@@ -1,0 +1,49 @@
+\name{getConfidenceInterval}
+\alias{getConfidenceInterval}
+\title{ Compute Confidence Intervals for a Model Fit to Dilution Series}
+\description{
+  This function computes confidence intervals for the estimated
+  concentrations in a four-parameter logistic model fit to a set of
+  dilution series in a reverse-phase protein array experiment.
+}
+\usage{
+getConfidenceInterval(result, alpha = 0.1, nSim = 50)
+}
+\arguments{
+  \item{result}{A \code{\link{RPPAFit}} object representing the
+    reuslt of fitting a four-parameter logistic model}
+  \item{alpha}{ The desired  significance of the confidence interval; the width
+    of the resulting interval is 1 - alpha.}
+  \item{nSim}{The number of times to resample the data in order to
+    estimate the confidenfce intervals.}
+}
+\details{
+  In order to compute the confidence intervals, the function assumes
+  that the errors in the observed \eqn{Y} intensities are independent
+  normal values, with mean centered on the estimated curve and standard
+  deviation that varies smoothly as a function of the (log)
+  concentration.  The smooth function is estimated using
+  \code{\link{loess}}. The residuals are resampled from this estimate
+  and the model is refit; the confidence intervals are computed
+  empirically as symmetrically dfefined quantiles of the refit parameter
+  sets.
+}
+\value{
+  An object of the \code{\link{RPPAFit}} class, containing updated
+  values for the slots \code{lower}, \code{upper}, and
+  \code{conf.width} that describe the confidence interval.
+}
+\references{KRC}
+\author{Kevin R. Coombes <kcoombes@mdanderson.org>}
+\seealso{ \code{\link{RPPAFit-class}}, \code{\link{RPPAFit}} }
+\examples{
+path <- system.file("rppaCellData", package="SuperCurve")
+akt <- RPPA("Akt.txt", path=path)
+design <- RPPADesign(akt, grouping="blockSample",
+                     controls=list("neg con", "pos con"))
+fit.nls <- RPPAFit(akt, design, "Mean.Net")
+# Warning: this takes a while!
+fit.nls <- getConfidenceInterval(fit.nls, alpha=0.10, nSim=50)
+}
+\keyword{models}
+

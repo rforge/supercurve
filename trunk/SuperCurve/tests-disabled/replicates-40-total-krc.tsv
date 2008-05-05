@@ -1,0 +1,8 @@
+	     AKT	     ERK2	    CTNNB1
+	Min.   :-0.7469  	Min.   :-0.70679  	Min.   :-2.15564  
+	1st Qu.:-0.1220  	1st Qu.:-0.18089  	1st Qu.:-0.06226  
+	Median : 0.1890  	Median : 0.07831  	Median : 0.11545  
+	Mean   : 0.2218  	Mean   : 0.09005  	Mean   : 0.12209  
+	3rd Qu.: 0.5647  	3rd Qu.: 0.22315  	3rd Qu.: 0.41784  
+	Max.   : 1.0063  	Max.   : 1.04378  	Max.   : 3.02792  
+	Correl.: 0.9852	Correl.: 0.9763	Correl.: 0.9691

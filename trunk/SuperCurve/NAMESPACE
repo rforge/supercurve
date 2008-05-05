@@ -1,0 +1,27 @@
+import(methods)
+	   
+
+
+importFrom("stats", coef, coefficients, fitted, resid, residuals)
+importFrom("graphics", plot, par, image, hist)
+importFrom("MASS", rlm)
+importFrom("stats", loess)
+
+
+## Functions defined in this package
+exportClasses(RPPAFit, RPPA, RPPADesign)
+exportClasses(RPPAFitParams, RPPADesignParams, RPPASet)
+export(RPPAFit, RPPA, RPPADesign)
+export(RPPAFitParams, RPPADesignParams, RPPAFitDir)
+
+export(sc)
+exportMethods(summary, plot, hist, image, names)
+exportMethods(coef, coefficients, resid, residuals, fitted, names)
+exportMethods(write.summary, fitslot)
+export(getConfidenceInterval, seriesNames, getSteps)
+export(image.RPPA, image.RPPAFit)
+
+
+
+
+
