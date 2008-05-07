@@ -18,9 +18,6 @@ setClass("RPPASet",
 # provide a generic convenience function to view a slot in the array of fits as a simple matrix view
 # e.g. fitslot(fitset, 'concentrations')
 #
-if (!isGeneric("fitslot"))
-  setGeneric("fitslot", function(object, ...) standardGeneric("fitslot"))
-  
 setMethod("fitslot", "RPPASet", function(object, sl, ...) {
   expr <- paste("object@fits[[1]]@", sl, sep='')
   mat <- matrix(NA, nrow = length(eval(parse(text=expr))), ncol = length(rownames(object@fits)))
@@ -41,9 +38,6 @@ setMethod("fitslot", "RPPASet", function(object, sl, ...) {
 # normalize = "median" for median normalization of the concentrations. 
 #     "median" = for each sample the median intensity over all plates is subtracted to account for varying sample concetratiosn
 #
-if (!isGeneric("write.summary"))
-  setGeneric("write.summary", function(object, ...) standardGeneric("write.summary"))
-  
 setMethod("write.summary", "RPPASet", function(object, file, path, graphs = TRUE, tiffdir = NULL, ...) {
 	conc <- fitslot(object, 'concentrations')
 	conc.ss <- fitslot(object, 'ss.ratio')

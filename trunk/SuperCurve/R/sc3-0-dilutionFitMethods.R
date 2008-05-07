@@ -16,9 +16,6 @@ setClass("FitClass",
 # Outputs:
 # (none) Use this data to create and store parameters for
 # the slide fit of intensity = f(conc) in the object
-if (!isGeneric("fitSlide"))
-  setGeneric("fitSlide", function(object, ...) standardGeneric("fitSlide"))
-
 setMethod("fitSlide", "FitClass", function(object, conc, intensity, ...) {
 	stop("fitSlide must be implemented for each kind of FitClass")
 })
@@ -34,9 +31,6 @@ setMethod("fitSlide", "FitClass", function(object, conc, intensity, ...) {
 # Outputs
 # est.conc = estimated concentration for dilution = 0
 #
-if (!isGeneric("fitSeries"))
-  setGeneric("fitSeries", function(object, ...) standardGeneric("fitSeries"))
-  
 setMethod("fitSeries", "FitClass", function(object, diln, intensity, est.conc, method = "nls", silent = T, trace = F, ...) {
 	stop("fitSeries must be implemented for each kind of FitClass")
 })
@@ -47,10 +41,6 @@ setMethod("fitSeries", "FitClass", function(object, diln, intensity, est.conc, m
 # trim
 # return concentration and intesity cutoffs for the model
 
-if (!isGeneric("trimConc"))
-  setGeneric("trimConc", function(object, ...) standardGeneric("trimConc"))
-  
-  
 setMethod("trimConc", "FitClass", function(object, conc, intensity, design,...) {
 	stop("trim must be implemented for each kind of FitClass")
     list(lo.intensity = 0, hi.intensity = 0, lo.conc = 0, hi.conc = 0)
