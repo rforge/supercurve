@@ -23,10 +23,11 @@
   right), and the identical bottom two rows contained the four least
   concentrated dilution steps. 
 }
-\usage{data(rppaCellData)}
+\usage{data(rppaCell)}
 \format{The objects \code{akt}, \code{c.erk2}, and \code{ctnnb1} are
   objects of the \code{\link{RPPA}} class.  The object \code{design40}
   is an object of the \code{\link{RPPADesign}} class.}
 \source{Bryan Hennessey and Gordon Mills}
 \references{KRC}
 \keyword{datasets}
+

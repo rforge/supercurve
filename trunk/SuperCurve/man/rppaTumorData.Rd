@@ -20,10 +20,11 @@
   the dilution series for a single sample, in decreasing concentration
   from left to right.
 }
-\usage{data(rppaTumorData)}
+\usage{data(rppaTumor)}
 \format{The objects \code{erk2}, \code{gsk3}, and \code{jnk} are objects
   of the \code{\link{RPPA}} class.  The object \code{tDesign} is an
   object of the \code{\link{RPPADesign}} class.} 
 \source{Bryan Hennessey and Gordon Mills}
 \references{KRC}
 \keyword{datasets}
+
