@@ -4,98 +4,66 @@ setClass("RPPA",
            file="character"
            ))
 
-RPPA.orig <- function(filename, path='.') {
-  v <- readLines(file.path(path, filename), n=1)
-  Mversion <- as.numeric(strsplit(v,"[:blank:]")[[1]][3])
-  if (Mversion < 2900) { # For Microvigene version 2.0 and higher, skip first 5 lines
-	  skip.lines <- 4
-  } else {
-	  skip.lines <- 5
-  }
-  temp <- read.table(file.path(path, filename), fill=TRUE,
-                     header=TRUE, row.names=NULL, sep='\t',
-                     quote='', comment.char='', skip=skip.lines)
-  temp <- temp[,1:(ncol(temp)-1)]
-  newNames <- dimnames(temp)[[2]]
-  newNames <- sub("GeneID",   "Sample",  newNames)
-  newNames <- sub("mean\_",   "Mean.",   newNames)
-  newNames <- sub("vol\_",    "Vol.",    newNames)
-  newNames <- sub("median\_", "Median.", newNames)
-  newNames <- sub("net",      "Net",     newNames)
-  newNames <- sub("total",    "Total",   newNames)
-  newNames <- sub("bkg",      "Bkg",     newNames)
-  newNames <- sub("dust",     "Dust",    newNames)
-  dimnames(temp)[[2]] <- newNames
-  new("RPPA", data=temp, file = filename)
+## :TODO: Change API to accept file object, replacing filename/path args
+## Logically, it really should be nothing more than a couple lines, with
+## a file object as the generator's sole argument.
+
+##-----------------------------------------------------------------------------
+## A function to read in the Microvigen .txt files to generate an RPPA object.
+RPPA <- function(filename, path='.', blanks=NULL) {
+
+    ## :TODO: Move code to read quantification file to external method
+    ## from redesign
+    pathname <- file.path(path, filename)
+
+    ## MicroVigene introducing an extra header line in later versions of file
+    get.num.header.lines <- function(filename) {
+        line <- readLines(filename, n=1)
+        mv.version <- as.numeric(strsplit(line, "[:blank:]")[[1]][3])
+        num.header.lines <- if (mv.version < 2900) 4 else 5
+        return(num.header.lines)
+    }
+
+    skip.lines <- get.num.header.lines(pathname)
+    quant.df <- read.delim(pathname,
+                           quote='',
+                           row.names=NULL,
+                           skip=skip.lines)
+
+    ## :TODO: Replace hardcoded substitutions below with algorithmic equivalent
+    ## from redesign
+    quant.df <- quant.df[, 1:(ncol(quant.df)-1)]
+    newNames <- dimnames(quant.df)[[2]]
+    newNames <- sub("GeneID",  "Sample",  newNames)
+    newNames <- sub("mean_",   "Mean.",   newNames)
+    newNames <- sub("vol_",    "Vol.",    newNames)
+    newNames <- sub("median_", "Median.", newNames)
+    newNames <- sub("net",     "Net",     newNames)
+    newNames <- sub("total",   "Total",   newNames)
+    newNames <- sub("bkg",     "Bkg",     newNames)
+    newNames <- sub("dust",    "Dust",    newNames)
+    dimnames(quant.df)[[2]] <- newNames
+
+    ## :TBD: Couldn't this be externalized? Perhaps add method to do exactly
+    ## same processing, removing need for extra argument...
+
+    #########
+    # Several sets of slides have large numbers of blanks which we want to
+    # exclude from the model fitting. The following procedure treats the
+    # blanks as controls, which realizes this purpose. Certainly, the sample
+    # name called 'control' must appear in the argument "control" in
+    # function "RPPADesignParams".
+    ######
+    if (!is.null(blanks)) {
+        quant.df$Sample <- as.character(quant.df$Sample)
+        quant.df$Sample[blanks] <- 'control'
+        quant.df$Sample <- as.factor(quant.df$Sample)
+    }
+
+    new("RPPA",
+        data=quant.df,
+        file=filename)
 }
-
-
-RPPA <- function(filename, path='.', blanks=0) {
-  ## A function to read in the Microvigen .txt files to generate an RPPA object.	
-  ## Author: Kevin Coombes
-  ## Modified and commented by Wenbin Liu	(12/16/2007)
-
-  for(k in 4:20) {
-       temp <- try(read.table(file.path(path, filename), fill=TRUE,
-                     header=TRUE, row.names=NULL, sep='\t',
-                     quote='', comment.char='', skip=k), silent=TRUE)
-       if(is(temp, 'try-error')) {
-         #print('Please ignore this error message.')
-         next
-       }
-       if (colnames(temp)[1]=='Main.Row')
-          break
-  }
-  # The program tries an increasing number of rows to skip until
-  # it reaches a header line that starts with 'Main.Row'. Generally,
-  # that number falls between 4 and 13. This problem occurs when the Microvigen
-  # .txt files were read in Linux/Unix versions of R, and also for changes between
-  # Microvigen versions.  
-
-
-  ## Also note that the backslashes("\") before underscore("_") are not accepted
-  ## by R-2.6.0 and newer, so they are removed in the code below. 
-  temp <- temp[,1:10]
-  newNames <- dimnames(temp)[[2]]
-  newNames <- sub("GeneID",   "Sample",  newNames)
-  newNames <- sub("mean_",   "Mean.",   newNames)
-  newNames <- sub("vol_",    "Vol.",    newNames)
-  newNames <- sub("median_", "Median.", newNames)
-  newNames <- sub("net",      "Net",     newNames)
-  newNames <- sub("total",    "Total",   newNames)
-  newNames <- sub("bkg",      "Bkg",     newNames)
-  newNames <- sub("dust",     "Dust",    newNames)
-  dimnames(temp)[[2]] <- newNames
-
-
-  ######### 
-  # Newest modification of RPPA:
-  # Several sets of slides have large numbers of blanks which we want to exclude from the model fitting.
-  # The following procedure treats the blanks as controls, which realizes this purpose.
-  # Certainly, the sample name called 'control' must appear in the argument "control" in function "RPPADesignParams".
-  ######
-  temp$Sample <- as.character(temp$Sample)
-  temp$Sample[blanks] <- 'control'
-  temp$Sample <-as.factor(temp$Sample)
-  
-  ##########
-  # Read sample info in order to integrate a column called 
-  # 'SampleID' to the data slot of the RPPA object:
-  # The file has to be 
-  ##########
-  
-  sam.info <- read.table
-  
-  
-  
-  new("RPPA", data=temp, file = filename)
-
-}
-
-
-
-
-
 
 
 
