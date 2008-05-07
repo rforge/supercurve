@@ -1,3 +1,7 @@
+###
+### GUI.R
+###
+
 library(tcltk)
 
 .browsePath <- function(title, initialdir = NULL) {

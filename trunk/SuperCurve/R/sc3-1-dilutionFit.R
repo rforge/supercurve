@@ -1,6 +1,8 @@
+###
+### DILUTIONFIT.R
+###
+
 ##############################################################
-# dilutionFit.R
-#
 # This is the result of the model building in doSimulation.R
 # Original version by Kevin R. Coombes and Jianhua Hu.
 # Modified by Corwin Joy.
@@ -93,7 +95,8 @@
 ##############################################################
 # RPPAFit
 
-setMethod("summary", "RPPAFit", function(object, ...) {
+setMethod("summary", "RPPAFit",
+          function(object, ...) {
   cat(paste("An RPPAFit object constructed via the function call:\n",
             as.character(list(object@call)), "\n"))
 })
@@ -105,9 +108,10 @@ setMethod("summary", "RPPAFit", function(object, ...) {
 # predicted intensities. Default for 'fitted' is to return the per-spot
 # fitted 'Y' intensities, with an option to return the per-spot fitted
 # 'X' concentrations.
-setMethod("fitted", "RPPAFit", function(object,
-                                            type=c("Y", "y", "X", "x"),
-                                            ...) {
+setMethod("fitted", "RPPAFit",
+          function(object,
+                   type=c("Y", "y", "X", "x"),
+                   ...) {
   type <- match.arg(type)
   conc <- object@concentrations
   series <- as.character(object@design@layout$Series)
@@ -131,9 +135,10 @@ setMethod("fitted", "RPPAFit", function(object,
 # Note that the model fitting is a bit of a hybrid between the linear and
 # logistic intensity scales, so it's not completely clear which residuals are
 # most meaningful
-setMethod("residuals", "RPPAFit", function(object,
-                                               type=c("raw", "standardized", "r2"),
-                                               ...) {
+setMethod("residuals", "RPPAFit",
+          function(object,
+                   type=c("raw", "standardized", "r2"),
+                   ...) {
   type <- match.arg(type)
   res <- object@rppa@data[, object@measure] - fitted(object)
   if (type == "standardized") {
@@ -148,7 +153,8 @@ setMethod("residuals", "RPPAFit", function(object,
   res
 })
 
-setMethod("resid", "RPPAFit", function(object, ...) {
+setMethod("resid", "RPPAFit",
+          function(object, ...) {
   residuals(object, ...)
 })
 
@@ -157,8 +163,8 @@ setMethod("resid", "RPPAFit", function(object, ...) {
 # forms of the residuals or for the fitted concentrations (X) or intensities (Y).
 
 image.RPPAFit <- function(x,
-                                           measure=c("Residuals", "ResidualsR2", "StdRes",  "X", "Y"),
-                                           ...) {
+                          measure=c("Residuals", "ResidualsR2", "StdRes",  "X", "Y"),
+                          ...) {
   measure <- match.arg(measure)
   rppa <- x@rppa
   rppa@data$Residuals <- resid(x)
@@ -170,12 +176,16 @@ image.RPPAFit <- function(x,
   invisible(x)
 }
 
-setMethod("image", "RPPAFit", image.RPPAFit)
+setMethod("image", "RPPAFit",
+          image.RPPAFit)
 
 # Histogram of the residuals, with an option to see the standardized or linear residuals
-setMethod("hist", "RPPAFit", function(x,
-                                          type=c("Residuals", "StdRes", "ResidualsR2"),
-                                          xlab=NULL, main=NULL, ...) {
+setMethod("hist", "RPPAFit",
+          function(x,
+                   type=c("Residuals", "StdRes", "ResidualsR2"),
+                   xlab=NULL,
+                   main=NULL,
+                   ...) {
   type <- match.arg(type)
   if(is.null(xlab)) xlab <- type
   if (is.null(main)) main <- paste('Histogram of', type)
@@ -196,10 +206,14 @@ setMethod("hist", "RPPAFit", function(x,
 }
       
 # Plot the results from dilutionFit above to see how well supercurve fits
-setMethod("plot", "RPPAFit", function(x, y,
-                                          type=c("cloud", "series", "individual", "steps", "resid"),
-                                          xlab='Log Concentration',
-                                          ylab='Intensity', colors=NULL, xform=function(x) x, ...) {
+setMethod("plot", "RPPAFit",
+          function(x, y,
+                   type=c("cloud", "series", "individual", "steps", "resid"),
+                   xlab='Log Concentration',
+                   ylab='Intensity',
+                   colors=NULL,
+                   xform=function(x) x,
+                   ...) {
 	                                          
   
   trimset <- as.list(x@trimset)	
@@ -385,7 +399,7 @@ RPPAFitParams <- function(measure,
 }
  
 RPPAFitFromParams <- function(rppa, design, fitparams) {
-	if(!inherits(fitparams, "RPPAFitParams"))
+    if(!inherits(fitparams, "RPPAFitParams"))
     	stop("'fitparams' must be a valid RPPAFitParams object")
     
     # .attachslot(fitparams)
@@ -394,11 +408,19 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
               fitparams@trace, fitparams@verbose, fitparams@veryVerbose, fitparams@warnLevel, fitparams@model)
 }   
                     
-RPPAFit <- function(rppa, design, measure, xform=function(x) x, 
-                        method=c("nls", "nlrob", "nlrq"), trim = TRUE,
-                        ci=FALSE, ignoreNegative=TRUE, 
-                        trace=FALSE, verbose=FALSE, veryVerbose=FALSE,
-                        warnLevel=0, model=c("logistic", "loess", "cobs")) {
+RPPAFit <- function(rppa,
+                    design,
+                    measure,
+                    xform=function(x) x, 
+                    method=c("nls", "nlrob", "nlrq"),
+                    trim = TRUE,
+                    ci=FALSE,
+                    ignoreNegative=TRUE, 
+                    trace=FALSE,
+                    verbose=FALSE,
+                    veryVerbose=FALSE,
+                    warnLevel=0,
+                    model=c("logistic", "loess", "cobs")) {
   # make sure the MASS library is loaded
   if (!require('MASS'))
     stop("This routine requires the MASS library for the 'rlm' routine.")
@@ -429,9 +451,9 @@ RPPAFit <- function(rppa, design, measure, xform=function(x) x,
   intensity <- xform(rppa@data[, measure])
   
   if (warnLevel < 0) {
-	  silent <- T
+	  silent <- TRUE
   } else {
-	  silent <- F
+	  silent <- FALSE
   }
 	  
   # perform the first pass to initialize the estimates
@@ -449,11 +471,10 @@ RPPAFit <- function(rppa, design, measure, xform=function(x) x,
   yval <- intensity[!.controlVector(design)]
   
   fc <- switch(model,
-    loess = new("loessFitClass"),
-    logistic = new("logisticFitClass"),
-    cobs = new("cobsFitClass"),
-    NULL
-    )
+               cobs = new("cobsFitClass"),
+               loess = new("loessFitClass"),
+               logistic = new("logisticFitClass"),
+               NULL)
     
   if (is.null(fc)) stop("Unknown model type in RPPAfit")
   
@@ -512,18 +533,24 @@ RPPAFit <- function(rppa, design, measure, xform=function(x) x,
 
   
   result <- new("RPPAFit",
-                call=call, rppa=rppa, design=design, # inputs
-                measure=measure, method=method, 
-                
+                call=call,
+                rppa=rppa,
+                design=design, # inputs
+                measure=measure,
+                method=method, 
                 trimset=c(lo.intensity = -100000, hi.intensity = 100000, lo.conc = -1000, hi.conc = 1000),   # inputs
                 model=fc,
-                concentrations=pass2, lower=pass2, upper=pass2,
+                concentrations=pass2,
+                lower=pass2,
+                upper=pass2,
                 intensities=fitted(fc, pass2),
-                ss.ratio=ss.ratio, p.values=pval2, conf.width=0,
+                ss.ratio=ss.ratio,
+                p.values=pval2,
+                conf.width=0,
                 warn=warn2)
                 #version=packageDescription("SuperCurve", fields="Version"))  ##### By Wenbin
 
-  if(trim) {
+  if (trim) {
 	  tc <- trimConc(fc, conc = fitted(result, "X"), intensity=intensity, design = design)
 	  series.conc <- result@concentrations
 	  series.conc[series.conc < tc$lo.conc] <- tc$lo.conc

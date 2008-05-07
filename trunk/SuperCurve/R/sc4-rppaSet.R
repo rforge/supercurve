@@ -1,6 +1,8 @@
+###
+### RPPASET.R
+###
+
 ##############################################################
-# RPPA set
-#
 # Fit a set of slides with a common layout
 # Initial version: Corwin Joy
 

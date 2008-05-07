@@ -1,8 +1,20 @@
-nlrob <-
-    function (formula, data, start, weights = NULL, na.action = na.fail,
-	      psi = psi.huber, test.vec = c("resid", "coef", "w"),
-	      maxit = 20, acc = 1e-06, algorithm = "default",
-	      control = nls.control(), trace = FALSE, ...)
+###
+### NLROB.R
+###
+
+nlrob <- function(formula,
+                  data,
+                  start,
+                  weights=NULL,
+                  na.action=na.fail,
+	          psi=psi.huber,
+                  test.vec=c("resid", "coef", "w"),
+	          maxit=20,
+                  acc=1e-06,
+                  algorithm="default",
+	          control=nls.control(),
+                  trace=FALSE,
+                  ...)
 {
     ## Purpose:
     ##	Robust fitting of nonlinear regression models. The fitting is
@@ -41,8 +53,8 @@ nlrob <-
     ## if (any(is.na(data)) & options("na.action")$na.action == "na.omit")
     ##	 stop("if NAs are present, use 'na.exclude' to preserve the residuals length")
 
-    irls.delta <- function(old, new) sqrt(sum((old - new)^2, na.rm = TRUE)/
-					  max(1e-20, sum(old^2, na.rm = TRUE)))
+    irls.delta <- function(old, new) sqrt(sum((old - new)^2, na.rm=TRUE)/
+					  max(1e-20, sum(old^2, na.rm=TRUE)))
 
     ##- initialize testvec  and update formula with robust weights
     coef <- start
@@ -55,8 +67,8 @@ nlrob <-
     ## The following "put everything on the right in order to use weights"
     ## is only necessary for R versions <= 2.2.1  (FIXME eventually)
     oform <- formula
-    formula <- as.formula(substitute(~(LHS-RHS) * w, list(LHS = formula[[2]],
-							  RHS = formula[[3]])))
+    formula <- as.formula(substitute(~(LHS-RHS) * w, list(LHS=formula[[2]],
+							  RHS=formula[[3]])))
     ##- robust loop (IWLS)
     converged <- FALSE
     status <- "converged"
@@ -65,7 +77,7 @@ nlrob <-
 	if (trace)
 	    cat("robust iteration", iiter, "\n")
 	previous <- get(test.vec)
-	Scale <- median(abs(resid), na.rm = TRUE)/0.6745
+	Scale <- median(abs(resid), na.rm=TRUE)/0.6745
 	if (Scale == 0) {
 	    convi <- 0
 	    method.exit <- TRUE
@@ -78,8 +90,8 @@ nlrob <-
 	    if (!is.null(weights))
 		w <- w * weights
 	    data$w <- sqrt(w)
-	    out <- nls(formula, data = data, start = start, algorithm = algorithm,
-		       trace = trace, na.action = na.action, control = control)
+	    out <- nls(formula, data=data, start=start, algorithm=algorithm,
+		       trace=trace, na.action=na.action, control=control)
 
 	    ## same sequence as in start! Ok for test.vec:
 	    coef <- coefficients(out)
@@ -102,12 +114,19 @@ nlrob <-
 	tmp <- weights != 0
 	w[tmp] <- w[tmp]/weights[tmp]
     }
-    out <- list(m = out$m, call = match.call(), formula = oform, new.formula = formula,
-		coefficients = coef, residuals = resid,
-		fitted.values = y - out$residuals,
-		Scale = Scale, w = w, status = status, psi = psi,
-		data = dataName,
-		dataClasses = attr(attr(mf, "terms"), "dataClasses"))
+    out <- list(m=out$m,
+                call=match.call(),
+                formula=oform,
+                new.formula=formula,
+		coefficients=coef,
+                residuals=resid,
+		fitted.values=y - out$residuals,
+		Scale=Scale,
+                w=w,
+                status=status,
+                psi=psi,
+		data=dataName,
+		dataClasses=attr(attr(mf, "terms"), "dataClasses"))
     ##MM: Where would this "label" really make sense?
     ##MM: attr(out$fitted.values, "label") <- "Fitted values"
     ##-	  names(out$residuals) <- rownames(data)
