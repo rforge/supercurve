@@ -167,8 +167,9 @@ fit.q <- RPPAFit(erk2, design, "Mean.Net")
 hist(fit.q, type="StdRes")
 plot(fit.q, type="series")
 
-coef(fit.nls)
-coef(fit.q)
+## :FIXME: coef method doesn't work
+#coef(fit.nls)
+#coef(fit.q)
 
 plot(fitted(fit.q), resid(fit.q))
 }

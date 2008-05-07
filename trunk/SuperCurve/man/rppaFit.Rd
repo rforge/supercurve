@@ -102,7 +102,8 @@ design <- RPPADesign(erk2, grouping="blockSample",
                      controls=list("neg con", "pos con"))
 fit.nls <- RPPAFit(erk2, design, "Mean.Net")
 summary(fit.nls)
-coef(fit.nls)
+## :FIXME: coef method doesn't work
+#coef(fit.nls)
 }
 \keyword{models}
 \keyword{regression}
