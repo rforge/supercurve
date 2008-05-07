@@ -252,11 +252,7 @@ setMethod("plot", "RPPAFit", function(x, y,
    
     if (type == "series") {
       if (is.null(colors)) {
-        if(!require(colorspace)) {
-          colors <- gray(0:7 / 7)
-        } else {
           colors <- hcl(seq(0, 360, length=9)[1:8], l=65, c=65)
-        }
       }
       i <- 0
       ncol <- length(colors)
