@@ -1,3 +1,5 @@
+library(tcltk)
+
 .browsePath <- function(title, initialdir = NULL) {
 	if(!is.null(initialdir)) {
 		fileName <- tclvalue(tkgetOpenFile(title=title, initialdir=initialdir)) 

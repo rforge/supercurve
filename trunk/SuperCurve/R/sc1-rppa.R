@@ -30,8 +30,7 @@ RPPA.orig <- function(filename, path='.') {
 }
 
 
-RPPA <-
-function(filename, path='.', blanks=0) {
+RPPA <- function(filename, path='.', blanks=0) {
   ## A function to read in the Microvigen .txt files to generate an RPPA object.	
   ## Author: Kevin Coombes
   ## Modified and commented by Wenbin Liu	(12/16/2007)
