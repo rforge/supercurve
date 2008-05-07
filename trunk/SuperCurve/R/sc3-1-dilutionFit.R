@@ -93,27 +93,6 @@
 ##############################################################
 # RPPAFit
 
-setClass("RPPAFit",
-         representation=list(
-           call = "call",             # function call used to create the model
-           rppa = "RPPA",               # required parameter
-           design ="RPPADesign",        # required parameter
-           measure = "character",       # required parameter
-           method = "character",        # optional parameter
-           trimset = "numeric",            # list(lo.intensity, hi.intensity, lo.conc, hi.conc)
-           model = "FitClass",  # curve model
-           concentrations = "numeric",# main output
-           lower = "numeric",           # confidence interval 
-           upper = "numeric",           # confidence interval
-           conf.width = "numeric",      # width of confidence interval
-           intensities = "numeric",   # intensities related to series concentrations
-           p.values = "numeric",      # measure of goodness of fit per dilution series
-           ss.ratio = "numeric",
-           warn = "character",
-           version = "character"
-           ))
-                                   
-                        
 setMethod("summary", "RPPAFit", function(object, ...) {
   cat(paste("An RPPAFit object constructed via the function call:\n",
             as.character(list(object@call)), "\n"))
@@ -379,30 +358,30 @@ setMethod("plot", "RPPAFit", function(x, y,
 # alpha and beta. Since we still don't know which method is best, we should
 # make it an option so we (and others) can continue to evaluate it.
 
-setClass("RPPAFitParams", # encapsulate optional params for use by other routines
-         representation=list(           
-           measure = "character",       
-           xform = "function",
-           method = "character", 
-           ci = "logical",
-           ignoreNegative = "logical",
-           trace="logical", 
-           verbose="logical", 
-           veryVerbose="logical",
-           warnLevel="numeric",
-           trim = "logical",
-           model = "character"
-           ))
-         
-RPPAFitParams <- function(measure, xform=function(x) x, 
-                        method=c("nls", "nlrob", "nlrq"),
-                        ci=FALSE, ignoreNegative=TRUE, 
-                        trace=FALSE, verbose=FALSE, veryVerbose=FALSE,
-                        warnLevel=0, trim = TRUE, model=c("logistic", "loess", "cobs"))  {
+RPPAFitParams <- function(measure,
+                          xform=function(x) x, 
+                          method=c("nls", "nlrob", "nlrq"),
+                          ci=FALSE,
+                          ignoreNegative=TRUE, 
+                          trace=FALSE,
+                          verbose=FALSE,
+                          veryVerbose=FALSE,
+                          warnLevel=0,
+                          trim=TRUE,
+                          model=c("logistic", "loess", "cobs"))  {
 	                       
-	new("RPPAFitParams", measure = measure, xform = xform, method = method, ci = ci, 
-		ignoreNegative = ignoreNegative,  trace = trace, 
-		verbose = verbose, veryVerbose = veryVerbose, warnLevel = warnLevel, trim = trim, model = model)                        
+    new("RPPAFitParams",
+        measure=measure,
+        xform=xform,
+        method=method,
+        ci=ci, 
+        ignoreNegative=ignoreNegative,
+        trace=trace, 
+        verbose=verbose,
+        veryVerbose=veryVerbose,
+        warnLevel=warnLevel,
+        trim=trim,
+        model=model)                        
 }
  
 RPPAFitFromParams <- function(rppa, design, fitparams) {

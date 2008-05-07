@@ -4,21 +4,12 @@
 # Fit a set of slides with a common layout
 # Initial version: Corwin Joy
 
-setClass("RPPASet",
-         representation=list(
-           call = "call",             # function call used to create the model
-           version = "character",     # package version
-           design ="RPPADesign",      # common design for all slides
-           rppas = "array",            # vector of RPPAs
-           fitparams = "RPPAFitParams", # parameters used for fitting
-           fits = "array"           # set of fits
-           ))
-
 
 # provide a generic convenience function to view a slot in the array of fits as a simple matrix view
 # e.g. fitslot(fitset, 'concentrations')
 #
-setMethod("fitslot", "RPPASet", function(object, sl, ...) {
+setMethod("fitslot", "RPPASet",
+          function(object, sl, ...) {
   expr <- paste("object@fits[[1]]@", sl, sep='')
   mat <- matrix(NA, nrow = length(eval(parse(text=expr))), ncol = length(rownames(object@fits)))
   rownames(mat) <- colnames(t(eval(parse(text=expr))))
@@ -38,7 +29,8 @@ setMethod("fitslot", "RPPASet", function(object, sl, ...) {
 # normalize = "median" for median normalization of the concentrations. 
 #     "median" = for each sample the median intensity over all plates is subtracted to account for varying sample concetratiosn
 #
-setMethod("write.summary", "RPPASet", function(object, file, path, graphs = TRUE, tiffdir = NULL, ...) {
+setMethod("write.summary", "RPPASet",
+          function(object, file, path, graphs = TRUE, tiffdir = NULL, ...) {
 	conc <- fitslot(object, 'concentrations')
 	conc.ss <- fitslot(object, 'ss.ratio')
 	if(sum(as.character(object@design@alias$Alias) == as.character(object@design@alias$Sample)) < nrow(conc)) {
@@ -126,8 +118,7 @@ setMethod("write.summary", "RPPASet", function(object, file, path, graphs = TRUE
 
 
 ####### RPPAFitDir() 
-RPPAFitDir <-
-function(path, designparams, fitparams, blanks=blanks) {
+RPPAFitDir <- function(path, designparams, fitparams, blanks=blanks) {
         if(!inherits(designparams, "RPPADesignParams"))
         stop("'design' must be a valid RPPADesignParams object")
   ## Modified by Wenbin Liu.
@@ -182,8 +173,11 @@ function(path, designparams, fitparams, blanks=blanks) {
         rownames(rppas) <- slidefiles
         
         new("RPPASet",
-                call=call, design=design, rppas=rppas, fitparams = fitparams, fits = fits
-                )
-          #removed acutual argument version=packageDescription("SuperCurve", fields="Version") by Wenbin Liu
-} #end of function
+            call=call,
+            design=design,
+            rppas=rppas,
+            fitparams=fitparams,
+            fits=fits)
+          #removed actual argument version=packageDescription("SuperCurve", fields="Version") by Wenbin Liu
+}
 

@@ -1,8 +1,7 @@
-setClass("RPPA",
-         representation = list(
-           data="data.frame",
-           file="character"
-           ))
+###
+### RPPA.R
+###
+
 
 ## :TODO: Change API to accept file object, replacing filename/path args
 ## Logically, it really should be nothing more than a couple lines, with

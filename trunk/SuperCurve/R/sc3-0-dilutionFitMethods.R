@@ -1,10 +1,6 @@
 ##############################################################
 # Classes for fit functions to drive dilutionFit
 
-# declare a virtual class to specify the interface for a fitClass
-setClass("FitClass",
-	 representation("VIRTUAL"))
-	
 # Required methods 
 
 # fitSlide
@@ -16,7 +12,8 @@ setClass("FitClass",
 # Outputs:
 # (none) Use this data to create and store parameters for
 # the slide fit of intensity = f(conc) in the object
-setMethod("fitSlide", "FitClass", function(object, conc, intensity, ...) {
+setMethod("fitSlide", "FitClass",
+          function(object, conc, intensity, ...) {
 	stop("fitSlide must be implemented for each kind of FitClass")
 })
 
@@ -31,7 +28,8 @@ setMethod("fitSlide", "FitClass", function(object, conc, intensity, ...) {
 # Outputs
 # est.conc = estimated concentration for dilution = 0
 #
-setMethod("fitSeries", "FitClass", function(object, diln, intensity, est.conc, method = "nls", silent = T, trace = F, ...) {
+setMethod("fitSeries", "FitClass",
+          function(object, diln, intensity, est.conc, method="nls", silent=TRUE, trace=FALSE, ...) {
 	stop("fitSeries must be implemented for each kind of FitClass")
 })
 
@@ -41,7 +39,8 @@ setMethod("fitSeries", "FitClass", function(object, diln, intensity, est.conc, m
 # trim
 # return concentration and intesity cutoffs for the model
 
-setMethod("trimConc", "FitClass", function(object, conc, intensity, design,...) {
+setMethod("trimConc", "FitClass",
+          function(object, conc, intensity, design,...) {
 	stop("trim must be implemented for each kind of FitClass")
     list(lo.intensity = 0, hi.intensity = 0, lo.conc = 0, hi.conc = 0)
 })
@@ -158,20 +157,15 @@ setMethod("trimConc", "FitClass", function(object, conc, intensity, design,...) 
 
 ##############################################################
 # Loess model class
-setOldClass("loess") # turn old S3 loess class into S4 class
 
-setClass("loessFitClass",representation(
-   "FitClass",
-   model = "loess"
-   )
-)
-
-setMethod("fitSlide", "loessFitClass", function(object, conc, intensity, ...) {	
+setMethod("fitSlide", "loessFitClass",
+          function(object, conc, intensity, ...) {	
 	fit.lo <- loess(intensity ~ conc)
 	new("loessFitClass", model = fit.lo)
 })
 
-setMethod("fitted", "loessFitClass", function(object, conc,...) {
+setMethod("fitted", "loessFitClass",
+          function(object, conc, ...) {
 	fit.lo <- object@model
 	
 	# loess will not interpolate beyond the initial fitted conc. range
@@ -187,28 +181,22 @@ setMethod("fitted", "loessFitClass", function(object, conc,...) {
 	intensity
 })
 
-setMethod("fitSeries", "loessFitClass", function(object, diln, intensity, est.conc, method = "nls", silent = T, trace = F, ...) {
+setMethod("fitSeries", "loessFitClass",
+          function(object, diln, intensity, est.conc, method = "nls", silent = T, trace = F, ...) {
 	.series.fit(object, diln, intensity, est.conc, method , silent, trace)		
 })
 
-setMethod("trimConc", "loessFitClass", function(object, conc, intensity, design,...) {
-	.generic.trim(object, conc, intensity, design,...)	 
+setMethod("trimConc", "loessFitClass",
+          function(object, conc, intensity, design, ...) {
+	.generic.trim(object, conc, intensity, design, ...)	 
 })
 	
 
 ##############################################################
 # cobs model class
-setOldClass("cobs") # turn old S3 loess class into S4 class
 
-setClass("cobsFitClass",representation(
-   "FitClass",
-   model = "cobs", # actually this is of class cobs, but I could not get that to work
-   lambda = "numeric"
-   ),
-   prototype = prototype(lambda = 0)
-)
-
-setMethod("fitSlide", "cobsFitClass", function(object, conc, intensity, ...) {	
+setMethod("fitSlide", "cobsFitClass",
+          function(object, conc, intensity, ...) {	
 	library("cobs")
 	fit.lo <- cobs(conc, intensity, constraint="increase", nknots=20, lambda = object@lambda, degree = 2, tau = 0.5,
 	  print.warn = FALSE, print.mesg = FALSE)
@@ -233,7 +221,8 @@ setMethod("fitSlide", "cobsFitClass", function(object, conc, intensity, ...) {
 	return(as.vector(fvalvec))
 }
 
-setMethod("fitted", "cobsFitClass", function(object, conc,...) {
+setMethod("fitted", "cobsFitClass",
+          function(object, conc,...) {
 	fit <- object@model
 	
 	# Predict missing values at min intensity
@@ -278,24 +267,20 @@ setMethod("fitted", "cobsFitClass", function(object, conc,...) {
 	intensity
 })
 
-setMethod("fitSeries", "cobsFitClass", function(object, diln, intensity, est.conc, method = "nls", silent = T, trace = F, ...) {
+setMethod("fitSeries", "cobsFitClass",
+          function(object, diln, intensity, est.conc, method = "nls", silent = T, trace = F, ...) {
 	.series.fit(object, diln, intensity, est.conc, method , silent, trace)		
 })
 
-setMethod("trimConc", "cobsFitClass", function(object, conc, intensity, design,...) {
-	.generic.trim(object, conc, intensity, design,...)	 
+setMethod("trimConc", "cobsFitClass",
+          function(object, conc, intensity, design, ...) {
+	.generic.trim(object, conc, intensity, design, ...)	 
 })
 	
 
 
 ##############################################################
 # Logistic model class
-setClass("logisticFitClass",representation(
-   "FitClass",
-   coefficients = "numeric" # alpha, beta, gamma
-   ),
-   prototype = prototype(coefficients=c(alpha=0, beta=0, gamma=0))
-)
 
 .ea <- function(x) { exp(x)/(1+exp(x)) }  # note: rnls does not work with local functions
 .lp <- function(p) log(p/(1-p))
@@ -310,7 +295,8 @@ setClass("logisticFitClass",representation(
 	list(alpha=p.alpha, beta=p.beta, gamma=p.gamma)
 }
 
-setMethod("fitSlide", "logisticFitClass", function(object, conc, intensity, ...) {
+setMethod("fitSlide", "logisticFitClass",
+          function(object, conc, intensity, ...) {
 	 cf <- as.list(object@coefficients)	 
 	 
 	 if (cf$gamma == 0) {
@@ -335,19 +321,22 @@ setMethod("fitSlide", "logisticFitClass", function(object, conc, intensity, ...)
 	new("logisticFitClass", coefficients = unlist(cf))
 })
 
-setMethod("fitted", "logisticFitClass", function(object, conc,...) {
+setMethod("fitted", "logisticFitClass",
+          function(object, conc, ...) {
 	cf <- as.list(object@coefficients)
 	cf$alpha + cf$beta*.ea(cf$gamma*conc)	
 })
 
 
 
-setMethod("fitSeries", "logisticFitClass", function(object, diln, intensity, est.conc, method = "nls", silent = T, trace = F, ...) {
+setMethod("fitSeries", "logisticFitClass",
+          function(object, diln, intensity, est.conc, method = "nls", silent = T, trace = F, ...) {
 	.series.fit(object, diln, intensity, est.conc, method , silent, trace)		
 })
 
 
-setMethod("trimConc", "logisticFitClass", function(object, conc, intensity, design,...) {
+setMethod("trimConc", "logisticFitClass",
+          function(object, conc, intensity, design, ...) {
 	  # Trim the concentration estimates to bound lower and upper concentration
       # estimates at the limits of what can be detected given our background noise.
       #

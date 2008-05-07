@@ -1,30 +1,27 @@
-setClass("RPPADesign",
-         representation=list(
-           layout="data.frame",
-           alias="list",
-           sampleMap="character",
-           controls="list"
-           ))
+###
+### DESIGN.R
+###
 
-setClass("RPPADesignParams", representation=list(
-					   steps="numeric",
-                       series="factor",
-                       grouping="character",
-                       ordering="character",
-                       alias="list", 
-                       center="logical", 
-                       controls="list"
-                       ))
 
-                       
-RPPADesignParams <- function(
-                       steps=rep(0,1),
-                       series=factor(rep(0,1)),
-                       grouping=c("byRow", "byCol", "bySample", "blockSample"),
-                       ordering=c("decreasing", "increasing"),
-                       alias=list(), center=FALSE, controls=list()) {
-  new("RPPADesignParams",
-        steps = steps, series = series, grouping = grouping, ordering = ordering, alias = alias, center=center, controls = controls)                 
+RPPADesignParams <- function(steps=rep(0,1),
+                             series=factor(rep(0,1)),
+                             grouping=c("byRow",
+                                        "byCol",
+                                        "bySample",
+                                        "blockSample"),
+                             ordering=c("decreasing",
+                                        "increasing"),
+                             alias=list(),
+                             center=FALSE,
+                             controls=list()) {
+    new("RPPADesignParams",
+        steps=steps,
+        series=series,
+        grouping=grouping,
+        ordering=ordering,
+        alias=alias,
+        center=center,
+        controls=controls)                 
 }
 
 if (FALSE) {
@@ -47,11 +44,18 @@ RPPADesignFromParams <- function(raw, designparams) {
 
 # This is bad to have two constructors here since now this has to be kept in sync with PRRADesignParams
 # Only keep for backwards compatibility atm
-RPPADesign <- function(raw, steps=rep(0,1),
+RPPADesign <- function(raw,
+                       steps=rep(0,1),
                        series=factor(rep(0,1)),
-                       grouping=c("byRow", "byCol", "bySample", "blockSample"),
-                       ordering=c("decreasing", "increasing"),
-                       alias=list(), center=FALSE, controls=list()) {
+                       grouping=c("byRow",
+                                  "byCol",
+                                  "bySample",
+                                  "blockSample"),
+                       ordering=c("decreasing",
+                                  "increasing"),
+                       alias=list(),
+                       center=FALSE,
+                       controls=list()) {
   if (length(alias) < 1) {
 	
     alias <- list(Alias=levels(raw@data$Sample), 
@@ -147,7 +151,8 @@ RPPADesign <- function(raw, steps=rep(0,1),
 }
 
 
-setMethod("image", "RPPADesign", function(x, ...) {
+setMethod("image", "RPPADesign",
+          function(x, ...) {
   # figure out how to make "geographic" pictures
   temp <- x@layout
   my <- max(temp$Main.Row) * max(temp$Sub.Row)
@@ -180,8 +185,7 @@ plotDesign.org <- function(rppa, design, measure='Mean.Total', main='') {
 }
 
 #########
-plotDesign<-
-function(rppa, design, measure='Mean.Total', main='') {
+plotDesign<- function(rppa, design, measure='Mean.Total', main='') {
         y <- rppa@data[, measure]
         x <- design@layout$Steps
 
@@ -207,7 +211,8 @@ function(rppa, design, measure='Mean.Total', main='') {
 
 
 
-setMethod("summary", "RPPADesign", function(object, ...) {
+setMethod("summary", "RPPADesign",
+          function(object, ...) {
   cat("An RPPA design object with controls:\n")
   print(unlist(object@controls))
   cat("\n")
@@ -235,7 +240,8 @@ getSteps <- function(design) {
   design@layout$Steps[!isControl]
 }
 
-setMethod("names", "RPPADesign", function(x) {
+setMethod("names", "RPPADesign",
+          function(x) {
   isControl <- .controlVector(x)
   as.character(x@layout$Series[!isControl])
 })
