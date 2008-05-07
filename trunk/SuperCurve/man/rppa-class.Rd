@@ -11,10 +11,10 @@
   reverse-phase protein array experiment.
 }
 \usage{
-RPPA(filename, path = ".")
+RPPA(filename, path=".", blanks=NULL)
 \S4method{summary}{RPPA}(object, ...)
-\S4method{image}{RPPA}(x, measure = "Mean.Net", main = measure, colorbar
-= FALSE, col = terrain.colors(256), ...)
+\S4method{image}{RPPA}(x, measure="Mean.Net", main=measure, colorbar
+=FALSE, col=terrain.colors(256), ...)
 }
 \arguments{
   \item{filename}{The name of a file containing MicroVigene
@@ -22,6 +22,7 @@ RPPA(filename, path = ".")
   \item{path}{An optional argument giving the path from the current
     directory to the file. The default value assumes the file is
     contained in the current direectory.}
+  \item{blanks}{:TODO:}
   \item{object}{An RPPA object.}
   \item{x}{An RPPA object.}
   \item{measure}{A character string containing the name of the
@@ -29,8 +30,8 @@ RPPA(filename, path = ".")
     \code{image} method.}
   \item{main}{A character string used to title the image plot}
   \item{colorbar}{A logical value that determines whether to include a
-    color bar in the plot.  Default is FALSE.  If set to TRUE, then the
-    image cannot be used as one panel in a window with multiple plots.}
+    color bar in the plot. If set to TRUE, then the image cannot be used
+    as one panel in a window with multiple plots.}
   \item{col}{The usual graphics parameter used by \link{image}. It is
     included here to change the default color scheme to use
     \link{terrain.colors}.}

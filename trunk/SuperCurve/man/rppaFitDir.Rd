@@ -5,13 +5,14 @@
   Fit dilution curves for all the slide quantification files in a given directory.  
 }
 \usage{
-RPPAFitDir(path, designparams, fitparams)
+RPPAFitDir(path, designparams, fitparams, blanks)
 }
 \arguments{
   \item{path}{A path to the directory containing the spot quantification files. These are assumed to be of the form *.txt}
   \item{designparams}{A \code{RPPADesignParams} object describing the layout
     of the array}
   \item{fitparams}{A \code{RPPAFitParams} object describing the fitting parameters to pass to \code{\link{RPPAFit}}}
+  \item{blanks}{:TODO:}
 }
 \details{
   Quantify all the slides in a directory using RPPAFit. This returns an object containing slide data and fits for each slide.
@@ -26,8 +27,11 @@ RPPAFitDir(path, designparams, fitparams)
 }
 \references{KRC}
 \author{Kevin R. Coombes <kcoombes@mdanderson.org>}
-\seealso{ \code{\link{RPPAFit-class}}, \code{\link{RPPA}},
-  \code{\link{RPPADesign}} }
+\seealso{
+  \code{\link{RPPAFit-class}},
+  \code{\link{RPPA}},
+  \code{\link{RPPADesign}}
+}
 \examples{
 if (FALSE) { # we did not want to bundle a bunch of image files with our code
 	txt <- "Y:/MyData/txt" # quantification files
