@@ -1,5 +1,5 @@
 Antibody	File	Alias
-ODC1	ODC 3600.txt	ODC
-ACTB	PC 3600.txt	beta actin
-FAK	Fak 3600.txt	PTK2
-ACTB-gray	PC 1200.txt	beta actin
+ODC1	ODC_3600.txt	ODC
+ACTB	PC_3600.txt	beta actin
+FAK	Fak_3600.txt	PTK2
+ACTB-gray	PC_1200.txt	beta actin
