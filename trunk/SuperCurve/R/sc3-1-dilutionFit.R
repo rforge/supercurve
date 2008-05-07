@@ -95,12 +95,6 @@
 ##############################################################
 # RPPAFit
 
-setMethod("summary", "RPPAFit",
-          function(object, ...) {
-  cat(paste("An RPPAFit object constructed via the function call:\n",
-            as.character(list(object@call)), "\n"))
-})
-
 
 # We are actually interested in estimating the concentrations for each
 # dilution series (which may be the same as a sample). However, when we do

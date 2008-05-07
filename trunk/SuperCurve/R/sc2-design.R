@@ -211,14 +211,6 @@ plotDesign<- function(rppa, design, measure='Mean.Total', main='') {
 
 
 
-setMethod("summary", "RPPADesign",
-          function(object, ...) {
-  cat("An RPPA design object with controls:\n")
-  print(unlist(object@controls))
-  cat("\n")
-  summary(object@layout)
-})
-
 .controlVector <- function(design) {
   sample <- as.character(design@layout$Sample)
   temp <- rep(FALSE, length(unique(sample)))

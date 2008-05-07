@@ -67,11 +67,6 @@ RPPA <- function(filename, path='.', blanks=NULL) {
 
 
 
-setMethod("summary", "RPPA", function(object, ...) {
-  cat(paste("An RPPA object loaded from", object@file, "\n\n"))
-  summary(object@data)
-})
-
 image.RPPA <- function(x, measure="Mean.Net", main=measure,
                                     colorbar=FALSE,
                                     col=terrain.colors(256),
