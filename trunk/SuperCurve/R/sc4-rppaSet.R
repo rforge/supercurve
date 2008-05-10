@@ -186,29 +186,39 @@ RPPAFitDir <- function(path,
                        designparams,
                        fitparams,
                        blanks=blanks) {
-   ## :TBD: Seems that path should be checked to be character of length 1
+    if (!is.character(pathname)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("path")))
+    } else if (!(length(pathname) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("path")))
+    }
  
-   if (!inherits(designparams, "RPPADesignParams")) {
-        stop("'design' must be a valid RPPADesignParams object")
+    if (!inherits(designparams, "RPPADesignParams")) {
+        stop(sprintf("argument %s must be a valid RPPADesignParams object",
+                     sQuote("designparams")))
     }
 
     if (!inherits(fitparams, "RPPAFitParams")) {
-        stop("'fitparams' must be a valid RPPAFitParams object")
+        stop(sprintf("argument %s must be a valid RPPAFitParams object",
+                     sQuote("fitparams")))
     }
 
     call <- match.call()
 
     ## assume all .txt files in the directory are slides
-    slidefiles <- list.files(path=path, pattern=".*[tT][xX][tT]$")
+    txt.re <- ".*[tT][xX][tT]$"
+    slidefiles <- list.files(path=path, pattern=txt.re)
 
     ## Load alias information in directory
     if (length(designparams@alias) < 1) {
-        layoutInfoPathName <- file.path(path, 'layoutInfo.tsv')
-        if (file.exists(layoutInfoPathName)[1]) {
-            sampleLayout <- try(read.delim(layoutInfoPathName,
+        layoutInfoPathname <- file.path(path, 'layoutInfo.tsv')
+        if (file.exists(layoutInfoPathname)) {
+            sampleLayout <- try(read.delim(layoutInfoPathname,
                                            quote='',
                                            row.names=NULL))
-
+            ## :TBD: If the above fails, what should happen?
+            ## Would appear this would crash and burn here...
             al <- list(Alias=sampleLayout$Alias,
                        Sample=sampleLayout$Sample)
             designparams@alias <- al
