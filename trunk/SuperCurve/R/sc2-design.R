@@ -151,23 +151,6 @@ RPPADesign <- function(raw,
 }
 
 
-setMethod("image", "RPPADesign",
-          function(x, ...) {
-  # figure out how to make "geographic" pictures
-  temp <- x@layout
-  my <- max(temp$Main.Row) * max(temp$Sub.Row)
-  mx <- max(temp$Main.Col) * max(temp$Sub.Col)
-  yspot <- 1+my-(max(temp$Sub.Row)*(temp$Main.Row-1) + temp$Sub.Row)
-  xspot <- max(temp$Sub.Col)*(temp$Main.Col-1) + temp$Sub.Col
-  geo.steps <- tapply(temp$Steps, list(xspot, yspot), mean)
-  image(1:mx, 1:my, geo.steps, ...)
-  abline(h = 0.5 + seq(0, my, length=1+max(temp$Main.Row)))
-  abline(v = 0.5 + seq(0, mx, length=1+max(temp$Main.Col)))
-  invisible(geo.steps)
-})
-
-
-
 # plot the series in an RPPA under a given design layout
 # see if the series make sense under this layout
 plotDesign.org <- function(rppa, design, measure='Mean.Total', main='') {
@@ -185,7 +168,7 @@ plotDesign.org <- function(rppa, design, measure='Mean.Total', main='') {
 }
 
 #########
-plotDesign<- function(rppa, design, measure='Mean.Total', main='') {
+plotDesign <- function(rppa, design, measure='Mean.Total', main='') {
         y <- rppa@data[, measure]
         x <- design@layout$Steps
 

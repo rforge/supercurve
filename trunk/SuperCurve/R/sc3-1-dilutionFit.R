@@ -173,34 +173,6 @@ setMethod("resid", "RPPAFit",
 
 
 ##-----------------------------------------------------------------------------
-# The image function gives a geographic plot of some measure computed from
-# the fit. Default is to image the (raw) residuals, with options for other
-# forms of the residuals or for the fitted concentrations (X) or intensities (Y).
-
-image.RPPAFit <- function(x,
-                          measure=c("Residuals",
-                                    "ResidualsR2",
-                                    "StdRes",
-                                    "X",
-                                    "Y"),
-                          ...) {
-    measure <- match.arg(measure)
-    rppa <- x@rppa
-    rppa@data$Residuals <- resid(x)
-    rppa@data$StdRes <- resid(x, "standardized")
-    rppa@data$ResidualsR2 <- resid(x, "r2")
-    rppa@data$X = fitted(x, "X")
-    rppa@data$Y = fitted(x, "Y")
-    image.RPPA(rppa, measure=measure, ...)
-
-    invisible(x)
-}
-
-setMethod("image", "RPPAFit",
-          image.RPPAFit)
-
-
-##-----------------------------------------------------------------------------
 # Histogram of the residuals, with an option to see the standardized or linear residuals
 setMethod("hist", "RPPAFit",
           function(x,

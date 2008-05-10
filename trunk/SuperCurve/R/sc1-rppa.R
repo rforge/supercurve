@@ -66,36 +66,6 @@ RPPA <- function(filename, path='.', blanks=NULL) {
 
 
 
-
-image.RPPA <- function(x, measure="Mean.Net", main=measure,
-                                    colorbar=FALSE,
-                                    col=terrain.colors(256),
-                                    ...) {
-  temp <- x@data
-  my <- max(temp$Main.Row) * max(temp$Sub.Row)
-  mx <- max(temp$Main.Col) * max(temp$Sub.Col)
-  yspot <- 1+my-(max(temp$Sub.Row)*(temp$Main.Row-1) + temp$Sub.Row)
-  xspot <- max(temp$Sub.Col)*(temp$Main.Col-1) + temp$Sub.Col
-  geo <- tapply(temp[,measure], list(xspot, yspot), mean)
-  if (colorbar) {
-    layout(matrix(c(2, 1), nrow=1), widths=c(10,1))
-    opar <- par(mai=c(1, 0.5, 1, 0.1))
-    on.exit(par(opar))
-    on.exit(layout(1))
-    image(1, seq(min(geo, na.rm=TRUE), max(geo, na.rm=TRUE), length=256),
-      matrix(1:256, nrow=1), col=col,
-      xaxt='n', xlab='', ylab='')
-
-  }
-  image(1:mx, 1:my, geo, main=main, col=col, ...)
-  abline(h = 0.5 + seq(0, my, length=1+max(temp$Main.Row)))
-  abline(v = 0.5 + seq(0, mx, length=1+max(temp$Main.Col)))
-  invisible(x)
-}
-
-setMethod("image", "RPPA", image.RPPA)
-
-
 if (FALSE) {
   path <- "../inst/rppaTumorData"
   erk2 <- RPPA("ERK2.txt", path=path)
