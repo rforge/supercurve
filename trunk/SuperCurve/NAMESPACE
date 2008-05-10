@@ -1,27 +1,52 @@
+###
+### NAMESPACE
+###
+
+
+## Imported methods
 import(methods)
-	   
-
-
-importFrom("stats", coef, coefficients, fitted, resid, residuals)
-importFrom("graphics", plot, par, image, hist)
 importFrom("MASS", rlm)
+importFrom("graphics", hist)
+importFrom("graphics", image)
+importFrom("graphics", par)     # :TBD: Necessary? This wasn't extended...
+importFrom("graphics", plot)
+importFrom("stats", coef, coefficients)
+importFrom("stats", fitted)
 importFrom("stats", loess)
+importFrom("stats", resid, residuals)
 
+## Public Classes
+exportClasses(RPPA)
+exportClasses(RPPADesign)
+exportClasses(RPPADesignParams)
+exportClasses(RPPAFit)
+exportClasses(RPPAFitParams)
+exportClasses(RPPASet)
 
-## Functions defined in this package
-exportClasses(RPPAFit, RPPA, RPPADesign)
-exportClasses(RPPAFitParams, RPPADesignParams, RPPASet)
-export(RPPAFit, RPPA, RPPADesign)
-export(RPPAFitParams, RPPADesignParams, RPPAFitDir)
+## S4 methods
+exportMethods(coef, coefficients)
+exportMethods(fitslot)
+exportMethods(fitted)
+exportMethods(hist)
+exportMethods(image)
+exportMethods(names)
+exportMethods(plot)
+exportMethods(resid, residuals)
+exportMethods(summary)
+exportMethods(write.summary)
 
-export(sc)
-exportMethods(summary, plot, hist, image, names)
-exportMethods(coef, coefficients, resid, residuals, fitted, names)
-exportMethods(write.summary, fitslot)
-export(getConfidenceInterval, seriesNames, getSteps)
-export(image.RPPA, image.RPPAFit)
+## Public methods
+export(RPPA)
+export(RPPADesign)
+export(RPPADesignParams)
+export(RPPAFit)
+export(RPPAFitDir)
+export(RPPAFitParams)
+export(getConfidenceInterval)
+export(getSteps)
+export(image.RPPA)     # :TBD: Why? Aren't these generic?
+export(image.RPPAFit)  # :TBD: Why? Aren't these generic?
+export(seriesNames)
 
-
-
-
+export(sc)             # :TODO: Move to separate package
 
