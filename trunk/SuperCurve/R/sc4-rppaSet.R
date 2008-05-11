@@ -136,12 +136,12 @@ setMethod("write.summary", "RPPASet",
             ## Use ImageMagick to merge output graphs with source tiff files
             if (is.null(tiffdir)) {
                 ## assume the tif images are in a sibling directory named "tif"
-                savedir <- getwd()
-                setwd(path)
-                setwd("..")
-                setwd("tif")
-                tiffdir <- getwd()
-                setwd(savedir)
+                tiffdir <- file.path(path, "..", "tif")
+                ## :TODO: Add code to verify directory exists
+                if (!file.exists(tiffdir)) {
+                    stop(sprintf("directory %s does not exist",
+                                 dQuote(tiffdir)))
+                }
             }
             for (i in seq(1, length(proteins))) {
                 tiff <- sub(".txt", ".tif", proteins[i], fixed=TRUE)
@@ -207,8 +207,10 @@ RPPAFitDir <- function(path,
     call <- match.call()
 
     ## assume all .txt files in the directory are slides
-    txt.re <- ".*[tT][xX][tT]$"
-    slidefiles <- list.files(path=path, pattern=txt.re)
+    slideFilenames <- {
+                          txt.re <- ".*[tT][xX][tT]$"
+                          list.files(path=path, pattern=txt.re)
+                      }
 
     ## Load alias information in directory
     if (length(designparams@alias) < 1) {
@@ -225,8 +227,8 @@ RPPAFitDir <- function(path,
         }
     }
 
-    message(paste("reading", slidefiles[1]))
-    firstslide <- RPPA(slidefiles[1],
+    message(paste("reading", slideFilenames[1]))
+    firstslide <- RPPA(slideFilenames[1],
                        path=path,
                        blanks)
     design <- RPPADesignFromParams(firstslide,
@@ -236,29 +238,31 @@ RPPAFitDir <- function(path,
     plotDesign(firstslide,
                design,
                'Mean.Total',
-               main=slidefiles[1])
+               main=slideFilenames[1])
 
-    rppas <- array(list(), c(length(slidefiles)), slidefiles)
+    ## :TBD: Why was this construct used and not 'vector("list", numslides)'
+    ## Is the dimension attribute used?
+    rppas <- array(list(), c(length(slideFilenames)), slideFilenames)
     rppas[[1]] <- firstslide
-    if (length(slidefiles) > 1) {
-        for (i in seq(2, length(slidefiles))) {
-            message(paste("reading", slidefiles[i]))
-            rppas[[i]] <- RPPA(slidefiles[i],
+    if (length(slideFilenames) > 1) {
+        for (i in seq(2, length(slideFilenames))) {
+            message(paste("reading", slideFilenames[i]))
+            rppas[[i]] <- RPPA(slideFilenames[i],
                                path=path,
                                blanks)
         }
     }
 
-    fits <- array(list(), c(length(slidefiles)), slidefiles)
-    for (i in seq(1, length(slidefiles))) {
-        message(paste("fitting", slidefiles[i], ".", "Please wait."))
+    fits <- array(list(), c(length(slideFilenames)), slideFilenames)
+    for (i in seq(1, length(slideFilenames))) {
+        message(paste("fitting", slideFilenames[i], ".", "Please wait."))
         fits[[i]] <- RPPAFitFromParams(rppas[[i]],
                                        design=design,
                                        fitparams=fitparams)
     }
 
-    rownames(fits) <- slidefiles
-    rownames(rppas) <- slidefiles
+    rownames(fits) <- slideFilenames
+    rownames(rppas) <- slideFilenames
 
     new("RPPASet",
         call=call,
