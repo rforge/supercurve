@@ -56,15 +56,23 @@ RPPADesign <- function(raw,
                        center=FALSE,
                        controls=list()) {
     ## :TODO: Need better checks on input values
+
+    ## If RPPA object, use its data slot value
+    if (inherits(raw, "RPPA")) {
+        raw <- raw@data
+    }
+
+    if (!(is.data.frame(raw) || is.matrix(raw))) {
+        stop(sprintf("argument %s must be matrix or data.frame",
+                     sQuote("raw")))
+    }
+
     if (length(alias) < 1) {
         alias <- list(Alias=levels(raw@data$Sample),
         Sample=levels(factor(tolower(as.character(raw@data$Sample)))))
     }
 
-    if (inherits(raw, "RPPA")) {
-        raw.df <- raw@data
-    }
-    temp <- data.frame(raw.df[, c("Main.Row",
+    temp <- data.frame(raw[, c("Main.Row",
                                "Main.Col",
                                "Sub.Row",
                                "Sub.Col",
@@ -72,8 +80,8 @@ RPPADesign <- function(raw,
     if (length(steps) < 2 && length(series) < 2) {
         grouping <- match.arg(grouping)
         ordering <- match.arg(ordering)
-        steps <- rep(NA, nrow(raw.df))
-        series <- rep(NA, nrow(raw.df))
+        steps <- rep(NA, nrow(raw))
+        series <- rep(NA, nrow(raw))
         if (grouping == "byRow") {
             series <- factor(paste("Series",
                                    temp$Main.Row,
