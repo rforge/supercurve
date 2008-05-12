@@ -33,18 +33,59 @@ setMethod("fitslot", "RPPASet",
 
 ##-----------------------------------------------------------------------------
 # provide a convenience function to save fit results to file
-# file = base filename
+# namebase = basename of filename (without extension)
 # path = path
 # normalize = "median" for median normalization of the concentrations.
 #     "median" = for each sample the median intensity over all plates is subtracted to account for varying sample concetratiosn
 #
 setMethod("write.summary", "RPPASet",
           function(object,
-                   file,
+                   namebase,
                    path,
                    graphs=TRUE,
                    tiffdir=NULL,
                    ...) {
+    if (!is.character(namebase)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("namebase")))
+    } else if (!(length(namebase) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("namebase")))
+    }
+
+    if (!is.character(path)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("path")))
+    } else if (!(length(path) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("path")))
+    }
+
+    if (!is.logical(graphs)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("graphs")))
+    } else if (!(length(graphs) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("graphs")))
+    }
+
+    if (is.null(tiffdir)) {
+        ## assume the tif images are in a sibling directory named "tif"
+        tiffdir <- file.path(path, "..", "tif")
+    } else if (!is.character(tiffdir)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("tiffdir")))
+    } else if (!(length(tiffdir) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("tiffdir")))
+    }
+
+    ## :TODO: Add code to verify directory exists
+    if (!file.exists(tiffdir)) {
+        stop(sprintf("directory %s does not exist",
+                     dQuote(tiffdir)))
+    }
+
     conc <- fitslot(object, 'concentrations')
     conc.ss <- fitslot(object, 'ss.ratio')
     if (sum(as.character(object@design@alias$Alias) == as.character(object@design@alias$Sample)) < nrow(conc)) {
@@ -58,7 +99,8 @@ setMethod("write.summary", "RPPASet",
         rownames(conc.ss) <- alias.name
     }
     write.csv(conc,
-              file=file.path(path, paste(file, '_conc_raw.csv', sep='')))
+              file=file.path(path,
+                             paste(namebase, '_conc_raw.csv', sep='')))
 
     ## median polish to normalize sample, slide effects
     pol <- medpolish(conc, trace.iter=FALSE)
@@ -66,10 +108,12 @@ setMethod("write.summary", "RPPASet",
     sample.correction <- pol$row
     conc <- cbind(sample.correction, conc)
     write.csv(conc,
-              file=file.path(path, paste(file, '_conc_med_polish.csv', sep='')))
+              file=file.path(path,
+                             paste(namebase, '_conc_med_polish.csv', sep='')))
 
     write.csv(conc.ss,
-              file=file.path(path, paste(file, '_ss.csv', sep='')))
+              file=file.path(path,
+                             paste(namebase, '_ss.csv', sep='')))
 
     ## Use red/yellow/green palette for residual plots.
     ## From RColorBrewer palette RdYlGn
@@ -109,7 +153,8 @@ setMethod("write.summary", "RPPASet",
                               col=RYG,
                               zlim=c(0.4, 1)))
             dev.copy(png,
-                     file.path(path, paste(file, proteins[i], 'png', sep='.')),
+                     file.path(path,
+                               paste(namebase, proteins[i], 'png', sep='.')),
                      width=640,
                      height=640)
             dev.off()
@@ -125,7 +170,8 @@ setMethod("write.summary", "RPPASet",
                      xform=object@fitparams@xform,
                      type="steps"))
             dev.copy(png,
-                     file.path(path, paste(file, proteins[i], '2', 'png', sep='.')),
+                     file.path(path,
+                               paste(namebase, proteins[i], '2', 'png', sep='.')),
                      width=640,
                      height=640)
             dev.off()
@@ -134,25 +180,19 @@ setMethod("write.summary", "RPPASet",
 
         if (TRUE) {
             ## Use ImageMagick to merge output graphs with source tiff files
-            if (is.null(tiffdir)) {
-                ## assume the tif images are in a sibling directory named "tif"
-                tiffdir <- file.path(path, "..", "tif")
-                ## :TODO: Add code to verify directory exists
-                if (!file.exists(tiffdir)) {
-                    stop(sprintf("directory %s does not exist",
-                                 dQuote(tiffdir)))
-                }
-            }
             for (i in seq(1, length(proteins))) {
-                tiff <- sub(".txt", ".tif", proteins[i], fixed=TRUE)
-                tiff <- file.path(tiffdir, tiff)
                 base <- sub(".txt", "", proteins[i], fixed=TRUE)
+                tiff <- file.path(tiffdir,
+                                  paste(base, "tif", sep='.'))
 
                 ## convert *4EBP1.tif "Y:\Private\LysateArray\DorisSiwak\Feiller\Feiler results\*4EBP1.txt.png" -append -quality 100 4EBP1.jpg
 
-                pg1 <- file.path(path, paste(file, proteins[i], 'png', sep='.'))
-                pg2 <- file.path(path, paste(file, proteins[i], '2', 'png', sep='.'))
-                output <- file.path(path, paste(base, "jpg", sep='.'))
+                pg1 <- file.path(path,
+                                 paste(namebase, proteins[i], 'png', sep='.'))
+                pg2 <- file.path(path,
+                                 paste(namebase, proteins[i], '2', 'png', sep='.'))
+                output <- file.path(path,
+                                    paste(base, "jpg", sep='.'))
                 # convert  $pg1 $pg2 +append $tiff -append -quality 100 $output
                 message(paste('merging tiff for', proteins[i]))
                 systemCmd <- paste('convert "',
@@ -165,7 +205,7 @@ setMethod("write.summary", "RPPASet",
                                    '" -append -quality 100 "',
                                    output,
                                    '"',
-                                   sep="")
+                                   sep='')
                 shell(systemCmd, invisible=TRUE)
             }
         }
@@ -186,10 +226,10 @@ RPPAFitDir <- function(path,
                        designparams,
                        fitparams,
                        blanks=blanks) {
-    if (!is.character(pathname)) {
+    if (!is.character(path)) {
         stop(sprintf("argument %s must be character",
                      sQuote("path")))
-    } else if (!(length(pathname) == 1)) {
+    } else if (!(length(path) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("path")))
     }
