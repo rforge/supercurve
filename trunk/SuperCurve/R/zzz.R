@@ -24,9 +24,12 @@
             }
 
             desc <- packageDescription(pkgname)
-            message(sprintf("%s, version %s", desc$Title, desc$Version))
-            message(sprintf("Type library(help=%s) to see package documentation",
-                            libraryPkgName(pkgname)))
+            msg <- sprintf("%s, version %s",
+                           desc$Title, desc$Version)
+            packageStartupMessage(msg)
+            msg <- sprintf("Type library(help=%s) to see package documentation",
+                           libraryPkgName(pkgname)))
+            packageStartupMessage(msg)
         })
     }
 }
