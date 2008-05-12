@@ -15,6 +15,49 @@ RPPADesignParams <- function(steps=rep(0, 1),
                              alias=list(),
                              center=FALSE,
                              controls=list()) {
+    if (!is.numeric(steps)) {
+        stop(sprintf("argument %s must be numeric",
+                     sQuote("steps")))
+    }
+
+    if (!(is.character(series) || is.factor(series))) {
+        stop(sprintf("argument %s must be character or factor",
+                     sQuote("series")))
+    }
+
+    grouping <- match.arg(grouping)
+    ordering <- match.arg(ordering)
+
+    if (!(is.list(alias) || is.data.frame(alias))) {
+        stop(sprintf("argument %s must be list or data.frame",
+                     sQuote("alias")))
+    } else if (!(length(alias) == 0)) {
+        reqdNames <- c("Alias", "Sample")
+        if (!(length(alias) >= length(reqdNames))) {
+            stop(sprintf("argument %s must be of length %d or greater",
+                         sQuote("alias"), length(reqdNames)))
+        } else if (!(all(reqdNames %in% names(alias)))) {
+            missingNames <- reqdNames[!reqdNames %in% names(alias)]
+            stop(sprintf(ngettext(length(missingNames),
+                                  "argument %s missing element: %s",
+                                  "argument %s missing elements: %s"),
+                         sQuote("alias"), missingNames))
+        }
+    }
+
+    if (!is.logical(center)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("center")))
+    } else if (!(length(center) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("center")))
+    }
+
+    if (!is.list(controls)) {
+        stop(sprintf("argument %s must be list",
+                     sQuote("controls")))
+    }
+
     new("RPPADesignParams",
         steps=steps,
         series=series,
@@ -69,7 +112,7 @@ RPPADesign <- function(raw,
 
     if (length(alias) < 1) {
         alias <- list(Alias=levels(raw$Sample),
-        Sample=levels(factor(tolower(as.character(raw$Sample)))))
+                      Sample=levels(factor(tolower(as.character(raw$Sample)))))
     }
 
     raw.df <- data.frame(raw[, c("Main.Row",
