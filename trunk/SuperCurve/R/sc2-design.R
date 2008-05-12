@@ -68,11 +68,11 @@ RPPADesign <- function(raw,
     }
 
     if (length(alias) < 1) {
-        alias <- list(Alias=levels(raw@data$Sample),
-        Sample=levels(factor(tolower(as.character(raw@data$Sample)))))
+        alias <- list(Alias=levels(raw$Sample),
+        Sample=levels(factor(tolower(as.character(raw$Sample)))))
     }
 
-    temp <- data.frame(raw[, c("Main.Row",
+    raw.df <- data.frame(raw[, c("Main.Row",
                                "Main.Col",
                                "Sub.Row",
                                "Sub.Col",
@@ -84,30 +84,30 @@ RPPADesign <- function(raw,
         series <- rep(NA, nrow(raw))
         if (grouping == "byRow") {
             series <- factor(paste("Series",
-                                   temp$Main.Row,
-                                   temp$Main.Col,
-                                   temp$Sub.Row,
+                                   raw.df$Main.Row,
+                                   raw.df$Main.Col,
+                                   raw.df$Sub.Row,
                                    sep='.'))
             steps <- if (ordering == "increasing") {
-                         temp$Sub.Col - 1
+                         raw.df$Sub.Col - 1
                      } else {
-                         max(temp$Sub.Col) - temp$Sub.Col
+                         max(raw.df$Sub.Col) - raw.df$Sub.Col
                      }
         } else if (grouping == "byCol") {
             series <- factor(paste("Series",
-                                   temp$Main.Row,
-                                   temp$Main.Col,
-                                   temp$Sub.Col,
+                                   raw.df$Main.Row,
+                                   raw.df$Main.Col,
+                                   raw.df$Sub.Col,
                                    sep='.'))
             steps <- if (ordering == "increasing") {
-                         temp$Sub.Row - 1
+                         raw.df$Sub.Row - 1
                      } else {
-                         max(temp$Sub.Row) - temp$Sub.Row
+                         max(raw.df$Sub.Row) - raw.df$Sub.Row
                      }
         } else if (grouping == "bySample") {
-            series <- temp$Sample
-            for (sam in levels(temp$Sample)) {
-                where <- temp$Sample == sam
+            series <- raw.df$Sample
+            for (sam in levels(raw.df$Sample)) {
+                where <- raw.df$Sample == sam
                 n <- sum(where)
                 steps[where] <- if (ordering == "increasing") {
                                     -1 + (1:n)
@@ -116,7 +116,7 @@ RPPADesign <- function(raw,
                                 }
             }
         } else if (grouping == "blockSample") {
-            attach(temp)
+            attach(raw.df)
             series <- factor(paste(as.character(Sample),
                                    Main.Row,
                                    Main.Col,
@@ -150,11 +150,11 @@ RPPADesign <- function(raw,
         stop("You must supply both 'steps' and 'series' if you supply either one")
     } else {
         # both series and steps supplied
-        if (length(steps) != nrow(temp) || length(series) != nrow(temp)) {
+        if (length(steps) != nrow(raw.df) || length(series) != nrow(raw.df)) {
             stop("lengths do not match")
         }
         # override sample names from file, with user supplied series names
-        temp$Sample <- series
+        raw.df$Sample <- series
         # it is important to override so that users can specify
         # controls with reference to their series names
 
@@ -163,9 +163,9 @@ RPPADesign <- function(raw,
     if (any(is.na(steps))) {
         warning("Some dilution steps have not been specified")
     }
-    temp$Steps <- steps
-    temp$Series <- series
-    sampleMap <- as.vector(tapply(as.character(temp$Sample),
+    raw.df$Steps <- steps
+    raw.df$Series <- series
+    sampleMap <- as.vector(tapply(as.character(raw.df$Sample),
                                   list(series),
                                   function(x) {
                                       x[[1]]
@@ -174,7 +174,7 @@ RPPADesign <- function(raw,
     names(sampleMap) <- levels(series)
 
     new("RPPADesign",
-        layout=temp,
+        layout=raw.df,
         alias=alias,
         sampleMap=sampleMap,
         controls=controls)
