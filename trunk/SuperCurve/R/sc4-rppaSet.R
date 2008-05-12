@@ -59,6 +59,10 @@ setMethod("write.summary", "RPPASet",
     } else if (!(length(path) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("path")))
+    } else if (!file.exists(path)) {
+        ## :TODO: Add code to verify directory exists
+        stop(sprintf("directory %s does not exist",
+                     dQuote(path)))
     }
 
     if (!is.logical(graphs)) {
@@ -72,16 +76,16 @@ setMethod("write.summary", "RPPASet",
     if (is.null(tiffdir)) {
         ## assume the tif images are in a sibling directory named "tif"
         tiffdir <- file.path(path, "..", "tif")
-    } else if (!is.character(tiffdir)) {
+    }
+
+    if (!is.character(tiffdir)) {
         stop(sprintf("argument %s must be character",
                      sQuote("tiffdir")))
     } else if (!(length(tiffdir) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("tiffdir")))
-    }
-
-    ## :TODO: Add code to verify directory exists
-    if (!file.exists(tiffdir)) {
+    } else if (!file.exists(tiffdir)) {
+        ## :TODO: Add code to verify directory exists
         stop(sprintf("directory %s does not exist",
                      dQuote(tiffdir)))
     }

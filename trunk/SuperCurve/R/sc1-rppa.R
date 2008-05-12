@@ -11,9 +11,25 @@
 ## A function to read in the Microvigen .txt files to generate an RPPA object.
 RPPA <- function(filename, path='.', blanks=NULL) {
 
+    if (!is.character(path)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("path")))
+    } else if (!(length(path) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("path")))
+    } else if (!file.exists(path)) {
+        ## :TODO: Add code to verify directory exists
+        stop(sprintf("directory %s does not exist",
+                     dQuote(path)))
+    }
+
     ## :TODO: Move code to read quantification file to external method
     ## from redesign
     pathname <- file.path(path, filename)
+    if (!file.exists(pathname)) {
+        stop(sprintf("file %s does not exist",
+                     dQuote(pathname)))
+    }
 
     ## MicroVigene introducing an extra header line in later versions of file
     get.num.header.lines <- function(filename) {
