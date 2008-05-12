@@ -28,7 +28,7 @@
                            desc$Title, desc$Version)
             packageStartupMessage(msg)
             msg <- sprintf("Type library(help=%s) to see package documentation",
-                           libraryPkgName(pkgname)))
+                           libraryPkgName(pkgname))
             packageStartupMessage(msg)
         })
     }
