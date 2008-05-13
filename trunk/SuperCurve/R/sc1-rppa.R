@@ -10,6 +10,14 @@
 ##-----------------------------------------------------------------------------
 ## A function to read in the Microvigen .txt files to generate an RPPA object.
 RPPA <- function(filename, path='.', blanks=NULL) {
+    ## Check arguments
+    if (!is.character(filename)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("filename")))
+    } else if (!(length(filename) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("filename")))
+    }
 
     if (!is.character(path)) {
         stop(sprintf("argument %s must be character",
@@ -22,6 +30,7 @@ RPPA <- function(filename, path='.', blanks=NULL) {
         stop(sprintf("directory %s does not exist",
                      dQuote(path)))
     }
+    ## :TODO: Add checks for 'blanks' argument
 
     ## :TODO: Move code to read quantification file to external method
     ## from redesign
@@ -75,6 +84,7 @@ RPPA <- function(filename, path='.', blanks=NULL) {
         quant.df$Sample <- as.factor(quant.df$Sample)
     }
 
+    ## Create new class
     new("RPPA",
         data=quant.df,
         file=filename)

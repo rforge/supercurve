@@ -10,12 +10,38 @@ image.RPPA <- function(x,
                        colorbar=FALSE,
                        col=terrain.colors(256),
                        ...) {
-    temp <- x@data
-    my <- max(temp$Main.Row) * max(temp$Sub.Row)
-    mx <- max(temp$Main.Col) * max(temp$Sub.Col)
-    yspot <- 1+my-(max(temp$Sub.Row)*(temp$Main.Row-1) + temp$Sub.Row)
-    xspot <- max(temp$Sub.Col)*(temp$Main.Col-1) + temp$Sub.Col
-    geo <- tapply(temp[,measure], list(xspot, yspot), mean)
+    ## Check arguments
+    if (!is.character(measure)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("measure")))
+    } else if (!(length(measure) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("measure")))
+    }
+
+    if (!is.character(main)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("main")))
+    } else if (!(length(main) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("main")))
+    }
+
+    if (!is.logical(colorbar)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("colorbar")))
+    } else if (!(length(colorbar) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("colorbar")))
+    }
+
+    ## Begin processing
+    data.df <- x@data
+    my <- max(data.df$Main.Row) * max(data.df$Sub.Row)
+    mx <- max(data.df$Main.Col) * max(data.df$Sub.Col)
+    yspot <- 1+my-(max(data.df$Sub.Row)*(data.df$Main.Row-1) + data.df$Sub.Row)
+    xspot <- max(data.df$Sub.Col)*(data.df$Main.Col-1) + data.df$Sub.Col
+    geo <- tapply(data.df[,measure], list(xspot, yspot), mean)
     if (colorbar) {
         layout(matrix(c(2, 1), nrow=1), widths=c(10,1))
         opar <- par(mai=c(1, 0.5, 1, 0.1))
@@ -32,8 +58,8 @@ image.RPPA <- function(x,
               ylab='')
     }
     image(1:mx, 1:my, geo, main=main, col=col, ...)
-    abline(h = 0.5 + seq(0, my, length=1+max(temp$Main.Row)))
-    abline(v = 0.5 + seq(0, mx, length=1+max(temp$Main.Col)))
+    abline(h = 0.5 + seq(0, my, length=1+max(data.df$Main.Row)))
+    abline(v = 0.5 + seq(0, mx, length=1+max(data.df$Main.Col)))
     invisible(x)
 }
 
@@ -44,15 +70,15 @@ setMethod("image", "RPPA", image.RPPA)
 setMethod("image", "RPPADesign",
           function(x, ...) {
     # figure out how to make "geographic" pictures
-    temp <- x@layout
-    my <- max(temp$Main.Row) * max(temp$Sub.Row)
-    mx <- max(temp$Main.Col) * max(temp$Sub.Col)
-    yspot <- 1+my-(max(temp$Sub.Row)*(temp$Main.Row-1) + temp$Sub.Row)
-    xspot <- max(temp$Sub.Col)*(temp$Main.Col-1) + temp$Sub.Col
-    geo.steps <- tapply(temp$Steps, list(xspot, yspot), mean)
+    data.df <- x@layout
+    my <- max(data.df$Main.Row) * max(data.df$Sub.Row)
+    mx <- max(data.df$Main.Col) * max(data.df$Sub.Col)
+    yspot <- 1+my-(max(data.df$Sub.Row)*(data.df$Main.Row-1) + data.df$Sub.Row)
+    xspot <- max(data.df$Sub.Col)*(data.df$Main.Col-1) + data.df$Sub.Col
+    geo.steps <- tapply(data.df$Steps, list(xspot, yspot), mean)
     image(1:mx, 1:my, geo.steps, ...)
-    abline(h = 0.5 + seq(0, my, length=1+max(temp$Main.Row)))
-    abline(v = 0.5 + seq(0, mx, length=1+max(temp$Main.Col)))
+    abline(h = 0.5 + seq(0, my, length=1+max(data.df$Main.Row)))
+    abline(v = 0.5 + seq(0, mx, length=1+max(data.df$Main.Col)))
     invisible(geo.steps)
 })
 
@@ -69,7 +95,10 @@ image.RPPAFit <- function(x,
                                     "X",
                                     "Y"),
                           ...) {
+    ## Check arguments
     measure <- match.arg(measure)
+
+    ## Begin processing
     rppa <- x@rppa
     rppa@data$Residuals <- resid(x)
     rppa@data$StdRes <- resid(x, "standardized")

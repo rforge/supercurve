@@ -16,6 +16,16 @@ setMethod("fitslot", "RPPASet",
           function(object,
                    sl,
                    ...) {
+    ## Check arguments
+    if (!is.character(sl)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("sl")))
+    } else if (!(length(sl) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("sl")))
+    }
+
+    ## Begin processing
     expr <- paste("object@fits[[1]]@", sl, sep='')
     mat <- matrix(NA,
                   nrow=length(eval(parse(text=expr))),
@@ -45,6 +55,7 @@ setMethod("write.summary", "RPPASet",
                    graphs=TRUE,
                    tiffdir=NULL,
                    ...) {
+    ## Check arguments
     if (!is.character(namebase)) {
         stop(sprintf("argument %s must be character",
                      sQuote("namebase")))
@@ -90,6 +101,7 @@ setMethod("write.summary", "RPPASet",
                      dQuote(tiffdir)))
     }
 
+    ## Begin processing
     conc <- fitslot(object, 'concentrations')
     conc.ss <- fitslot(object, 'ss.ratio')
     if (sum(as.character(object@design@alias$Alias) == as.character(object@design@alias$Sample)) < nrow(conc)) {
@@ -220,8 +232,8 @@ setMethod("write.summary", "RPPASet",
 ##-----------------------------------------------------------------------------
 # Create an RPPA set from a directory of slides.
 # path = directory to analyze
-# designparams =  A common slide design specification of class RPPADesignParams
-# fitparams =  A common fit specification of class RPPAFitParams
+# designparams = common slide design specification of class RPPADesignParams
+# fitparams = common fit specification of class RPPAFitParams
 #
 # example usage:
 # see tests/testRPPASet.R
@@ -230,24 +242,31 @@ RPPAFitDir <- function(path,
                        designparams,
                        fitparams,
                        blanks=blanks) {
+    ## Check arguments
     if (!is.character(path)) {
         stop(sprintf("argument %s must be character",
                      sQuote("path")))
     } else if (!(length(path) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("path")))
+    } else if (!file.exists(path)) {
+        ## :TODO: Add code to verify directory exists
+        stop(sprintf("directory %s does not exist",
+                     dQuote(path)))
     }
  
     if (!inherits(designparams, "RPPADesignParams")) {
-        stop(sprintf("argument %s must be a valid RPPADesignParams object",
+        stop(sprintf("argument %s must be RPPADesignParams object",
                      sQuote("designparams")))
     }
 
     if (!inherits(fitparams, "RPPAFitParams")) {
-        stop(sprintf("argument %s must be a valid RPPAFitParams object",
+        stop(sprintf("argument %s must be RPPAFitParams object",
                      sQuote("fitparams")))
     }
+    ## :TODO: Add checks for 'blanks' argument
 
+    ## Begin processing
     call <- match.call()
 
     ## assume all .txt files in the directory are slides
@@ -308,6 +327,7 @@ RPPAFitDir <- function(path,
     rownames(fits) <- slideFilenames
     rownames(rppas) <- slideFilenames
 
+    ## Create new class
     new("RPPASet",
         call=call,
         design=design,

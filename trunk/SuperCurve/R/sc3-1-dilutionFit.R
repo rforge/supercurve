@@ -35,11 +35,39 @@
     # Computes crude estimates of the parameters (i.e., alpha, beta,
     # gamma, and the EC50s) so we can initialize the routine.
 
-    # 'yval' is a vector of intensit values selected from the MircoVigene file
+    # 'yval' is a vector of intensity values selected from the MicroVigene file
     # 'design' is a RPPADesign object. The length of 'yval' should match the
     # number of rows in design@layout, and be in the same order
     # in practice, 'epsilon' never changes
 
+    ## Check arguments
+    if (!is.numeric(yval)) {
+        stop(sprintf("argument %s must be numeric",
+                     sQuote("yval")))
+    }
+
+    if (!inherits(design, "RPPADesign")) {
+        stop(sprintf("argument %s must be RPPADesign object",
+                     sQuote("design")))
+    }
+
+    if (!is.logical(ignoreNegative)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("ignoreNegative")))
+    } else if (!(length(ignoreNegative) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("ignoreNegative")))
+    }
+
+    if (!is.numeric(epsilon)) {
+        stop(sprintf("argument %s must be numeric",
+                     sQuote("epsilon")))
+    } else if (!(length(epsilon) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("epsilon")))
+    }
+
+    ## Begin processing
     if (ignoreNegative) {
         yval[yval < 0] <- NA
     }
@@ -120,7 +148,10 @@ setMethod("fitted", "RPPAFit",
           function(object,
                    type=c("Y", "y", "X", "x"),
                    ...) {
+    ## Check arguments
     type <- match.arg(type)
+
+    ## Begin processing
     conc <- object@concentrations
     series <- as.character(object@design@layout$Series)
     fitX <- conc[series] + object@design@layout$Steps
@@ -149,7 +180,10 @@ setMethod("residuals", "RPPAFit",
           function(object,
                    type=c("raw", "standardized", "r2"),
                    ...) {
+    ## Check arguments
     type <- match.arg(type)
+
+    ## Begin processing
     res <- object@rppa@data[, object@measure] - fitted(object)
 
     if (type == "standardized") {
@@ -219,11 +253,37 @@ setMethod("plot", "RPPAFit",
                    colors=NULL,
                    xform=function(x) { x },
                    ...) {
+    ## Check arguments
+    type <- match.arg(type)
+
+    if (!is.character(xlab)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("xlab")))
+    } else if (!(length(xlab) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("xlab")))
+    }
+
+    if (!is.character(ylab)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("ylab")))
+    } else if (!(length(ylab) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("ylab")))
+    }
+
+    ## :TODO: colors
+
+    if (!is.function(xform)) {
+        stop(sprintf("argument %s must be function",
+                     sQuote("xform")))
+    }
+
+    ## Begin processing
     trimset <- as.list(x@trimset)
     max.step <- max(getSteps(x@design))
     min.step <- min(getSteps(x@design))
 
-    type <- match.arg(type)
     xval <- fitted(x, 'x')
     yval <- fitted(x, 'y')
     yraw <- xform(x@rppa@data[, x@measure])
@@ -406,6 +466,83 @@ RPPAFitParams <- function(measure,
                           warnLevel=0,
                           trim=TRUE,
                           model=c("logistic", "loess", "cobs")) {
+    ## Check arguments
+    if (!is.character(measure)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("measure")))
+    } else if (!(length(measure) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("measure")))
+    }
+
+    if (!is.function(xform)) {
+        stop(sprintf("argument %s must be function",
+                     sQuote("xform")))
+    }
+
+    method <- match.arg(method)
+
+    if (!is.logical(ci)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("ci")))
+    } else if (!(length(ci) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("ci")))
+    }
+
+    if (!is.logical(ignoreNegative)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("ignoreNegative")))
+    } else if (!(length(ignoreNegative) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("ignoreNegative")))
+    }
+
+    if (!is.logical(trace)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("trace")))
+    } else if (!(length(trace) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("trace")))
+    }
+
+    if (!is.logical(verbose)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("verbose")))
+    } else if (!(length(verbose) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("verbose")))
+    }
+
+    if (!is.logical(veryVerbose)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("veryVerbose")))
+    } else if (!(length(veryVerbose) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("veryVerbose")))
+    }
+
+    if (!is.numeric(warnLevel)) {
+        stop(sprintf("argument %s must be numeric",
+                     sQuote("warnLevel")))
+    } else if (!(length(warnLevel) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("warnLevel")))
+    }
+
+    warnLevel <- as.integer(warnLevel)
+
+    if (!is.logical(trim)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("trim")))
+    } else if (!(length(trim) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("trim")))
+    }
+
+    model <- match.arg(model)
+
+    ## Create new class
     new("RPPAFitParams",
         measure=measure,
         xform=xform,
@@ -423,14 +560,23 @@ RPPAFitParams <- function(measure,
 
 ##-----------------------------------------------------------------------------
 RPPAFitFromParams <- function(rppa, design, fitparams) {
+    ## Check arguments
     if (!inherits(rppa, "RPPA")) {
-        stop("'rppa' must be a valid RPPA object")
-    } else if (!inherits(design, "RPPADesign")) {
-        stop("'design' must be a valid RPPADesign object")
-    } else if (!inherits(fitparams, "RPPAFitParams")) {
-        stop("'fitparams' must be a valid RPPAFitParams object")
+        stop(sprintf("argument %s must be RPPA object",
+                     sQuote("rppa")))
     }
 
+    if (!inherits(design, "RPPADesign")) {
+        stop(sprintf("argument %s must be RPPADesign object",
+                     sQuote("design")))
+    }
+
+    if (!inherits(fitparams, "RPPAFitParams")) {
+        stop(sprintf("argument %s must be RPPAFitParams object",
+                     sQuote("fitparams")))
+    }
+
+    ## Begin processing
     # .attachslot(fitparams)
     RPPAFit(rppa,
             design,
@@ -454,24 +600,103 @@ RPPAFit <- function(rppa,
                     measure,
                     xform=function(x) x,
                     method=c("nls", "nlrob", "nlrq"),
-                    trim=TRUE,
                     ci=FALSE,
                     ignoreNegative=TRUE,
                     trace=FALSE,
                     verbose=FALSE,
                     veryVerbose=FALSE,
                     warnLevel=0,
+                    trim=TRUE,
                     model=c("logistic", "loess", "cobs")) {
-    # make sure the MASS library is loaded
-    if (!require('MASS')) {
-        stop("This routine requires the MASS library for the 'rlm' routine.")
-    }
-    # make sure the input types are sensible
+    ## Check arguments
     if (!inherits(rppa, "RPPA")) {
-        stop("'rppa' must be a valid RPPA object")
-    } else if (!inherits(design, "RPPADesign")) {
-        stop("'design' must be a valid RPPADesign object")
+        stop(sprintf("argument %s must be RPPA object",
+                     sQuote("rppa")))
     }
+
+    if (!inherits(design, "RPPADesign")) {
+        stop(sprintf("argument %s must be RPPADesign object",
+                     sQuote("design")))
+    }
+
+    if (!is.character(measure)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("measure")))
+    } else if (!(length(measure) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("measure")))
+    }
+
+    if (!is.function(xform)) {
+        stop(sprintf("argument %s must be function",
+                     sQuote("xform")))
+    }
+
+    method <- match.arg(method)
+
+    if (!is.logical(ci)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("ci")))
+    } else if (!(length(ci) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("ci")))
+    }
+
+    if (!is.logical(ignoreNegative)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("ignoreNegative")))
+    } else if (!(length(ignoreNegative) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("ignoreNegative")))
+    }
+
+    if (!is.logical(trace)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("trace")))
+    } else if (!(length(trace) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("trace")))
+    }
+
+    if (!is.logical(verbose)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("verbose")))
+    } else if (!(length(verbose) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("verbose")))
+    }
+
+    if (!is.logical(veryVerbose)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("veryVerbose")))
+    } else if (!(length(veryVerbose) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("veryVerbose")))
+    }
+
+    if (!is.numeric(warnLevel)) {
+        stop(sprintf("argument %s must be numeric",
+                     sQuote("warnLevel")))
+    } else if (!(length(warnLevel) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("warnLevel")))
+    }
+
+    warnLevel <- as.integer(warnLevel)
+
+    if (!is.logical(trim)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("trim")))
+    } else if (!(length(trim) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("trim")))
+    }
+
+    model <- match.arg(model)
+
+    ## Begin processing
+
+    # make sure the input types are sensible
 
     if (missing("measure")) {
         stop("You must supply the name of the measurement column to fit")
@@ -484,6 +709,7 @@ RPPAFit <- function(rppa,
     if (length(temp) > 1) {
         stop("'measure' must identify a unique column of 'rppa'")
     }
+    measure <- dn[temp]
 
     l1 <- levels(design@layout$Sample)
     l2 <- levels(rppa@data$Sample)
@@ -491,10 +717,6 @@ RPPAFit <- function(rppa,
         warning("Number of sample labels in design does not match number of sample labels given in raw RPPA quantification file.")
     }
 
-    measure <- dn[temp]
-
-    method <- match.arg(method)
-    model <- match.arg(model)
     call <- match.call()
     intensity <- xform(rppa@data[, measure])
 
@@ -585,6 +807,7 @@ RPPAFit <- function(rppa,
         }
     }
 
+    ## Create new class
     result <- new("RPPAFit",
                   call=call,
                   rppa=rppa,
@@ -632,6 +855,31 @@ RPPAFit <- function(rppa,
 
 ##-----------------------------------------------------------------------------
 getConfidenceInterval <- function(result, alpha=0.10, nSim=50) {
+    ## Check arguments
+    if (!inherits(result, "RPPAFit")) {
+        stop(sprintf("argument %s must be RPPAFit object",
+                     sQuote("result")))
+    }
+
+    if (!is.numeric(alpha)) {
+        stop(sprintf("argument %s must be numeric",
+                     sQuote("alpha")))
+    } else if (!(length(alpha) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("alpha")))
+    }
+
+    if (!is.numeric(nSim)) {
+        stop(sprintf("argument %s must be numeric",
+                     sQuote("nSim")))
+    } else if (!(length(nSim) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("nSim")))
+    }
+
+    nSim <- as.integer(nSim)
+
+    ## Begin processing
     method <- result@method
     silent <- TRUE
     series <- seriesNames(result@design)
@@ -645,7 +893,7 @@ getConfidenceInterval <- function(result, alpha=0.10, nSim=50) {
     lo <- loess(ares ~ xval, data.frame(ares=abs(res), xval=xval))
     # We assume the residuals locally satisfy R ~ N(0, sigma). Then the
     # expected value of |R| is sigma*sqrt(2/pi), so:
-    sigma <- sqrt(pi/2)*fitted(lo)
+    sigma <- sqrt(pi/2) * fitted(lo)
     for (this in series) {
         items <- result@design@layout$Series == this
         xhat <- xval[items]

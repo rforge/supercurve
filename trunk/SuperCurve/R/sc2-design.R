@@ -15,6 +15,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
                              alias=list(),
                              center=FALSE,
                              controls=list()) {
+    ## Check arguments
     if (!is.numeric(steps)) {
         stop(sprintf("argument %s must be numeric",
                      sQuote("steps")))
@@ -41,7 +42,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
             stop(sprintf(ngettext(length(missingNames),
                                   "argument %s missing element: %s",
                                   "argument %s missing elements: %s"),
-                         sQuote("alias"), missingNames))
+                         sQuote("alias"), paste(missingNames, collapse=', ')))
         }
     }
 
@@ -58,6 +59,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
                      sQuote("controls")))
     }
 
+    ## Create new class
     new("RPPADesignParams",
         steps=steps,
         series=series,
@@ -71,6 +73,13 @@ RPPADesignParams <- function(steps=rep(0, 1),
 
 ##-----------------------------------------------------------------------------
 RPPADesignFromParams <- function(raw, designparams) {
+    ## Check arguments
+    if (!inherits(designparams, "RPPADesignParams")) {
+        stop(sprintf("argument %s must be RPPADesignParams object",
+                     sQuote("designparams")))
+    }
+
+    ## Begin processing
     RPPADesign(raw,
                designparams@steps,
                designparams@series,
@@ -98,16 +107,32 @@ RPPADesign <- function(raw,
                        alias=list(),
                        center=FALSE,
                        controls=list()) {
-    ## :TODO: Need better checks on input values
-
     ## If RPPA object, use its data slot value
     if (inherits(raw, "RPPA")) {
         raw <- raw@data
     }
 
+    ## Check arguments
     if (!(is.data.frame(raw) || is.matrix(raw))) {
         stop(sprintf("argument %s must be matrix or data.frame",
                      sQuote("raw")))
+    }
+
+    if (!is.numeric(steps)) {
+        stop(sprintf("argument %s must be numeric",
+                     sQuote("steps")))
+    }
+
+    if (!(is.character(series) || is.factor(series))) {
+        stop(sprintf("argument %s must be character or factor",
+                     sQuote("series")))
+    }
+
+    ## :TBD: grouping, ordering
+
+    if (!(is.list(alias) || is.data.frame(alias))) {
+        stop(sprintf("argument %s must be list or data.frame",
+                     sQuote("alias")))
     }
 
     if (length(alias) < 1) {
@@ -115,11 +140,25 @@ RPPADesign <- function(raw,
                       Sample=levels(factor(tolower(as.character(raw$Sample)))))
     }
 
+    if (!is.logical(center)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("center")))
+    } else if (!(length(center) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("center")))
+    }
+
+    if (!is.list(controls)) {
+        stop(sprintf("argument %s must be list",
+                     sQuote("controls")))
+    }
+
+    ## Begin processing
     raw.df <- data.frame(raw[, c("Main.Row",
-                               "Main.Col",
-                               "Sub.Row",
-                               "Sub.Col",
-                               "Sample")])
+                                 "Main.Col",
+                                 "Sub.Row",
+                                 "Sub.Col",
+                                 "Sample")])
     if (length(steps) < 2 && length(series) < 2) {
         grouping <- match.arg(grouping)
         ordering <- match.arg(ordering)
@@ -200,7 +239,6 @@ RPPADesign <- function(raw,
         raw.df$Sample <- series
         # it is important to override so that users can specify
         # controls with reference to their series names
-
     }
 
     if (any(is.na(steps))) {
@@ -216,6 +254,7 @@ RPPADesign <- function(raw,
     sampleMap <- tolower(sampleMap)
     names(sampleMap) <- levels(series)
 
+    ## Create new class
     new("RPPADesign",
         layout=raw.df,
         alias=alias,
@@ -236,7 +275,7 @@ plotDesign.org <- function(rppa,
     plot(c(min(x), max(x)),
          c(min(y), max(y)),
          type='n',
-         main=paste(measure, "Intensity v.s. Dilution Step", main),
+         main=paste(measure, "Intensity vs. Dilution Step", main),
          xlab='Dilution Step',
          ylab='Intensity')
     series <- design@layout$Series
@@ -257,6 +296,34 @@ plotDesign <- function(rppa,
                        design,
                        measure='Mean.Total',
                        main='') {
+    ## Check arguments
+    if (!inherits(rppa, "RPPA")) {
+        stop(sprintf("argument %s must be RPPA object",
+                     sQuote("rppa")))
+    }
+
+    if (!inherits(design, "RPPADesign")) {
+        stop(sprintf("argument %s must be RPPADesign object",
+                     sQuote("design")))
+    }
+
+    if (!is.character(measure)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("measure")))
+    } else if (!(length(measure) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("measure")))
+    }
+
+    if (!is.character(main)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("main")))
+    } else if (!(length(main) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("main")))
+    }
+
+    ## Begin processing
     y <- rppa@data[, measure]
     x <- design@layout$Steps
 
@@ -266,12 +333,12 @@ plotDesign <- function(rppa,
     # in the Sample column and the original max(x) will mess up the plot.
     #######
 
-    is.ctrl<- .controlVector(design)  # get the indexes of the control spots
+    is.ctrl <- .controlVector(design)  # get the indexes of the control spots
     par(mfrow=c(1, 1)) # avoid existing partitions of graphic device.
     plot(c(min(x[!is.ctrl]), max(x[!is.ctrl])),
          c(min(y), max(y)),
          type='n',
-         main=paste(measure, "Intensity v.s. Dilution Step", main),
+         main=paste(measure, "Intensity vs. Dilution Step", main),
          xlab='Dilution Step',
          ylab='Intensity')
     series <- design@layout$Series
@@ -289,6 +356,13 @@ plotDesign <- function(rppa,
 
 ##-----------------------------------------------------------------------------
 .controlVector <- function(design) {
+    ## Check arguments
+    if (!inherits(design, "RPPADesign")) {
+        stop(sprintf("argument %s must be RPPADesign object",
+                     sQuote("design")))
+    }
+
+    ## Begin processing
     sample <- as.character(design@layout$Sample)
     temp <- rep(FALSE, length(unique(sample)))
     names(temp) <- unique(sample)
@@ -299,9 +373,13 @@ plotDesign <- function(rppa,
 
 ##-----------------------------------------------------------------------------
 seriesNames <- function(design) {
+    ## Check arguments
     if (!inherits(design, "RPPADesign")) {
-        stop("Invalid design class")
+        stop(sprintf("argument %s must be RPPADesign object",
+                     sQuote("design")))
     }
+
+    ## Begin processing
     isControl <- .controlVector(design)
     series <- as.character(design@layout$Series[!isControl])
     unique(series)
@@ -310,6 +388,13 @@ seriesNames <- function(design) {
 
 ##-----------------------------------------------------------------------------
 getSteps <- function(design) {
+    ## Check arguments
+    if (!inherits(design, "RPPADesign")) {
+        stop(sprintf("argument %s must be RPPADesign object",
+                     sQuote("design")))
+    }
+
+    ## Begin processing
     isControl <- .controlVector(design)
     design@layout$Steps[!isControl]
 }
