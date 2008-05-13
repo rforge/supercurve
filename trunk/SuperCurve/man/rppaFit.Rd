@@ -9,10 +9,10 @@
 }
 \usage{
 RPPAFit(rppa, design, measure, xform=function(x) x,
-    method = c("nls", "nlrob", "nlrq"), trim = TRUE,
+    method = c("nls", "nlrob", "nlrq"),
     ci = FALSE, ignoreNegative = TRUE, 
     trace = FALSE, verbose = FALSE, veryVerbose = FALSE,
-    warnLevel = 0, model=c("logistic", "loess", "cobs"))
+    warnLevel = 0, trim = TRUE, model=c("logistic", "loess", "cobs"))
 }
 \arguments{
   \item{rppa}{An \code{\link{RPPA}} object containing the raw data to be fit}
@@ -30,9 +30,6 @@ RPPAFit(rppa, design, measure, xform=function(x) x,
     least squares. Setting \code{method} to \code{nlrob} uses \code{nlrob}
     which is robust nls from the robustbase package. \code{nlrq} uses  \code{nlrq} from quantreg which is robust
     median regression.}
-  \item{trim}{If trim = TRUE, concentrations will be trimmed to reflect min and max 
-    concentrations we can estimate given the background noise. If trim = FALSE, raw
-    concentrations are returned with no trimming. }
   \item{ci}{A logical value: if TRUE, then compute 90\% confidence
     intervals on the concentraion estimates}
   \item{ignoreNegative}{A logical value: if TRUE, then negative values
@@ -49,6 +46,9 @@ RPPAFit(rppa, design, measure, xform=function(x) x,
     dilution sereis are failing.  Setting \code{warnLevel} to two or
     greater may change the values returtned by the function}
     
+  \item{trim}{If trim = TRUE, concentrations will be trimmed to reflect min and max 
+    concentrations we can estimate given the background noise. If trim = FALSE, raw
+    concentrations are returned with no trimming. }
   \item{model}{optional parameter specifying the model for the response curve fitted for the slie.  Default method is
     \code{logistic}, which assumes a logistic shape for the curve.  Other choices are \code{loess}, fit a loess curve to the
     response, and \code{cobs}, fit a b-spline curve to the slide with the constraint that the curve be strictly increasing.}
