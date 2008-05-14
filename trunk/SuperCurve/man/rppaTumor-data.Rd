@@ -1,5 +1,5 @@
-\name{rppaTumorData}
-\alias{rppaTumorData}
+\name{rppaTumor-data}
+\alias{rppaTumor-data}
 \alias{tDesign}
 \alias{jnk}
 \alias{erk2}

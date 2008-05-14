@@ -1,5 +1,5 @@
-\name{rppaCellData}
-\alias{rppaCellData}
+\name{rppaCell-data}
+\alias{rppaCell-data}
 \alias{akt}
 \alias{ctnnb1}
 \alias{c.erk2}
