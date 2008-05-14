@@ -18,13 +18,13 @@ RPPADesignParams(steps=rep(0,1),
 }
 \arguments{
   \item{steps}{An optional numeric vector listing the dilution step
-associated with each spot, on a logarithmic scale.}
+    associated with each spot, on a logarithmic scale.}
   \item{series}{factor TBD}
   \item{grouping}{Describes the way dilution series are oriented on the
-array.}
-  \item{ordering}{Are dilution series arranges in order of
-\code{increasing} or \code{decreasing} concentrations. Default is
-\code{decreasing}.}
+    array.}
+  \item{ordering}{Are dilution series arranged in order of
+    \code{increasing} or \code{decreasing} concentrations. Default is
+    \code{decreasing}.}
   \item{alias}{list TBD}
   \item{center}{logical TBD}
   \item{controls}{list TBD}
@@ -54,7 +54,10 @@ array.}
 }
 \references{KRC}
 \author{Kevin R. Coombes <kcoombes@mdanderson.org>}
-\seealso{\code{\link{RPPAFit}}, \code{\link{RPPADesign}}}
+\seealso{
+  \code{\link{RPPAFit}},
+  \code{\link{RPPADesign}}
+}
 \examples{
 ##path <- system.file("rppaTumorData", package="SuperCurve")
 ##cat("path=", path, "\n")

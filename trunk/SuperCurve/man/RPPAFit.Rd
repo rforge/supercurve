@@ -5,14 +5,22 @@
   \code{RPPAFit} fits an intensity response model to the dilution
   series in a reverse-phase protein array experiment. Individual sample
   concentrations are estimated by matching individual sample dilution
-  series to the overall logistic response for the slide.  
+  series to the overall logistic response for the slide.
 }
 \usage{
-RPPAFit(rppa, design, measure, xform=function(x) x,
-    method = c("nls", "nlrob", "nlrq"), ci = FALSE,
-    ignoreNegative = TRUE, trace = FALSE,
-    verbose = FALSE, veryVerbose = FALSE,
-    warnLevel = 0, trim = TRUE, model=c("logistic", "loess", "cobs"))
+RPPAFit(rppa,
+        design,
+        measure,
+        xform=function(x) x,
+        method=c("nls", "nlrob", "nlrq"),
+        ci=FALSE,
+        ignoreNegative=TRUE,
+        trace=FALSE,
+        verbose=FALSE,
+        veryVerbose=FALSE,
+        warnLevel=0,
+        trim=TRUE,
+        model=c("logistic", "loess", "cobs"))
 }
 \arguments{
   \item{rppa}{object of type \code{\link{RPPA}} containing the raw data
@@ -46,7 +54,7 @@ RPPAFit(rppa, design, measure, xform=function(x) x,
     are failing. Setting \code{warnLevel} to two or greater may change the
     values returned}
   \item{trim}{logical specifying if concentrations should be trimmed.
-    If TRUE, concentrations will be trimmed to reflect min and max 
+    If TRUE, concentrations will be trimmed to reflect min and max
     concentrations we can estimate given the background noise.
     If FALSE, raw concentrations are returned with no trimming.}
   \item{model}{character string specifying the model for the response curve
@@ -56,29 +64,29 @@ RPPAFit(rppa, design, measure, xform=function(x) x,
     constraint that the curve be strictly increasing.}
 }
 \details{
-  The basic mathematical model is given by \deqn{Y   = f(X-\delta_i),}
+  The basic mathematical model is given by \deqn{Y = f(X-\delta_i),}
   where \eqn{Y} is the observed intensity, \eqn{X} is the designed dilution
-  step and f is the model for the protein response curve.  
+  step and f is the model for the protein response curve.
   By fitting a joint model, we assume that the response curve is the same for
   all dilution series on the array. The real point of the model, however, is
   to be able to draw inferences on the \eqn{\delta_i}, which represent the
   (log) concentration of the protein present in different dilution series.
-  
+
   As the first step in fitting the model, we compute crude estimates of the
   individual \eqn{\delta_i} assuming a rough logistic shape for the protein
   response curve.
-  
+
   Next, we fit an overall response curve for the slide \eqn{f} using the
   estimated concentrations and observed intensities \eqn{Y = f(\delta_i)}.
   The model for  \eqn{f} is specified in the \eqn{model} parameter.
-  
+
   Next, we update the estimates of the individual \eqn{\delta_i} using our
   improved fitted model \eqn{f} for the overall slide response curve. These
   individual series are matched to the overall slide response curve using the
   algorithm specified in \code{method}. The default method is \code{nls}, a
   least squares matchup, but we also offer robust alternatives which can do
   better.
-  
+
   Finally we re-estimate \eqn{f} using the improved estimates for \eqn{\delta_i}.
   We continue to iterate between \eqn{f} and \eqn{\delta_i}. We do this twice
   since that seems to give reasonable convergence.

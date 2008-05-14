@@ -11,10 +11,10 @@
   reverse-phase protein array experiment.
 }
 \usage{
-RPPA(filename, path = ".", blanks = NULL)
-\S4method{summary}{RPPA}(object, ...)
-\S4method{image}{RPPA}(x, measure = "Mean.Net", main = measure, colorbar
-= FALSE, col = terrain.colors(256), ...)
+RPPA(filename, path=".", blanks=NULL)
+\S4method{summary}{RPPA}(object, \dots)
+\S4method{image}{RPPA}(x, measure="Mean.Net", main=measure,
+colorbar=FALSE, col=terrain.colors(256), \dots)
 }
 \arguments{
   \item{filename}{The name of a file containing MicroVigene
@@ -30,7 +30,7 @@ RPPA(filename, path = ".", blanks = NULL)
     \code{image} method.}
   \item{main}{A character string used to title the image plot}
   \item{colorbar}{A logical value that determines whether to include a
-    color bar in the plot.  Default is FALSE.  If set to TRUE, then the
+    color bar in the plot. Default is FALSE. If set to TRUE, then the
     image cannot be used as one panel in a window with multiple plots.}
   \item{col}{The usual graphics parameter used by \link{image}. It is
     included here to change the default color scheme to use
@@ -39,10 +39,10 @@ RPPA(filename, path = ".", blanks = NULL)
 }
 \details{
   The data frame slot (\code{data}) in a valid RPPA object constructed
-  from a MicroVigne input file using the \code{RPPA} function is
+  from a MicroVigene input file using the \code{RPPA} function is
   guaranteed to contain at least 6 columns of information:
   \code{Main.Row}, \code{Main.Col}, \code{Sub.Row}, \code{Sub.Col},
-  \code{Sample}, and \code{Mean.Net}.  The first four pieces of
+  \code{Sample}, and \code{Mean.Net}. The first four pieces of
   information give the logical location of a spot on an array, after
   which we get a unique identifier of the sample spotted at that
   location and a measurement that represents the background-corrected
@@ -63,18 +63,18 @@ RPPA(filename, path = ".", blanks = NULL)
 }
 \section{Methods}{
   \describe{
-    \item{summary(object, ...)}{The summary method prints a summary of
+    \item{summary(object, \dots)}{The summary method prints a summary of
       the underlying data frame.}
     \item{image(x, measure="Mean.Net", main=measure, colorbar=FALSE,
-      col=terrain.colors(256), ...)}{The image method produces a
+      col=terrain.colors(256), \dots)}{The image method produces a
       "geographic" image of the measurement column named by the
-      \code{measure} argument.  The colors in the image represent the
+      \code{measure} argument. The colors in the image represent the
       intensity of the measurement at each spot on the array, and the
       display locations match the row and column locations of the spot.
-      Any measurement column can be displayed using this function.  An
+      Any measurement column can be displayed using this function. An
       optional color bar can be added; this will be placed at the right
-      edge.  In order to display the color bar, the method uses the
-      \code{\link{layout}} function.  Since \code{layout} works on the
+      edge. In order to display the color bar, the method uses the
+      \code{\link{layout}} function. Since \code{layout} works on the
       complete device, this prohibits the inclusion of an image with a
       color bar as one panel in a window of multiple plots.}
   }

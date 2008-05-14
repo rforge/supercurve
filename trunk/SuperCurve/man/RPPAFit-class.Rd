@@ -18,17 +18,17 @@
   reverse-phase protein array experiment.
 }
 \usage{
-\S4method{summary}{RPPAFit}(object, ...)
-\S4method{coef}{RPPAFit}(object, ...)
-\S4method{coefficients}{RPPAFit}(object, ...)
-\S4method{fitted}{RPPAFit}(object, type=c("Y", "y", "X", "x"), ...)
-\S4method{residuals}{RPPAFit}(object, type=c("raw", "standardized", "linear"), ...)
-\S4method{resid}{RPPAFit}(object, ...)
-\S4method{image}{RPPAFit}(x, type=c("Residuals", "StdRes", "X", "Y"), ...)
+\S4method{summary}{RPPAFit}(object, \dots)
+\S4method{coef}{RPPAFit}(object, \dots)
+\S4method{coefficients}{RPPAFit}(object, \dots)
+\S4method{fitted}{RPPAFit}(object, type=c("Y", "y", "X", "x"), \dots)
+\S4method{residuals}{RPPAFit}(object, type=c("raw", "standardized", "linear"), \dots)
+\S4method{resid}{RPPAFit}(object, \dots)
+\S4method{image}{RPPAFit}(x, type=c("Residuals", "StdRes", "X", "Y"), \dots)
 \S4method{hist}{RPPAFit}(x, type=c("Residuals", "StdRes"),
-  xlab = NULL, main = NULL, ...)
+  xlab=NULL, main=NULL, \dots)
 \S4method{plot}{RPPAFit}(x, y, type=c("cloud", "series", "individual"),
-xlab="Log Concentration", ylab="Intensity", colors=NULL, ...)
+xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
 }
 \arguments{
   \item{object}{An RPPAFit object.}
@@ -39,9 +39,9 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, ...)
   \item{ylab}{Graphics parameter; how the y-axis should be labeled.}
   \item{main}{Character string used as a title for the plot.}
   \item{y}{not used.}
-  \item{colors}{A graphical parameter, used only if
-    \code{type='series'}, to color the lines connecting different
-    dilution series. Eight default colors are used if the argument is NULL.} 
+  \item{colors}{A graphical parameter, used only if \code{type='series'},
+    to color the lines connecting different dilution series.
+    Eight default colors are used if the argument is NULL.}
   \item{\dots}{The usual extra arguments for generic or plotting routines.}
 }
 \details{
@@ -62,13 +62,13 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, ...)
     \item{\code{call}:}{A call object: the function call that was used
       to generate this model fit.}
     \item{\code{rppa}:}{The RPPA object containing the raw data that was
-    fit}
+      fit}
     \item{\code{design}:}{The RPPADesign object describing the layout of
-    the array.}
+      the array.}
     \item{\code{measure}:}{A character string containing the name of the
-    measurement column in the raw data that was fit by the model}
+      measurement column in the raw data that was fit by the model}
     \item{\code{method}:}{A charcater string containing the name of the
-      metohd that was used to estimate the upper and lower limit
+      method that was used to estimate the upper and lower limit
       parameters in the model.}
     \item{\code{concentration}:}{A vector of estimates of the relative
       log concentration of protein present in each sample.}
@@ -89,39 +89,39 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, ...)
 }
 \section{Methods}{
   \describe{
-    \item{summary(object, ...)}{Print a summary of the \code{RPPAFit}
-	object. At present, this only reports the function call used to
-	fit the model.}
-    \item{fitted(object, type=c("Y", "y", "X", "x"), ...)}{Extract the
-	fitted values of the model. This process is more complicated
-	than it may seem at first, since we are estimating values on
-	both the \eqn{X} and \eqn{Y} axes.  By default, the fitted
-	values are assumed to be the intensities, \eqn{Y}, which are
-	obtained using either an uppercase or lowercase 'y' as the
-	\code{type} argument.  The fitted log concentrations are
-	returned when \code{type} is set to either uppercase or
-	lowercase 'x'. In the notation used above to describe the model,
-	these fitted values are given by \eqn{X_i = X - \delta_i}.}
-    \item{residuals(object, type=c("raw", "standardized"), ...)}{
-        Report the residual errors. The 'raw' residuals are defined
-	as the difference between the observed intensities and the
-	fitted intensities, as computed by the \code{fitted} function.
-	The 'standardized' residuals are obtained by standardizing the
-	raw residuals.}
-    \item{resid(object, ...)}{An alias for \code{residuals}.}
-    \item{image(x, type=c("Residuals", "StdRes", "X", "Y"), ...)}{
+    \item{summary(object, \dots)}{Print a summary of the \code{RPPAFit}
+      object. At present, this only reports the function call used to
+      fit the model.}
+    \item{fitted(object, type=c("Y", "y", "X", "x"), \dots)}{Extract the
+      fitted values of the model. This process is more complicated
+      than it may seem at first, since we are estimating values on
+      both the \eqn{X} and \eqn{Y} axes. By default, the fitted
+      values are assumed to be the intensities, \eqn{Y}, which are
+      obtained using either an uppercase or lowercase 'y' as the
+      \code{type} argument. The fitted log concentrations are
+      returned when \code{type} is set to either uppercase or
+      lowercase 'x'. In the notation used above to describe the model,
+      these fitted values are given by \eqn{X_i = X - \delta_i}.}
+    \item{residuals(object, type=c("raw", "standardized"), \dots)}{
+      Report the residual errors. The 'raw' residuals are defined
+      as the difference between the observed intensities and the
+      fitted intensities, as computed by the \code{fitted} function.
+      The 'standardized' residuals are obtained by standardizing the
+      raw residuals.}
+    \item{resid(object, \dots)}{An alias for \code{residuals}.}
+    \item{image(x, type=c("Residuals", "StdRes", "X", "Y"), \dots)}{
       The \code{image} method produces a 'geographic' plot of the
       residuals or of the fitted values, depending on the value of the
       \code{type} argument. The implementation reuses code from the
       \code{image} method for an \code{\link{RPPA}} object.}
-    \item{hist(x, type=c("Residuals", "StdRes"), xlab=NULL, main=NULL, ...)}{
-      The \code{hist} method produces a histogram of
+    \item{hist(x, type=c("Residuals", "StdRes"), xlab=NULL, main=NULL,
+      \dots)}{The \code{hist} method produces a histogram of
       the residuals. The exact form of the residuals being displayed
       depends on the value of the \code{type} argument.}
-    \item{plot(x, y, type=c("cloud", "series", "individual"), xlab="Log
-      Concentration", ylab="Intensity", ...)}{The \code{plot} method
-      produces a diagnostic plot of the model fit. The default
-      \code{type}, 'cloud', simply plots the fitted \eqn{X} values
+    \item{plot(x, y, type=c("cloud", "series", "individual"),
+      xlab="Log Concentration", ylab="Intensity", \dots)}{
+      The \code{plot} method produces a diagnostic plot of the model fit.
+      The default \code{type}, 'cloud', simply plots the fitted \eqn{X} values
       against the observed \eqn{Y} values as a cloud of points around
       the jointly estimated sigmoid curve. The 'series' plot uses
       different colored lines to join points belonging to the same

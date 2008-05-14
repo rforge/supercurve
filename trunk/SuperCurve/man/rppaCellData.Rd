@@ -21,7 +21,7 @@
   identical top two rows of a subgrid contained the four most
   concentrated dilution steps (in decreasing concentrations from left to
   right), and the identical bottom two rows contained the four least
-  concentrated dilution steps. 
+  concentrated dilution steps.
 }
 \usage{
 data(rppaCell)

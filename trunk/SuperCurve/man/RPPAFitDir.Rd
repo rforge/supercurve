@@ -2,30 +2,34 @@
 \alias{RPPAFitDir}
 \title{Fit Dilution Curves for a Directory}
 \description{
-  Fit dilution curves for all the slide quantification files in a given directory.  
+  Fit dilution curves for all the slide quantification files in a given
+  directory.
 }
 \usage{
 RPPAFitDir(path, designparams, fitparams, blanks)
 }
 \arguments{
-  \item{path}{A path to the directory containing the spot quantification files. These are assumed to be of the form *.txt}
+  \item{path}{A path to the directory containing the spot quantification files.
+    These are assumed to be of the form *.txt}
   \item{designparams}{A \code{RPPADesignParams} object describing the layout
     of the array}
-  \item{fitparams}{A \code{RPPAFitParams} object describing the fitting parameters to pass to \code{\link{RPPAFit}}}
+  \item{fitparams}{A \code{RPPAFitParams} object describing the fitting
+    parameters to pass to \code{\link{RPPAFit}}}
   \item{blanks}{TBD logical array.}
 }
 \details{
   Quantify all the slides in a directory using RPPAFit. This returns an object
-containing slide data and fits for each slide.
+  containing slide data and fits for each slide.
   Typically this is followed by a call to \code{write.summary} to write the
   resulting quantifications and diagnostic plots to a directory.
 }
 \value{
   This function constructs and returns an object of the \code{RPPASet} class
-containing information about how the function was called and a matrix of fitted
-intensities. The returned \code{RPPASet} class contains at least the following
-slots:
-  \item{rppas}{Array of \link{RPPA} objects containing slide data from the directory.}
+  containing information about how the function was called and a matrix of
+  fitted intensities. The returned \code{RPPASet} class contains at least the
+  following slots:
+  \item{rppas}{Array of \link{RPPA} objects containing slide data from the
+    directory.}
   \item{fits}{Array of fitted concentrations for each slide}
 }
 \references{KRC}
@@ -52,7 +56,7 @@ fitparams <- RPPAFitParams(measure="Mean.Net",
                            ignoreNegative=FALSE,
                            warnLevel=-1,
                            verbose=FALSE)
-rm(fitset) 
+rm(fitset)
 fitset <- RPPAFitDir(txtdir, designparams, fitparams)
 write.summary(fitset,
               namebase="supercurve",
