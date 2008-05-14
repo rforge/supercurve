@@ -241,7 +241,7 @@ setMethod("write.summary", "RPPASet",
 RPPAFitDir <- function(path,
                        designparams,
                        fitparams,
-                       blanks=blanks) {
+                       blanks=NULL) {
     ## Check arguments
     if (!is.character(path)) {
         stop(sprintf("argument %s must be character",
