@@ -39,13 +39,15 @@ getConfidenceInterval(result, alpha=0.1, nSim=50)
   \code{\link{RPPAFit}}
 }
 \examples{
+  \dontrun{
 path <- system.file("rppaCellData", package="SuperCurve")
 akt <- RPPA("Akt.txt", path=path)
 design <- RPPADesign(akt, grouping="blockSample",
                      controls=list("neg con", "pos con"))
 fit.nls <- RPPAFit(akt, design, "Mean.Net")
-# Warning: this takes a while!
+## N.B.: this takes a while!
 fit.nls <- getConfidenceInterval(fit.nls, alpha=0.10, nSim=50)
+  }
 }
 \keyword{models}
 

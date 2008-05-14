@@ -6,7 +6,7 @@
   directory.
 }
 \usage{
-RPPAFitDir(path, designparams, fitparams, blanks)
+RPPAFitDir(path, designparams, fitparams, blanks=NULL)
 }
 \arguments{
   \item{path}{A path to the directory containing the spot quantification files.
