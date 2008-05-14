@@ -93,7 +93,6 @@ RPPA(filename, path = ".", blanks = NULL)
 \seealso{\code{\link{RPPAFit}}, \code{\link{RPPADesign}}}
 \examples{
 path <- system.file("rppaTumorData", package="SuperCurve")
-cat("path=", path, "\n")
 erk2 <- RPPA("ERK2.txt", path=path)
 summary(erk2)
 image(erk2)
@@ -103,3 +102,4 @@ image(erk2, "Vol.Bkg", main="Background Estimates", colorbar=TRUE)
 \keyword{hplot}
 \keyword{color}
 \keyword{file}
+
