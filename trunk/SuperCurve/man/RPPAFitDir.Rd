@@ -46,20 +46,20 @@ designparams <- RPPADesignParams(grouping="blockSample",
                                  controls=list("control",
                                                "pos con",
                                                "neg con"))
-fitparams <- RPPAFitParams(measure = "Mean.Net",
-                           method='nlrob',
-                           model='cobs',
+fitparams <- RPPAFitParams(measure="Mean.Net",
+                           method="nlrob",
+                           model="cobs",
                            ignoreNegative=FALSE,
                            warnLevel=-1,
-                           verbose = FALSE)
+                           verbose=FALSE)
 rm(fitset) 
 fitset <- RPPAFitDir(txtdir, designparams, fitparams)
 write.summary(fitset,
-              file = 'supercurve',    # :TBD: file extension?
-              path = resdir,
-              normalize = 'median',
+              namebase="supercurve",
+              path=resdir,
+              normalize="median",
               graphs=TRUE,
-              tiffdir = imgdir)
+              tiffdir=imgdir)
   }
 
   \dontrun{
