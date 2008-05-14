@@ -123,9 +123,7 @@ the names of the unique (non-control) dilution series on the array.
 }
 \references{KRC}
 \author{Kevin R. Coombes <kcoombes@mdanderson.org>}
-\seealso{
-  \link{RPPA}
-}
+\seealso{\link{RPPA}}
 \examples{
 path <- system.file("rppaTumorData", package="SuperCurve")
 erk2 <- RPPA("ERK2.txt", path=path)
@@ -133,8 +131,7 @@ design <- RPPADesign(erk2, grouping="blockSample", center=TRUE)
 image(design)
 summary(design)
 
-design <- RPPADesign(erk2,
-                     grouping="blockSample",
+design <- RPPADesign(erk2, grouping="blockSample",
                      controls=list("neg con", "pos con"))
 image(design)
 summary(design)
@@ -153,6 +150,6 @@ series <- factor(paste(as.character(akt@data$Sample),
 design40 <- RPPADesign(akt, steps=steps, series=series)
 image(design40)
 summary(design40)
+
 }
 \keyword{regression}
-
