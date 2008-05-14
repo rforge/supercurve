@@ -211,18 +211,18 @@ setMethod("write.summary", "RPPASet",
                                     paste(base, "jpg", sep='.'))
                 # convert  $pg1 $pg2 +append $tiff -append -quality 100 $output
                 message(paste('merging tiff for', proteins[i]))
-                systemCmd <- paste('convert "',
-                                   pg1,
-                                   '" "',
-                                   pg2,
-                                   '" +append ',
-                                   '"',
-                                   tiff,
-                                   '" -append -quality 100 "',
-                                   output,
-                                   '"',
-                                   sep='')
-                shell(systemCmd, invisible=TRUE)
+                command <- paste('convert "',
+                                 pg1,
+                                 '" "',
+                                 pg2,
+                                 '" +append ',
+                                 '"',
+                                 tiff,
+                                 '" -append -quality 100 "',
+                                 output,
+                                 '"',
+                                 sep='')
+                system(command, invisible=TRUE)
             }
         }
     }
@@ -318,7 +318,7 @@ RPPAFitDir <- function(path,
 
     fits <- array(list(), c(length(slideFilenames)), slideFilenames)
     for (i in seq(1, length(slideFilenames))) {
-        message(paste("fitting", slideFilenames[i], ".", "Please wait."))
+        message(paste("fitting", slideFilenames[i], "-", "Please wait."))
         fits[[i]] <- RPPAFitFromParams(rppas[[i]],
                                        design=design,
                                        fitparams=fitparams)
