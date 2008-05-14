@@ -312,7 +312,7 @@ plotDesign <- function(rppa,
     plot(c(min(x[!is.ctrl]), max(x[!is.ctrl])),
          c(min(y), max(y)),
          type='n',
-         main=paste(measure, "Intensity vs. Dilution Step", main),
+         main=paste(measure, "Intensity vs. Dilution Step", "-", main),
          xlab='Dilution Step',
          ylab='Intensity')
     series <- design@layout$Series
