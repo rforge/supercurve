@@ -583,13 +583,13 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
             fitparams@measure,
             fitparams@xform,
             fitparams@method,
-            fitparams@trim,
             fitparams@ci,
             fitparams@ignoreNegative,
             fitparams@trace,
             fitparams@verbose,
             fitparams@veryVerbose,
             fitparams@warnLevel,
+            fitparams@trim,
             fitparams@model)
 }
 
