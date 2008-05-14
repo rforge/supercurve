@@ -80,7 +80,7 @@ RPPAFit(rppa, design, measure, xform=function(x) x,
   better.
   
   Finally we re-estimate \eqn{f} using the improved estimates for \eqn{\delta_i}.
-  We continue to iterate between \eqn{f} and \eqn{\delta_i}. We do this 2 times
+  We continue to iterate between \eqn{f} and \eqn{\delta_i}. We do this twice
   since that seems to give reasonable convergence.
 
   If the \code{ci} argument is set to TRUE, then the function also computes
@@ -108,7 +108,7 @@ design <- RPPADesign(erk2,
                      controls=list("neg con", "pos con"))
 fit.nls <- RPPAFit(erk2, design, "Mean.Net")
 summary(fit.nls)
-##coef(fit.nls)   ## :TBD: R CMD check error
+##coef(fit.nls)   ## :BUG: method 'coef' doesn't work
 }
 \keyword{models}
 \keyword{regression}
