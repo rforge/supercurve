@@ -12,16 +12,19 @@ RPPAFitDir(path, designparams, fitparams, blanks)
   \item{designparams}{A \code{RPPADesignParams} object describing the layout
     of the array}
   \item{fitparams}{A \code{RPPAFitParams} object describing the fitting parameters to pass to \code{\link{RPPAFit}}}
-  \item{blanks}{:TODO:}
+  \item{blanks}{TBD logical array.}
 }
 \details{
-  Quantify all the slides in a directory using RPPAFit. This returns an object containing slide data and fits for each slide.
+  Quantify all the slides in a directory using RPPAFit. This returns an object
+containing slide data and fits for each slide.
   Typically this is followed by a call to \code{write.summary} to write the
   resulting quantifications and diagnostic plots to a directory.
 }
 \value{
-  This function constructs and returns an object of the \code{RPPASet} class containing information about how the function was called 
-  and a matrix of fitted intensities.  The returned \code{RPPASet} class contains at least the following slots:
+  This function constructs and returns an object of the \code{RPPASet} class
+containing information about how the function was called and a matrix of fitted
+intensities. The returned \code{RPPASet} class contains at least the following
+slots:
   \item{rppas}{Array of \link{RPPA} objects containing slide data from the directory.}
   \item{fits}{Array of fitted concentrations for each slide}
 }
@@ -33,23 +36,40 @@ RPPAFitDir(path, designparams, fitparams, blanks)
   \code{\link{RPPADesign}}
 }
 \examples{
-if (FALSE) { # we did not want to bundle a bunch of image files with our code
-	txt <- "Y:/MyData/txt" # quantification files
-	tiffdir <- "Y:/MyData/tif"  # tif image files corresponding to each quantification
-	results <- "Y:/MyData/results"  # output dir
-	designparams <- RPPADesignParams(grouping="blockSample", center=FALSE, controls=list("control", "pos con", "neg con"))
-	fitparams <- RPPAFitParams(measure = "Mean.Net", ignoreNegative=FALSE, method='nlrob', warnLevel=-1, verbose = FALSE, model='cobs') 
-	rm(fitset) 
-	fitset <- RPPAFitDir(txt, designparams, fitparams)
-	write.summary(fitset, file = 'supercurve', path = results, normalize = 'median', graphs=TRUE, tiffdir = tiffdir)
-}
+  \dontrun{
+parentdir <- "Y:/MyData"
+txtdir <- file.path(parentdir, "txt")     # quantification files
+imgdir <- file.path(parentdir, "tif")     # images corresponding to each quantification
+resdir <- file.path(parentdir, "results") # output files
+designparams <- RPPADesignParams(grouping="blockSample",
+                                 center=FALSE,
+                                 controls=list("control",
+                                               "pos con",
+                                               "neg con"))
+fitparams <- RPPAFitParams(measure = "Mean.Net",
+                           method='nlrob',
+                           model='cobs',
+                           ignoreNegative=FALSE,
+                           warnLevel=-1,
+                           verbose = FALSE)
+rm(fitset) 
+fitset <- RPPAFitDir(txtdir, designparams, fitparams)
+write.summary(fitset,
+              file = 'supercurve',    # :TBD: file extension?
+              path = resdir,
+              normalize = 'median',
+              graphs=TRUE,
+              tiffdir = imgdir)
+  }
 
-if (FALSE) { # An even easier way to call this function is to use a simple gui we have set up
-	sc()
-}
-	  
+  \dontrun{
+# :TBD: shitcan example if gui moved to separate package
+# An even easier way to call this function is to use a simple gui we have set up
+sc() # :TBD: gui really needs a more explicit name
+  }
 }
 \keyword{models}
 \keyword{regression}
 \keyword{nonlinear}
 \keyword{robust}
+
