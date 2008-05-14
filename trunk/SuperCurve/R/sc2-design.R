@@ -40,8 +40,8 @@ RPPADesignParams <- function(steps=rep(0, 1),
         } else if (!(all(reqdNames %in% names(alias)))) {
             missingNames <- reqdNames[!reqdNames %in% names(alias)]
             stop(sprintf(ngettext(length(missingNames),
-                                  "argument %s missing element: %s",
-                                  "argument %s missing elements: %s"),
+                                  "argument %s missing component: %s",
+                                  "argument %s missing components: %s"),
                          sQuote("alias"), paste(missingNames, collapse=', ')))
         }
     }
@@ -266,32 +266,6 @@ RPPADesign <- function(raw,
 ##-----------------------------------------------------------------------------
 # plot the series in an RPPA under a given design layout
 # see if the series make sense under this layout
-plotDesign.org <- function(rppa,
-                           design,
-                           measure='Mean.Total',
-                           main='') {
-    y <- rppa@data[, measure]
-    x <- design@layout$Steps
-    plot(c(min(x), max(x)),
-         c(min(y), max(y)),
-         type='n',
-         main=paste(measure, "Intensity vs. Dilution Step", main),
-         xlab='Dilution Step',
-         ylab='Intensity')
-    series <- design@layout$Series
-    s <- seriesNames(design) # strip out control spots
-    rows <- length(s)
-    bow <- rainbow(rows)
-    for (i in seq(1, rows)) {
-        lines(x=x[series == s[i]],
-              y=y[series == s[i]],
-              col=bow[i],
-              type='b')
-    }
-}
-
-
-##-----------------------------------------------------------------------------
 plotDesign <- function(rppa,
                        design,
                        measure='Mean.Total',
