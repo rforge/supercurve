@@ -9,10 +9,10 @@
 }
 \usage{
 RPPAFit(rppa, design, measure, xform=function(x) x,
-    method = c("nls", "nlrob", "nlrq"), trim = TRUE,
-    ci = FALSE, ignoreNegative = TRUE, 
-    trace = FALSE, verbose = FALSE, veryVerbose = FALSE,
-    warnLevel = 0, model=c("logistic", "loess", "cobs"))
+    method = c("nls", "nlrob", "nlrq"), ci = FALSE,
+    ignoreNegative = TRUE, trace = FALSE,
+    verbose = FALSE, veryVerbose = FALSE,
+    warnLevel = 0, trim = TRUE, model=c("logistic", "loess", "cobs"))
 }
 \arguments{
   \item{rppa}{object of type \code{\link{RPPA}} containing the raw data
@@ -30,10 +30,6 @@ RPPAFit(rppa, design, measure, xform=function(x) x,
     nonlinear least squares. Method \code{nlrob} uses \code{nlrob} which is
     robust nls from robustbase package. Method \code{nlrq} uses \code{nlrq}
     from quantreg package which is robust median regression.}
-  \item{trim}{logical specifying if concentrations should be trimmed.
-    If TRUE, concentrations will be trimmed to reflect min and max 
-    concentrations we can estimate given the background noise.
-    If FALSE, raw concentrations are returned with no trimming.}
   \item{ci}{logical specifying whether to compute 90\% confidence intervals
     on the concentration estimates.}
   \item{ignoreNegative}{logical specifying whether negative values should be
@@ -49,6 +45,10 @@ RPPAFit(rppa, design, measure, xform=function(x) x,
     cause failure but will give us a chance to figure out which dilution series
     are failing. Setting \code{warnLevel} to two or greater may change the
     values returned}
+  \item{trim}{logical specifying if concentrations should be trimmed.
+    If TRUE, concentrations will be trimmed to reflect min and max 
+    concentrations we can estimate given the background noise.
+    If FALSE, raw concentrations are returned with no trimming.}
   \item{model}{character string specifying the model for the response curve
     fitted for the slie. Default model is \code{logistic}, which assumes a
     logistic shape for the curve. Model \code{loess} fits a loess curve to the
