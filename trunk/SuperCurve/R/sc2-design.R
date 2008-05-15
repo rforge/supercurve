@@ -1,5 +1,5 @@
 ###
-### DESIGN.R
+### RPPADESIGN.R
 ###
 
 
@@ -75,8 +75,8 @@ RPPADesignParams <- function(steps=rep(0, 1),
 RPPADesignFromParams <- function(raw, designparams) {
     ## Check arguments
     if (!inherits(designparams, "RPPADesignParams")) {
-        stop(sprintf("argument %s must be RPPADesignParams object",
-                     sQuote("designparams")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("designparams"), "RPPADesignParams"))
     }
 
     ## Begin processing
@@ -92,8 +92,8 @@ RPPADesignFromParams <- function(raw, designparams) {
 
 
 ##-----------------------------------------------------------------------------
-# This is bad to have two constructors here since now this has to be kept in
-# sync with PRRADesignParams
+# This is bad to have two generators here since now this has to be kept in
+# sync with RPPADesignParams.
 # Only keep for backwards compatibility atm
 RPPADesign <- function(raw,
                        steps=rep(0, 1),
@@ -159,7 +159,8 @@ RPPADesign <- function(raw,
                                  "Sub.Row",
                                  "Sub.Col",
                                  "Sample")])
-    if (length(steps) < 2 && length(series) < 2) {
+    if (length(steps) < 2 &&
+        length(series) < 2) {
         grouping <- match.arg(grouping)
         ordering <- match.arg(ordering)
         steps <- rep(NA, nrow(raw))
@@ -228,22 +229,31 @@ RPPADesign <- function(raw,
             }
         }
 
-    } else if (length(steps) < 2 || length(series) < 2) {
-        stop("You must supply both 'steps' and 'series' if you supply either one")
+    } else if (length(steps) < 2 ||
+               length(series) < 2) {
+        stop(sprintf("arguments %s and %s must both be specified if either is",
+                     sQuote("steps"),
+                     sQuote("series")))
     } else {
-        # both series and steps supplied
-        if (length(steps) != nrow(raw.df) || length(series) != nrow(raw.df)) {
-            stop("lengths do not match")
+        ## both series and steps supplied
+        if (length(steps) != nrow(raw.df) ||
+            length(series) != nrow(raw.df)) {
+            stop(sprintf("arguments %s (%d) and %s (%d) must be of length %d",
+                         sQuote("steps"),
+                         length(steps),
+                         sQuote("series"),
+                         length(series),
+                         nrow(raw.df)))
         }
-        # override sample names from file, with user supplied series names
+        ## override sample names from file with user-supplied ones to allow
+        ## users to specify controls with reference to their series names
         raw.df$Sample <- series
-        # it is important to override so that users can specify
-        # controls with reference to their series names
     }
 
     if (any(is.na(steps))) {
-        warning("Some dilution steps have not been specified")
+        warning("some dilution steps have not been specified")
     }
+
     raw.df$Steps <- steps
     raw.df$Series <- series
     sampleMap <- as.vector(tapply(as.character(raw.df$Sample),
@@ -272,13 +282,13 @@ plotDesign <- function(rppa,
                        main='') {
     ## Check arguments
     if (!inherits(rppa, "RPPA")) {
-        stop(sprintf("argument %s must be RPPA object",
-                     sQuote("rppa")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("rppa"), "RPPA"))
     }
 
     if (!inherits(design, "RPPADesign")) {
-        stop(sprintf("argument %s must be RPPADesign object",
-                     sQuote("design")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("design"), "RPPADesign"))
     }
 
     if (!is.character(measure)) {
@@ -308,11 +318,11 @@ plotDesign <- function(rppa,
     #######
 
     is.ctrl <- .controlVector(design)  # get the indexes of the control spots
-    par(mfrow=c(1, 1)) # avoid existing partitions of graphic device.
+    par(mfrow=c(1, 1)) # avoid existing partitions of graphic device
     plot(c(min(x[!is.ctrl]), max(x[!is.ctrl])),
          c(min(y), max(y)),
-         type='n',
          main=paste(measure, "Intensity vs. Dilution Step", "-", main),
+         type='n',
          xlab='Dilution Step',
          ylab='Intensity')
     series <- design@layout$Series
@@ -332,8 +342,8 @@ plotDesign <- function(rppa,
 .controlVector <- function(design) {
     ## Check arguments
     if (!inherits(design, "RPPADesign")) {
-        stop(sprintf("argument %s must be RPPADesign object",
-                     sQuote("design")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("design"), "RPPADesign"))
     }
 
     ## Begin processing
@@ -349,8 +359,8 @@ plotDesign <- function(rppa,
 seriesNames <- function(design) {
     ## Check arguments
     if (!inherits(design, "RPPADesign")) {
-        stop(sprintf("argument %s must be RPPADesign object",
-                     sQuote("design")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("design"), "RPPADesign"))
     }
 
     ## Begin processing
@@ -364,8 +374,8 @@ seriesNames <- function(design) {
 getSteps <- function(design) {
     ## Check arguments
     if (!inherits(design, "RPPADesign")) {
-        stop(sprintf("argument %s must be RPPADesign object",
-                     sQuote("design")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("design"), "RPPADesign"))
     }
 
     ## Begin processing
@@ -380,7 +390,6 @@ setMethod("names", "RPPADesign",
     isControl <- .controlVector(x)
     as.character(x@layout$Series[!isControl])
 })
-
 
 
 if (FALSE) {
@@ -399,10 +408,13 @@ if (FALSE) {
 if (FALSE) {
   path <- "../inst/rppaTumorData"
   erk2 <- RPPA("ERK2.txt", path=path)
-  design <- RPPADesign(erk2, grouping="blockSample", center=TRUE)
+  design <- RPPADesign(erk2,
+                       grouping="blockSample",
+                       center=TRUE)
   image(design)
   summary(design)
-  design <- RPPADesign(erk2, grouping="blockSample",
+  design <- RPPADesign(erk2,
+                       grouping="blockSample",
                        controls=list("neg con", "pos con"))
   image(design)
   summary(design)
