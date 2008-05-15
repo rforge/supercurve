@@ -8,7 +8,7 @@
 ## a file object as the generator's sole argument.
 
 ##-----------------------------------------------------------------------------
-## A function to read in the Microvigen .txt files to generate an RPPA object.
+## Generates an RPPA object from a Microvigene .txt file.
 RPPA <- function(filename, path='.', blanks=NULL) {
     ## Check arguments
     if (!is.character(filename)) {
@@ -84,6 +84,8 @@ RPPA <- function(filename, path='.', blanks=NULL) {
         quant.df$Sample <- as.factor(quant.df$Sample)
     }
 
+    ## :TBD: Add path to object? Convert to canonical format prior to doing so?
+
     ## Create new class
     new("RPPA",
         data=quant.df,
@@ -91,7 +93,8 @@ RPPA <- function(filename, path='.', blanks=NULL) {
 }
 
 
-
+##
+##
 if (FALSE) {
   path <- "../inst/rppaTumorData"
   erk2 <- RPPA("ERK2.txt", path=path)
