@@ -3,20 +3,20 @@
 ###
 
 ##############################################################
-# Classes for fit functions to drive dilutionFit
+## Classes for fit functions to drive dilutionFit
 
 # Required methods
 
 ##-----------------------------------------------------------------------------
-# fitSlide
-# Use the conc and intensity series for an entire slide to
-# fit a curve for the the slide of intensity = f(conc)
-#
-# Inputs:
-# conc and intensity values for a slide
-# Outputs:
-# (none) Use this data to create and store parameters for
-# the slide fit of intensity = f(conc) in the object
+## Use the conc and intensity series for an entire slide to
+## fit a curve for the the slide of intensity = f(conc)
+##
+## Inputs:
+## conc and intensity values for a slide
+## Outputs:
+## (none) Use this data to create and store parameters for
+## the slide fit of intensity = f(conc) in the object
+##
 setMethod("fitSlide", "FitClass",
           function(object,
                    conc,
@@ -27,17 +27,16 @@ setMethod("fitSlide", "FitClass",
 
 
 ##-----------------------------------------------------------------------------
-# fitSeries
-# find the concentration for an individual dilution series
-# given the curve fit for the slide
-#
-# Inputs
-# dilutions and intensities for a single dilution series
-# est.conc  = starting estimated concentration for dilution = 0
-#
-# Outputs
-# est.conc = estimated concentration for dilution = 0
-#
+## find the concentration for an individual dilution series
+## given the curve fit for the slide
+##
+## Inputs
+## dilutions and intensities for a single dilution series
+## est.conc  = starting estimated concentration for dilution = 0
+##
+## Outputs
+## est.conc = estimated concentration for dilution = 0
+##
 setMethod("fitSeries", "FitClass",
           function(object,
                    diln,
@@ -52,12 +51,10 @@ setMethod("fitSeries", "FitClass",
 
 
 ########################################################################
-# General utility functions for curve response fits
+## General utility functions for curve response fits
 
 ##-----------------------------------------------------------------------------
-# trim
-# return concentration and intesity cutoffs for the model
-
+## return concentration and intensity cutoffs for the model
 setMethod("trimConc", "FitClass",
           function(object,
                    conc,
@@ -65,12 +62,15 @@ setMethod("trimConc", "FitClass",
                    design,
                    ...) {
     stop("trim must be implemented for each kind of FitClass")
-    list(lo.intensity=0, hi.intensity=0, lo.conc=0, hi.conc=0)
+    ## :TBD: Why is this code here when never executed?
+    list(lo.intensity=0,
+         hi.intensity=0,
+         lo.conc=0,
+         hi.conc=0)
 })
 
 
 ##-----------------------------------------------------------------------------
-#
 .slide.model <- function(conc) {
     obj <- get(".RPPA.fit.model", env=.GlobalEnv)
     fitted(obj, conc)
@@ -87,34 +87,37 @@ setMethod("trimConc", "FitClass",
                         silent=TRUE,
                         trace=FALSE,
                         ...) {
-    dum <- list(Y=intensity, Steps=diln)
+    ## :TBD: should 'method' argument be done as 'c(choice1, choice2, choice3)'
+    dum <- list(Y=intensity,
+                Steps=diln)
 
+    ## :TBD: should this be done with 'switch(EXPR = method, ...'
     # define regression method
-    if (method == "nls") {
-        nlsmeth <- nls
-    } else if (method == "nlrob") {
-        if (!require('MASS')) {
-            ## :TBD: Error message correct?
-            stop("This routine requires the MASS library for the 'rlm' routine.")
-        }
-        nlsmeth <- nlrob
-    } else if (method == "nlrq") {
-        ## :TODO: Add this package to 'Suggests:' field of DESCRIPTION file
-        if (!require('quantreg')) {
-            stop("This routine requires the quantreg library for the 'nlrq' routine.")
-        }
-        nlsmeth <- function(...) {
-            nlrq(..., control=nlrq.control(maxiter=10, eps=1e-02))
-        }
-    } else {
-        stop('unrecognized regression method')
-    }
+    nlsmeth <- if (method == "nls") {
+                   nls
+               } else if (method == "nlrob") {
+                   if (!require('MASS')) {
+                       ## :TBD: Error message correct?
+                       stop("This routine requires the MASS library for the 'rlm' routine.")  ## :TBD: err text right method?
+                   }
+                   nlrob
+               } else if (method == "nlrq") {
+                   if (!require('quantreg')) {
+                       stop("This routine requires the quantreg library for the 'nlrq' routine.")
+                   }
+                   function(...) {
+                       nlrq(..., control=nlrq.control(maxiter=10, eps=1e-02))
+                   }
+               } else {
+                   stop('unrecognized regression method')
+               }
 
-    # function .slide.model references object back here for curve model
+    ## function .slide.model references object back here for curve model
     assign(".RPPA.fit.model", object, env=.GlobalEnv)
 
     tmp <- try(nlsmeth(Y ~ .slide.model(Steps+X),
-                       data=data.frame(Y=intensity, Steps=diln),
+                       data=data.frame(Y=intensity,
+                                       Steps=diln),
                        start=list(X=est.conc),
                        trace=trace),
                silent)
@@ -126,7 +129,7 @@ setMethod("trimConc", "FitClass",
         warn <- 'unavoidable nls-error'
         resids <- 0
     } else {
-        # the model fitting succeded, so we can continue
+        ## model fitting succeded, so we can continue
         warn <- ''
         est.conc <- coef(tmp)
         resids <- residuals(tmp)
@@ -139,15 +142,15 @@ setMethod("trimConc", "FitClass",
 
 
 ##-----------------------------------------------------------------------------
-# This bisection search was shamelessly copied from the "fields" package
-.bisection.search <- function (x1,
-                               x2,
-                               f,
-                               tol=1e-07,
-                               niter=25,
-                               f.extra=NA,
-                               upcross.level=0)
-{
+## :TBD: license issue?
+## This bisection search was shamelessly copied from the "fields" package
+.bisection.search <- function(x1,
+                              x2,
+                              f,
+                              tol=1e-07,
+                              niter=25,
+                              f.extra=NA,
+                              upcross.level=0) {
     f1 <- f(x1, f.extra) - upcross.level
     f2 <- f(x2, f.extra) - upcross.level
     if (f1 > f2) {
@@ -165,6 +168,7 @@ setMethod("trimConc", "FitClass",
             x2 <- xm
             f2 <- fm
         }
+
         if (abs(fm) < tol) {
             iter <- k
             break
@@ -190,7 +194,7 @@ setMethod("trimConc", "FitClass",
 
     max.step <- max(getSteps(design))
     min.step <- min(getSteps(design))
-    r <- fitted(object, conc)-intensity  #residuals
+    r <- fitted(object, conc) - intensity  # residuals
     s <- mad(r, na.rm=TRUE)
     lBot <- quantile(intensity, probs=c(.01), na.rm=TRUE)
     lTop <- quantile(intensity, probs=c(.99), na.rm=TRUE)
@@ -210,7 +214,7 @@ setMethod("trimConc", "FitClass",
     # hi.intensity <- lTop - trim
     hi.intensity <- max(intensity)
 
-    # search fitted model to find conc corresponding to lo.intensity
+    ## search fitted model to find conc corresponding to lo.intensity
     lo.conc <- .bisection.search(min(conc, na.rm=TRUE),
                                  max(conc, na.rm=TRUE),
                                  function(x, object) {
@@ -240,8 +244,7 @@ setMethod("trimConc", "FitClass",
 
 
 ##############################################################
-# Loess model class
-
+## Loess model class
 
 ##-----------------------------------------------------------------------------
 setMethod("fitSlide", "loessFitClass",
@@ -250,6 +253,8 @@ setMethod("fitSlide", "loessFitClass",
                    intensity,
                    ...) {
     fit.lo <- loess(intensity ~ conc)
+
+    ## Create new class
     new("loessFitClass",
         model=fit.lo)
 })
@@ -262,7 +267,7 @@ setMethod("fitted", "loessFitClass",
                    ...) {
     fit.lo <- object@model
 
-    # loess will not interpolate beyond the initial fitted conc. range
+    ## loess will not interpolate beyond the initial fitted conc. range
     lo <- min(fit.lo$x)
     conc <- pmax(min(fit.lo$x), conc)
     conc <- pmin(max(fit.lo$x), conc)
@@ -320,8 +325,8 @@ setMethod("fitSlide", "cobsFitClass",
                    tau=0.5,
                    print.warn=FALSE,
                    print.mesg=FALSE)
-    # plot(fit.lo)
 
+    ## Create new class
     new("cobsFitClass",
         model=fit.lo,
         lambda=fit.lo$lambda)
@@ -329,17 +334,17 @@ setMethod("fitSlide", "cobsFitClass",
 
 
 ##-----------------------------------------------------------------------------
-.predict.spline=function(xvec, aknot, acoef) {
+.predict.spline <- function(xvec, aknot, acoef) {
     library("splines")
-    nknot=length(aknot)
-    aknotnew=c(aknot[1], aknot[1], aknot, aknot[nknot], aknot[nknot])
-    ncoef=length(acoef)
+    nknot <- length(aknot)
+    aknotnew <- c(aknot[1], aknot[1], aknot, aknot[nknot], aknot[nknot])
+    ncoef <- length(acoef)
 
-    xvec[xvec<(aknot[1]+(1e-8))]=aknot[1]+(1e-8)
-    xvec[xvec > (aknot[nknot]-(1e-8))]=aknot[nknot]-(1e-8)
+    xvec[xvec < (aknot[1] + (1e-8))] <- aknot[1] + (1e-8)
+    xvec[xvec > (aknot[nknot] - (1e-8))] <- aknot[nknot] - (1e-8)
 
-    a=spline.des(aknotnew, xvec, ord=3)
-    fvalvec= (a$design)%*%acoef
+    a <- spline.des(aknotnew, xvec, ord=3)
+    fvalvec <- (a$design) %*% acoef
 
     return(as.vector(fvalvec))
 }
@@ -352,43 +357,42 @@ setMethod("fitted", "cobsFitClass",
                    ...) {
     fit <- object@model
 
-    # Predict missing values at min intensity
+    ## Predict missing values at min intensity
     lo <- min(fit$x)
     conc.pred <- conc
     conc.pred[is.na(conc)] <- lo
 
-    if (TRUE) {
-        ## predict.cobs is irritating
-        ## It returns predicted values after sorting on the input vector.
-        ## So we get intensity ~ sort(fit)
-        ## We need to undo this sort to find predictions using the original
-        ## concentration ordering
+    intensity <- if (TRUE) {
+                     ## predict.cobs is irritating
+                     ## It returns predicted values after sorting on the input
+                     ## vector. So we get intensity ~ sort(fit)
+                     ## We need to undo this sort to find predictions using the
+                     ## original concentration ordering
 
-        n <- length(conc.pred)
-        if (n > 1) {
-            ## undo sort on fit
-            o <- sort.list(conc.pred, method="quick", na.last=NA)
-            u <- rep(NA, n)
-            u[o] <- 1:n
-            cobs.intensity <- predict(fit, conc.pred[o])[, "fit"]
-            intensity <- cobs.intensity[u]
-        } else {
-            # only one data point
-            intensity <- predict(fit, conc.pred)[, "fit"]
-        }
-
-    } else {
-        ## The above sort and unsort process is yucky and a bit slow.
-        ## Jianhua did not use the cobs predict method and instead evaluates
-        ## the spline directly. Unfortunately, there seems to be a bug in
-        ## .predict.spline where it does not have the correct number
-        ## of coefficients sometimes
-        aknot=fit$knots
-        acoef=fit$coef
-        intensity <- .predict.spline(conc.pred, aknot, acoef)
-    }
-
-    # plot(cobs.intensity, intensity)
+                     n <- length(conc.pred)
+                     if (n > 1) {
+                         ## undo sort on fit
+                         o <- sort.list(conc.pred,
+                                        method="quick",
+                                        na.last=NA)
+                         u <- rep(NA, n)
+                         u[o] <- 1:n
+                         cobs.intensity <- predict(fit, conc.pred[o])[, "fit"]
+                         cobs.intensity[u]
+                     } else {
+                         ## only one data point
+                         predict(fit, conc.pred)[, "fit"]
+                     }
+                 } else {
+                     ## The above sort and unsort process is yucky and a bit
+                     ## slow. Jianhua did not use the cobs predict method and
+                     ## instead evaluates the spline directly. Unfortunately,
+                     ## there seems to be a bug in .predict.spline where it does
+                     ## not have the correct number of coefficients sometimes
+                     .predict.spline(conc.pred,
+                                     fit$knots,
+                                     fit$coef)
+                 }
 
     intensity[is.na(conc)] <- NA
 
@@ -421,12 +425,11 @@ setMethod("trimConc", "cobsFitClass",
 })
 
 
-
 ##############################################################
-# Logistic model class
+## Logistic model class
 
 ##-----------------------------------------------------------------------------
-# note: rnls does not work with local functions
+## N.B.: rnls does not work with local functions
 .ea <- function(x) {
     exp(x) / (1 + exp(x))
 }
@@ -472,8 +475,8 @@ setMethod("fitSlide", "logisticFitClass",
                          control=nls.control(maxiter=100),
                          na.action='na.omit'))
     if (is(nls.model, 'try-error')) {
-        warning('unable to perform 1st pass overall slide fit. trying quantiles.')
-        ## crude way to get alpha and beta but it seems to be robust.
+        warning('unable to perform first pass overall slide fit. trying quantiles.')
+        ## crude way to get alpha and beta but it seems to be robust
         cf <- .coef.quantile.est(intensity)
     } else {
         cf <- coef(nls.model)
@@ -485,6 +488,7 @@ setMethod("fitSlide", "logisticFitClass",
                    gamma=p.gamma)
     }
 
+    ## Create new class
     new("logisticFitClass",
         coefficients=unlist(cf))
 })
@@ -496,7 +500,7 @@ setMethod("fitted", "logisticFitClass",
                    conc,
                    ...) {
     cf <- as.list(object@coefficients)
-    cf$alpha + cf$beta*.ea(cf$gamma*conc)
+    cf$alpha + cf$beta * .ea(cf$gamma * conc)
 })
 
 
@@ -532,10 +536,11 @@ setMethod("trimConc", "logisticFitClass",
 
     ## Use trim * (median absolute deviation of residuals)
     ## as estimate for background noise
+
     ## By default, trim is set to 2.
     ## Trim is arbitrary, and was based on trying
     ## multiple cutoff levels across multiple slides.
-    trim <-  2 * s / cf$beta
+    trim <- 2 * s / cf$beta
     lo.conc <- .lp(trim) / cf$gamma - max.step
     hi.conc <- .lp(1-trim) / cf$gamma - min.step
 
