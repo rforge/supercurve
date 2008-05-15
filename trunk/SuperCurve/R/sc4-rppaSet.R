@@ -176,15 +176,15 @@ setMethod("write.summary", "RPPASet",
             dev.off()
 
             try(plot(object@fits[[i]],
-                     xlim=c(-15, 15),
                      main=ptitle,
+                     type="resid",
                      xform=object@fitparams@xform,
-                     type="resid"))
+                     xlim=c(-15, 15)))
             try(plot(object@fits[[i]],
-                     xlim=c(-15, 15),
                      main=ptitle,
+                     type="steps",
                      xform=object@fitparams@xform,
-                     type="steps"))
+                     xlim=c(-15, 15)))
             dev.copy(png,
                      file.path(path,
                                paste(namebase, proteins[i], '2', 'png', sep='.')),
@@ -256,13 +256,13 @@ RPPAFitDir <- function(path,
     }
  
     if (!inherits(designparams, "RPPADesignParams")) {
-        stop(sprintf("argument %s must be RPPADesignParams object",
-                     sQuote("designparams")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("designparams"), "RPPADesignParams"))
     }
 
     if (!inherits(fitparams, "RPPAFitParams")) {
-        stop(sprintf("argument %s must be RPPAFitParams object",
-                     sQuote("fitparams")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("fitparams"), "RPPAFitParams"))
     }
     ## :TODO: Add checks for 'blanks' argument
 
