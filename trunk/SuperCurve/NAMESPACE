@@ -45,7 +45,6 @@ export(RPPAFitParams)
 export(getConfidenceInterval)
 export(getSteps)
 export(image.RPPA)     # :TBD: Why? Aren't these generic?
-export(image.RPPAFit)  # :TBD: Why? Aren't these generic?
 export(seriesNames)
 
 export(sc)             # :TODO: Move to separate package
