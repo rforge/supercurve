@@ -7,7 +7,7 @@
 setMethod("summary", "RPPA",
           function(object,
                    ...) {
-    cat(paste("An RPPA object loaded from", object@file),
+    cat(sprintf("An RPPA object loaded from %s", dQuote(object@file)),
         "\n\n")
     summary(object@data)
 })
