@@ -61,7 +61,6 @@ setClass("RPPAFit",
                              upper="numeric",          # confidence interval
                              conf.width="numeric",     # width of confidence interval
                              intensities="numeric",    # intensities related to series concentrations
-                             p.values="numeric",       # measure of goodness of fit per dilution series
                              ss.ratio="numeric",
                              warn="character",
                              version="character"))
