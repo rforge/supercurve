@@ -3,24 +3,24 @@
 ###
 
 ##############################################################
-# This is the result of the model building in doSimulation.R
-# Original version by Kevin R. Coombes and Jianhua Hu.
-# Modified by Corwin Joy.
-# Modified by: Kevin R. Coombes, 31 March 2006
-# Modified by: Corwin Joy, 31 March 2006 to add more robust estimate for
-#              alpha, beta & more formal regression tests.
-# Last modified by: Kevin Coombes, 3 May 2006
-#   Converted to S4 classes. Completely revised interface, giving more
-#   sensible names to inputs and outputs. Added numerous useful methods
-#   for assessing the quality of the fit.
+## This is the result of the model building in doSimulation.R
+## Original version by Kevin R. Coombes and Jianhua Hu.
+## Modified by Corwin Joy.
+## Modified by: Kevin R. Coombes, 31 March 2006
+## Modified by: Corwin Joy, 31 March 2006 to add more robust estimate for
+##              alpha, beta & more formal regression tests.
+## Last modified by: Kevin Coombes, 3 May 2006
+##   Converted to S4 classes. Completely revised interface, giving more
+##   sensible names to inputs and outputs. Added numerous useful methods
+##   for assessing the quality of the fit.
 
 
 ##################################################################
-# First pass estimator for concentrations
+## First pass estimator for concentrations
 
 ##-----------------------------------------------------------------------------
-# compute a multiple of the logit transform.
-# in practice, epsilon never changes.
+## compute a multiple of the logit transform.
+## in practice, epsilon never changes.
 .calcLogitz <- function(data, alpha, beta, gamma, epsilon=0.001) {
     z <- (data - alpha) / beta
     # Truncate points at min and max for dilution curve
@@ -32,13 +32,13 @@
 
 ##-----------------------------------------------------------------------------
 .firstPass <- function(yval, design, ignoreNegative, epsilon=1e-4) {
-    # Computes crude estimates of the parameters (i.e., alpha, beta,
-    # gamma, and the EC50s) so we can initialize the routine.
+    ## Computes crude estimates of the parameters (i.e., alpha, beta,
+    ## gamma, and the EC50s) so we can initialize the routine.
 
-    # 'yval' is a vector of intensity values selected from the MicroVigene file
-    # 'design' is a RPPADesign object. The length of 'yval' should match the
-    # number of rows in design@layout, and be in the same order
-    # in practice, 'epsilon' never changes
+    ## 'yval' is a vector of intensity values selected from the MicroVigene
+    ## file; its length of 'yval' should match the number of rows in
+    ## design@layout, and be in the same order.
+    ## in practice, 'epsilon' never changes
 
     ## Check arguments
     if (!is.numeric(yval)) {
@@ -47,8 +47,8 @@
     }
 
     if (!inherits(design, "RPPADesign")) {
-        stop(sprintf("argument %s must be RPPADesign object",
-                     sQuote("design")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("design"), "RPPADesign"))
     }
 
     if (!is.logical(ignoreNegative)) {
@@ -72,51 +72,58 @@
         yval[yval < 0] <- NA
     }
     temp <- yval[!.controlVector(design)]
-    # compute a robust estimate for alpha and beta
-    # Tried to use robust 'rnls' from 'sfsmisc' to fit alpha and beta below
-    # but found it was still too sensitive to outliers.
-    # This is a crude way to get alpha and beta but it seems to be robust.
 
-    # XXXXXXXXXXXXXXXXXXXXXXXXXXX
+    ## compute a robust estimate for alpha and beta
+    ## Tried to use robust 'rnls' from 'sfsmisc' to fit alpha and beta below
+    ## but found it was still too sensitive to outliers.
+    ## This is a crude way to get alpha and beta but it seems to be robust.
+
+    ## HERE IS THE PROBLEM!
+    ## Quantiles forces a double trim in conjunction with calcLogitz
+    ## and epsilon above, artificially shrinking alpha and beta
+    ## Try to match 0.12
     # lBot <- quantile(temp, probs=c(.05), na.rm=TRUE)
     # lTop <- quantile(temp, probs=c(.95), na.rm=TRUE)
 
-    # HERE IS THE PROBLEM!
-    # Quantiles forces a double trim in conjunction with calcLogitz
-    # and epsilon above, artificially shrinking alpha and beta
-    # Try to match 0.12
     lBot <- min(temp, na.rm=TRUE)
     lTop <- max(temp, na.rm=TRUE)
 
-
     lindata <- .calcLogitz(yval, lBot, lTop-lBot, 1)
-
     series <- seriesNames(design) # omits the control spots automagically
 
     .estimateLogisticSlope <- function(ser, dsn, ld) {
-        layout <- dsn@layout
-        items <- layout$Series == ser   # get the items in this diluton series
-        steps <- layout$Steps[items]    # get the log2 steps for this series
-        x <- ld[items]                  # get the transformed intensity values
-        y <- x[!is.na(x) & !is.infinite(x)] # only use valid values
-        (max(y) - min(y))/(max(steps) - min(steps)) # ychange / xchange
+        ## get the items in this diluton series
+        items <- dsn@layout$Series == ser
+        ## get the log2 steps for this series
+        steps <- dsn@layout$Steps[items]
+        ## get the transformed intensity values
+        x <- ld[items]
+        ## only use valid values
+        y <- x[!is.na(x) & !is.infinite(x)]
+        ## :TBD: What should be returned if x consists solely of NAs?
+        ## ychange / xchange
+        (max(y) - min(y)) / (max(steps) - min(steps))
     }
 
-    # initial estimate of the logistic slope across the dilution steps
-    # there should be a more comprehensible way to write this:
-    dat <- unlist(lapply(series, .estimateLogisticSlope, design, lindata))
+    ## initial estimate of the logistic slope across the dilution steps
+    ## there should be a more comprehensible way to write this:
+    dat <- unlist(lapply(series,
+                         .estimateLogisticSlope,
+                         design,
+                         lindata))
 
-    # force a nonzero slope for starting estimate, and
-    # filter out zero slopes from blank sample
+    ## force a nonzero slope for starting estimate
     minslope <- 0.001
+
+    ## filter out zero slopes from blank sample
     dat <- dat[dat > minslope]
 
-    # use mean, not median. We may have many blank samples
-    # on a slide in which case median slope will be 0
+    ## use mean, not median. We may have many blank samples
+    ## on a slide in which case median slope will be 0
     gamma <- mean(dat, trim=0.01)
-    gamma <- max(gamma, minslope) # force a nonzero slope for starting estimate
+    gamma <- max(gamma, minslope) # force nonzero slope for starting estimate
 
-    # for each sample, estimate the offset
+    ## for each sample, estimate the offset
     passer <- rep(NA, length(series))
     names(passer) <- series
     for (this in series) {
@@ -138,12 +145,12 @@
 
 
 ##-----------------------------------------------------------------------------
-# We are actually interested in estimating the concentrations for each
-# dilution series (which may be the same as a sample). However, when we do
-# that we also get estimated concentrations at each spot, with corresponding
-# predicted intensities. Default for 'fitted' is to return the per-spot
-# fitted 'Y' intensities, with an option to return the per-spot fitted
-# 'X' concentrations.
+## We are actually interested in estimating the concentrations for each
+## dilution series (which may be the same as a sample). However, when we do
+## that we also get estimated concentrations at each spot, with corresponding
+## predicted intensities. Default for 'fitted' is to return the per-spot
+## fitted 'Y' intensities, with an option to return the per-spot fitted
+## 'X' concentrations.
 setMethod("fitted", "RPPAFit",
           function(object,
                    type=c("Y", "y", "X", "x"),
@@ -155,27 +162,25 @@ setMethod("fitted", "RPPAFit",
     conc <- object@concentrations
     series <- as.character(object@design@layout$Series)
     fitX <- conc[series] + object@design@layout$Steps
-    if (type == "x" || type == "X") {
-        return(fitX)
-    }
-
-    fitted(object@model, fitX)
+    switch(EXPR=type,
+           x=, X=fitX,
+           y=, Y=fitted(object@model, fitX))
 })
 
 
 ##-----------------------------------------------------------------------------
-# raw residuals are defined so that
-#    observed intensity = fitted Y + raw residuals
-# standardized residuals are formed from the raw residuals in the obvious way
-# linear residuals are the residuals after the logistic transformation
-# r2 residuals are expressed as a kind of R^2 number.  specifically, if the entire fit had
-# this residual value at each yi, show what would the R^2 for the fit would be. This allows us
-# to express residuals on a uniform scale across multiple slides and quickly spot "bad" residuals
-# on a uniform scale.
-#
-# Note that the model fitting is a bit of a hybrid between the linear and
-# logistic intensity scales, so it's not completely clear which residuals are
-# most meaningful
+## raw residuals are defined so that
+##    observed intensity = fitted Y + raw residuals
+## standardized residuals are formed from the raw residuals in the obvious way
+## linear residuals are the residuals after the logistic transformation
+## r2 residuals are expressed as a kind of R^2 number. Specifically, if the
+## entire fit had this residual value at each yi, show what would the R^2 for
+## the fit would be. This allows us to express residuals on a uniform scale
+## across multiple slides and quickly spot "bad" residuals on a uniform scale.
+##
+## Note that the model fitting is a bit of a hybrid between the linear and
+## logistic intensity scales, so it's not completely clear which residuals are
+## most meaningful
 setMethod("residuals", "RPPAFit",
           function(object,
                    type=c("raw", "standardized", "r2"),
@@ -186,17 +191,15 @@ setMethod("residuals", "RPPAFit",
     ## Begin processing
     res <- object@rppa@data[, object@measure] - fitted(object)
 
-    if (type == "standardized") {
-        res <- scale(res)
-    }
-    if (type == "r2") {
-        y    <- object@rppa@data[, object@measure]
-        nobs <- length(y)
-        sigmasq <- var(y) * (nobs-1)
-        res  <- 1 - (nobs * res * res / sigmasq)
-    }
-
-    res
+    switch(EXPR=type,
+           raw          = res,
+           standardized = scale(res),
+           r2           = {
+                              y <- object@rppa@data[, object@measure]
+                              nobs <- length(y)
+                              sigmasq <- var(y) * (nobs-1)
+                              1 - (nobs * res * res / sigmasq)
+                          })
 })
 
 
@@ -207,7 +210,8 @@ setMethod("resid", "RPPAFit",
 
 
 ##-----------------------------------------------------------------------------
-# Histogram of the residuals, with an option to see the standardized or linear residuals
+## Histogram of the (raw) residuals, with an option to see the standardized
+## or linear residuals
 setMethod("hist", "RPPAFit",
           function(x,
                    type=c("Residuals", "StdRes", "ResidualsR2"),
@@ -244,7 +248,7 @@ setMethod("hist", "RPPAFit",
 
 
 ##-----------------------------------------------------------------------------
-# Plot the results from dilutionFit above to see how well supercurve fits
+## Plot the results from dilutionFit above to see how well supercurve fits
 setMethod("plot", "RPPAFit",
           function(x, y,
                    type=c("cloud", "series", "individual", "steps", "resid"),
@@ -313,7 +317,7 @@ setMethod("plot", "RPPAFit",
 
         if (type == "series") {
             if (is.null(colors)) {
-                colors <- hcl(seq(0, 360, length=9)[1:8], l=65, c=65)
+                colors <- hcl(seq(0, 360, length=9)[1:8], c=65, l=65)
             }
             i <- 0
             ncol <- length(colors)
@@ -326,13 +330,14 @@ setMethod("plot", "RPPAFit",
         }
     } else if (type == "individual") {
         xx <- seq(-10, 10, length=200)
-        ymax <- max(yval)
-        ymin <- min(yval)
+        ymax <- max(yval, na.rm=TRUE)
+        ymin <- min(yval, na.rm=TRUE)
         for (this in series) {
+            ## :TBD: why aren't {x,y}labs passed to plot()?
             plot(sort(xval), sort(yval), col=model.color, ylim=c(ymin, ymax))
             lines(sort(xval), sort(yval), col=model.color)
-            text("topleft",
-                 paste('SS Ratio =', format(x@ss.ratio[this], digits=4)), adj=0)
+            ## :PLR: Replaced text() with title(). Something else wanted?
+            title(sub=paste('SS Ratio =', format(x@ss.ratio[this], digits=4)))
             points(x@concentrations[this],
                    x@intensities[this],
                    col='red',
@@ -355,21 +360,21 @@ setMethod("plot", "RPPAFit",
             y.ser <-  yval2[2:l]
             x.fit <-  yfiti[1:l-1]
             y.fit <-  yfiti[2:l]
-            xplot <- c(xplot, (x.ser+y.ser) / 2)
-            yplot <- c(yplot, y.ser-x.ser)
-            xfit <- c(xfit, (x.fit+y.fit) / 2)
-            yfit <- c(yfit, y.fit-x.fit)
+            xplot <- c(xplot, (x.ser + y.ser) / 2)
+            yplot <- c(yplot, y.ser - x.ser)
+            xfit <- c(xfit, (x.fit + y.fit) / 2)
+            yfit <- c(yfit, y.fit - x.fit)
         }
         xplot <- xplot[-1]
         yplot <- yplot[-1]
         xfit <- xfit[-1]
         yfit <- yfit[-1]
-        plot(xplot, yplot,
+        plot(xplot,
+             yplot,
              xlab="(Step[n+1]+Step[n])/2",
              ylab="Step[n+1] - Step[n]")
         .loess.line(xplot, yplot)
         abline(0, 0, col="blue")
-
 
         o <- order(xfit)
         lines(xfit[o], yfit[o], col=model.color)
@@ -378,11 +383,11 @@ setMethod("plot", "RPPAFit",
                col=c("red", model.color),
                lty=1)
     } else if (type == "resid") {
-        ## show a plot of the residuals v.s. estimated concentration
+        ## show a plot of the residuals vs. estimated concentration
         ## to check for heteroscedasticity
         r <- resid(x)
 
-        ## fit a model of abs(residual) v.s. estimated conc.
+        ## fit a model of abs(residual) vs. estimated concentration
         ## to do a rough check for increasing heteroscedasticity
         l <- lm(abs(r) ~ xval)
         s <- summary(l)
@@ -408,52 +413,54 @@ setMethod("plot", "RPPAFit",
 
 
 ##-----------------------------------------------------------------------------
-# REQUIRED INPUTS:
-# rppa    = an RPPA object
-# design  = a RPPADesign object
-# measure = name of column in rppa@data to view as intensity
-#
-# OPTIONAL INPUTS CONTROLLING THE ALGORITHM:
-# method   = how to fit the alpha and beta values. simplest is quantiles, which simply
-#     uses the 5th and 95th percentiles. Default is "nls", which just takes wahtever
-#     the 'nls' method provides. Last is 'rlm', which performs a logistic transform
-#     and tries a robust linear fit.
-# ignoreNegative = if true, then alues below zero are converted to NA before estimating
-#     alpha and beta. Only matters for the 'quantiles' method.
-# ci       = if true, calculate a 90% confidence interval for the LC50 supercurve values
-# bayesian = if true, use slide level logistic model as a bayesian prior for fitting
-#     individual dilution series rather than an absolute set of constants. In particular
-#     the baseline response 'alpha' is treated as a bayesian prior to account for
-#     individual series having varying background
-#
-# OPTIONAL INPUTS CONTROLLING VERBOSITY:
-# trace = passed to nls in the 'bayesian' portion
-# verbose = logical value; should the function tell you what it is doing
-# veryVerbose = logical value; should the function overwhelm you
-#               to tell you what it is doing
-# warnLevel = used to set the 'warn' option before calling 'rlm'.
-#             since this is wrapped in a 'try', it won't cause
-#             failure but will give us a chance to figure out
-#             which dilution series fail. Setting warnLevel to
-#             two or greater may change the computed results.
-# balance = optional parameter specifying the spot concentration in each dilution step.
-#           By default, a 2x dilution is assumed for each sample. If you want to override
-#           this, you will need to provide a matrix(nrow=nsample, ncol=ndilutions)
-#           that gives concentrations in each row on a log2 scale centered at 0.
-#
-# trim = optional parameter specifying whether to trim the concentrations.  If FALSE, concentrations will not be trimmed / bounded.
-#
-# OUTPUTS:
-# An object of the RPPAFit class described above.
-#
-# N.B.!!!!
-# If you change this routine please run dilutionFitRegessionTest() as at
-# least a basic test that the routine still runs reasonably correctly
-#
+## REQUIRED INPUTS:
+## rppa    - an RPPA object
+## design  - a RPPADesign object
+## measure - name of column in rppa@data to view as intensity
+##
+## OPTIONAL INPUTS CONTROLLING THE ALGORITHM:
+## method  - how to fit the alpha and beta values. simplest is quantiles, which
+##           simply uses the 5th and 95th percentiles. Default is "nls", which
+##           just takes whatever the 'nls' method provides. Last is 'rlm',
+##           which performs a logistic transform and tries a robust linear fit.
+## ignoreNegative - if true, then values below zero are converted to NA before
+##           estimating alpha and beta. Only matters for the 'quantiles' method.
+## ci      - if true, calculate a 90% confidence interval for the LC50
+##           supercurve values
+## :TBD: no such option in current version...
+## bayesian - if true, use slide level logistic model as a bayesian prior for
+##           fitting individual dilution series rather than an absolute set
+##           of constants. In particular the baseline response 'alpha' is
+##           treated as a bayesian prior to account for individual series
+##           having varying background
+##
+## OPTIONAL INPUTS CONTROLLING VERBOSITY:
+## trace   - passed to nls in the 'bayesian' portion
+## verbose - if true, have the function tell you what it is doing
+## veryVerbose - if true, have the function overwhelm you telling you what it
+##           is doing
+## warnLevel - used to set the 'warn' option before calling 'rlm'.
+##           since this is wrapped in a 'try', it won't cause failure but will
+##           give us a chance to figure out which dilution series failed.
+##           Setting warnLevel to two or greater may change computed results.
+## :TBD: no such option in current version...
+## balance - specifies the spot concentration in each dilution step.
+##           By default, a 2x dilution is assumed for each sample. If you want
+##           to override this, you will need to provide a
+##           matrix(nrow=nsample, ncol=ndilutions) that gives concentrations
+##           in each row on a log2 scale centered at 0.
+## trim    - if true, trim the concentrations; otherwise, concentrations will
+##           not be trimmed / bounded.
 
-# KRC: Added yet another parameter, 'method', to control the ways to fit
-# alpha and beta. Since we still don't know which method is best, we should
-# make it an option so we (and others) can continue to evaluate it.
+
+## N.B.!!!!
+## If you change this routine, please run dilutionFitRegessionTest() as at
+## least a basic test that the routine still runs reasonably correctly
+
+## :TBD: already had option 'method'. some new nuance?
+## KRC: Added yet another parameter, 'method', to control the ways to fit
+## alpha and beta. Since we still don't know which method is best, we should
+## make it an option so we (and others) can continue to evaluate it.
 
 RPPAFitParams <- function(measure,
                           xform=function(x) x,
@@ -562,18 +569,18 @@ RPPAFitParams <- function(measure,
 RPPAFitFromParams <- function(rppa, design, fitparams) {
     ## Check arguments
     if (!inherits(rppa, "RPPA")) {
-        stop(sprintf("argument %s must be RPPA object",
-                     sQuote("rppa")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("rppa"), "RPPA"))
     }
 
     if (!inherits(design, "RPPADesign")) {
-        stop(sprintf("argument %s must be RPPADesign object",
-                     sQuote("design")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("design"), "RPPADesign"))
     }
 
     if (!inherits(fitparams, "RPPAFitParams")) {
-        stop(sprintf("argument %s must be RPPAFitParams object",
-                     sQuote("fitparams")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("fitparams"), "RPPAFitParams"))
     }
 
     ## Begin processing
@@ -610,13 +617,13 @@ RPPAFit <- function(rppa,
                     model=c("logistic", "loess", "cobs")) {
     ## Check arguments
     if (!inherits(rppa, "RPPA")) {
-        stop(sprintf("argument %s must be RPPA object",
-                     sQuote("rppa")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("rppa"), "RPPA"))
     }
 
     if (!inherits(design, "RPPADesign")) {
-        stop(sprintf("argument %s must be RPPADesign object",
-                     sQuote("design")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("design"), "RPPADesign"))
     }
 
     if (!is.character(measure)) {
@@ -696,85 +703,87 @@ RPPAFit <- function(rppa,
 
     ## Begin processing
 
-    # make sure the input types are sensible
+    ## make sure the input types are sensible
 
     if (missing("measure")) {
-        stop("You must supply the name of the measurement column to fit")
+        stop("missing name of the measurement column to fit")
     }
     dn <- dimnames(rppa@data)[[2]]
     temp <- pmatch(measure, dn)
     if (is.na(temp)) {
-        stop("You must supply the name of a valid measurement column to fit")
-    }
-    if (length(temp) > 1) {
-        stop("'measure' must identify a unique column of 'rppa'")
+        stop("supply the name of a valid measurement column to fit")
+    } else if (length(temp) > 1) {
+        stop(sprintf("argument %s must identify unique column of argument %s",
+                     sQuote("measure"),
+                     sQuote("rppa")))
     }
     measure <- dn[temp]
 
     l1 <- levels(design@layout$Sample)
     l2 <- levels(rppa@data$Sample)
     if (!(length(l1) == length(l2)) || sum(l1 != l2) > 0) {
-        warning("Number of sample labels in design does not match number of sample labels given in raw RPPA quantification file.")
+        warning(sprintf("number of sample labels in design (%d) does not match number of sample labels given in raw RPPA quantification file (%d).",
+                        length(l1),
+                        length(l2)))
     }
 
     call <- match.call()
     intensity <- xform(rppa@data[, measure])
 
-    if (warnLevel < 0) {
-        silent <- TRUE
-    } else {
-        silent <- FALSE
-    }
+    silent <- warnLevel < 0
 
-    # perform the first pass to initialize the estimates
+    ## perform the first pass to initialize the estimates
     first <- .firstPass(intensity, design, ignoreNegative)
     passer    <- first$passer
     gamma.est <- first$gamma
     if (verbose) {
-        cat(paste('Completed first pass. Parameters:\n\tlBot =', first$lBot,
-                  '\n\tlTop =', first$lTop, '\n\tG =', first$gamma, '\n\n'))
+        cat(paste('Completed first pass. Parameters:\n\tlBot =',
+                  first$lBot,
+                  '\n\tlTop =',
+                  first$lTop,
+                  '\n\tG =',
+                  first$gamma,
+                  '\n\n'))
+        flush.console()
     }
 
-    # put our current guess at the x and y values into vectors
-    # here we must finally explicitly poke into the internals of the RPPADesign
-    # class in order to omit the control spots.
+    ## put our current guess at the x and y values into vectors
+    ## here we must finally explicitly poke into the internals of RPPADesign
+    ## class in order to omit the control spots.
     yval <- intensity[!.controlVector(design)]
 
-    fc <- switch(model,
+    fc <- switch(EXPR=model,
                  cobs = new("cobsFitClass"),
                  loess = new("loessFitClass"),
                  logistic = new("logisticFitClass"),
                  NULL)
 
     if (is.null(fc)) {
-        stop("Unknown model type in RPPAfit")
+        stop("unknown model type in RPPAfit")
     }
 
-
-
-    ## do a two pass estimation. first using rough conc. estimates,
+    ## do a two pass estimation, first using rough conc. estimates,
     ## then using better ones
     for (pass in 1:2) {
-        if (pass == 1) {
-            xval <- getSteps(design) + passer[names(design)]
-        } else {
-            xval <- getSteps(design) + pass2[names(design)]
-        }
+        xval <- if (pass == 1) {
+                    getSteps(design) + passer[names(design)]
+                } else {
+                    getSteps(design) + pass2[names(design)]
+                }
 
-        # Fit a response curve for the slide of the form yval = f(xval)
+        ## Fit a response curve for the slide of the form yval = f(xval)
         fc <- fitSlide(fc, conc=xval, intensity=yval, method=method)
 
-        # Conditional on the response curve fit for the slide
-        # perform a separate fit of the EC50 values for each dilution series.
-        # If the option 'bayesian' is true, then we allow different alpha's
-        # for each series to fine tune the baseline.  If 'bayesian' is false,
-        # then we perform a logit transform and compute a robust linear model.
+        ## Conditional on the response curve fit for the slide
+        ## perform a separate fit of the EC50 values for each dilution series.
+        ## If the option 'bayesian' is true, then we allow different alpha's
+        ## for each series to fine tune the baseline.  If 'bayesian' is false,
+        ## then we perform a logit transform and compute a robust linear model.
         steps <- getSteps(design)
         series <- seriesNames(design)
         pass2 <- rep(NA, length(series))
 
         names(pass2) <- series
-        pval2  <- pass2
         ss.ratio <- pass2
         warn2  <- rep('', length(series))
         names(warn2) <- series
@@ -791,19 +800,19 @@ RPPAFit <- function(rppa,
             pass2[this] <- fs$est.conc
             warn2[this] <- fs$warn
             resids <- fs$resids
-            pval2[this] = 0 # pval is deprecated, doesn't work anyway, not given by .rnls
-            # Compute R^2 as sum(r[i]^2) / sum((y[i]-mean(y))^2) = fraction of
-            # variance explained for this series
+            ## Compute R^2 as sum(r[i]^2) / sum((y[i]-mean(y))^2) = fraction of
+            ## variance explained for this series
             ratio <- 1 - (sum(resids*resids) /
                             (var(yval[items])*(length(yval[items])-1)))
             ss.ratio[this] <- ratio
         }
 
         if (verbose) {
-            cat('Finished estimating EC50 values.  Coefficients:\n')
+            cat('Finished estimating EC50 values. Coefficients:\n')
             print(summary(pass2))
             cat('SS Ratio:\n')
             print(summary(ss.ratio))
+            flush.console()
         }
     }
 
@@ -814,24 +823,22 @@ RPPAFit <- function(rppa,
                   design=design,
                   measure=measure,
                   method=method,
-                  trimset=c(lo.intensity = -100000,
-                            hi.intensity =  100000,
-                            lo.conc = -1000,
-                            hi.conc = 1000),
+                  trimset=c(lo.intensity=-100000,
+                            hi.intensity=100000,
+                            lo.conc=-1000,
+                            hi.conc=1000),
                   model=fc,
                   concentrations=pass2,
                   lower=pass2,
                   upper=pass2,
                   intensities=fitted(fc, pass2),
                   ss.ratio=ss.ratio,
-                  p.values=pval2,
                   conf.width=0,
                   warn=warn2)
-                  #version=packageDescription("SuperCurve", fields="Version"))  ##### By Wenbin
 
     if (trim) {
         tc <- trimConc(fc,
-                       conc = fitted(result, "X"),
+                       conc=fitted(result, "X"),
                        intensity=intensity,
                        design=design)
         series.conc <- result@concentrations
@@ -841,10 +848,11 @@ RPPAFit <- function(rppa,
         result@trimset <- unlist(tc)
     }
 
+    ## Should confidence intervals for the estimates be computed?
     if (ci) {
-        # compute confidence intervals for the estimates
         if (verbose) {
             cat("Computing confidence intervals...", "\n")
+            flush.console()
         }
         result <- getConfidenceInterval(result)
     }
@@ -857,8 +865,8 @@ RPPAFit <- function(rppa,
 getConfidenceInterval <- function(result, alpha=0.10, nSim=50) {
     ## Check arguments
     if (!inherits(result, "RPPAFit")) {
-        stop(sprintf("argument %s must be RPPAFit object",
-                     sQuote("result")))
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("result"), "RPPAFit"))
     }
 
     if (!is.numeric(alpha)) {
@@ -887,13 +895,16 @@ getConfidenceInterval <- function(result, alpha=0.10, nSim=50) {
     res <- resid(result)         # actual residuals on the intensity scale
     yval <- fitted(result, "Y")  # best fit of the intensities
     xval <- fitted(result, "X")  # best fit concentrations on the log2 scale
-    # we assume the residuals vary smoothly with the concentration or intensity
-    # so, we use loess to fit the absolute residuals as a function of the
-    # fitted concentration
+
+    ## we assume the residuals vary smoothly with concentration or intensity
+    ## so, we use loess to fit the absolute residuals as a function of the
+    ## fitted concentration
     lo <- loess(ares ~ xval, data.frame(ares=abs(res), xval=xval))
-    # We assume the residuals locally satisfy R ~ N(0, sigma). Then the
-    # expected value of |R| is sigma*sqrt(2/pi), so:
-    sigma <- sqrt(pi/2) * fitted(lo)
+
+    ## We assume the residuals locally satisfy R ~ N(0, sigma).
+    ## Then the expected value of |R| is sigma*sqrt(2/pi), so:
+    sigma <- sqrt(pi / 2) * fitted(lo)
+
     for (this in series) {
         items <- result@design@layout$Series == this
         xhat <- xval[items]
@@ -901,9 +912,9 @@ getConfidenceInterval <- function(result, alpha=0.10, nSim=50) {
 
         sim <- rep(NA, nSim)
         for (j in seq(1, nSim)) {
-            # sample the residuals
+            ## sample the residuals
             resid.boot <- rnorm(sum(items), 0, sigma[items])
-            # add resid.boot to y_hat;  refit;
+            ## add resid.boot to y_hat;  refit;
             ysim <- yhat + resid.boot
 
             fs <- fitSeries(result@model,
