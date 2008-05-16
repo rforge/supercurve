@@ -30,25 +30,45 @@ getSteps(design)
 \S4method{names}{RPPADesign}(x)
 }
 \arguments{
-  \item{raw}{A data frame or an RPPA object.}
-  \item{steps}{An optional numeric vector listing the dilution step
-    associated with each spot, on a logarithmic scale.}
-  \item{series}{An optional character vector or factor identifying the
-    dilution series to which each spot corresponds.}
-  \item{grouping}{Describes the way dilution series are oriented on the
-    array.}
-  \item{ordering}{Are dilution series arranges in order of
-    \code{increasing} or \code{decreasing} concentrations. Default is
-    \code{decreasing}.}
-  \item{alias}{A data frame containing two columns: Alias and Sample}
-  \item{center}{A logical value: if TRUE, then dilution steps are
+  \item{raw}{data frame, matrix, or object of class RPPA.}
+  \item{steps}{numeric vector listing the dilution step associated with each
+    spot, on a logarithmic scale.}
+  \item{series}{character vector or factor identifying the dilution series
+    to which each spot corresponds.}
+  \item{grouping}{character string specifying the orientation of the
+    dilution series on the array. Valid values are:
+    \tabular{ll}{
+      \code{"byRow"}       \tab each row of a subgrid is its own dilution
+                                series \cr
+      \code{"byColumn"}    \tab each column of a subgrid is its own dilution
+                                series \cr
+      \code{"bySample"}    \tab each unique sample id is its own dilution
+                                series \cr
+      \code{"blockSample"} \tab all occurrences of sample id within subgrid
+                                refer to same dilution series \cr
+    }}
+  \item{ordering}{character string specifying arrangement of dilution series.
+    Valid values are:
+    \tabular{ll}{
+      \code{"decreasing"} \tab arranged in order of decreasing
+                               concentrations \cr
+      \code{"increasing"} \tab arranged in order of increasing
+                               concentrations \cr
+    }}
+  \item{alias}{list or data frame with the following required
+    named components:
+    \tabular{ll}{
+      \code{Alias}  \tab TBD description \cr
+      \code{Sample} \tab TBD description \cr
+    }}
+  \item{center}{logical scalar. If \code{TRUE}, then dilution steps are
     centered around 0.}
-  \item{controls}{A list containing the character strings that identify
-    control spots on the array. }
-  \item{x}{A RPPADesign object}
-  \item{object}{A RPPADesign object}
-  \item{design}{A RPPADesign object}
-  \item{\dots}{The usual extra arguments for generic or plotting routines.}
+  \item{controls}{list containing the character strings that identify
+    control spots on the array.}
+  \item{x}{object of class RPPADesign}
+  \item{object}{object of class RPPADesign}
+  \item{design}{object of class RPPADesign}
+  \item{\dots}{extra arguments for generic or plotting routines.}
 }
 \details{
   From their inception, reverse-phase protein array experiments have
@@ -81,26 +101,26 @@ getSteps(design)
   for each spot.
 }
 \section{Objects from the Class}{
-  Objects of the RPPADesign class should be constructed using the
-  \code{RPPADesign} function.
+  Although objects of the class can be created by a direct call to \link{new},
+  the preferred method is to use the \code{RPPADesign} generator function.
 }
 \section{Slots}{
   \describe{
-    \item{\code{layout}:}{A data frame}
-    \item{\code{alias}:}{A data frame}
-    \item{\code{sampleMap}:}{A character vector}
-    \item{\code{controls}:}{A list containing the character strings that
+    \item{\code{layout}:}{data frame}
+    \item{\code{alias}:}{list or data frame}
+    \item{\code{sampleMap}:}{character vector}
+    \item{\code{controls}:}{list containing the character strings that
       identify control spots on the array. Controls are not included as part
       of any dilution series.}
   }
 }
 \section{Methods}{
   \describe{
-    \item{image(x, \dots)}{The \code{image} method produces a
-      two-dimensional graphical display of the layout design. Colors are used
-      to represent different dilution steps, and laid out in the same pattern
-      as the rows and columns of the array. This provides a visual check that
-      the design has been specified correctly.}
+    \item{image(x, \dots)}{The \code{image} method produces a two-dimensional
+      graphical display of the layout design. Colors are used to represent
+      different dilution steps, and laid out in the same pattern as the rows
+      and columns of the array. This provides a visual check that the design
+      has been specified correctly.}
     \item{summary(object, \dots)}{The \code{summary} method lists the
       names of the control spots on the array and then prints a summary of the
       data frame describing the layout.}
@@ -110,6 +130,9 @@ getSteps(design)
   }
 }
 \value{
+  The \code{RPPADesign} generator returns an object of class
+  \code{RPPADesign}.
+
   The \code{image} method invisibly returns the displayed matrix of
   dilution steps.
 

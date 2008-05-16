@@ -17,17 +17,40 @@ RPPADesignParams(steps=rep(0,1),
                  controls=list())
 }
 \arguments{
-  \item{steps}{An optional numeric vector listing the dilution step
-    associated with each spot, on a logarithmic scale.}
-  \item{series}{factor TBD}
-  \item{grouping}{Describes the way dilution series are oriented on the
-    array.}
-  \item{ordering}{Are dilution series arranged in order of
-    \code{increasing} or \code{decreasing} concentrations. Default is
-    \code{decreasing}.}
-  \item{alias}{list TBD}
-  \item{center}{logical TBD}
-  \item{controls}{list TBD}
+  \item{steps}{numeric vector listing the dilution step associated with each
+    spot, on a logarithmic scale.}
+  \item{series}{character vector or factor identifying the dilution series
+    to which each spot corresponds.}
+  \item{grouping}{character string specifying the orientation of the
+    dilution series on the array. Valid values are:
+    \tabular{ll}{
+      \code{"byRow"}       \tab each row of a subgrid is its own dilution
+                                series \cr
+      \code{"byColumn"}    \tab each column of a subgrid is its own dilution
+                                series \cr
+      \code{"bySample"}    \tab each unique sample id is its own dilution
+                                series \cr
+      \code{"blockSample"} \tab all occurrences of sample id within subgrid
+                                refer to same dilution series \cr
+    }}
+  \item{ordering}{character string specifying arrangement of dilution series.
+    Valid values are:
+    \tabular{ll}{
+      \code{"decreasing"} \tab arranged in order of decreasing
+                               concentrations \cr
+      \code{"increasing"} \tab arranged in order of increasing
+                               concentrations \cr
+    }}
+  \item{alias}{list or data frame with the following required
+    named components:
+    \tabular{ll}{ 
+      \code{Alias}  \tab TBD description \cr 
+      \code{Sample} \tab TBD description \cr
+    }}
+  \item{center}{logical scalar. If \code{TRUE}, then dilution steps are
+    centered around 0.}
+  \item{controls}{list containing the character strings that identify
+    control spots on the array.}
 }
 \details{
   TBD
@@ -35,7 +58,7 @@ RPPADesignParams(steps=rep(0,1),
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to
   \link{new}, the preferred method is to use the \code{RPPADesignParams}
-  function.
+  generator function.
 }
 \section{Slots}{
   \describe{
@@ -49,8 +72,8 @@ RPPADesignParams(steps=rep(0,1),
   }
 }
 \value{
-  The \code{RPPADesignParams} constructor returns an object of the
-  \code{RPPADesignParams} class.
+  The \code{RPPADesignParams} generator returns an object of class
+  \code{RPPADesignParams}.
 }
 \references{KRC}
 \author{Kevin R. Coombes <kcoombes@mdanderson.org>}

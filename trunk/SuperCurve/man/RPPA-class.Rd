@@ -17,47 +17,50 @@ RPPA(filename, path=".", blanks=NULL)
 colorbar=FALSE, col=terrain.colors(256), \dots)
 }
 \arguments{
-  \item{filename}{The name of a file containing MicroVigene
-    quantifications of a reverse-phase protein array experiment.}
-  \item{path}{An optional argument giving the path from the current
+  \item{filename}{character string specifying the name of a text file
+    containing MicroVigene quantifications of a reverse-phase protein array
+    experiment}
+  \item{path}{character string specifying the path from the current
     directory to the file. The default value assumes the file is
-    contained in the current direectory.}
-  \item{blanks}{TBD logical array.}
-  \item{object}{An RPPA object.}
-  \item{x}{An RPPA object.}
-  \item{measure}{A character string containing the name of the
-    measurement column in \code{data} that should be displayed by the
-    \code{image} method.}
-  \item{main}{A character string used to title the image plot}
-  \item{colorbar}{A logical value that determines whether to include a
-    color bar in the plot. Default is FALSE. If set to TRUE, then the
-    image cannot be used as one panel in a window with multiple plots.}
-  \item{col}{The usual graphics parameter used by \link{image}. It is
-    included here to change the default color scheme to use
-    \link{terrain.colors}.}
-  \item{\dots}{The usual extra arguments for generic or plotting routines.}
+    contained in the current directory.}
+  \item{blanks}{logical vector specifying TBD}
+  \item{object}{object of class \code{RPPA}}
+  \item{x}{object of class \code{RPPA}}
+  \item{measure}{character string containing the name of the measurement column
+    in \code{data} that should be displayed by the \code{image} method}
+  \item{main}{character string used to title the image plot}
+  \item{colorbar}{logical scalar that determines whether to include a
+    color bar in the plot. If \code{TRUE}, the image cannot be used as
+    one panel in a window with multiple plots. Default is \code{FALSE}.}
+  \item{col}{graphics parameter used by \link{image}. It is included here
+    to change the default color scheme to use \link{terrain.colors}.}
+  \item{\dots}{extra arguments for generic or plotting routines}
 }
 \details{
   The data frame slot (\code{data}) in a valid RPPA object constructed
-  from a MicroVigene input file using the \code{RPPA} function is
+  from a MicroVigene input file using the \code{RPPA} generator function is
   guaranteed to contain at least 6 columns of information:
-  \code{Main.Row}, \code{Main.Col}, \code{Sub.Row}, \code{Sub.Col},
-  \code{Sample}, and \code{Mean.Net}. The first four pieces of
-  information give the logical location of a spot on an array, after
-  which we get a unique identifier of the sample spotted at that
-  location and a measurement that represents the background-corrected
-  mean intensity of the spot. Additional columns may be included or may
-  be added later.
+  \tabular{ll}{
+    \code{Main.Row} \tab logical location of spot on the array TBD \cr
+    \code{Main.Col} \tab logical location of spot on the array TBD \cr
+    \code{Sub.Row}  \tab logical location of spot on the array TBD \cr
+    \code{Sub.Col}  \tab logical location of spot on the array TBD \cr
+    \code{Sample}   \tab unique identifier of sample spotted at location \cr
+    \code{Mean.Net} \tab measurement representing background-corrected
+                         mean intensity of the spot \cr
+  } 
+  The first four components (taken together) give the logical location of a
+  spot on an array.  Additional columns may be included or may be added later.
 }
 \section{Objects from the Class}{
-  Although objects of the class can be created by a direct call to
-  \link{new}, the preferred method is to use the \code{RPPA} function.
+  Although objects of the class can be created by a direct call to \link{new},
+  the preferred method is to use the \code{RPPA} generator function.
 }
 \section{Slots}{
   \describe{
-    \item{\code{data}:}{A data.frame containing the contents of a
+    \item{\code{data}:}{data.frame containing the contents of a
       MicroVigene or other quantification file}
-    \item{\code{file}:}{A character string: the name of the file that
+    \item{\code{file}:}{character string specifying the name of the file that
       the data was loaded from}
   }
 }
@@ -80,7 +83,7 @@ colorbar=FALSE, col=terrain.colors(256), \dots)
   }
 }
 \value{
-  The \code{RPPA} constructor returns an object of the \code{RPPA} class.
+  The \code{RPPA} generator returns an object of the \code{RPPA} class.
 
   The \code{summary} method returns a summary of the underlying data
   frame.

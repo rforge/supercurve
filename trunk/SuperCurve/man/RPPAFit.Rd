@@ -23,9 +23,9 @@ RPPAFit(rppa,
         model=c("logistic", "loess", "cobs"))
 }
 \arguments{
-  \item{rppa}{object of type \code{\link{RPPA}} containing the raw data
+  \item{rppa}{object of class \code{\link{RPPA}} containing the raw data
     to be fit}
-  \item{design}{object of type \code{\link{RPPADesign}} describing the layout
+  \item{design}{object of class \code{\link{RPPADesign}} describing the layout
     of the array}
   \item{measure}{character string identifying the column of the raw RPPA data
     that should be used to fit to the model.}
@@ -34,34 +34,42 @@ RPPAFit(rppa,
     column is transformed using this function before fitting the model.}
   \item{method}{character string specifying the method for matching
     the individual dilution series to the response curve fitted for the slide.
-    Default method is \code{nls}, which simply uses the optimal fit based on
-    nonlinear least squares. Method \code{nlrob} uses \code{nlrob} which is
-    robust nls from robustbase package. Method \code{nlrq} uses \code{nlrq}
-    from quantreg package which is robust median regression.}
-  \item{ci}{logical specifying whether to compute 90\% confidence intervals
+    Valid values are:
+    \tabular{ll}{
+      \code{"nls"}   \tab uses the optimal fit based on nonlinear least
+                          squares \cr
+      \code{"nlrob"} \tab uses \code{nlrob} which is robust nls from
+                          robustbase package \cr
+      \code{"nlrq"}  \tab uses \code{nlrq} from quantreg package which is
+                          robust median regression \cr
+    }}
+  \item{ci}{logical scalar. If \code{TRUE}, compute 90\% confidence intervals
     on the concentration estimates.}
-  \item{ignoreNegative}{logical specifying whether negative values should be
-    converted to NA before fitting the model.}
-  \item{trace}{logical passed to \link{nls} in the \code{method} portion of
-    the routine}
-  \item{verbose}{logical specifying whether to print updates while fitting
+  \item{ignoreNegative}{logical scalar. If \code{TRUE}, convert negative values
+    to NA before fitting the model.}
+  \item{trace}{logical scalar passed to \link{nls} in the \code{method} portion
+    of the routine}
+  \item{verbose}{logical scalar. If \code{TRUE}, print updates while fitting
     the data}
-  \item{veryVerbose}{logical specifying whether to print voluminous updates
+  \item{veryVerbose}{logical scalar. If \code{TRUE}, print voluminous updates
     as each individual dilution series is fitted}
-  \item{warnLevel}{numeric used to set the \code{warn} option before calling
-    \code{method}. Since this is wrapped in a \code{try} function, it won't
-    cause failure but will give us a chance to figure out which dilution series
-    are failing. Setting \code{warnLevel} to two or greater may change the
-    values returned}
-  \item{trim}{logical specifying if concentrations should be trimmed.
-    If TRUE, concentrations will be trimmed to reflect min and max
-    concentrations we can estimate given the background noise.
-    If FALSE, raw concentrations are returned with no trimming.}
+  \item{warnLevel}{integer scalar used to set the \code{warn} option before
+    calling \code{method}. Since this is wrapped in a \code{try} function, it
+    won't cause failure but will give us a chance to figure out which dilution
+    series are failing. Setting \code{warnLevel} to two or greater may change
+    the values returned.}
+  \item{trim}{logical scalar specifying if concentrations should be trimmed.
+    If \code{TRUE}, concentrations will be trimmed to reflect min and max
+    concentrations we can estimate given the background noise; otherwise,
+    raw concentrations are returned without trimming.}
   \item{model}{character string specifying the model for the response curve
-    fitted for the slie. Default model is \code{logistic}, which assumes a
-    logistic shape for the curve. Model \code{loess} fits a loess curve to the
-    response. Model \code{cobs} fits a b-spline curve to the slide with the
-    constraint that the curve be strictly increasing.}
+    fitted for the slide. Valid values are:
+    \tabular{ll}{
+      \code{"logistic"} \tab assumes a logistic shape for the curve \cr
+      \code{"loess"}    \tab fits a loess curve to the response \cr
+      \code{"cobs"}     \tab fits a b-spline curve to the slide with the
+                             constraint that curve be strictly increasing \cr
+    }}
 }
 \details{
   The basic mathematical model is given by \deqn{Y = f(X-\delta_i),}
@@ -87,11 +95,11 @@ RPPAFit(rppa,
   least squares matchup, but we also offer robust alternatives which can do
   better.
 
-  Finally we re-estimate \eqn{f} using the improved estimates for \eqn{\delta_i}.
-  We continue to iterate between \eqn{f} and \eqn{\delta_i}. We do this twice
-  since that seems to give reasonable convergence.
+  Finally, we re-estimate \eqn{f} using the improved estimates for
+  \eqn{\delta_i}. We continue to iterate between \eqn{f} and \eqn{\delta_i}.
+  We do this twice since that seems to give reasonable convergence.
 
-  If the \code{ci} argument is set to TRUE, then the function also computes
+  If the \code{ci} argument is \code{TRUE}, then the function also computes
   confidence intervals around the estimates of the log concentration.
   Since this step can be time-consuming, it is not performed by default.
   Moreover, confidence intervals can be computed after the main model is fit

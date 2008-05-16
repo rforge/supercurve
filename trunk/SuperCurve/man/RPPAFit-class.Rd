@@ -31,18 +31,18 @@
 xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
 }
 \arguments{
-  \item{object}{An RPPAFit object.}
-  \item{x}{An RPPAFit object.}
-  \item{type}{A list of options describing the type of fitted values,
-    residuals, images, histograms, or plots.}
-  \item{xlab}{Graphics parameter; how the x-axis should be labeled.}
-  \item{ylab}{Graphics parameter; how the y-axis should be labeled.}
-  \item{main}{Character string used as a title for the plot.}
-  \item{y}{not used.}
-  \item{colors}{A graphical parameter, used only if \code{type='series'},
+  \item{object}{object of class \code{RPPAFit}}
+  \item{x}{object of class \code{RPPAFit}}
+  \item{type}{character string describing the type of fitted values,
+    residuals, images, histograms, or plots}
+  \item{xlab}{graphics parameter specifying how the x-axis should be labeled}
+  \item{ylab}{graphics parameter specifying how the y-axis should be labeled}
+  \item{main}{character string used as a title for the plot}
+  \item{y}{not used}
+  \item{colors}{graphics parameter, used only if \code{type='series'},
     to color the lines connecting different dilution series.
     Eight default colors are used if the argument is NULL.}
-  \item{\dots}{The usual extra arguments for generic or plotting routines.}
+  \item{\dots}{extra arguments for generic or plotting routines}
 }
 \details{
   The \code{RPPAFit} class holds the results of fitting a response model to
@@ -59,31 +59,34 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
 }
 \section{Slots}{
   \describe{
-    \item{\code{call}:}{A call object: the function call that was used
-      to generate this model fit.}
-    \item{\code{rppa}:}{The RPPA object containing the raw data that was
-      fit}
-    \item{\code{design}:}{The RPPADesign object describing the layout of
-      the array.}
-    \item{\code{measure}:}{A character string containing the name of the
+    \item{\code{call}:}{object of class \code{call} specifying the function
+      call that was used to generate this model fit}
+    \item{\code{rppa}:}{object of class \code{RPPA} containing the raw data
+      that was fit}
+    \item{\code{design}:}{object of class \code{RPPADesign} describing the
+      layout of the array}
+    \item{\code{measure}:}{character string containing the name of the
       measurement column in the raw data that was fit by the model}
-    \item{\code{method}:}{A charcater string containing the name of the
+    \item{\code{method}:}{character string containing the name of the
       method that was used to estimate the upper and lower limit
-      parameters in the model.}
-    \item{\code{concentration}:}{A vector of estimates of the relative
-      log concentration of protein present in each sample.}
-    \item{\code{lower}:}{A vector containing the lower bounds on the
+      parameters in the model}
+    \item{\code{trimset}:}{TBD}
+    \item{\code{model}:}{object of class \code{FitClass} TBD}
+    \item{\code{concentrations}:}{numeric vector of estimates of the relative
+      log concentration of protein present in each sample}
+    \item{\code{lower}:}{numeric vector containing the lower bounds on the
       confidence interval of the log concentration estimates}
-    \item{\code{upper}:}{A vector containing the upper bounds on the
+    \item{\code{upper}:}{numeric vector containing the upper bounds on the
       confidence interval of the log concentration estimates}
-    \item{\code{conf.width}:}{The width of the confidence interval}
-    \item{\code{intensities}:}{The predicted observed intensity at the
-      estimated concentrations for each dilution series.}
-    \item{\code{ss.ratio}:}{A statistic measuring the \eqn{R^2}
-      for each individual dilution series.}
-    \item{\code{warn}:}{A character vector containing any warnings that
-      arose when trying to fit the model to individual dilution series.}
-    \item{\code{version}:}{A character string containing the version of
+    \item{\code{conf.width}:}{numeric scalar specifying width of the
+      confidence interval}
+    \item{\code{intensities}:}{numeric vector containing the predicted observed
+      intensity at the estimated concentrations for each dilution series}
+    \item{\code{ss.ratio}:}{numeric vector containing statistic measuring the
+      \eqn{R^2} for each individual dilution series}
+    \item{\code{warn}:}{character vector containing any warnings that arose
+      when trying to fit the model to individual dilution series}
+    \item{\code{version}:}{character string containing the version of
       SuperCurve that produced the fit}
   }
 }

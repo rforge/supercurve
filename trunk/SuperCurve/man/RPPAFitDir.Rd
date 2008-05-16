@@ -9,13 +9,13 @@
 RPPAFitDir(path, designparams, fitparams, blanks=NULL)
 }
 \arguments{
-  \item{path}{A path to the directory containing the spot quantification files.
-    These are assumed to be of the form *.txt}
-  \item{designparams}{A \code{RPPADesignParams} object describing the layout
-    of the array}
-  \item{fitparams}{A \code{RPPAFitParams} object describing the fitting
+  \item{path}{character string specifying path to the directory containing
+    the spot quantification files (assumed to be text files)}
+  \item{designparams}{object of class \code{RPPADesignParams} describing the
+    layout of the array}
+  \item{fitparams}{object of class \code{RPPAFitParams} describing the fitting
     parameters to pass to \code{\link{RPPAFit}}}
-  \item{blanks}{TBD logical array.}
+  \item{blanks}{logical vector TBD}
 }
 \details{
   Quantify all the slides in a directory using RPPAFit. This returns an object
@@ -24,12 +24,12 @@ RPPAFitDir(path, designparams, fitparams, blanks=NULL)
   resulting quantifications and diagnostic plots to a directory.
 }
 \value{
-  This function constructs and returns an object of the \code{RPPASet} class
+  This function constructs and returns an object of class \code{RPPASet}
   containing information about how the function was called and a matrix of
   fitted intensities. The returned \code{RPPASet} class contains at least the
   following slots:
-  \item{rppas}{Array of \link{RPPA} objects containing slide data from the
-    directory.}
+  \item{rppas}{Array of \code{\link{RPPA}} objects containing slide data from
+    the directory.}
   \item{fits}{Array of fitted concentrations for each slide}
 }
 \references{KRC}
