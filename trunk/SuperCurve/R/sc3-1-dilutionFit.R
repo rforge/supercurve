@@ -753,9 +753,9 @@ RPPAFit <- function(rppa,
     yval <- intensity[!.controlVector(design)]
 
     fc <- switch(EXPR=model,
-                 cobs = new("cobsFitClass"),
-                 loess = new("loessFitClass"),
                  logistic = new("logisticFitClass"),
+                 loess = new("loessFitClass"),
+                 cobs = new("cobsFitClass"),
                  NULL)
 
     if (is.null(fc)) {

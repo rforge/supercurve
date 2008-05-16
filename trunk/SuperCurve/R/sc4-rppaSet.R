@@ -104,7 +104,8 @@ setMethod("write.summary", "RPPASet",
     ## Begin processing
     conc <- fitslot(object, 'concentrations')
     conc.ss <- fitslot(object, 'ss.ratio')
-    if (sum(as.character(object@design@alias$Alias) == as.character(object@design@alias$Sample)) < nrow(conc)) {
+    if (sum(as.character(object@design@alias$Alias) ==
+            as.character(object@design@alias$Sample)) < nrow(conc)) {
         ## We have non-trivial alias names.
         ## Use sample aliases to write out data
         rno <- rownames(conc)
@@ -151,7 +152,7 @@ setMethod("write.summary", "RPPASet",
         par(mfrow=c(2, 1))
         proteins <- rownames(object@fits)
         for (i in seq(1, length(proteins))) {
-            # first pair of plots
+            ## first pair of plots
             ptitle <- paste(object@fits[[i]]@measure,
                             ":  ",
                             proteins[i],
@@ -161,13 +162,13 @@ setMethod("write.summary", "RPPASet",
                      xform=object@fitparams@xform,
                      xlim=c(-15, 15)))
 
-            # Mark R^2 = 0.4 and below as red.
-            try(image.RPPAFit(object@fits[[i]],
-                              measure="ResidualsR2",
-                              xlab="Residuals R^2",
-                              main="",
-                              col=RYG,
-                              zlim=c(0.4, 1)))
+            ## Mark R^2 = 0.4 and below as red.
+            try(image(object@fits[[i]],
+                      col=RYG,
+                      main="",
+                      measure="ResidualsR2",
+                      xlab="Residuals R^2",
+                      zlim=c(0.4, 1)))
             dev.copy(png,
                      file.path(path,
                                paste(namebase, proteins[i], 'png', sep='.')),
@@ -331,9 +332,9 @@ RPPAFitDir <- function(path,
     new("RPPASet",
         call=call,
         design=design,
-        rppas=rppas,
         fitparams=fitparams,
-        fits=fits)
-    #removed actual argument version=packageDescription("SuperCurve", fields="Version") by Wenbin Liu
+        fits=fits,
+        rppas=rppas,
+        version=packageDescription("SuperCurve", fields="Version"))
 }
 
