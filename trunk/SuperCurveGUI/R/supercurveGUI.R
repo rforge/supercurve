@@ -21,8 +21,8 @@ library(tcltk)
 
 
 ##-----------------------------------------------------------------------------
-# Given a list of button names, create a dialog box with those labels
-# Return a number indiciating which button in the list was selected
+## Given a list of button names, create a dialog box with those labels
+## Return a number indiciating which button in the list was selected
 .listButtonDialog <- function(buttonLabels, title, msg) {
     ## Create a new toplevel window
     tt <- tktoplevel()
