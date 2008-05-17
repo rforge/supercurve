@@ -1,8 +1,7 @@
 \name{RPPAFitParams-class}
-\docType{class}
 \alias{RPPAFitParams-class}
 \alias{RPPAFitParams}
-
+\docType{class}
 \title{The RPPAFitParams Class}
 \description{
   The RPPAFitParams class represents TBD

@@ -1,6 +1,5 @@
 \name{RPPAFit-class}
 \alias{RPPAFit-class}
-\docType{class}
 \alias{summary,RPPAFit-method}
 \alias{coef,RPPAFit-method}
 \alias{coefficients,RPPAFit-method}
@@ -10,7 +9,7 @@
 \alias{image,RPPAFit-method}
 \alias{hist,RPPAFit-method}
 \alias{plot,RPPAFit-method}
-
+\docType{class}
 \title{The RPPAFit Class}
 \description{
   Objects of the \code{RPPAFit} class represent the results of

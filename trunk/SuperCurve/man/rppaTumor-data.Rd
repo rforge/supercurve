@@ -1,11 +1,11 @@
 \name{rppaTumor-data}
 \alias{rppaTumor-data}
+\alias{rppaTumor}
 \alias{tDesign}
 \alias{jnk}
 \alias{erk2}
 \alias{gsk3}
 \docType{data}
-
 \title{ERK2, GSK3, and JNK expression in tumor samples}
 \description{
   This data set contains the expression levels of three proteins: ERK2,

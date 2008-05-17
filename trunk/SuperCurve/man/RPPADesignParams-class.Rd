@@ -1,8 +1,7 @@
 \name{RPPADesignParams-class}
-\docType{class}
 \alias{RPPADesignParams-class}
 \alias{RPPADesignParams}
-
+\docType{class}
 \title{The RPPADesignParams Class}
 \description{
   The RPPADesignParams class represents TBD

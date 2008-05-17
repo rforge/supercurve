@@ -1,10 +1,9 @@
 \name{RPPA-class}
-\docType{class}
 \alias{RPPA-class}
 \alias{RPPA}
 \alias{summary,RPPA-method}
 \alias{image,RPPA-method}
-
+\docType{class}
 \title{The RPPA Class}
 \description{
   The RPPA class represents the raw quantification data from a

@@ -1,5 +1,4 @@
 \name{RPPADesign-class}
-\docType{class}
 \alias{RPPADesign-class}
 \alias{RPPADesign}
 \alias{image,RPPADesign-method}
@@ -7,7 +6,7 @@
 \alias{names,RPPADesign-method}
 \alias{seriesNames}
 \alias{getSteps}
-
+\docType{class}
 \title{The RPPADesign Class}
 \description{
   This class represents the information that describes how a particular

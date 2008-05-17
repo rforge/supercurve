@@ -1,11 +1,11 @@
 \name{rppaCell-data}
 \alias{rppaCell-data}
+\alias{rppaCell}
 \alias{akt}
 \alias{ctnnb1}
 \alias{c.erk2}
 \alias{design40}
 \docType{data}
-
 \title{AKT, ERK2, and CTNNB1 expression in cell lines}
 \description{
   This data set contains the expression levels of three proteins: AKT,
