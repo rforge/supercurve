@@ -834,7 +834,8 @@ RPPAFit <- function(rppa,
                   intensities=fitted(fc, pass2),
                   ss.ratio=ss.ratio,
                   conf.width=0,
-                  warn=warn2)
+                  warn=warn2,
+                  version=packageDescription("SuperCurve", fields="Version"))
 
     if (trim) {
         tc <- trimConc(fc,
