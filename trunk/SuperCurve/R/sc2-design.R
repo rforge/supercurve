@@ -199,12 +199,11 @@ RPPADesign <- function(raw,
                                 }
             }
         } else if (grouping == "blockSample") {
-            attach(raw.df)
-            series <- factor(paste(as.character(Sample),
-                                   Main.Row,
-                                   Main.Col,
-                                   sep='.'))
-            detach()
+            series <- with(raw.df,
+                           factor(paste(as.character(Sample),
+                                        Main.Row,
+                                        Main.Col,
+                                        sep='.')))
             for (sam in levels(series)) {
                 where <- series == sam
                 n <- sum(where)

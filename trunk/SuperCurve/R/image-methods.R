@@ -90,12 +90,12 @@ image.RPPA <- function(x,
 }
 
 ## :TODO: Figure out how to combine with above and remove S3 definition
-setMethod("image", "RPPA",
+setMethod("image", signature(x="RPPA"),
           image.RPPA)
 
 
 ##-----------------------------------------------------------------------------
-setMethod("image", "RPPADesign",
+setMethod("image", signature(x="RPPADesign"),
           function(x,
                    ...) {
     ## figure out how to make "geographic" pictures
@@ -121,7 +121,7 @@ setMethod("image", "RPPADesign",
 ## Provides a geographic plot of some measure computed from the fit.
 ## Default is to image the (raw) residuals, with options for other forms
 ## of the residuals or for the fitted concentrations (X) or intensities (Y).
-setMethod("image", "RPPAFit",
+setMethod("image", signature(x="RPPAFit"),
           function(x,
                    measure=c("Residuals",
                              "ResidualsR2",
@@ -134,13 +134,14 @@ setMethod("image", "RPPAFit",
 
     ## Begin processing
     rppa <- x@rppa
-    ## :TBD: Why not just requested measure? Isn't doing rest unnecessary?
-    rppa@data$Residuals <- resid(x)
-    rppa@data$StdRes <- resid(x, "standardized")
-    rppa@data$ResidualsR2 <- resid(x, "r2")
-    rppa@data$X <- fitted(x, "X")
-    rppa@data$Y <- fitted(x, "Y")
+    rppa@data[[measure]] <- switch(EXPR=measure,
+                                   Residuals=resid(x),
+                                   StdRes=resid(x, "standardized"),
+                                   ResidualsR2=resid(x, "r2"),
+                                   X=fitted(x, "X"),
+                                   Y=fitted(x, "Y"))
 
+    ## :TBD: Should this invoke callNextMethod instead?
     ## :TBD: What should axis labels be?
     ## :TBD: Shouldn't main reference file as well?
     image(rppa,

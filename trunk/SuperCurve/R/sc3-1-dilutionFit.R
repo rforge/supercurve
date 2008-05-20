@@ -249,7 +249,7 @@ setMethod("hist", "RPPAFit",
 
 ##-----------------------------------------------------------------------------
 ## Plot the results from dilutionFit above to see how well supercurve fits
-setMethod("plot", "RPPAFit",
+setMethod("plot", signature(x="RPPAFit", y="missing"),
           function(x, y,
                    type=c("cloud", "series", "individual", "steps", "resid"),
                    xlab='Log Concentration',
@@ -306,9 +306,16 @@ setMethod("plot", "RPPAFit",
                              round(min.conc, 2),
                              '/',
                              round(max.conc, 2))
-            plot(xval, yraw, xlab="", ylab=ylab, sub=autosub, ...)
+            plot(xval, yraw,
+                 xlab="",
+                 ylab=ylab,
+                 sub=autosub,
+                 ...)
         } else {
-            plot(xval, yraw, xlab=xlab, ylab=ylab, ...)
+            plot(xval, yraw,
+                 xlab=xlab,
+                 ylab=ylab,
+                 ...)
         }
 
         lines(sort(xval), sort(yval), col=model.color)
@@ -334,7 +341,9 @@ setMethod("plot", "RPPAFit",
         ymin <- min(yval, na.rm=TRUE)
         for (this in series) {
             ## :TBD: why aren't {x,y}labs passed to plot()?
-            plot(sort(xval), sort(yval), col=model.color, ylim=c(ymin, ymax))
+            plot(sort(xval), sort(yval),
+                 col=model.color,
+                 ylim=c(ymin, ymax))
             lines(sort(xval), sort(yval), col=model.color)
             ## :PLR: Replaced text() with title(). Something else wanted?
             title(sub=paste('SS Ratio =', format(x@ss.ratio[this], digits=4)))
@@ -356,10 +365,10 @@ setMethod("plot", "RPPAFit",
             yval2 <- yraw[items]
             yfiti <- yval[items]
             l <- length(yval2)
-            x.ser <-  yval2[1:l-1]
-            y.ser <-  yval2[2:l]
-            x.fit <-  yfiti[1:l-1]
-            y.fit <-  yfiti[2:l]
+            x.ser <- yval2[1:l-1]
+            y.ser <- yval2[2:l]
+            x.fit <- yfiti[1:l-1]
+            y.fit <- yfiti[2:l]
             xplot <- c(xplot, (x.ser + y.ser) / 2)
             yplot <- c(yplot, y.ser - x.ser)
             xfit <- c(xfit, (x.fit + y.fit) / 2)
@@ -369,8 +378,7 @@ setMethod("plot", "RPPAFit",
         yplot <- yplot[-1]
         xfit <- xfit[-1]
         yfit <- yfit[-1]
-        plot(xplot,
-             yplot,
+        plot(xplot, yplot,
              xlab="(Step[n+1]+Step[n])/2",
              ylab="Step[n+1] - Step[n]")
         .loess.line(xplot, yplot)
@@ -396,7 +404,11 @@ setMethod("plot", "RPPAFit",
                       round(vals[1], 2),
                       ", p-value = ",
                       round(vals[2], 3))
-        plot(xval, r, sub=subt, xlab=xlab, ylab='Residual Instensity', ...)
+        plot(xval, r,
+             sub=subt,
+             xlab=xlab,
+             ylab='Residual Instensity',
+             ...)
         abline(h=0, col=model.color)
         abline(l, col="red")
         l <- lm(-abs(r) ~ xval)
