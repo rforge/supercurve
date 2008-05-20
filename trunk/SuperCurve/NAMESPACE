@@ -8,7 +8,6 @@ import(methods)
 importFrom("MASS", rlm)
 importFrom("graphics", hist)
 importFrom("graphics", image)
-importFrom("graphics", par)     # :TBD: Necessary? This wasn't extended...
 importFrom("graphics", plot)
 importFrom("stats", coef, coefficients)
 importFrom("stats", fitted)
@@ -44,6 +43,7 @@ export(RPPAFitDir)
 export(RPPAFitParams)
 export(getConfidenceInterval)
 export(getSteps)
-export(image.RPPA)     # :TBD: Why? Aren't these generic?
+export(image.RPPA)     # :BUG: S4 generic but doesn't work unless S3 present
+export(image.RPPAFit)  # :BUG: S4 generic but doesn't work unless S3 present
 export(seriesNames)
 
