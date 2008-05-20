@@ -121,14 +121,13 @@ setMethod("image", signature(x="RPPADesign"),
 ## Provides a geographic plot of some measure computed from the fit.
 ## Default is to image the (raw) residuals, with options for other forms
 ## of the residuals or for the fitted concentrations (X) or intensities (Y).
-setMethod("image", signature(x="RPPAFit"),
-          function(x,
-                   measure=c("Residuals",
-                             "ResidualsR2",
-                             "StdRes",
-                             "X",
-                             "Y"),
-                   ...) {
+image.RPPAFit <- function(x,
+                          measure=c("Residuals",
+                                    "ResidualsR2",
+                                    "StdRes",
+                                    "X",
+                                    "Y"),
+                          ...) {
     ## Check arguments
     measure <- match.arg(measure)
 
@@ -141,7 +140,7 @@ setMethod("image", signature(x="RPPAFit"),
                                    X=fitted(x, "X"),
                                    Y=fitted(x, "Y"))
 
-    ## :TBD: Should this invoke callNextMethod instead?
+    ## :TBD: Should this invoke callNextMethod instead (when S4 method)?
     ## :TBD: What should axis labels be?
     ## :TBD: Shouldn't main reference file as well?
     image(rppa,
@@ -149,5 +148,10 @@ setMethod("image", signature(x="RPPAFit"),
           ...)
 
     invisible(x)
-})
+}
+
+## :TODO: Figure out how to combine with above and remove S3 definition
+setMethod("image", signature(x="RPPAFit"),
+          image.RPPAFit)
+
 
