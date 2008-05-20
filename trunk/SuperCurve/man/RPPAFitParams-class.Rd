@@ -31,10 +31,10 @@ RPPAFitParams(measure,
     \tabular{ll}{
       \code{"nls"}   \tab uses the optimal fit based on nonlinear least
                           squares \cr
-      \code{"nlrob"} \tab uses \code{nlrob} which is robust nls from
-                          robustbase package \cr
-      \code{"nlrq"}  \tab uses \code{nlrq} from quantreg package which is
-                          robust median regression \cr
+      \code{"nlrob"} \tab uses \code{nlrob} which is robust nls
+                          from \pkg{robustbase} package \cr
+      \code{"nlrq"}  \tab uses \code{nlrq} which is robust median regression
+                          from \pkg{quantreg} package \cr
     }}
   \item{ci}{logical scalar. If \code{TRUE}, compute 90\% confidence intervals
     on the concentration estimates.}

@@ -8,7 +8,7 @@
 \alias{resid,RPPAFit-method}
 \alias{image,RPPAFit-method}
 \alias{hist,RPPAFit-method}
-\alias{plot,RPPAFit-method}
+\alias{plot,RPPAFit,missing-method}
 \docType{class}
 \title{The RPPAFit Class}
 \description{
@@ -26,7 +26,7 @@
 \S4method{image}{RPPAFit}(x, type=c("Residuals", "StdRes", "X", "Y"), \dots)
 \S4method{hist}{RPPAFit}(x, type=c("Residuals", "StdRes"),
   xlab=NULL, main=NULL, \dots)
-\S4method{plot}{RPPAFit}(x, y, type=c("cloud", "series", "individual"),
+\S4method{plot}{RPPAFit,missing}(x, y, type=c("cloud", "series", "individual"),
 xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
 }
 \arguments{
@@ -36,7 +36,7 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
     residuals, images, histograms, or plots}
   \item{xlab}{graphics parameter specifying how the x-axis should be labeled}
   \item{ylab}{graphics parameter specifying how the y-axis should be labeled}
-  \item{main}{character string used as a title for the plot}
+  \item{main}{character string specifying title for the plot}
   \item{y}{not used}
   \item{colors}{graphics parameter, used only if \code{type='series'},
     to color the lines connecting different dilution series.
