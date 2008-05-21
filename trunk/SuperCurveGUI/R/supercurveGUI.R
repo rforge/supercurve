@@ -6,30 +6,131 @@ library(tcltk)
 
 
 ##-----------------------------------------------------------------------------
-.browsePath <- function(title, initialdir=NULL) {
-    fileName <- if (!is.null(initialdir)) {
-                    tclvalue(tkgetOpenFile(title=title, initialdir=initialdir))
-                } else {
-                    tclvalue(tkgetOpenFile(title=title))
-                }
-    result <- if (!nchar(fileName)) {
-                  NULL
-              } else {
-                  dirname(fileName)
-              }
+## Returns directory of file user selected via dialog
+.chooseDirectoryOfFile <- function(title, initialdir, filetypes) {
+    if (missing(initialdir) || is.null(initialdir)) {
+        initialdir <- getwd()
+    }
+    if (missing(filetypes)) {
+        filetypes <- "{{All files} * }"
+    }
+
+    stopifnot(is.character(title)      && length(title) == 1)
+    stopifnot(is.character(initialdir) && length(initialdir) == 1)
+    stopifnot(is.character(filetypes)  && length(filetypes) == 1)
+
+    filename <- tclvalue(tkgetOpenFile(title=title,
+                                       filetypes=filetypes,
+                                       initialdir=initialdir))
+    if (!nchar(filename)) {
+        NULL
+    } else {
+        dirname(filename)
+    }
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns directory user selected via dialog
+.chooseDirectory <- function(title, initialdir) {
+    if (missing(initialdir) || is.null(initialdir)) {
+        initialdir <- getwd()
+    }
+
+    stopifnot(is.character(title)      && length(title) == 1)
+    stopifnot(is.character(initialdir) && length(initialdir) == 1)
+
+    directory <- tclvalue(tkchooseDirectory(title=title,
+                                            initialdir=initialdir))
+    if (!nchar(directory)) {
+        NULL
+    } else {
+        directory
+    }
+}
+
+
+##-----------------------------------------------------------------------------
+.chooseQuantificationDirectory <- function(initialdir) {
+    .chooseDirectoryOfFile("Select quantification directory",
+                           initialdir,
+                           "{{Quantification Files} {.txt}} {{All files} * }")
+}
+
+
+##-----------------------------------------------------------------------------
+.chooseImageDirectory <- function(initialdir) {
+    .chooseDirectoryOfFile("Select image directory",
+                           initialdir,
+                           "{{TIFF Files} {.tif .tiff}} {{All files} * }")
+}
+
+
+##-----------------------------------------------------------------------------
+.chooseOutputDirectory <- function(initialdir) {
+    .chooseDirectory("Select output directory",
+                     initialdir)
+}
+
+
+##-----------------------------------------------------------------------------
+.editBox <- function(title, message, default="", width=40) {
+    stopifnot(is.character(title)   && length(title) == 1)
+    stopifnot(is.character(message) && length(message) == 1)
+    stopifnot(is.character(default) && length(default) == 1)
+    stopifnot(is.numeric(width)     && length(width) == 1)
+
+    ## Create a new toplevel window
+    tt <- tktoplevel()
+    ## Give the window a title
+    tkwm.title(tt, title)
+
+    Text <- tclVar(default)
+    done <- tclVar(0)
+    width <- as.character(as.integer(width))
+    textField <- tkentry(tt, width=width, textvariable=Text)
+    tkgrid(tklabel(tt, text=message))
+    tkgrid(textField)
+
+    okButton <- tkbutton(tt,
+                         text="   OK   ",
+                         command=function() {
+                             tclvalue(done) <- 1
+                         })
+    tkgrid(okButton)
+
+    ## Capture destroy event (e.g., Alt-F4 in Windows)
+    tkbind(tt,
+           "<Destroy>",
+           function() {
+               tclvalue(done) <- 1
+           })
+
+    tkfocus(tt)
+    tkwait.variable(done)
+
+    TextVal <- tclvalue(Text)
+    tkdestroy(tt)
+    TextVal
 }
 
 
 ##-----------------------------------------------------------------------------
 ## Given a list of button names, create a dialog box with those labels
 ## Return a number indiciating which button in the list was selected
-.listButtonDialog <- function(buttonLabels, title, msg) {
+.listButtonDialog <- function(title, message, buttonLabels) {
+    stopifnot(is.character(title)   && length(title) == 1)
+    stopifnot(is.character(message) && length(message) == 1)
+    stopifnot(is.character(buttonLabels))
+
     ## Create a new toplevel window
     tt <- tktoplevel()
 
     ## Give the window a title
     tkwm.title(tt, title)
-    tkgrid(tklabel(tt, text=msg))
+
+    ## :TBD:
+    tkgrid(tklabel(tt, text=message))
 
     ## Create a variable to keep track of the state of the dialog window:
     ##   If window is active,                                        done = 0
@@ -71,43 +172,25 @@ library(tcltk)
 
 
 ##-----------------------------------------------------------------------------
-.editBox <- function(title, msg, default="", width="40") {
-    tt<-tktoplevel()
-    tkwm.title(tt, msg)
-    Text <- tclVar(default)
-    done <- tclVar(0)
-    entry.Text <-tkentry(tt, width="20", textvariable=Text)
-    tkgrid(tklabel(tt, text=msg))
-    tkgrid(entry.Text)
+.logSettings <- function(settings, file) {
+    stopifnot(is.character(settings))
+    stopifnot(is.character(file) || inherits(file, "file"))
 
-    okButton <- tkbutton(tt,
-                         text="   OK   ",
-                         command=function() {
-                             tclvalue(done) <- 1
-                         })
-    tkgrid(okButton)
-
-    ## Capture destroy event (e.g., Alt-F4 in Windows)
-    tkbind(tt,
-           "<Destroy>",
-           function() {
-               tclvalue(done) <- 1
-           })
-
-    tkfocus(tt)
-
-    tkwait.variable(done)
-    TextVal <- tclvalue(Text)
-    tkdestroy(tt)
-    TextVal
+    version <- packageDescription("SuperCurve", fields="Version")
+    cat("Run from GUI. Settings:", "\n",
+        settings,
+        paste("supercurve version =", version, "\n"),
+        sep="",
+        file=file)
 }
 
 
 ##-----------------------------------------------------------------------------
 .trim <- function(str) {
-    lt <- gsub('^[[:space:]]+', '', str)
-    rt <- gsub('[[:space:]]+$', '', lt)
-    rt
+    stopifnot(is.character(str))
+
+    lt <- gsub('^[[:space:]]+', '', str)  ## remove spaces on left side
+    gsub('[[:space:]]+$', '', lt)         ## remove spaces on right side
 }
 
 
@@ -115,62 +198,59 @@ library(tcltk)
 ## Prompt user for parameters and run SuperCurve using specified directories
 supercurveGUI <- function() {
 
-    .path <- Sys.getenv("SC_DIR")
-    if (nchar(.path) < 1) {
-       .path <- NULL
-    }
-
-    .path <- if (is.null(.path)) {
-                 .browsePath("Select quantification file (*.txt) directory")
+    .path <- if (nchar(scdir <- Sys.getenv("SC_DIR")) > 1) {
+                 scdir
              } else {
-                 .browsePath("Select quantification file (*.txt) directory",
-                             .path)
+                 NULL
              }
+
+    .path <- .chooseQuantificationDirectory(.path)
 
     if (!is.null(.path)) {
         Sys.setenv("SC_DIR"=.path)
     }
 
-    tiffdir <- .browsePath("Select image (*.tif) directory",
-                           dirname(.path))
-    results <- .browsePath("Select output directory for results",
-                           dirname(.path))
-    net.total <- .listButtonDialog(c("Mean Net", "Mean Total"),
-                                   "Intensity Measure",
-                                   "Choose spot measure to use for quantification")
+    tiffdir <- .chooseImageDirectory(dirname(.path))
+    outputdir <- .chooseOutputDirectory(dirname(.path))
+
+    net.total <- .listButtonDialog(title="Intensity Measure",
+                                   message="Choose spot measure to use for quantification",
+                                   c("Mean Net", "Mean Total"))
     measure <- switch(EXPR=net.total,
                       "Mean.Net",
                       "Mean.Total")
 
-    curve.model <- .listButtonDialog(c("Monotone Increasing B-spline",
+    curve.model <- .listButtonDialog(title="Dilution Curve Model",
+                                     message="Choose a model for fitting the antibody response curve",
+                                     c("Monotone Increasing B-spline",
                                        "Loess",
-                                       "Logistic"),
-                                     "Dilution Curve Model",
-                                     "Choose a model for fitting the antibody response curve")
+                                       "Logistic"))
     model <- switch(EXPR=curve.model,
                     "cobs",
                     "loess",
                     "logistic")
 
-    controls <- .editBox("Controls",
-                         "Names of control spots",
+    controls <- .editBox(title="Controls",
+                         message="Names of control spots",
                          "control, pos con, neg con",
-                         width="60")
+                         width=60)
     controls <- unlist(strsplit(controls, ","))
     for (i in seq(1, length(controls))) {
         controls[i] <- .trim(controls[i])
     }
 
-    settings <- paste("txt dir = ", sQuote(.path), "\n",
-                      "tiff dir = ", sQuote(tiffdir), "\n",
-                      "result dir = ", sQuote(results), "\n",
-                      "quantification type = ", sQuote(measure), "\n",
-                      "dilution curve model = ", sQuote(model), "\n",
+    settings <- paste("txt dir = ", shQuote(.path), "\n",
+                      "tiff dir = ", shQuote(tiffdir), "\n",
+                      "result dir = ", shQuote(outputdir), "\n",
+                      "quantification type = ", shQuote(measure), "\n",
+                      "dilution curve model = ", shQuote(model), "\n",
                       "control spot labels = ",
-                      sQuote(paste(controls, collapse=", ")),
+                      shQuote(paste(controls, collapse=", ")), "\n",
                       sep="")
 
     confirm <- tkmessageBox(message=paste("Run analysis with the following options:\n\n", settings, sep=""),
+                            icon="question",
+                            title="Confirm",
                             type="yesno")
 
     if (as.character(confirm) == "no") {
@@ -178,13 +258,7 @@ supercurveGUI <- function() {
         return()
     }
 
-    version <- packageDescription("SuperCurve", fields="Version")
-
-    cat("Run from GUI. Settings:", "\n",
-        settings,
-        paste("\nsupercurve version = ", version),
-        sep="",
-        file=file.path(results, "analysis.log"))
+    .logSettings(settings, file.path(outputdir, "analysis.log"))
 
     designparams <- SuperCurve::RPPADesignParams(grouping="blockSample",
                                                  center=FALSE,
@@ -198,7 +272,7 @@ supercurveGUI <- function() {
     fitset <- SuperCurve::RPPAFitDir(.path, designparams, fitparams)
     SuperCurve::write.summary(fitset,
                               namebase='supercurve',
-                              path=results,
+                              path=outputdir,
                               normalize='median',
                               graphs=TRUE,
                               tiffdir=tiffdir)
