@@ -3,15 +3,13 @@
 ###
 
 ##############################################################
-# Fit a set of slides with a common layout
-# Initial version: Corwin Joy
+## Fit a set of slides with a common layout
+## Initial version: Corwin Joy
 
 
 ##-----------------------------------------------------------------------------
-# provide a generic convenience function to view a slot in the array of fits
-# as a simple matrix view
-# e.g. fitslot(fitset, 'concentrations')
-#
+## Provide a generic convenience function to view a slot in the array of fits
+## as a simple matrix view (e.g., fitslot(fitset, 'concentrations'))
 setMethod("fitslot", "RPPASet",
           function(object,
                    sl,
@@ -42,12 +40,39 @@ setMethod("fitslot", "RPPASet",
 
 
 ##-----------------------------------------------------------------------------
-# provide a convenience function to save fit results to file
-# namebase = basename of filename (without extension)
-# path = path
-# normalize = "median" for median normalization of the concentrations.
-#     "median" = for each sample the median intensity over all plates is subtracted to account for varying sample concetratiosn
-#
+## Merge output graphs with source tiff files
+.mergeGraphAndImage <- function(protein, namebase, outputdir, tiffdir) {
+    stopifnot(is.character(protein)   && length(protein) == 1)
+    stopifnot(is.character(namebase)  && length(namebase) == 1)
+    stopifnot(is.character(outputdir) && length(outputdir) == 1)
+    stopifnot(is.character(tiffdir)   && length(tiffdir) == 1)
+
+    base <- sub(".txt", "", protein, fixed=TRUE)
+    tiff <- file.path(tiffdir, paste(base, "tif", sep='.'))
+
+    ## convert *4EBP1.tif "Y:\Private\LysateArray\DorisSiwak\Feiller\Feiler results\*4EBP1.txt.png" -append -quality 100 4EBP1.jpg
+
+    pg1 <- file.path(outputdir, paste(namebase, protein, 'png', sep='.'))
+    pg2 <- file.path(outputdir, paste(namebase, protein, '2', 'png', sep='.'))
+    output <- file.path(outputdir, paste(base, "jpg", sep='.'))
+
+    # convert  $pg1 $pg2 +append $tiff -append -quality 100 $output
+    message(paste('merging tiff for', protein))
+    command <- paste('convert ',
+                     shQuote(pg1),
+                     ' ',
+                     shQuote(pg2),
+                     ' +append ',
+                     shQuote(tiff),
+                     ' -append -quality 100 ',
+                     shQuote(output),
+                     sep='')
+    return(rc <- system(command))
+}
+
+
+##-----------------------------------------------------------------------------
+## Provide a convenience function to save fit results to file
 setMethod("write.summary", "RPPASet",
           function(object,
                    namebase,
@@ -148,7 +173,7 @@ setMethod("write.summary", "RPPASet",
 
     if (graphs) {
         ## save fit graphs
-        op <- par()
+        op <- par(no.readonly=TRUE)
         par(mfrow=c(2, 1))
         proteins <- rownames(object@fits)
         for (i in seq(1, length(proteins))) {
@@ -198,32 +223,12 @@ setMethod("write.summary", "RPPASet",
         if (TRUE) {
             ## Use ImageMagick to merge output graphs with source tiff files
             for (i in seq(1, length(proteins))) {
-                base <- sub(".txt", "", proteins[i], fixed=TRUE)
-                tiff <- file.path(tiffdir,
-                                  paste(base, "tif", sep='.'))
-
-                ## convert *4EBP1.tif "Y:\Private\LysateArray\DorisSiwak\Feiller\Feiler results\*4EBP1.txt.png" -append -quality 100 4EBP1.jpg
-
-                pg1 <- file.path(path,
-                                 paste(namebase, proteins[i], 'png', sep='.'))
-                pg2 <- file.path(path,
-                                 paste(namebase, proteins[i], '2', 'png', sep='.'))
-                output <- file.path(path,
-                                    paste(base, "jpg", sep='.'))
-                # convert  $pg1 $pg2 +append $tiff -append -quality 100 $output
-                message(paste('merging tiff for', proteins[i]))
-                command <- paste('convert "',
-                                 pg1,
-                                 '" "',
-                                 pg2,
-                                 '" +append ',
-                                 '"',
-                                 tiff,
-                                 '" -append -quality 100 "',
-                                 output,
-                                 '"',
-                                 sep='')
-                system(command, invisible=TRUE)
+                rc <- .mergeGraphAndImage(proteins[i], namebase, path, tiffdir)
+                if (rc == 32512) {
+                    warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH", sQuote("convert")))
+                    message("some output files may be missing")
+                    break
+                }
             }
         }
     }
