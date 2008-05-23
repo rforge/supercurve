@@ -67,8 +67,3 @@ if (!isGeneric("trimConc")) {
                function(object, ...) standardGeneric("trimConc"))
 }
 
-if (!isGeneric("write.summary")) {
-    setGeneric("write.summary",
-               function(object, ...) standardGeneric("write.summary"))
-}
-

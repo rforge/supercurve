@@ -1,10 +1,6 @@
 ###
-### RPPASET.R
+### RPPASET.R - Fit a set of slides with a common layout
 ###
-
-##############################################################
-## Fit a set of slides with a common layout
-## Initial version: Corwin Joy
 
 
 ##-----------------------------------------------------------------------------
@@ -41,22 +37,29 @@ setMethod("fitslot", "RPPASet",
 
 ##-----------------------------------------------------------------------------
 ## Merge output graphs with source tiff files
-.mergeGraphAndImage <- function(protein, namebase, outputdir, tiffdir) {
+.mergeGraphAndImage <- function(protein, prefix, outputdir, tiffdir) {
     stopifnot(is.character(protein)   && length(protein) == 1)
-    stopifnot(is.character(namebase)  && length(namebase) == 1)
+    stopifnot(is.character(prefix)    && length(prefix) == 1)
     stopifnot(is.character(outputdir) && length(outputdir) == 1)
     stopifnot(is.character(tiffdir)   && length(tiffdir) == 1)
 
-    base <- sub(".txt", "", protein, fixed=TRUE)
-    tiff <- file.path(tiffdir, paste(base, "tif", sep='.'))
+    filename <- paste(protein, "tif", sep=".")
+    tiff <- file.path(tiffdir, filename)
 
-    ## convert *4EBP1.tif "Y:\Private\LysateArray\DorisSiwak\Feiller\Feiler results\*4EBP1.txt.png" -append -quality 100 4EBP1.jpg
+    filename <- paste(paste(prefix, protein, sep="_"),
+                      "png",
+                      sep=".")
+    pg1 <- file.path(outputdir, filename)
 
-    pg1 <- file.path(outputdir, paste(namebase, protein, 'png', sep='.'))
-    pg2 <- file.path(outputdir, paste(namebase, protein, '2', 'png', sep='.'))
-    output <- file.path(outputdir, paste(base, "jpg", sep='.'))
+    filename <- paste(paste(prefix, protein, "2", sep="_"),
+                      "png",
+                      sep=".")
+    pg2 <- file.path(outputdir, filename)
 
-    # convert  $pg1 $pg2 +append $tiff -append -quality 100 $output
+    filename <- paste(protein, "jpg", sep=".")
+    output <- file.path(outputdir, filename)
+
+    ## convert $pg1 $pg2 +append $tiff -append -quality 100 $output
     message(paste('merging tiff for', protein))
     command <- paste('convert ',
                      shQuote(pg1),
@@ -73,20 +76,16 @@ setMethod("fitslot", "RPPASet",
 
 ##-----------------------------------------------------------------------------
 ## Provide a convenience function to save fit results to file
-setMethod("write.summary", "RPPASet",
-          function(object,
-                   namebase,
-                   path,
-                   graphs=TRUE,
-                   tiffdir=NULL,
-                   ...) {
+## :TODO: Rename this method to something more appropriate
+write.summary <- function(rppaset,
+                          path,
+                          prefix="supercurve",
+                          graphs=TRUE,
+                          tiffdir=NULL) {
     ## Check arguments
-    if (!is.character(namebase)) {
-        stop(sprintf("argument %s must be character",
-                     sQuote("namebase")))
-    } else if (!(length(namebase) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("namebase")))
+    if (!inherits(rppaset, "RPPASet")) {
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("rppaset"), "RPPASet"))
     }
 
     if (!is.character(path)) {
@@ -99,6 +98,14 @@ setMethod("write.summary", "RPPASet",
         ## :TODO: Add code to verify directory exists
         stop(sprintf("directory %s does not exist",
                      dQuote(path)))
+    }
+
+    if (!is.character(prefix)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("prefix")))
+    } else if (!(length(prefix) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("prefix")))
     }
 
     if (!is.logical(graphs)) {
@@ -127,35 +134,43 @@ setMethod("write.summary", "RPPASet",
     }
 
     ## Begin processing
-    conc <- fitslot(object, 'concentrations')
-    conc.ss <- fitslot(object, 'ss.ratio')
-    if (sum(as.character(object@design@alias$Alias) ==
-            as.character(object@design@alias$Sample)) < nrow(conc)) {
+    conc <- fitslot(rppaset, 'concentrations')
+    conc.ss <- fitslot(rppaset, 'ss.ratio')
+    if (sum(as.character(rppaset@design@alias$Alias) ==
+            as.character(rppaset@design@alias$Sample)) < nrow(conc)) {
         ## We have non-trivial alias names.
         ## Use sample aliases to write out data
         rno <- rownames(conc)
-        sn <- object@design@sampleMap[rno]
-        lookup.sn <- match(sn, object@design@alias$Sample)
-        alias.name <- as.character(object@design@alias$Alias)[lookup.sn]
+        sn <- rppaset@design@sampleMap[rno]
+        lookup.sn <- match(sn, rppaset@design@alias$Sample)
+        alias.name <- as.character(rppaset@design@alias$Alias)[lookup.sn]
         rownames(conc) <- alias.name
         rownames(conc.ss) <- alias.name
     }
-    write.csv(conc,
-              file=file.path(path,
-                             paste(namebase, '_conc_raw.csv', sep='')))
 
-    ## median polish to normalize sample, slide effects
+    ## Write file for raw concentrations
+    filename <- paste(paste(prefix, "conc_raw", sep="_"),
+                      "csv",
+                      sep=".")
+    write.csv(conc, file=file.path(path, filename))
+
+    ## Write file for R^2 statistics
+    filename <- paste(paste(prefix, "ss_ratio", sep="_"),
+                      "csv",
+                      sep=".")
+    write.csv(conc.ss, file=file.path(path, filename))
+
+    ## Median polish to normalize sample, slide effects
     pol <- medpolish(conc, trace.iter=FALSE)
     conc <- pol$residuals
     sample.correction <- pol$row
     conc <- cbind(sample.correction, conc)
-    write.csv(conc,
-              file=file.path(path,
-                             paste(namebase, '_conc_med_polish.csv', sep='')))
 
-    write.csv(conc.ss,
-              file=file.path(path,
-                             paste(namebase, '_ss.csv', sep='')))
+    ## Write file for polished concentration
+    filename <- paste(paste(prefix, "conc_med_polish", sep="_"),
+                      "csv",
+                      sep=".")
+    write.csv(conc, file=file.path(path, filename))
 
     ## Use red/yellow/green palette for residual plots.
     ## From RColorBrewer palette RdYlGn
@@ -175,75 +190,79 @@ setMethod("write.summary", "RPPASet",
         ## save fit graphs
         op <- par(no.readonly=TRUE)
         par(mfrow=c(2, 1))
-        proteins <- rownames(object@fits)
+        proteins <- {
+                        slideFilenames <- rownames(rppaset@fits)
+                        ## Remove filename extensions
+                        sub(".[Tt][Xx][Tt]$", "", slideFilenames)
+                    }
         for (i in seq(1, length(proteins))) {
-            ## first pair of plots
-            ptitle <- paste(object@fits[[i]]@measure,
+            protein <- proteins[i]
+            ptitle <- paste(rppaset@fits[[i]]@measure,
                             ":  ",
-                            proteins[i],
+                            protein,
                             sep="")
-            try(plot(object@fits[[i]],
+
+            ## First pair of plots
+            try(plot(rppaset@fits[[i]],
                      main=ptitle,
-                     xform=object@fitparams@xform,
+                     xform=rppaset@fitparams@xform,
                      xlim=c(-15, 15)))
 
             ## Mark R^2 = 0.4 and below as red.
-            try(image(object@fits[[i]],
+            try(image(rppaset@fits[[i]],
                       col=RYG,
                       main="",
                       measure="ResidualsR2",
                       xlab="Residuals R^2",
                       zlim=c(0.4, 1)))
+
+            filename <- paste(paste(prefix, protein, sep="_"),
+                              "png",
+                              sep=".")
             dev.copy(png,
-                     file.path(path,
-                               paste(namebase, proteins[i], 'png', sep='.')),
+                     file.path(path, filename),
                      width=640,
                      height=640)
             dev.off()
 
-            try(plot(object@fits[[i]],
+            ## Second pair of plots
+            try(plot(rppaset@fits[[i]],
                      main=ptitle,
                      type="resid",
-                     xform=object@fitparams@xform,
+                     xform=rppaset@fitparams@xform,
                      xlim=c(-15, 15)))
-            try(plot(object@fits[[i]],
+            try(plot(rppaset@fits[[i]],
                      main=ptitle,
                      type="steps",
-                     xform=object@fitparams@xform,
+                     xform=rppaset@fitparams@xform,
                      xlim=c(-15, 15)))
+
+            filename <- paste(paste(prefix, protein, "2", sep="_"),
+                              "png",
+                              sep=".")
             dev.copy(png,
-                     file.path(path,
-                               paste(namebase, proteins[i], '2', 'png', sep='.')),
+                     file.path(path, filename),
                      width=640,
                      height=640)
             dev.off()
         }
         par(op)
 
-        if (TRUE) {
-            ## Use ImageMagick to merge output graphs with source tiff files
-            for (i in seq(1, length(proteins))) {
-                rc <- .mergeGraphAndImage(proteins[i], namebase, path, tiffdir)
-                if (rc == 32512) {
-                    warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH", sQuote("convert")))
-                    message("some output files may be missing")
-                    break
-                }
+        ## Use ImageMagick to merge output graphs with source tiff files
+        for (i in seq(1, length(proteins))) {
+            rc <- .mergeGraphAndImage(proteins[i], prefix, path, tiffdir)
+            if (rc == 32512) {
+                warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH", sQuote("convert")))
+                message("some output files may be missing")
+                break
             }
         }
     }
-})
+}
 
 
 ##-----------------------------------------------------------------------------
-# Create an RPPA set from a directory of slides.
-# path = directory to analyze
-# designparams = common slide design specification of class RPPADesignParams
-# fitparams = common fit specification of class RPPAFitParams
-#
-# example usage:
-# see tests/testRPPASet.R
-
+## Create an RPPA set from a directory of slides.
 RPPAFitDir <- function(path,
                        designparams,
                        fitparams,
@@ -275,7 +294,7 @@ RPPAFitDir <- function(path,
     ## Begin processing
     call <- match.call()
 
-    ## assume all .txt files in the directory are slides
+    ## Assumes all .txt files in the directory are slides
     slideFilenames <- {
                           txt.re <- ".*[tT][xX][tT]$"
                           list.files(path=path, pattern=txt.re)
@@ -283,10 +302,10 @@ RPPAFitDir <- function(path,
 
     ## Load alias information in directory
     if (length(designparams@alias) < 1) {
-        layoutInfoPathname <- file.path(path, 'layoutInfo.tsv')
+        layoutInfoPathname <- file.path(path, "layoutInfo.tsv")
         if (file.exists(layoutInfoPathname)) {
             sampleLayout <- try(read.delim(layoutInfoPathname,
-                                           quote='',
+                                           quote="",
                                            row.names=NULL))
             ## :TBD: If the above fails, what should happen?
             ## Would appear this would crash and burn here...
@@ -303,7 +322,8 @@ RPPAFitDir <- function(path,
     design <- RPPADesignFromParams(firstslide,
                                    designparams)
 
-    ## plot the first slide as a quick design check
+    ## Plot the first slide as a quick design check
+    ## :TBD: Should this be plotting the requested measure instead?
     plotDesign(firstslide,
                design,
                'Mean.Total',

@@ -92,7 +92,7 @@ RPPAFitParams(measure,
   \code{RPPAFitParams}.
 }
 \references{KRC}
-\author{Kevin R. Coombes <kcoombes@mdanderson.org>}
+\author{P. Roebuck, \email{plroebuck@mdanderson.org}}
 \seealso{
   \code{\link{RPPAFit}}
 }

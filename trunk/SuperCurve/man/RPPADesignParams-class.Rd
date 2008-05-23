@@ -75,7 +75,7 @@ RPPADesignParams(steps=rep(0,1),
   \code{RPPADesignParams}.
 }
 \references{KRC}
-\author{Kevin R. Coombes <kcoombes@mdanderson.org>}
+\author{P. Roebuck, \email{plroebuck@mdanderson.org}}
 \seealso{
   \code{\link{RPPAFit}},
   \code{\link{RPPADesign}}

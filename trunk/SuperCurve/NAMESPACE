@@ -32,7 +32,6 @@ exportMethods(names)
 exportMethods(plot)
 exportMethods(resid, residuals)
 exportMethods(summary)
-exportMethods(write.summary)
 
 ## Public methods
 export(RPPA)
@@ -46,4 +45,5 @@ export(getSteps)
 export(image.RPPA)     # :BUG: S4 generic but doesn't work unless S3 present
 export(image.RPPAFit)  # :BUG: S4 generic but doesn't work unless S3 present
 export(seriesNames)
+export(write.summary)
 
