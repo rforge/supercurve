@@ -41,10 +41,6 @@ RPPAFitDir(path, designparams, fitparams, blanks=NULL)
 }
 \examples{
   \dontrun{
-parentdir <- "Y:/MyData"
-txtdir <- file.path(parentdir, "txt")     # quantification files
-imgdir <- file.path(parentdir, "tif")     # images corresponding to each quantification
-resdir <- file.path(parentdir, "results") # output files
 designparams <- RPPADesignParams(grouping="blockSample",
                                  center=FALSE,
                                  controls=list("control",
@@ -56,20 +52,19 @@ fitparams <- RPPAFitParams(measure="Mean.Net",
                            ignoreNegative=FALSE,
                            warnLevel=-1,
                            verbose=FALSE)
-rm(fitset)
+
+parentdir <- "Y:/MyData"
+txtdir <- file.path(parentdir, "txt")     # quantification files
+imgdir <- file.path(parentdir, "tif")     # and corresponding image files
+outdir <- file.path(parentdir, "results") # output files
+
 fitset <- RPPAFitDir(txtdir, designparams, fitparams)
 write.summary(fitset,
               namebase="supercurve",
-              path=resdir,
+              path=outdir,
               normalize="median",
               graphs=TRUE,
               tiffdir=imgdir)
-  }
-
-  \dontrun{
-# :TBD: shitcan example if gui moved to separate package
-# An even easier way to call this function is to use a simple gui we have set up
-sc() # :TBD: gui really needs a more explicit name
   }
 }
 \keyword{models}

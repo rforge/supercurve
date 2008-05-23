@@ -92,7 +92,10 @@ colorbar=FALSE, col=terrain.colors(256), \dots)
 }
 \references{KRC}
 \author{Kevin R. Coombes <kcoombes@mdanderson.org>}
-\seealso{\code{\link{RPPAFit}}, \code{\link{RPPADesign}}}
+\seealso{
+  \code{\link{RPPAFit}},
+  \code{\link{RPPADesign}}
+}
 \examples{
 path <- system.file("rppaTumorData", package="SuperCurve")
 erk2 <- RPPA("ERK2.txt", path=path)
