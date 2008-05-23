@@ -126,48 +126,6 @@ setMethod("trimConc", "FitClass",
 
 
 ##-----------------------------------------------------------------------------
-## :TBD: license issue? This function (GPL)
-## :TODO: contact package author for permission to include function
-## This bisection search was shamelessly copied from the "fields" package
-.bisection.search <- function(x1,
-                              x2,
-                              f,
-                              tol=1e-07,
-                              niter=25,
-                              f.extra=NA,
-                              upcross.level=0) {
-    f1 <- f(x1, f.extra) - upcross.level
-    f2 <- f(x2, f.extra) - upcross.level
-    if (f1 > f2) {
-        stop("f1 must be < f2")
-    }
-    iter <- niter
-    for (k in seq(1, niter)) {
-        xm <- (x1 + x2) / 2
-        fm <- f(xm, f.extra) - upcross.level
-        if (fm < 0) {
-            x1 <- xm
-            f1 <- fm
-        }
-        else {
-            x2 <- xm
-            f2 <- fm
-        }
-
-        if (abs(fm) < tol) {
-            iter <- k
-            break
-        }
-    }
-    xm <- (x1 + x2) / 2
-    fm <- f(xm, f.extra) - upcross.level
-    list(x=xm,
-         fm=fm,
-         iter=iter)
-}
-
-
-##-----------------------------------------------------------------------------
 .generic.trim <- function(object,
                           conc,
                           intensity,
@@ -200,23 +158,23 @@ setMethod("trimConc", "FitClass",
     hi.intensity <- max(intensity)
 
     ## search fitted model to find conc corresponding to lo.intensity
-    lo.conc <- .bisection.search(min(conc, na.rm=TRUE),
-                                 max(conc, na.rm=TRUE),
-                                 function(x, object) {
-                                     fitted(object, x) - lo.intensity
-                                 },
-                                 f.extra=object,
-                                 tol=0.1)$x
+    lo.conc <- bisection.search(min(conc, na.rm=TRUE),
+                                max(conc, na.rm=TRUE),
+                                function(x, object) {
+                                    fitted(object, x) - lo.intensity
+                                },
+                                f.extra=object,
+                                tol=0.1)$x
     ## Adjust min allowable conc to point at undiluted spot
     lo.conc <- lo.conc - max.step
 
-    hi.conc <- .bisection.search(min(conc, na.rm=TRUE),
-                                 max(conc, na.rm=TRUE),
-                                 function(x, object) {
-                                     fitted(object, x) - hi.intensity
-                                 },
-                                 f.extra=object,
-                                 tol=0.1)$x
+    hi.conc <- bisection.search(min(conc, na.rm=TRUE),
+                                max(conc, na.rm=TRUE),
+                                function(x, object) {
+                                    fitted(object, x) - hi.intensity
+                                },
+                                f.extra=object,
+                                tol=0.1)$x
     ## :TBD: comment right?
     ## Adjust min allowable conc to point at most dilute spot
     hi.conc <- hi.conc - min.step
