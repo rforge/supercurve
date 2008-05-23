@@ -2,33 +2,10 @@
 ### DILUTIONFITMETHODS.R
 ###
 
-##############################################################
-## Classes for fit functions to drive dilutionFit
-
-# Required methods
 
 ##-----------------------------------------------------------------------------
-## Use the conc and intensity series for an entire slide to
-## fit a curve for the the slide of intensity = f(conc)
-##
-## Inputs:
-## conc and intensity values for a slide
-## Outputs:
-## (none) Use this data to create and store parameters for
-## the slide fit of intensity = f(conc) in the object
-##
-setMethod("fitSlide", "FitClass",
-          function(object,
-                   conc,
-                   intensity,
-                   ...) {
-    stop("fitSlide must be implemented for each kind of FitClass")
-})
-
-
-##-----------------------------------------------------------------------------
-## find the concentration for an individual dilution series
-## given the curve fit for the slide
+## Finds the concentration for an individual dilution series given the
+## curve fit for the slide
 ##
 ## Inputs
 ## dilutions and intensities for a single dilution series
@@ -46,27 +23,34 @@ setMethod("fitSeries", "FitClass",
                    silent=TRUE,
                    trace=FALSE,
                    ...) {
-    stop("fitSeries must be implemented for each kind of FitClass")
+    stop(sprintf("%s must be implemented by any subclass of %s",
+                 sQuote("fitSeries"), sQuote("FitClass")))
 })
 
 
-########################################################################
-## General utility functions for curve response fits
+##-----------------------------------------------------------------------------
+## Use the conc and intensity series for an entire slide to
+## fit a curve for the slide of intensity = f(conc)
+setMethod("fitSlide", "FitClass",
+          function(object,
+                   conc,
+                   intensity,
+                   ...) {
+    stop(sprintf("%s must be implemented by any subclass of %s",
+                 sQuote("fitSlide"), sQuote("FitClass")))
+})
+
 
 ##-----------------------------------------------------------------------------
-## return concentration and intensity cutoffs for the model
+## Returns concentration and intensity cutoffs for the model
 setMethod("trimConc", "FitClass",
           function(object,
                    conc,
                    intensity,
                    design,
                    ...) {
-    stop("trim must be implemented for each kind of FitClass")
-    ## :TBD: Why is this code here when never executed?
-    list(lo.intensity=0,
-         hi.intensity=0,
-         lo.conc=0,
-         hi.conc=0)
+    stop(sprintf("%s must be implemented by any subclass of %s",
+                 sQuote("trimConc"), sQuote("FitClass")))
 })
 
 
@@ -83,34 +67,34 @@ setMethod("trimConc", "FitClass",
                         diln,
                         intensity,
                         est.conc,
-                        method="nls",
+                        method=c("nls", "nlrob", "nlrq"),
                         silent=TRUE,
                         trace=FALSE,
                         ...) {
-    ## :TBD: should 'method' argument be done as 'c(choice1, choice2, choice3)'
+    method <- match.arg(method)
+
     dum <- list(Y=intensity,
                 Steps=diln)
 
-    ## :TBD: should this be done with 'switch(EXPR = method, ...'
-    # define regression method
-    nlsmeth <- if (method == "nls") {
-                   nls
-               } else if (method == "nlrob") {
-                   if (!require('MASS')) {
-                       ## :TBD: Error message correct?
-                       stop("This routine requires the MASS library for the 'rlm' routine.")  ## :TBD: err text right method?
-                   }
-                   nlrob
-               } else if (method == "nlrq") {
-                   if (!require('quantreg')) {
-                       stop("This routine requires the quantreg library for the 'nlrq' routine.")
-                   }
-                   function(...) {
-                       nlrq(..., control=nlrq.control(maxiter=10, eps=1e-02))
-                   }
-               } else {
-                   stop('unrecognized regression method')
-               }
+    ## Ensure necessary packages available
+    if (method == "nlrob" && !require(robustbase)) {
+        stop(sprintf("%s package required for %s method",
+                     sQuote("robustbase"), sQuote(method)))
+    } else if (method == "nlrq" && !require(quantreg)) {
+        stop(sprintf("%s package required for %s method",
+                     sQuote("quantreg"), sQuote(method)))
+    }
+
+    ## Define regression method
+    nlsmeth <- switch(EXPR=method,
+                      nls=nls,
+                      nlrob=nlrob,
+                      nlrq=function(...) {
+                               nlrq(...,
+                                    control=nlrq.control(maxiter=10, eps=1e-02))
+                           },
+                      stop(sprintf("unrecognized regression method %s",
+                                   sQuote(method))))
 
     ## function .slide.model references object back here for curve model
     assign(".RPPA.fit.model", object, env=.GlobalEnv)
@@ -142,7 +126,8 @@ setMethod("trimConc", "FitClass",
 
 
 ##-----------------------------------------------------------------------------
-## :TBD: license issue?
+## :TBD: license issue? This function (GPL)
+## :TODO: contact package author for permission to include function
 ## This bisection search was shamelessly copied from the "fields" package
 .bisection.search <- function(x1,
                               x2,
@@ -222,7 +207,7 @@ setMethod("trimConc", "FitClass",
                                  },
                                  f.extra=object,
                                  tol=0.1)$x
-    ## adjust min allowable conc to point at undiluted spot
+    ## Adjust min allowable conc to point at undiluted spot
     lo.conc <- lo.conc - max.step
 
     hi.conc <- .bisection.search(min(conc, na.rm=TRUE),
@@ -233,7 +218,7 @@ setMethod("trimConc", "FitClass",
                                  f.extra=object,
                                  tol=0.1)$x
     ## :TBD: comment right?
-    ## adjust min allowable conc to point at most dilute spot
+    ## Adjust min allowable conc to point at most dilute spot
     hi.conc <- hi.conc - min.step
 
     list(lo.intensity=lo.intensity,
@@ -243,11 +228,12 @@ setMethod("trimConc", "FitClass",
 }
 
 
-##############################################################
+##
 ## Loess model class
+##
 
 ##-----------------------------------------------------------------------------
-setMethod("fitSlide", "loessFitClass",
+setMethod("fitSlide", "LoessFitClass",
           function(object,
                    conc,
                    intensity,
@@ -255,13 +241,13 @@ setMethod("fitSlide", "loessFitClass",
     fit.lo <- loess(intensity ~ conc)
 
     ## Create new class
-    new("loessFitClass",
+    new("LoessFitClass",
         model=fit.lo)
 })
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitted", "loessFitClass",
+setMethod("fitted", "LoessFitClass",
           function(object,
                    conc,
                    ...) {
@@ -282,7 +268,7 @@ setMethod("fitted", "loessFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitSeries", "loessFitClass",
+setMethod("fitSeries", "LoessFitClass",
           function(object,
                    diln,
                    intensity,
@@ -296,7 +282,7 @@ setMethod("fitSeries", "loessFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("trimConc", "loessFitClass",
+setMethod("trimConc", "LoessFitClass",
           function(object,
                    conc,
                    intensity,
@@ -306,11 +292,12 @@ setMethod("trimConc", "loessFitClass",
 })
 
 
-##############################################################
-# cobs model class
+##
+## Cobs model class
+##
 
 ##-----------------------------------------------------------------------------
-setMethod("fitSlide", "cobsFitClass",
+setMethod("fitSlide", "CobsFitClass",
           function(object,
                    conc,
                    intensity,
@@ -327,7 +314,7 @@ setMethod("fitSlide", "cobsFitClass",
                    print.mesg=FALSE)
 
     ## Create new class
-    new("cobsFitClass",
+    new("CobsFitClass",
         model=fit.lo,
         lambda=fit.lo$lambda)
 })
@@ -351,7 +338,7 @@ setMethod("fitSlide", "cobsFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitted", "cobsFitClass",
+setMethod("fitted", "CobsFitClass",
           function(object,
                    conc,
                    ...) {
@@ -401,7 +388,7 @@ setMethod("fitted", "cobsFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitSeries", "cobsFitClass",
+setMethod("fitSeries", "CobsFitClass",
           function(object,
                    diln,
                    intensity,
@@ -415,7 +402,7 @@ setMethod("fitSeries", "cobsFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("trimConc", "cobsFitClass",
+setMethod("trimConc", "CobsFitClass",
           function(object,
                    conc,
                    intensity,
@@ -425,8 +412,9 @@ setMethod("trimConc", "cobsFitClass",
 })
 
 
-##############################################################
+##
 ## Logistic model class
+##
 
 ##-----------------------------------------------------------------------------
 ## N.B.: rnls does not work with local functions
@@ -455,7 +443,7 @@ setMethod("trimConc", "cobsFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitSlide", "logisticFitClass",
+setMethod("fitSlide", "LogisticFitClass",
           function(object,
                    conc,
                    intensity,
@@ -489,13 +477,13 @@ setMethod("fitSlide", "logisticFitClass",
     }
 
     ## Create new class
-    new("logisticFitClass",
+    new("LogisticFitClass",
         coefficients=unlist(cf))
 })
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitted", "logisticFitClass",
+setMethod("fitted", "LogisticFitClass",
           function(object,
                    conc,
                    ...) {
@@ -505,7 +493,7 @@ setMethod("fitted", "logisticFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitSeries", "logisticFitClass",
+setMethod("fitSeries", "LogisticFitClass",
           function(object,
                    diln,
                    intensity,
@@ -519,7 +507,7 @@ setMethod("fitSeries", "logisticFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("trimConc", "logisticFitClass",
+setMethod("trimConc", "LogisticFitClass",
           function(object,
                    conc,
                    intensity,

@@ -162,9 +162,13 @@ setMethod("fitted", "RPPAFit",
     conc <- object@concentrations
     series <- as.character(object@design@layout$Series)
     fitX <- conc[series] + object@design@layout$Steps
+
+    ## Define type of fitted values
     switch(EXPR=type,
            x=, X=fitX,
-           y=, Y=fitted(object@model, fitX))
+           y=, Y=fitted(object@model, fitX),
+           stop(sprintf("unrecognized fitted values type %s",
+                        sQuote(type))))
 })
 
 
@@ -191,6 +195,7 @@ setMethod("residuals", "RPPAFit",
     ## Begin processing
     res <- object@rppa@data[, object@measure] - fitted(object)
 
+    ## Define residuals type
     switch(EXPR=type,
            raw          = res,
            standardized = scale(res),
@@ -199,7 +204,9 @@ setMethod("residuals", "RPPAFit",
                               nobs <- length(y)
                               sigmasq <- var(y) * (nobs-1)
                               1 - (nobs * res * res / sigmasq)
-                          })
+                          },
+           stop(sprintf("unrecognized residuals type %s",
+                        sQuote(type))))
 })
 
 
@@ -765,14 +772,11 @@ RPPAFit <- function(rppa,
     yval <- intensity[!.controlVector(design)]
 
     fc <- switch(EXPR=model,
-                 logistic = new("logisticFitClass"),
-                 loess = new("loessFitClass"),
-                 cobs = new("cobsFitClass"),
-                 NULL)
-
-    if (is.null(fc)) {
-        stop("unknown model type in RPPAfit")
-    }
+                 logistic = new("LogisticFitClass"),
+                 loess = new("LoessFitClass"),
+                 cobs = new("CobsFitClass"),
+                 stop(sprintf("unrecognized model type %s",
+                              sQuote(model))))
 
     ## do a two pass estimation, first using rough conc. estimates,
     ## then using better ones

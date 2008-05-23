@@ -11,19 +11,19 @@ setClass("FitClass",
 setOldClass("cobs")
 setOldClass("loess")
 
-setClass("cobsFitClass",
+setClass("CobsFitClass",
          representation("FitClass",
-                        model = "cobs", # actually this is of class cobs, but I could not get that to work
+                        model = "cobs",
                         lambda = "numeric"),
          prototype=prototype(lambda=0))
 
-setClass("loessFitClass",
+setClass("LoessFitClass",
          representation("FitClass",
                         model="loess"))
 
-setClass("logisticFitClass",
+setClass("LogisticFitClass",
          representation("FitClass",
-                        coefficients="numeric"), # alpha, beta, gamma
+                        coefficients="numeric"),
          prototype=prototype(coefficients=c(alpha=0, beta=0, gamma=0)))
 
 ##

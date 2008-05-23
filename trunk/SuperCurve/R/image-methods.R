@@ -138,7 +138,9 @@ image.RPPAFit <- function(x,
                                    StdRes=resid(x, "standardized"),
                                    ResidualsR2=resid(x, "r2"),
                                    X=fitted(x, "X"),
-                                   Y=fitted(x, "Y"))
+                                   Y=fitted(x, "Y"),
+                                   stop(sprintf("unrecognized measure %s",
+                                                sQuote(measure))))
 
     ## :TBD: Should this invoke callNextMethod instead (when S4 method)?
     ## :TBD: What should axis labels be?
