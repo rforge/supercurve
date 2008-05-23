@@ -271,9 +271,7 @@ supercurveGUI <- function() {
 
     fitset <- SuperCurve::RPPAFitDir(.path, designparams, fitparams)
     SuperCurve::write.summary(fitset,
-                              namebase='supercurve',
                               path=outputdir,
-                              normalize='median',
                               graphs=TRUE,
                               tiffdir=tiffdir)
 }
