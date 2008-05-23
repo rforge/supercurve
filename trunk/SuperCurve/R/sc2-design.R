@@ -2,6 +2,21 @@
 ### RPPADESIGN.R
 ###
 
+setClass("RPPADesign",
+         representation=list(layout="data.frame",
+                             alias="list",
+                             sampleMap="character",
+                             controls="list"))
+
+setClass("RPPADesignParams",
+         representation=list(steps="numeric",
+                             series="factor",
+                             grouping="character",
+                             ordering="character",
+                             alias="list",
+                             center="logical",
+                             controls="list"))
+
 
 ##-----------------------------------------------------------------------------
 RPPADesignParams <- function(steps=rep(0, 1),
@@ -273,13 +288,51 @@ RPPADesign <- function(raw,
 
 
 ##-----------------------------------------------------------------------------
+setMethod("summary", "RPPADesign",
+          function(object,
+                   ...) {
+    cat("An RPPA design object with controls:", "\n")
+    print(unlist(object@controls))
+    cat("\n")
+    summary(object@layout)
+})
+
+
+##-----------------------------------------------------------------------------
+setMethod("image", signature(x="RPPADesign"),
+          function(x,
+                   ...) {
+    ## figure out how to make "geographic" pictures
+    data.df <- x@layout
+    my <- max(data.df$Main.Row) * max(data.df$Sub.Row)
+    mx <- max(data.df$Main.Col) * max(data.df$Sub.Col)
+    yspot <- 1+my-(max(data.df$Sub.Row)*(data.df$Main.Row-1) + data.df$Sub.Row)
+    xspot <- max(data.df$Sub.Col)*(data.df$Main.Col-1) + data.df$Sub.Col
+    geo.steps <- tapply(data.df$Steps,
+                        list(xspot, yspot),
+                        mean)
+    image(1:mx,
+          1:my,
+          geo.steps,
+          ...)
+    abline(h=(0.5 + seq(0, my, length=1+max(data.df$Main.Row))))
+    abline(v=(0.5 + seq(0, mx, length=1+max(data.df$Main.Col))))
+    invisible(geo.steps)
+})
+
+##-----------------------------------------------------------------------------
 # plot the series in an RPPA under a given design layout
 # see if the series make sense under this layout
+## :KRC: This should be a genric plot function, probably with a more
+## 'interesting' signature. Perhaps
+##     setMethod(plot, signature=c("RPPA", "RPPADesign"), 
 plotDesign <- function(rppa,
                        design,
                        measure='Mean.Total',
                        main='') {
     ## Check arguments
+    ## :KRC: Do not need the first two parts of this checkif you use the
+    ## S4 methods to do it for you...
     if (!inherits(rppa, "RPPA")) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppa"), "RPPA"))
@@ -392,6 +445,8 @@ setMethod("names", "RPPADesign",
 
 
 if (FALSE) {
+  ## :KRC: why did we comment out .attachSlot,
+  ## and why did we have it in the first place?
     .attachslot <- function(x) {
         xname <- substitute(x)
         sl <- names(getSlots(class(x)))

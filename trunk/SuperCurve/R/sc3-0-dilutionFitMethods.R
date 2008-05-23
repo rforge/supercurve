@@ -2,6 +2,28 @@
 ### DILUTIONFITMETHODS.R
 ###
 
+setClass("FitClass",
+         representation("VIRTUAL"))
+
+setOldClass("cobs")
+setOldClass("loess")
+
+setClass("CobsFitClass",
+         representation("FitClass",
+                        model = "cobs",
+                        lambda = "numeric"),
+         prototype=prototype(lambda=0))
+
+setClass("LoessFitClass",
+         representation("FitClass",
+                        model="loess"))
+
+setClass("LogisticFitClass",
+         representation("FitClass",
+                        coefficients="numeric"),
+         prototype=prototype(coefficients=c(alpha=0, beta=0, gamma=0)))
+
+
 
 ##-----------------------------------------------------------------------------
 ## Finds the concentration for an individual dilution series given the

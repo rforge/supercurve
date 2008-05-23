@@ -2,6 +2,36 @@
 ### DILUTIONFIT.R
 ###
 
+setClass("RPPAFit",
+         representation=list(call="call",              # function call used to create the model
+                             rppa="RPPA",              # required parameter
+                             design="RPPADesign",      # required parameter
+                             measure="character",      # required parameter
+                             method="character",       # optional parameter
+                             trimset="numeric",        # list(lo.intensity, hi.intensity, lo.conc, hi.conc)
+                             model="FitClass",         # curve model
+                             concentrations="numeric", # main output
+                             lower="numeric",          # confidence interval
+                             upper="numeric",          # confidence interval
+                             conf.width="numeric",     # width of confidence interval
+                             intensities="numeric",    # intensities related to series concentrations
+                             ss.ratio="numeric",
+                             warn="character",
+                             version="character"))
+
+setClass("RPPAFitParams",
+         representation=list(measure="character",
+                             xform="function",
+                             method="character",
+                             ci="logical",
+                             ignoreNegative="logical",
+                             trace="logical",
+                             verbose="logical",
+                             veryVerbose="logical",
+                             warnLevel="numeric",
+                             trim="logical",
+                             model="character"))
+
 ##############################################################
 ## This is the result of the model building in doSimulation.R
 ## Original version by Kevin R. Coombes and Jianhua Hu.
@@ -143,6 +173,56 @@
 ##############################################################
 # RPPAFit
 
+##-----------------------------------------------------------------------------
+setMethod("summary", "RPPAFit",
+          function(object,
+                   ...) {
+    cat(paste("An RPPAFit object constructed via the function call:",
+              "\n",
+              as.character(list(object@call))),
+        "\n")
+})
+
+
+##-----------------------------------------------------------------------------
+## Provides a geographic plot of some measure computed from the fit.
+## Default is to image the (raw) residuals, with options for other forms
+## of the residuals or for the fitted concentrations (X) or intensities (Y).
+.imageRPPAFit <- function(x,
+                          measure=c("Residuals",
+                                    "ResidualsR2",
+                                    "StdRes",
+                                    "X",
+                                    "Y"),
+                          ...) {
+    ## Check arguments
+    measure <- match.arg(measure)
+
+    ## Begin processing
+    rppa <- x@rppa
+    rppa@data[[measure]] <- switch(EXPR=measure,
+                                   Residuals=resid(x),
+                                   StdRes=resid(x, "standardized"),
+                                   ResidualsR2=resid(x, "r2"),
+                                   X=fitted(x, "X"),
+                                   Y=fitted(x, "Y"),
+                                   stop(sprintf("unrecognized measure %s",
+                                                sQuote(measure))))
+
+    ## :TBD: Should this invoke callNextMethod instead (when S4 method)?
+    ## :TBD: What should axis labels be?
+    ## :TBD: Shouldn't main reference file as well?
+    foo <- getMethod("image", class(rppa))
+    foo(rppa,
+          measure=measure,
+          ...)
+
+    invisible(x)
+}
+
+## :TODO: Figure out how to combine with above and remove S3 definition
+setMethod("image", "RPPAFit",
+          .imageRPPAFit)
 
 ##-----------------------------------------------------------------------------
 ## We are actually interested in estimating the concentrations for each

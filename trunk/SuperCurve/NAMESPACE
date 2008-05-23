@@ -42,8 +42,6 @@ export(RPPAFitDir)
 export(RPPAFitParams)
 export(getConfidenceInterval)
 export(getSteps)
-export(image.RPPA)     # :BUG: S4 generic but doesn't work unless S3 present
-export(image.RPPAFit)  # :BUG: S4 generic but doesn't work unless S3 present
 export(seriesNames)
 export(write.summary)
 

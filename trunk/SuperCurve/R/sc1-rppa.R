@@ -3,9 +3,16 @@
 ###
 
 
+##-----------------------------------------------------------------------------
+setClass("RPPA",
+         representation=list(data="data.frame",
+                             file="character"))
+
 ## :TODO: Change API to accept file object, replacing filename/path args
 ## Logically, it really should be nothing more than a couple lines, with
 ## a file object as the generator's sole argument.
+
+## :TODO: The blanks argument belongeth not here.
 
 ##-----------------------------------------------------------------------------
 ## Generates an RPPA object from a Microvigene .txt file.
@@ -41,6 +48,8 @@ RPPA <- function(filename, path='.', blanks=NULL) {
     }
 
     ## MicroVigene introducing an extra header line in later versions of file
+    ## :TODO: Something more sensible than hardcoding the two choices of the
+    ## number of header lines....
     get.num.header.lines <- function(filename) {
         line <- readLines(filename, n=1)
         mv.version <- as.numeric(strsplit(line, "[:blank:]")[[1]][3])
@@ -85,6 +94,8 @@ RPPA <- function(filename, path='.', blanks=NULL) {
     }
 
     ## :TBD: Add path to object? Convert to canonical format prior to doing so?
+    ## :KRC: No, I just want the filename, not the full path. That is why the
+    ## arguments were separated to start with.
 
     ## Create new class
     new("RPPA",
@@ -92,6 +103,100 @@ RPPA <- function(filename, path='.', blanks=NULL) {
         file=filename)
 }
 
+##-----------------------------------------------------------------------------
+setMethod("summary", "RPPA",
+          function(object,
+                   ...) {
+    cat(sprintf("An RPPA object loaded from %s", dQuote(object@file)),
+        "\n\n")
+    summary(object@data)
+})
+
+##-----------------------------------------------------------------------------
+setMethod("image", "RPPA",  function(x,
+                       measure="Mean.Net",
+                       main=measure,
+                       colorbar=FALSE,
+                       col=terrain.colors(256),
+                       ...) {
+    ## Check arguments
+    if (!is.character(measure)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("measure")))
+    } else if (!(length(measure) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("measure")))
+    }
+
+    if (!is.character(main)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("main")))
+    } else if (!(length(main) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("main")))
+    }
+
+    if (!is.logical(colorbar)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("colorbar")))
+    } else if (!(length(colorbar) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("colorbar")))
+    }
+
+    ## Begin processing
+    data.df <- x@data
+    my <- max(data.df$Main.Row) * max(data.df$Sub.Row)
+    mx <- max(data.df$Main.Col) * max(data.df$Sub.Col)
+    yspot <- 1+my-(max(data.df$Sub.Row)*(data.df$Main.Row-1) + data.df$Sub.Row)
+    xspot <- max(data.df$Sub.Col)*(data.df$Main.Col-1) + data.df$Sub.Col
+    geo <- tapply(data.df[, measure],
+                  list(xspot, yspot),
+                  mean)
+    if (colorbar) {
+        ## get the size of the plotting region in relative units
+        startPlt <- par()$plt
+
+        ## We're only going to partition things on the x-axis, so only
+        ## the first 2 coordinates are of interest. Define the boundaries
+        ## for the two panels so that a 10/1 width ratio is attained.
+        imagePlt    <- startPlt
+        colorbarPlt <- startPlt
+        startWidth  <- startPlt[2] - startPlt[1]
+
+        imagePlt[2]    <- startPlt[1] + (10/12)*startWidth
+        colorbarPlt[1] <- startPlt[2] - ( 1/12)*startWidth
+
+        ## draw the colorbar
+        par(plt=colorbarPlt)
+        image(1,
+              seq(min(geo, na.rm=TRUE),
+                  max(geo, na.rm=TRUE),
+                  length=256),
+              matrix(1:256, nrow=1),
+              col=col,
+              xaxt="n",
+              xlab="",
+              yaxt="n",
+              ylab="")
+        axis(4) # put labeling at right
+        box()
+
+        ## set things up to draw the main image and
+        ## revert back for the next figure
+        par(plt=imagePlt, new=TRUE)
+        on.exit(par(plt=startPlt))
+    }
+    image(1:mx,
+          1:my,
+          geo,
+          col=col,
+          main=main,
+          ...)
+    abline(h=(0.5 + seq(0, my, length=1+max(data.df$Main.Row))))
+    abline(v=(0.5 + seq(0, mx, length=1+max(data.df$Main.Col))))
+    invisible(x)
+})
 
 ##
 ##

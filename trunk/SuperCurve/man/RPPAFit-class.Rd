@@ -166,6 +166,10 @@ design <- RPPADesign(erk2,
                      grouping="blockSample",
                      controls=list("neg con", "pos con"))
 fit.nls <- RPPAFit(erk2, design, "Mean.Net")
+showMethods('image')
+class(fit.nls)
+
+image(fit.nls)
 image(fit.nls, measure="Residuals")
 plot(fit.nls, type="cloud")
 

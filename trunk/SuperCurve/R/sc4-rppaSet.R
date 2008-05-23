@@ -2,6 +2,13 @@
 ### RPPASET.R - Fit a set of slides with a common layout
 ###
 
+setClass("RPPASet",
+         representation=list(call="call",               # function call used to create the model
+                             version="character",       # package version
+                             design="RPPADesign",       # common design for all slides
+                             rppas="array",             # vector of RPPAs
+                             fitparams="RPPAFitParams", # parameters used for fitting
+                             fits="array"))             # set of fits
 
 ##-----------------------------------------------------------------------------
 ## Provide a generic convenience function to view a slot in the array of fits
