@@ -136,6 +136,8 @@ setMethod("image", "RPPA",  function(x,
                      sQuote("main")))
     }
 
+    ## :KRC: This is overkill. If someone want to submit a number or vector,
+    ## why should we care? This is R, not C or Java.
     if (!is.logical(colorbar)) {
         stop(sprintf("argument %s must be logical",
                      sQuote("colorbar")))
@@ -168,6 +170,7 @@ setMethod("image", "RPPA",  function(x,
         colorbarPlt[1] <- startPlt[2] - ( 1/12)*startWidth
 
         ## draw the colorbar
+        ## :TODO: Figure out how to set the margins so it works in small windows...
         par(plt=colorbarPlt)
         image(1,
               seq(min(geo, na.rm=TRUE),
@@ -201,6 +204,8 @@ setMethod("image", "RPPA",  function(x,
 ##
 ##
 if (FALSE) {
+  source("AllGenerics.R")
+  source("sc1-rppa.R")
   path <- "../inst/rppaTumorData"
   erk2 <- RPPA("ERK2.txt", path=path)
   summary(erk2)

@@ -31,6 +31,10 @@ RPPADesignParams <- function(steps=rep(0, 1),
                              center=FALSE,
                              controls=list()) {
     ## Check arguments
+    grouping <- match.arg(grouping)
+
+    ordering <- match.arg(ordering)
+
     if (!is.numeric(steps)) {
         stop(sprintf("argument %s must be numeric",
                      sQuote("steps")))
@@ -41,13 +45,14 @@ RPPADesignParams <- function(steps=rep(0, 1),
                      sQuote("series")))
     }
 
-    grouping <- match.arg(grouping)
-    ordering <- match.arg(ordering)
-
     if (!(is.list(alias) || is.data.frame(alias))) {
         stop(sprintf("argument %s must be list or data.frame",
                      sQuote("alias")))
-    } else if (!(length(alias) == 0)) {
+    }
+    if (length(alias) < 1) {
+        alias <- list(Alias=levels(raw$Sample),
+                      Sample=levels(factor(tolower(as.character(raw$Sample)))))
+    } else {
         reqdNames <- c("Alias", "Sample")
         if (!(length(alias) >= length(reqdNames))) {
             stop(sprintf("argument %s must be of length %d or greater",
@@ -88,40 +93,6 @@ RPPADesignParams <- function(steps=rep(0, 1),
 
 ##-----------------------------------------------------------------------------
 RPPADesignFromParams <- function(raw, designparams) {
-    ## Check arguments
-    if (!inherits(designparams, "RPPADesignParams")) {
-        stop(sprintf("argument %s must be object of class %s",
-                     sQuote("designparams"), "RPPADesignParams"))
-    }
-
-    ## Begin processing
-    RPPADesign(raw,
-               designparams@steps,
-               designparams@series,
-               designparams@grouping,
-               designparams@ordering,
-               designparams@alias,
-               designparams@center,
-               designparams@controls)
-}
-
-
-##-----------------------------------------------------------------------------
-# This is bad to have two generators here since now this has to be kept in
-# sync with RPPADesignParams.
-# Only keep for backwards compatibility atm
-RPPADesign <- function(raw,
-                       steps=rep(0, 1),
-                       series=factor(rep(0, 1)),
-                       grouping=c("byRow",
-                                  "byCol",
-                                  "bySample",
-                                  "blockSample"),
-                       ordering=c("decreasing",
-                                  "increasing"),
-                       alias=list(),
-                       center=FALSE,
-                       controls=list()) {
     ## If RPPA object, use its data slot value
     if (inherits(raw, "RPPA")) {
         raw <- raw@data
@@ -133,41 +104,19 @@ RPPADesign <- function(raw,
                      sQuote("raw")))
     }
 
-    if (!is.numeric(steps)) {
-        stop(sprintf("argument %s must be numeric",
-                     sQuote("steps")))
+    if (!inherits(designparams, "RPPADesignParams")) {
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("designparams"), "RPPADesignParams"))
     }
 
-    if (!(is.character(series) || is.factor(series))) {
-        stop(sprintf("argument %s must be character or factor",
-                     sQuote("series")))
-    }
-
-    ## :TBD: grouping, ordering
-
-    if (!(is.list(alias) || is.data.frame(alias))) {
-        stop(sprintf("argument %s must be list or data.frame",
-                     sQuote("alias")))
-    }
-
-    if (length(alias) < 1) {
-        alias <- list(Alias=levels(raw$Sample),
-                      Sample=levels(factor(tolower(as.character(raw$Sample)))))
-    }
-
-    if (!is.logical(center)) {
-        stop(sprintf("argument %s must be logical",
-                     sQuote("center")))
-    } else if (!(length(center) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("center")))
-    }
-
-    if (!is.list(controls)) {
-        stop(sprintf("argument %s must be list",
-                     sQuote("controls")))
-    }
-
+    steps    <- designparams@steps
+    series   <- designparams@series
+    grouping <- designparams@grouping
+    ordering <- designparams@ordering
+    alias    <- designparams@alias
+    center   <- designparams@center
+    controls <- designparams@controls
+    
     ## Begin processing
     raw.df <- data.frame(raw[, c("Main.Row",
                                  "Main.Col",
@@ -176,8 +125,6 @@ RPPADesign <- function(raw,
                                  "Sample")])
     if (length(steps) < 2 &&
         length(series) < 2) {
-        grouping <- match.arg(grouping)
-        ordering <- match.arg(ordering)
         steps <- rep(NA, nrow(raw))
         series <- rep(NA, nrow(raw))
         if (grouping == "byRow") {
@@ -288,6 +235,28 @@ RPPADesign <- function(raw,
 
 
 ##-----------------------------------------------------------------------------
+## Keep for backwards compatibility. Note that code has been refactored for
+## maintainability so nothing is done twice.
+RPPADesign <- function(raw,
+                       steps=rep(0, 1),
+                       series=factor(rep(0, 1)),
+                       grouping=c("byRow",
+                                  "byCol",
+                                  "bySample",
+                                  "blockSample"),
+                       ordering=c("decreasing",
+                                  "increasing"),
+                       alias=list(),
+                       center=FALSE,
+                       controls=list()) {
+  params <- RPPADesignParams(steps, series, grouping, ordering,
+                             alias, center, controls)
+  RPPADesignFromParams(raw, params)
+}
+  
+
+
+##-----------------------------------------------------------------------------
 setMethod("summary", "RPPADesign",
           function(object,
                    ...) {
@@ -299,10 +268,7 @@ setMethod("summary", "RPPADesign",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("image", signature(x="RPPADesign"),
-          function(x,
-                   ...) {
-    ## figure out how to make "geographic" pictures
+setMethod("image", signature(x="RPPADesign"), function(x, ...) {
     data.df <- x@layout
     my <- max(data.df$Main.Row) * max(data.df$Sub.Row)
     mx <- max(data.df$Main.Col) * max(data.df$Sub.Col)
@@ -323,7 +289,7 @@ setMethod("image", signature(x="RPPADesign"),
 ##-----------------------------------------------------------------------------
 # plot the series in an RPPA under a given design layout
 # see if the series make sense under this layout
-## :KRC: This should be a genric plot function, probably with a more
+## :KRC: This should be a generic plot function, probably with a more
 ## 'interesting' signature. Perhaps
 ##     setMethod(plot, signature=c("RPPA", "RPPADesign"), 
 plotDesign <- function(rppa,
@@ -388,7 +354,6 @@ plotDesign <- function(rppa,
               type='b')
     }
 }
-
 
 ##-----------------------------------------------------------------------------
 .controlVector <- function(design) {
@@ -460,6 +425,9 @@ if (FALSE) {
 
 
 if (FALSE) {
+  source("AllGenerics.R")
+  source("sc1-rppa.R")
+  source("sc2-design.R")
   path <- "../inst/rppaTumorData"
   erk2 <- RPPA("ERK2.txt", path=path)
   design <- RPPADesign(erk2,

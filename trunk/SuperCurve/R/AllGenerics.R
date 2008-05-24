@@ -11,8 +11,7 @@ if (!isGeneric("summary")) {
                function(object, ...) standardGeneric("summary"))
 }
 
-# defined for: RPPA, RPPAFit.
-## Why not RPPADesign?
+# defined for: RPPA, RPPAFit. RPPADesign
 if (!isGeneric("image")) {
     setGeneric("image",
                function(x, ...) standardGeneric("image"))
@@ -83,7 +82,7 @@ if (!isGeneric("fitSlide")) {
 }
 
 # defined for: RPPASet
-## if there is only one class that buses it, why is it generic?
+## if there is only one class that uses it, why is it generic?
 if (!isGeneric("fitslot")) {
     setGeneric("fitslot",
                function(object, ...) standardGeneric("fitslot"))
