@@ -355,6 +355,13 @@ plotDesign <- function(rppa,
     }
 }
 
+setMethod("plot", signature(x="RPPA", y="RPPADesign"),
+          function(x, y, measure="Mean.Total", main='', ...) {
+            plotDesign(x, y, measure, main, ...)
+          })
+
+
+
 ##-----------------------------------------------------------------------------
 .controlVector <- function(design) {
     ## Check arguments
@@ -441,5 +448,7 @@ if (FALSE) {
   image(design)
   summary(design)
   rm(path, erk2, design)
+
+  plotDesign(erk2, design)
 }
 

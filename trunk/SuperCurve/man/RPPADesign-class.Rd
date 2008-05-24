@@ -4,6 +4,7 @@
 \alias{image,RPPADesign-method}
 \alias{summary,RPPADesign-method}
 \alias{names,RPPADesign-method}
+\alias{plot,RPPA,RPPADesign-method}
 \alias{seriesNames}
 \alias{getSteps}
 \docType{class}
@@ -27,6 +28,7 @@ getSteps(design)
 \S4method{image}{RPPADesign}(x, \dots)
 \S4method{summary}{RPPADesign}(object, \dots)
 \S4method{names}{RPPADesign}(x)
+\S4method{plot}{RPPA,RPPADesign}(x, y, ...)
 }
 \arguments{
   \item{raw}{data frame, matrix, or object of class RPPA.}
@@ -64,7 +66,8 @@ getSteps(design)
     centered around 0.}
   \item{controls}{list containing the character strings that identify
     control spots on the array.}
-  \item{x}{object of class RPPADesign}
+  \item{x}{object of class RPPADesign (or RPPA in plot method)}
+  \item{y}{object of class RPPADesign}
   \item{object}{object of class RPPADesign}
   \item{design}{object of class RPPADesign}
   \item{\dots}{extra arguments for generic or plotting routines.}
@@ -123,9 +126,8 @@ getSteps(design)
     \item{summary(object, \dots)}{The \code{summary} method lists the
       names of the control spots on the array and then prints a summary of the
       data frame describing the layout.}
-    \item{names(x)}{The \code{names} method returns a character vector
-      containing, for each non-control spot, the name of the dilution series
-      to which that spot belongs.}
+    \item{plot(x,y,...)}{Plot an RPPA object by showing its dilution
+      series with respect to the corresponding RPPADesign.}
   }
 }
 \value{
@@ -164,6 +166,8 @@ design <- RPPADesign(erk2,
                      controls=list("neg con", "pos con"))
 image(design)
 summary(design)
+
+plot(erk2, design)
 
 path <- system.file("rppaCellData", package="SuperCurve")
 akt <- RPPA("Akt.txt", path=path)
