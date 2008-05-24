@@ -2,6 +2,21 @@
 ### DILUTIONFIT.R
 ###
 
+##############################################################
+## This is the result of the model building in doSimulation.R
+## Original version by Kevin R. Coombes.
+## Modified to incorproate cobs method by Jianhua Hu.
+## Modified by Corwin Joy.
+## Modified by: Kevin R. Coombes, 31 March 2006
+## Modified by: Corwin Joy, 31 March 2006 to add more robust estimate for
+##              alpha, beta & more formal regression tests.
+## Last modified by: Kevin Coombes, 3 May 2006
+##   Converted to S4 classes. Completely revised interface, giving more
+##   sensible names to inputs and outputs. Added numerous useful methods
+##   for assessing the quality of the fit.
+##############################################################
+
+
 setClass("RPPAFit",
          representation=list(call="call",              # function call used to create the model
                              rppa="RPPA",              # required parameter
@@ -31,19 +46,6 @@ setClass("RPPAFitParams",
                              warnLevel="numeric",
                              trim="logical",
                              model="character"))
-
-##############################################################
-## This is the result of the model building in doSimulation.R
-## Original version by Kevin R. Coombes and Jianhua Hu.
-## Modified by Corwin Joy.
-## Modified by: Kevin R. Coombes, 31 March 2006
-## Modified by: Corwin Joy, 31 March 2006 to add more robust estimate for
-##              alpha, beta & more formal regression tests.
-## Last modified by: Kevin Coombes, 3 May 2006
-##   Converted to S4 classes. Completely revised interface, giving more
-##   sensible names to inputs and outputs. Added numerous useful methods
-##   for assessing the quality of the fit.
-
 
 ##################################################################
 ## First pass estimator for concentrations
@@ -188,7 +190,7 @@ setMethod("summary", "RPPAFit",
 ## Provides a geographic plot of some measure computed from the fit.
 ## Default is to image the (raw) residuals, with options for other forms
 ## of the residuals or for the fitted concentrations (X) or intensities (Y).
-.imageRPPAFit <- function(x,
+setMethod("image", "RPPAFit", function(x,
                           measure=c("Residuals",
                                     "ResidualsR2",
                                     "StdRes",
@@ -218,11 +220,7 @@ setMethod("summary", "RPPAFit",
           ...)
 
     invisible(x)
-}
-
-## :TODO: Figure out how to combine with above and remove S3 definition
-setMethod("image", "RPPAFit",
-          .imageRPPAFit)
+})
 
 ##-----------------------------------------------------------------------------
 ## We are actually interested in estimating the concentrations for each

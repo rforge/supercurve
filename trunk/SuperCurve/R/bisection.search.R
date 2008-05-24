@@ -3,6 +3,8 @@
 ### University Corporation for Atmospheric Research
 ### Used with permission of Doug Nychka under Artistic license (2008)
 
+## :KRC: Should this be placed as an internal function inside the
+## .generic.trim function that is the only thing that ever uses it.
 
 ##-----------------------------------------------------------------------------
 "bisection.search" <-

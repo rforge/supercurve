@@ -81,10 +81,3 @@ if (!isGeneric("fitSlide")) {
                function(object, ...) standardGeneric("fitSlide"))
 }
 
-# defined for: RPPASet
-## if there is only one class that uses it, why is it generic?
-if (!isGeneric("fitslot")) {
-    setGeneric("fitslot",
-               function(object, ...) standardGeneric("fitslot"))
-}
-

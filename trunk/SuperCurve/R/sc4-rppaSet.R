@@ -9,14 +9,16 @@ setClass("RPPASet",
                              rppas="array",             # vector of RPPAs
                              fitparams="RPPAFitParams", # parameters used for fitting
                              fits="array"))             # set of fits
+## :KRC: WHy is "rppas" an array or vector instead of a list (or even an environment)?
 
 ##-----------------------------------------------------------------------------
-## Provide a generic convenience function to view a slot in the array of fits
-## as a simple matrix view (e.g., fitslot(fitset, 'concentrations'))
-setMethod("fitslot", "RPPASet",
-          function(object,
-                   sl,
-                   ...) {
+## Provide a convenience function to view a slot in the array of fits
+## as a simple matrix view (e.g., .fitSlot(fitset, 'concentrations'))
+#3 Note that this is no longer generic, and it is not even exported
+## since it is an internal utility funciton
+.fitSlot <- function(object,
+                    sl,
+                    ...) {
     ## Check arguments
     if (!is.character(sl)) {
         stop(sprintf("argument %s must be character",
@@ -39,7 +41,7 @@ setMethod("fitslot", "RPPASet",
     }
     colnames(mat) <- rownames(object@fits)
     mat
-})
+}
 
 
 ##-----------------------------------------------------------------------------
@@ -141,8 +143,8 @@ write.summary <- function(rppaset,
     }
 
     ## Begin processing
-    conc <- fitslot(rppaset, 'concentrations')
-    conc.ss <- fitslot(rppaset, 'ss.ratio')
+    conc <- .fitSlot(rppaset, 'concentrations')
+    conc.ss <- .fitSlot(rppaset, 'ss.ratio')
     if (sum(as.character(rppaset@design@alias$Alias) ==
             as.character(rppaset@design@alias$Sample)) < nrow(conc)) {
         ## We have non-trivial alias names.
@@ -268,12 +270,20 @@ write.summary <- function(rppaset,
 }
 
 
+setMethod("summary", "RPPASet", function(object,
+                                         path,
+                                         prefix="supercurve",
+                                         graphs=TRUE,
+                                         tiffdir=NULL, ...) {
+  write.summary(object, path, prefix, graphs, tiffdir)
+})
+
 ##-----------------------------------------------------------------------------
 ## Create an RPPA set from a directory of slides.
-RPPAFitDir <- function(path,
-                       designparams,
-                       fitparams,
-                       blanks=NULL) {
+RPPASet <- function(path,
+                    designparams,
+                    fitparams,
+                    blanks=NULL) {
     ## Check arguments
     if (!is.character(path)) {
         stop(sprintf("argument %s must be character",

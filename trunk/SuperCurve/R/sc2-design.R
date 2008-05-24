@@ -289,9 +289,6 @@ setMethod("image", signature(x="RPPADesign"), function(x, ...) {
 ##-----------------------------------------------------------------------------
 # plot the series in an RPPA under a given design layout
 # see if the series make sense under this layout
-## :KRC: This should be a generic plot function, probably with a more
-## 'interesting' signature. Perhaps
-##     setMethod(plot, signature=c("RPPA", "RPPADesign"), 
 plotDesign <- function(rppa,
                        design,
                        measure='Mean.Total',
@@ -450,5 +447,6 @@ if (FALSE) {
   rm(path, erk2, design)
 
   plotDesign(erk2, design)
+  plot(erk2, design)
 }
 

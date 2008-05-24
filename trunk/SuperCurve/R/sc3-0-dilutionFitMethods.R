@@ -2,11 +2,16 @@
 ### DILUTIONFITMETHODS.R
 ###
 
+setOldClass("cobs")
+setOldClass("loess")
+
 setClass("FitClass",
          representation("VIRTUAL"))
 
-setOldClass("cobs")
-setOldClass("loess")
+setClass("LogisticFitClass",
+         representation("FitClass",
+                        coefficients="numeric"),
+         prototype=prototype(coefficients=c(alpha=0, beta=0, gamma=0)))
 
 setClass("CobsFitClass",
          representation("FitClass",
@@ -18,12 +23,10 @@ setClass("LoessFitClass",
          representation("FitClass",
                         model="loess"))
 
-setClass("LogisticFitClass",
-         representation("FitClass",
-                        coefficients="numeric"),
-         prototype=prototype(coefficients=c(alpha=0, beta=0, gamma=0)))
 
-
+###################################################################
+## GENERIC METHODS FOR FitClass: Typically throw an erro since they
+## must be implemented by derived classes.
 
 ##-----------------------------------------------------------------------------
 ## Finds the concentration for an individual dilution series given the
@@ -75,6 +78,12 @@ setMethod("trimConc", "FitClass",
                  sQuote("trimConc"), sQuote("FitClass")))
 })
 
+
+###################################################################
+## Utility fuctions used to implement methods for derived classes
+## :KRC: Should these be used for the FitClass method so we can
+## both document them and use them if we decide to develop new
+## and improved fitting algorithms in the future?
 
 ##-----------------------------------------------------------------------------
 .slide.model <- function(conc) {
@@ -208,7 +217,7 @@ setMethod("trimConc", "FitClass",
 }
 
 
-##
+###################################################################
 ## Loess model class
 ##
 
@@ -272,7 +281,7 @@ setMethod("trimConc", "LoessFitClass",
 })
 
 
-##
+###################################################################
 ## Cobs model class
 ##
 
@@ -392,7 +401,7 @@ setMethod("trimConc", "CobsFitClass",
 })
 
 
-##
+###################################################################
 ## Logistic model class
 ##
 
