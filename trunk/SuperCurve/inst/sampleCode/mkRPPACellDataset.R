@@ -8,7 +8,7 @@ local({
     ##
 
     cell40data.dir <- system.file("rppaCellData", package="SuperCurve")
-    akt    <- RPPA("AKT.txt", path=cell40data.dir)
+    akt    <- RPPA("Akt.txt", path=cell40data.dir)
     c.erk2 <- RPPA("ERK2no2.txt", path=cell40data.dir)
     ctnnb1 <- RPPA("Bcatenin40breastcelllines.txt", path=cell40data.dir)
 
