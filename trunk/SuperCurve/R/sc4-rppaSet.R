@@ -30,7 +30,7 @@ setClass("RPPASet",
     } else if (!(length(sl) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("sl")))
-    } else if (!(sl in slotNames(rppaset@fits[[1]]))) {
+    } else if (!(sl %in% slotNames(rppaset@fits[[1]]))) {
         stop(sprintf("invalid slotname %s",
                      sQuote(sl)))
     }
