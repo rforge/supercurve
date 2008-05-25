@@ -2,10 +2,6 @@
 ### SUPERCURVEGUI.R
 ###
 
-library(tcltk)
-## Should really do this properly:
-# library(SuperCurve)
-
 
 ##-----------------------------------------------------------------------------
 ## Returns directory of file user selected via dialog
@@ -199,20 +195,22 @@ library(tcltk)
 ##-----------------------------------------------------------------------------
 ## Prompt user for parameters and run SuperCurve using specified directories
 
-## :TODO: Most of th hard-coded choices should be converted to a data-driven model
-## that allows us to read them from a table or flat file somewhere.  The idea should
-## be to allow new classes to "register" themselves smoewhere and thus get added to
-## the GUI automagically without having to modify the code here. This method was
-## used by the 'affy' class in BioConducotr to allow for the easy plug-in of new
-## methods. Specifically, we previously worked out a model that had three basic
-## processing steps:
-##    [1] SpotLevel Corrections (which might just be local background correction
-##        but might now involve Shannon's nested surface fits to the diluted
-##        positive controls.
-##    [2] Curve fitting, whihc now has at least three possible models.  At present,
-##        truncation (trimming) is included a part of this step, but we might want
-##        to separate it to allow for alternative trimming algorithms.
-##    [3] Normalization,which is not presently included in the GUI, but should be.
+## :TODO: Most of the hard-coded choices should be converted to a data-driven
+## model that allows us to read them from a table or flat file somewhere. The
+## idea should be to allow new classes to "register" themselves somewhere and
+## thus get added to the GUI automagically without having to modify the code
+## here. This method was used by the 'affy' class in Bioconductor to allow for
+## the easy plug-in of new methods. Specifically, we previously worked out a
+## model that had three basic processing steps:
+##  [1] SpotLevel Corrections (which might just be local background correction
+##      but might now involve Shannon's nested surface fits to the diluted
+##      positive controls.
+##  [2] Curve fitting, which now has at least three possible models. At
+##      present, truncation (trimming) is included a part of this step, but
+##      we might want to separate it to allow for alternative trimming
+##      algorithms.
+##  [3] Normalization, which is not presently included in the GUI, but should
+##      be.
 supercurveGUI <- function() {
 
     .path <- if (nchar(scdir <- Sys.getenv("SC_DIR")) > 1) {
@@ -233,12 +231,13 @@ supercurveGUI <- function() {
     net.total <- .listButtonDialog(title="Intensity Measure",
                                    message="Choose spot measure to use for quantification",
                                    c("Mean Net", "Mean Total"))
-    # :KRC: more general measures should be possible, especilly if we allow spot-level adjustment
+    ## :KRC: more general measures should be possible, especially if
+    ## we allow spot-level adjustment
     measure <- switch(EXPR=net.total,
                       "Mean.Net",
                       "Mean.Total")
 
-    # :KRC: Needs to be data-driven so we can extend this to other models easily
+    ## :KRC: Needs to be data-driven so it extends to other models easily
     curve.model <- .listButtonDialog(title="Dilution Curve Model",
                                      message="Choose a model for fitting the antibody response curve",
                                      c("Monotone Increasing B-spline",
@@ -249,7 +248,7 @@ supercurveGUI <- function() {
                     "loess",
                     "logistic")
 
-    # :KRC: Should probably include blanks at this level
+    ## :KRC: Should probably include blanks at this level
     controls <- .editBox(title="Controls",
                          message="Names of control spots",
                          "control, pos con, neg con",
@@ -259,8 +258,8 @@ supercurveGUI <- function() {
         controls[i] <- .trim(controls[i])
     }
 
-    # :KRC: Post-processing steps (truncation, normalization) should be added. Again, this
-    # needs to be data-driven.
+    ## :KRC: Post-processing steps (truncation, normalization) should be added.
+    ## Again, this needs to be data-driven.
     settings <- paste("txt dir = ", shQuote(.path), "\n",
                       "tiff dir = ", shQuote(tiffdir), "\n",
                       "result dir = ", shQuote(outputdir), "\n",
@@ -280,12 +279,12 @@ supercurveGUI <- function() {
         return()
     }
 
-    # :KRC: This may be the most important step in the whole process!
-    # Can this be improved so that the algorithm can be run simply by loading the
-    # saved log information?
+    ## :KRC: This may be the most important step in the whole process!
+    ## Can this be improved so that the algorithm can be run simply by
+    ## loading the saved log information?
     .logSettings(settings, file.path(outputdir, "analysis.log"))
 
-    # Here we finally call the SuperCurve routines.
+    ## Perform analysis
     designparams <- SuperCurve::RPPADesignParams(grouping="blockSample",
                                                  center=FALSE,
                                                  controls=list(controls))
@@ -296,9 +295,9 @@ supercurveGUI <- function() {
                                            model=model)
 
     fitset <- SuperCurve::RPPASet(.path, designparams, fitparams)
-    # :TODO: Convert this into a 'summary' method for the RPPASet class.
-    # I think this requires us to load the SuperCurve class explicitly in order for the S4
-    # system to correctly perform method dispatch.
+    ## :TODO: Convert this into a 'summary' method for the RPPASet class.
+    ## I think this requires us to load the SuperCurve class explicitly
+    ## in order for the S4 system to correctly perform method dispatch.
     SuperCurve::write.summary(fitset,
                               path=outputdir,
                               graphs=TRUE,
