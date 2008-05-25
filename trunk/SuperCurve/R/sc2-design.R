@@ -321,30 +321,30 @@ setMethod("plot", signature(x="RPPA", y="RPPADesign"),
     }
 
     ## Begin processing
-    y <- rppa@data[, measure]
-    x <- design@layout$Steps
+    vert <- x@data[, measure]
+    horz <- y@layout$Steps
 
     ########
     ##The following were modified by Wenbin Liu:
     # Sometimes there are many (e.g., hundreds of) appearances of 'control'
-    # in the Sample column and the original max(x) will mess up the plot.
+    # in the Sample column and the original max(horz) will mess up the plot.
     #######
 
-    is.ctrl <- .controlVector(design)  # Get the indexes of the control spots
+    is.ctrl <- .controlVector(y)  # Get the indexes of the control spots
     par(mfrow=c(1, 1)) # Avoid existing partitions of graphic device
-    plot(c(min(x[!is.ctrl]), max(x[!is.ctrl])),
-         c(min(y), max(y)),
+    plot(c(min(horz[!is.ctrl]), max(horz[!is.ctrl])),
+         c(min(vert), max(vert)),
          main=paste(measure, "Intensity vs. Dilution Step", "-", main),
          type='n',
          xlab='Dilution Step',
          ylab='Intensity')
-    series <- design@layout$Series
-    s <- seriesNames(design) # strip out control spots
+    series <- y@layout$Series
+    s <- seriesNames(y) # strip out control spots
     rows <- length(s)
     bow <- rainbow(rows)
     for (i in seq(1, rows)) {
-        lines(x=x[series == s[i]],
-              y=y[series == s[i]],
+        lines(x=horz[series == s[i]],
+              y=vert[series == s[i]],
               col=bow[i],
               type='b')
     }
