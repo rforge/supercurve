@@ -63,7 +63,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
             stop(sprintf(ngettext(length(missingNames),
                                   "argument %s missing component: %s",
                                   "argument %s missing components: %s"),
-                         sQuote("alias"), paste(missingNames, collapse=', ')))
+                         sQuote("alias"), paste(missingNames, collapse=", ")))
         }
     }
 
@@ -133,7 +133,7 @@ RPPADesignFromParams <- function(raw, designparams) {
                                    raw.df$Main.Row,
                                    raw.df$Main.Col,
                                    raw.df$Sub.Row,
-                                   sep='.'))
+                                   sep="."))
             steps <- if (ordering == "increasing") {
                          raw.df$Sub.Col - 1
                      } else {
@@ -144,7 +144,7 @@ RPPADesignFromParams <- function(raw, designparams) {
                                    raw.df$Main.Row,
                                    raw.df$Main.Col,
                                    raw.df$Sub.Col,
-                                   sep='.'))
+                                   sep="."))
             steps <- if (ordering == "increasing") {
                          raw.df$Sub.Row - 1
                      } else {
@@ -166,7 +166,7 @@ RPPADesignFromParams <- function(raw, designparams) {
                            factor(paste(as.character(Sample),
                                         Main.Row,
                                         Main.Col,
-                                        sep='.')))
+                                        sep=".")))
             for (sam in levels(series)) {
                 where <- series == sam
                 n <- sum(where)
@@ -297,11 +297,12 @@ setMethod("image", signature(x="RPPADesign"),
 ##-----------------------------------------------------------------------------
 ## Plot the series in an RPPA under a given design layout to see if the series
 ## makes sense under this layout.
+## :TBD: Is this signature backwards?
 setMethod("plot", signature(x="RPPA", y="RPPADesign"),
           function(x,
                    y,
                    measure="Mean.Total",
-                   main='',
+                   main="",
                    ...) {
     ## Check arguments
     if (!is.character(measure)) {
@@ -331,22 +332,22 @@ setMethod("plot", signature(x="RPPA", y="RPPADesign"),
     #######
 
     is.ctrl <- .controlVector(y)  # Get the indexes of the control spots
-    par(mfrow=c(1, 1)) # Avoid existing partitions of graphic device
+    par(mfrow=c(1, 1))  # Avoid existing partitions of graphic device
     plot(c(min(horz[!is.ctrl]), max(horz[!is.ctrl])),
          c(min(vert), max(vert)),
          main=paste(measure, "Intensity vs. Dilution Step", "-", main),
-         type='n',
-         xlab='Dilution Step',
-         ylab='Intensity')
+         type="n",
+         xlab="Dilution Step",
+         ylab="Intensity")
     series <- y@layout$Series
-    s <- seriesNames(y) # strip out control spots
+    s <- seriesNames(y) # Strip out control spots
     rows <- length(s)
     bow <- rainbow(rows)
     for (i in seq(1, rows)) {
         lines(x=horz[series == s[i]],
               y=vert[series == s[i]],
               col=bow[i],
-              type='b')
+              type="b")
     }
 })
 

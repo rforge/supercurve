@@ -17,8 +17,8 @@ setClass("LogisticFitClass",
 
 setClass("CobsFitClass",
          representation("FitClass",
-                        model = "cobs",
-                        lambda = "numeric"),
+                        model="cobs",
+                        lambda="numeric"),
          prototype=prototype(lambda=0))
 
 setClass("LoessFitClass",
@@ -95,7 +95,7 @@ setMethod("trimConc", "FitClass",
 
 
 ##-----------------------------------------------------------------------------
-# Fit the dilution series to the model for the slide
+## Fit the dilution series to the model for the slide
 .series.fit <- function(object,
                         diln,
                         intensity,
@@ -129,7 +129,8 @@ setMethod("trimConc", "FitClass",
                       stop(sprintf("unrecognized regression method %s",
                                    sQuote(method))))
 
-    ## function .slide.model references object back here for curve model
+    ## Function .slide.model references object back here for curve model
+    ## :TBD: Isn't writing into global environment considered rude?
     assign(".RPPA.fit.model", object, env=.GlobalEnv)
 
     tmp <- try(nlsmeth(Y ~ .slide.model(Steps+X),
@@ -143,11 +144,11 @@ setMethod("trimConc", "FitClass",
         if (!silent) {
             warning('unavoidable nls/rlm error')
         }
-        warn <- 'unavoidable nls-error'
+        warn <- "unavoidable nls-error"
         resids <- 0
     } else {
-        ## model fitting succeded, so we can continue
-        warn <- ''
+        ## Model fitting succeded, so we can continue
+        warn <- ""
         est.conc <- coef(tmp)
         resids <- residuals(tmp)
     }
@@ -190,7 +191,7 @@ setMethod("trimConc", "FitClass",
     # hi.intensity <- lTop - trim
     hi.intensity <- max(intensity)
 
-    ## search fitted model to find conc corresponding to lo.intensity
+    ## Search fitted model to find conc corresponding to lo.intensity
     lo.conc <- bisection.search(min(conc, na.rm=TRUE),
                                 max(conc, na.rm=TRUE),
                                 function(x, object) {
@@ -293,7 +294,11 @@ setMethod("fitSlide", "CobsFitClass",
                    conc,
                    intensity,
                    ...) {
-    library("cobs")
+    if (!require(cobs)) {
+        stop(sprintf("%s package required for %s method",
+                     sQuote("cobs"), sQuote("fitSlide")))
+    }
+
     fit.lo <- cobs(conc,
                    intensity,
                    constraint="increase",
@@ -313,7 +318,10 @@ setMethod("fitSlide", "CobsFitClass",
 
 ##-----------------------------------------------------------------------------
 .predict.spline <- function(xvec, aknot, acoef) {
-    library("splines")
+    stopifnot(is.numeric(xvec))
+    stopifnot(is.numeric(aknot))
+    stopifnot(is.numeric(acoef))
+
     nknot <- length(aknot)
     aknotnew <- c(aknot[1], aknot[1], aknot, aknot[nknot], aknot[nknot])
     ncoef <- length(acoef)
@@ -340,6 +348,7 @@ setMethod("fitted", "CobsFitClass",
     conc.pred <- conc
     conc.pred[is.na(conc)] <- lo
 
+    ## :TODO: Add argument to enable Jianhua's code, or remove it
     intensity <- if (TRUE) {
                      ## predict.cobs is irritating
                      ## It returns predicted values after sorting on the input
@@ -349,7 +358,7 @@ setMethod("fitted", "CobsFitClass",
 
                      n <- length(conc.pred)
                      if (n > 1) {
-                         ## undo sort on fit
+                         ## Undo sort on fit
                          o <- sort.list(conc.pred,
                                         method="quick",
                                         na.last=NA)
@@ -358,15 +367,20 @@ setMethod("fitted", "CobsFitClass",
                          cobs.intensity <- predict(fit, conc.pred[o])[, "fit"]
                          cobs.intensity[u]
                      } else {
-                         ## only one data point
+                         ## Only one data point
                          predict(fit, conc.pred)[, "fit"]
                      }
                  } else {
+                     if (!require(splines)) {
+                         stop(sprintf("%s package required for %s method",
+                                      sQuote("splines"), sQuote("fitted")))
+                     }
+
                      ## The above sort and unsort process is yucky and a bit
                      ## slow. Jianhua did not use the cobs predict method and
                      ## instead evaluates the spline directly. Unfortunately,
                      ## there seems to be a bug in .predict.spline where it does
-                     ## not have the correct number of coefficients sometimes
+                     ## not have the correct number of coefficients sometimes.
                      .predict.spline(conc.pred,
                                      fit$knots,
                                      fit$coef)
@@ -422,11 +436,13 @@ setMethod("trimConc", "CobsFitClass",
 
 ##-----------------------------------------------------------------------------
 .coef.quantile.est <- function(intensity) {
+    stopifnot(is.numeric(intensity))
+
     lBot <- quantile(intensity, probs=c(.05), na.rm=TRUE)
     lTop <- quantile(intensity, probs=c(.95), na.rm=TRUE)
     p.alpha <- lBot
     p.beta  <- lTop-lBot
-    p.gamma <- log(2)  # assume linear response on log2 scale as first guess
+    p.gamma <- log(2)  # Assume linear response on log2 scale as first guess
     list(alpha=p.alpha,
          beta=p.beta,
          gamma=p.gamma)
@@ -442,7 +458,8 @@ setMethod("fitSlide", "LogisticFitClass",
     cf <- as.list(object@coefficients)
 
     if (cf$gamma == 0) {
-        cf <- .coef.quantile.est(intensity) # initialize coefficients
+        ## Initialize coefficients
+        cf <- .coef.quantile.est(intensity)
     }
     dum <- data.frame(xval=conc,
                       yval=log(intensity + 5000))
@@ -454,8 +471,8 @@ setMethod("fitSlide", "LogisticFitClass",
                          control=nls.control(maxiter=100),
                          na.action='na.omit'))
     if (is(nls.model, 'try-error')) {
-        warning('unable to perform first pass overall slide fit. trying quantiles.')
-        ## crude way to get alpha and beta but it seems to be robust
+        warning("unable to perform first pass overall slide fit. trying quantiles.")
+        ## Crude (but robust) way to get alpha and beta
         cf <- .coef.quantile.est(intensity)
     } else {
         cf <- coef(nls.model)

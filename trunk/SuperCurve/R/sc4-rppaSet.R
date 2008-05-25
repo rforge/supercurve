@@ -19,32 +19,24 @@ setClass("RPPASet",
 ## Returns a slot in the array of fits as a simple matrix view.
 .fitSlot <- function(rppaset, sl) {
     ## Check arguments
-    if (!inherits(rppaset, "RPPASet")) {
-        stop(sprintf("argument %s must be object of class %s",
-                     sQuote("rppaset"), "RPPASet"))
-    }
+    stopifnot(inherits(rppaset, "RPPASet"))
+    stopifnot(is.character(sl) && length(sl) == 1)
 
-    if (!is.character(sl)) {
-        stop(sprintf("argument %s must be character",
-                     sQuote("sl")))
-    } else if (!(length(sl) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("sl")))
-    } else if (!(sl %in% slotNames(rppaset@fits[[1]]))) {
+    if (!(sl %in% slotNames(rppaset@fits[[1]]))) {
         stop(sprintf("invalid slotname %s",
                      sQuote(sl)))
     }
 
     ## Begin processing
     ## :TODO: simplify processing using slot method instead of eval/parse
-    expr <- paste("rppaset@fits[[1]]@", sl, sep='')
+    expr <- paste("rppaset@fits[[1]]@", sl, sep="")
     mat <- matrix(NA,
                   nrow=length(eval(parse(text=expr))),
                   ncol=length(rownames(rppaset@fits)))
     rownames(mat) <- colnames(t(eval(parse(text=expr))))
 
     for (j in seq(1, ncol(mat))) {
-        expr <- paste("rppaset@fits[[j]]@", sl, sep='')
+        expr <- paste("rppaset@fits[[j]]@", sl, sep="")
         mat[, j] <- eval(parse(text=expr))
     }
     colnames(mat) <- rownames(rppaset@fits)
@@ -77,7 +69,7 @@ setClass("RPPASet",
     output <- file.path(outputdir, filename)
 
     ## convert $pg1 $pg2 +append $tiff -append -quality 100 $output
-    message(paste('merging tiff for', protein))
+    message(paste("merging tiff for", protein))
     command <- paste('convert ',
                      shQuote(pg1),
                      ' ',
@@ -86,7 +78,7 @@ setClass("RPPASet",
                      shQuote(tiff),
                      ' -append -quality 100 ',
                      shQuote(output),
-                     sep='')
+                     sep="")
     return(rc <- system(command))
 }
 
@@ -134,7 +126,7 @@ write.summary <- function(rppaset,
     }
 
     if (is.null(tiffdir)) {
-        ## assume the tif images are in a sibling directory named "tif"
+        ## Assume the tif images are in a sibling directory named "tif"
         tiffdir <- file.path(path, "..", "tif")
     }
 
@@ -151,8 +143,8 @@ write.summary <- function(rppaset,
     }
 
     ## Begin processing
-    conc <- .fitSlot(rppaset, 'concentrations')
-    conc.ss <- .fitSlot(rppaset, 'ss.ratio')
+    conc <- .fitSlot(rppaset, "concentrations")
+    conc.ss <- .fitSlot(rppaset, "ss.ratio")
     if (sum(as.character(rppaset@design@alias$Alias) ==
             as.character(rppaset@design@alias$Sample)) < nrow(conc)) {
         ## We have non-trivial alias names.
@@ -190,7 +182,7 @@ write.summary <- function(rppaset,
     write.csv(conc, file=file.path(path, filename))
 
     if (graphs) {
-        ## save fit graphs
+        ## Save fit graphs
         op <- par(no.readonly=TRUE)
         par(mfrow=c(2, 1))
 
@@ -357,7 +349,7 @@ RPPASet <- function(path,
     ## :TBD: Should this be plotting the requested measure instead?
     plot(firstslide,
          design,
-         'Mean.Total',
+         "Mean.Total",
          main=slideFilenames[1])
 
     ## :TBD: Why was this construct used and not 'vector("list", numslides)'

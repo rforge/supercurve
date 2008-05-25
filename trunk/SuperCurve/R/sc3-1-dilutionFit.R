@@ -203,10 +203,11 @@ setMethod("image", "RPPAFit",
     ## :TBD: Should this invoke callNextMethod instead (when S4 method)?
     ## :TBD: What should axis labels be?
     ## :TBD: Shouldn't main reference file as well?
-    foo <- getMethod("image", class(rppa))
-    foo(rppa,
-          measure=measure,
-          ...)
+    ## :TBD: Should this use doCall instead?
+    imageRPPA <- getMethod("image", class(rppa))
+    imageRPPA(rppa,
+              measure=measure,
+              ...)
 
     invisible(x)
 })
