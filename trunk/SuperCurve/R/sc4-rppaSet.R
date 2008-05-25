@@ -2,6 +2,8 @@
 ### RPPASET.R - Fit a set of slides with a common layout
 ###
 
+
+##=============================================================================
 setClass("RPPASet",
          representation=list(call="call",               # function call used to create the model
                              version="character",       # package version
@@ -9,37 +11,43 @@ setClass("RPPASet",
                              rppas="array",             # vector of RPPAs
                              fitparams="RPPAFitParams", # parameters used for fitting
                              fits="array"))             # set of fits
-## :KRC: WHy is "rppas" an array or vector instead of a list (or even an environment)?
+## :KRC: Why is "rppas" an array or vector instead of a list (or environment)?
+## :PLR: Because Corwin? wrote it this way...
+
 
 ##-----------------------------------------------------------------------------
-## Provide a convenience function to view a slot in the array of fits
-## as a simple matrix view (e.g., .fitSlot(fitset, 'concentrations'))
-#3 Note that this is no longer generic, and it is not even exported
-## since it is an internal utility funciton
-.fitSlot <- function(object,
-                    sl,
-                    ...) {
+## Returns a slot in the array of fits as a simple matrix view.
+.fitSlot <- function(rppaset, sl) {
     ## Check arguments
+    if (!inherits(rppaset, "RPPASet")) {
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("rppaset"), "RPPASet"))
+    }
+
     if (!is.character(sl)) {
         stop(sprintf("argument %s must be character",
                      sQuote("sl")))
     } else if (!(length(sl) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("sl")))
+    } else if (!(sl in slotNames(rppaset@fits[[1]]))) {
+        stop(sprintf("invalid slotname %s",
+                     sQuote(sl)))
     }
 
     ## Begin processing
-    expr <- paste("object@fits[[1]]@", sl, sep='')
+    ## :TODO: simplify processing using slot method instead of eval/parse
+    expr <- paste("rppaset@fits[[1]]@", sl, sep='')
     mat <- matrix(NA,
                   nrow=length(eval(parse(text=expr))),
-                  ncol=length(rownames(object@fits)))
+                  ncol=length(rownames(rppaset@fits)))
     rownames(mat) <- colnames(t(eval(parse(text=expr))))
 
     for (j in seq(1, ncol(mat))) {
-        expr <- paste("object@fits[[j]]@", sl, sep='')
+        expr <- paste("rppaset@fits[[j]]@", sl, sep='')
         mat[, j] <- eval(parse(text=expr))
     }
-    colnames(mat) <- rownames(object@fits)
+    colnames(mat) <- rownames(rppaset@fits)
     mat
 }
 
@@ -181,24 +189,25 @@ write.summary <- function(rppaset,
                       sep=".")
     write.csv(conc, file=file.path(path, filename))
 
-    ## Use red/yellow/green palette for residual plots.
-    ## From RColorBrewer palette RdYlGn
-    RYG <- c("#A50026",
-             "#D73027",
-             "#F46D43",
-             "#FDAE61",
-             "#FEE08B",
-             "#FFFFBF",
-             "#D9EF8B",
-             "#A6D96A",
-             "#66BD63",
-             "#1A9850",
-             "#006837")
-
     if (graphs) {
         ## save fit graphs
         op <- par(no.readonly=TRUE)
         par(mfrow=c(2, 1))
+
+        ## Use red/yellow/green palette for residual plots.
+        ## From RColorBrewer palette RdYlGn
+        RYG <- c("#A50026",
+                 "#D73027",
+                 "#F46D43",
+                 "#FDAE61",
+                 "#FEE08B",
+                 "#FFFFBF",
+                 "#D9EF8B",
+                 "#A6D96A",
+                 "#66BD63",
+                 "#1A9850",
+                 "#006837")
+
         proteins <- {
                         slideFilenames <- rownames(rppaset@fits)
                         ## Remove filename extensions
@@ -270,13 +279,18 @@ write.summary <- function(rppaset,
 }
 
 
-setMethod("summary", "RPPASet", function(object,
-                                         path,
-                                         prefix="supercurve",
-                                         graphs=TRUE,
-                                         tiffdir=NULL, ...) {
-  write.summary(object, path, prefix, graphs, tiffdir)
+setMethod("summary", "RPPASet",
+          function(object,
+                   path,
+                   prefix="supercurve",
+                   graphs=TRUE,
+                   tiffdir=NULL,
+                   ...) {
+    ## :PLR: A call to summary on any other kind of object won't write to disk
+    ## This seems at odds with below...
+    write.summary(object, path, prefix, graphs, tiffdir)
 })
+
 
 ##-----------------------------------------------------------------------------
 ## Create an RPPA set from a directory of slides.
