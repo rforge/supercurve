@@ -24,7 +24,7 @@ if (!isGeneric("fitted")) {
     setGeneric("fitted",
                function(object, ...) standardGeneric("fitted"))
 }
-  
+
 ## defined for: RPPAFit
 if (!isGeneric("hist")) {
     setGeneric("hist",
@@ -37,8 +37,7 @@ if (!isGeneric("image")) {
                function(x, ...) standardGeneric("image"))
 }
 
-## defined for: RPPAFit
-## :KRC: Why not RPPADEsign, since there is a [expletive] plotDesign function?
+## defined for: RPPAFit, RPPADesign
 if (!isGeneric("plot")) {
     setGeneric("plot",
                function(x, y, ...) standardGeneric("plot"))

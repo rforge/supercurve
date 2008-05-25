@@ -2,6 +2,8 @@
 ### DILUTIONFITMETHODS.R
 ###
 
+
+##=============================================================================
 setOldClass("cobs")
 setOldClass("loess")
 
@@ -24,8 +26,8 @@ setClass("LoessFitClass",
                         model="loess"))
 
 
-###################################################################
-## GENERIC METHODS FOR FitClass: Typically throw an erro since they
+####################################################################
+## GENERIC METHODS FOR FitClass: Typically throw an error since they
 ## must be implemented by derived classes.
 
 ##-----------------------------------------------------------------------------

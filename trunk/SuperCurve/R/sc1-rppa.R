@@ -3,10 +3,11 @@
 ###
 
 
-##-----------------------------------------------------------------------------
+##=============================================================================
 setClass("RPPA",
          representation=list(data="data.frame",
                              file="character"))
+
 
 ## :TODO: Change API to accept file object, replacing filename/path args
 ## Logically, it really should be nothing more than a couple lines, with
@@ -96,12 +97,15 @@ RPPA <- function(filename, path='.', blanks=NULL) {
     ## :TBD: Add path to object? Convert to canonical format prior to doing so?
     ## :KRC: No, I just want the filename, not the full path. That is why the
     ## arguments were separated to start with.
+    ## :PLR: Question was whether an additional slot would contain directory
+    ## info, not a merge with existing field.
 
     ## Create new class
     new("RPPA",
         data=quant.df,
         file=filename)
 }
+
 
 ##-----------------------------------------------------------------------------
 setMethod("summary", "RPPA",
@@ -112,13 +116,15 @@ setMethod("summary", "RPPA",
     summary(object@data)
 })
 
+
 ##-----------------------------------------------------------------------------
-setMethod("image", "RPPA",  function(x,
-                       measure="Mean.Net",
-                       main=measure,
-                       colorbar=FALSE,
-                       col=terrain.colors(256),
-                       ...) {
+setMethod("image", "RPPA",
+          function(x,
+                   measure="Mean.Net",
+                   main=measure,
+                   colorbar=FALSE,
+                   col=terrain.colors(256),
+                   ...) {
     ## Check arguments
     if (!is.character(measure)) {
         stop(sprintf("argument %s must be character",
@@ -156,7 +162,7 @@ setMethod("image", "RPPA",  function(x,
                   list(xspot, yspot),
                   mean)
     if (colorbar) {
-        ## get the size of the plotting region in relative units
+        ## Get the size of the plotting region in relative units
         startPlt <- par()$plt
 
         ## We're only going to partition things on the x-axis, so only
@@ -169,8 +175,8 @@ setMethod("image", "RPPA",  function(x,
         imagePlt[2]    <- startPlt[1] + (10/12)*startWidth
         colorbarPlt[1] <- startPlt[2] - ( 1/12)*startWidth
 
-        ## draw the colorbar
-        ## :TODO: Figure out how to set the margins so it works in small windows...
+        ## Draw the colorbar
+        ## :TODO: Figure out how to set margins so it works in small windows...
         par(plt=colorbarPlt)
         image(1,
               seq(min(geo, na.rm=TRUE),
@@ -182,11 +188,10 @@ setMethod("image", "RPPA",  function(x,
               xlab="",
               yaxt="n",
               ylab="")
-        axis(4) # put labeling at right
+        axis(4) # Put labeling at right
         box()
 
-        ## set things up to draw the main image and
-        ## revert back for the next figure
+        ## Set things up to draw main image and revert back for next figure
         par(plt=imagePlt, new=TRUE)
         on.exit(par(plt=startPlt))
     }
@@ -200,6 +205,7 @@ setMethod("image", "RPPA",  function(x,
     abline(v=(0.5 + seq(0, mx, length=1+max(data.df$Main.Col))))
     invisible(x)
 })
+
 
 ##
 ##

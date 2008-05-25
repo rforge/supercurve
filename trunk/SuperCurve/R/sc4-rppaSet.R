@@ -310,7 +310,7 @@ RPPASet <- function(path,
         stop(sprintf("directory %s does not exist",
                      dQuote(path)))
     }
- 
+
     if (!inherits(designparams, "RPPADesignParams")) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("designparams"), "RPPADesignParams"))
@@ -355,10 +355,10 @@ RPPASet <- function(path,
 
     ## Plot the first slide as a quick design check
     ## :TBD: Should this be plotting the requested measure instead?
-    plotDesign(firstslide,
-               design,
-               'Mean.Total',
-               main=slideFilenames[1])
+    plot(firstslide,
+         design,
+         'Mean.Total',
+         main=slideFilenames[1])
 
     ## :TBD: Why was this construct used and not 'vector("list", numslides)'
     ## Is the dimension attribute used?

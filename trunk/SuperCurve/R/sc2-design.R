@@ -2,6 +2,8 @@
 ### RPPADESIGN.R
 ###
 
+
+##=============================================================================
 setClass("RPPADesign",
          representation=list(layout="data.frame",
                              alias="list",
@@ -31,10 +33,6 @@ RPPADesignParams <- function(steps=rep(0, 1),
                              center=FALSE,
                              controls=list()) {
     ## Check arguments
-    grouping <- match.arg(grouping)
-
-    ordering <- match.arg(ordering)
-
     if (!is.numeric(steps)) {
         stop(sprintf("argument %s must be numeric",
                      sQuote("steps")))
@@ -44,6 +42,9 @@ RPPADesignParams <- function(steps=rep(0, 1),
         stop(sprintf("argument %s must be character or factor",
                      sQuote("series")))
     }
+
+    grouping <- match.arg(grouping)
+    ordering <- match.arg(ordering)
 
     if (!(is.list(alias) || is.data.frame(alias))) {
         stop(sprintf("argument %s must be list or data.frame",
@@ -116,7 +117,7 @@ RPPADesignFromParams <- function(raw, designparams) {
     alias    <- designparams@alias
     center   <- designparams@center
     controls <- designparams@controls
-    
+
     ## Begin processing
     raw.df <- data.frame(raw[, c("Main.Row",
                                  "Main.Col",
@@ -183,7 +184,7 @@ RPPADesignFromParams <- function(raw, designparams) {
                 steps[where] <- steps[where] - median(steps[where])
             }
         } else {
-            # set top intensity (undiluted) spot to zero
+            ## Set top intensity (undiluted) spot to zero
             for (ser in levels(series)) {
                 where <- series == ser
                 steps[where] <- steps[where] - max(steps[where])
@@ -196,7 +197,7 @@ RPPADesignFromParams <- function(raw, designparams) {
                      sQuote("steps"),
                      sQuote("series")))
     } else {
-        ## both series and steps supplied
+        ## Both series and steps supplied
         if (length(steps) != nrow(raw.df) ||
             length(series) != nrow(raw.df)) {
             stop(sprintf("arguments %s (%d) and %s (%d) must be of length %d",
@@ -206,7 +207,7 @@ RPPADesignFromParams <- function(raw, designparams) {
                          length(series),
                          nrow(raw.df)))
         }
-        ## override sample names from file with user-supplied ones to allow
+        ## Override sample names from file with user-supplied ones to allow
         ## users to specify controls with reference to their series names
         raw.df$Sample <- series
     }
@@ -249,11 +250,15 @@ RPPADesign <- function(raw,
                        alias=list(),
                        center=FALSE,
                        controls=list()) {
-  params <- RPPADesignParams(steps, series, grouping, ordering,
-                             alias, center, controls)
-  RPPADesignFromParams(raw, params)
+    params <- RPPADesignParams(steps,
+                               series,
+                               grouping,
+                               ordering,
+                               alias,
+                               center,
+                               controls)
+    RPPADesignFromParams(raw, params)
 }
-  
 
 
 ##-----------------------------------------------------------------------------
@@ -268,7 +273,9 @@ setMethod("summary", "RPPADesign",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("image", signature(x="RPPADesign"), function(x, ...) {
+setMethod("image", signature(x="RPPADesign"),
+          function(x,
+                   ...) {
     data.df <- x@layout
     my <- max(data.df$Main.Row) * max(data.df$Sub.Row)
     mx <- max(data.df$Main.Col) * max(data.df$Sub.Col)
@@ -286,26 +293,17 @@ setMethod("image", signature(x="RPPADesign"), function(x, ...) {
     invisible(geo.steps)
 })
 
+
 ##-----------------------------------------------------------------------------
-# plot the series in an RPPA under a given design layout
-# see if the series make sense under this layout
-plotDesign <- function(rppa,
-                       design,
-                       measure='Mean.Total',
-                       main='') {
+## Plot the series in an RPPA under a given design layout to see if the series
+## makes sense under this layout.
+setMethod("plot", signature(x="RPPA", y="RPPADesign"),
+          function(x,
+                   y,
+                   measure="Mean.Total",
+                   main='',
+                   ...) {
     ## Check arguments
-    ## :KRC: Do not need the first two parts of this checkif you use the
-    ## S4 methods to do it for you...
-    if (!inherits(rppa, "RPPA")) {
-        stop(sprintf("argument %s must be object of class %s",
-                     sQuote("rppa"), "RPPA"))
-    }
-
-    if (!inherits(design, "RPPADesign")) {
-        stop(sprintf("argument %s must be object of class %s",
-                     sQuote("design"), "RPPADesign"))
-    }
-
     if (!is.character(measure)) {
         stop(sprintf("argument %s must be character",
                      sQuote("measure")))
@@ -332,8 +330,8 @@ plotDesign <- function(rppa,
     # in the Sample column and the original max(x) will mess up the plot.
     #######
 
-    is.ctrl <- .controlVector(design)  # get the indexes of the control spots
-    par(mfrow=c(1, 1)) # avoid existing partitions of graphic device
+    is.ctrl <- .controlVector(design)  # Get the indexes of the control spots
+    par(mfrow=c(1, 1)) # Avoid existing partitions of graphic device
     plot(c(min(x[!is.ctrl]), max(x[!is.ctrl])),
          c(min(y), max(y)),
          main=paste(measure, "Intensity vs. Dilution Step", "-", main),
@@ -350,13 +348,7 @@ plotDesign <- function(rppa,
               col=bow[i],
               type='b')
     }
-}
-
-setMethod("plot", signature(x="RPPA", y="RPPADesign"),
-          function(x, y, measure="Mean.Total", main='', ...) {
-            plotDesign(x, y, measure, main, ...)
-          })
-
+})
 
 
 ##-----------------------------------------------------------------------------
@@ -416,6 +408,9 @@ setMethod("names", "RPPADesign",
 if (FALSE) {
   ## :KRC: why did we comment out .attachSlot,
   ## and why did we have it in the first place?
+
+  ## :PLR: Commented out since not in use; not removed as its raison d'etre
+  ## unknown at time...
     .attachslot <- function(x) {
         xname <- substitute(x)
         sl <- names(getSlots(class(x)))
@@ -446,7 +441,6 @@ if (FALSE) {
   summary(design)
   rm(path, erk2, design)
 
-  plotDesign(erk2, design)
   plot(erk2, design)
 }
 
