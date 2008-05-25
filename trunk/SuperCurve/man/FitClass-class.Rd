@@ -1,16 +1,10 @@
 \name{FitClass-class}
 \alias{FitClass-class}
-\alias{CobsFitClass-class}
-\alias{LoessFitClass-class}
-\alias{LogisticFitClass-class}
 \alias{fitSeries,FitClass-method}
 \alias{fitSlide,FitClass-method}
 \alias{trimConc,FitClass-method}
-\alias{fitted,CobsFitClass-method}
-\alias{fitted,LoessFitClass-method}
-\alias{fitted,LogisticFitClass-method}
 \docType{class}
-\title{The FitClass Class}
+\title{Class "FitClass"}
 \description{
   The FitClass class represents TBD.
 }
@@ -19,9 +13,6 @@
                                silent=TRUE, trace=FALSE, \dots)
 \S4method{fitSlide}{FitClass}(object, conc, intensity, \dots)
 \S4method{trimConc}{FitClass}(object, conc, intensity, design, \dots)
-\S4method{fitted}{CobsFitClass}(object, conc, \dots)
-\S4method{fitted}{LoessFitClass}(object, conc, \dots)
-\S4method{fitted}{LogisticFitClass}(object, conc, \dots)
 }
 \arguments{
   \item{object}{object of (sub)class \code{FitClass}}
@@ -46,7 +37,6 @@
       intensity = f(conc).}
     \item{trimConc(object, conc, intensity, design, \dots)}{Returns
       concentration and intensity cutoffs for the model.}
-    \item{fitted(object, conc, \dots)}{TBD}
   }
 }
 \references{KRC}

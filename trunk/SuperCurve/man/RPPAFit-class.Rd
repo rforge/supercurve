@@ -10,7 +10,7 @@
 \alias{hist,RPPAFit-method}
 \alias{plot,RPPAFit,missing-method}
 \docType{class}
-\title{The RPPAFit Class}
+\title{Class "RPPAFit"}
 \description{
   Objects of the \code{RPPAFit} class represent the results of
   fitting a four-parameter logistic model to the dilution series in a
@@ -154,9 +154,9 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
 \references{KRC}
 \author{Kevin R. Coombes <kcoombes@mdanderson.org>}
 \seealso{
+  \code{\linkS4class{RPPA}},
+  \code{\linkS4class{RPPADesign}},
   \code{\link{RPPAFit}},
-  \code{\link{RPPA}},
-  \code{\link{RPPADesign}},
   \code{\link{hist}}
 }
 \examples{

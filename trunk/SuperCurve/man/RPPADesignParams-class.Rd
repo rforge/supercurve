@@ -2,7 +2,7 @@
 \alias{RPPADesignParams-class}
 \alias{RPPADesignParams}
 \docType{class}
-\title{The RPPADesignParams Class}
+\title{Class "RPPADesignParams"}
 \description{
   The RPPADesignParams class represents TBD
 }
@@ -77,8 +77,8 @@ RPPADesignParams(steps=rep(0,1),
 \references{KRC}
 \author{P. Roebuck, \email{plroebuck@mdanderson.org}}
 \seealso{
-  \code{\link{RPPAFit}},
-  \code{\link{RPPADesign}}
+  \code{\linkS4class{RPPAFit}},
+  \code{\linkS4class{RPPADesign}}
 }
 \examples{
 ##path <- system.file("rppaTumorData", package="SuperCurve")

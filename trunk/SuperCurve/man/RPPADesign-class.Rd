@@ -8,7 +8,7 @@
 \alias{seriesNames}
 \alias{getSteps}
 \docType{class}
-\title{The RPPADesign Class}
+\title{Class "RPPADesign"}
 \description{
   This class represents the information that describes how a particular
   set of RPPA slides was designed.
@@ -152,7 +152,7 @@ getSteps(design)
 \references{KRC}
 \author{Kevin R. Coombes <kcoombes@mdanderson.org>}
 \seealso{
-  \link{RPPA}
+  \code{\linkS4class{RPPA}}
 }
 \examples{
 path <- system.file("rppaTumorData", package="SuperCurve")

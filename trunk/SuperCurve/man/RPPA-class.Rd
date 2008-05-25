@@ -4,7 +4,7 @@
 \alias{summary,RPPA-method}
 \alias{image,RPPA-method}
 \docType{class}
-\title{The RPPA Class}
+\title{Class "RPPA"}
 \description{
   The RPPA class represents the raw quantification data from a
   reverse-phase protein array experiment.
@@ -93,8 +93,8 @@ colorbar=FALSE, col=terrain.colors(256), \dots)
 \references{KRC}
 \author{Kevin R. Coombes <kcoombes@mdanderson.org>}
 \seealso{
-  \code{\link{RPPAFit}},
-  \code{\link{RPPADesign}}
+  \code{\linkS4class{RPPAFit}},
+  \code{\linkS4class{RPPADesign}}
 }
 \examples{
 path <- system.file("rppaTumorData", package="SuperCurve")

@@ -2,7 +2,7 @@
 \alias{RPPAFitParams-class}
 \alias{RPPAFitParams}
 \docType{class}
-\title{The RPPAFitParams Class}
+\title{Class "RPPAFitParams"}
 \description{
   The RPPAFitParams class represents TBD
 }
@@ -94,7 +94,7 @@ RPPAFitParams(measure,
 \references{KRC}
 \author{P. Roebuck, \email{plroebuck@mdanderson.org}}
 \seealso{
-  \code{\link{RPPAFit}}
+  \code{\linkS4class{RPPAFit}}
 }
 \examples{
 ##path <- system.file("rppaTumorData", package="SuperCurve")
