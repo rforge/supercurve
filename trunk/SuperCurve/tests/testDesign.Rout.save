@@ -1,0 +1,114 @@
+
+R version 2.7.0 (2008-04-22)
+Copyright (C) 2008 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(SuperCurve)
+Loading required package: MASS
+Loading required package: cobs
+Loading required package: SparseM
+Package SparseM (0.77) loaded.  To cite, see citation("SparseM")
+Loading required package: quantreg
+Loading required package: splines
+> 
+> ## Get a valid RPPA object to get started
+> path <- system.file("rppaTumorData", package="SuperCurve")
+> jnk <- RPPA("JNK.txt", path=path)
+> 
+> ## check the 'grouping' variable
+> ## both of these fail
+> try( dp <- RPPADesignParams(grouping='bogus') )
+Error in match.arg(grouping) : 
+  'arg' should be one of "byRow", "byCol", "bySample", "blockSample"
+> try( dp <- RPPADesignParams(grouping=1) )
+Error in match.arg(grouping) : 'arg' must be NULL or a character vector
+> 
+> ## check the 'ordering variable'
+> ## both of these fail
+> try( dp <- RPPADesignParams(ordering='bogus') )
+Error in match.arg(ordering) : 
+  'arg' should be one of "decreasing", "increasing"
+> try( dp <- RPPADesignParams(ordering=1) )
+Error in match.arg(ordering) : 'arg' must be NULL or a character vector
+> 
+> ###########################
+> ## tests of 'controls'
+> 
+> ## obvious error in specifying controls. Should we allow
+> ## character vectors as well as lists?
+> try( dp <- RPPADesignParams(controls=c('neg con', 'pos con')) )
+Error in RPPADesignParams(controls = c("neg con", "pos con")) : 
+  argument 'controls' must be list
+> 
+> ## This is for showing off the plot, where the controls dominate
+> dp <- RPPADesignParams(grouping='bySample') 
+> dsn <- RPPADesignFromParams(jnk, dp)
+> plot(jnk, dsn)
+> 
+> ## Putting a vector into a list (instead of making a list) seems to work
+> ## just fine. I really don't see why6 it should....
+> ## Apparently, we were clever enough to include an 'unlist' in the
+> ## .controlVector function. 
+> dp <- RPPADesignParams(grouping='bySample',
++                        controls=list(c('neg con', 'pos con', 'blanks')))
+> dsn <- RPPADesignFromParams(jnk, dp)
+> plot(jnk, dsn)
+> 
+> ###########################
+> ## tests of 'steps' and 'series'
+> 
+> # why does this work? which value does it think is being set?
+> dp <- RPPADesignParams(13) # this should probably give an error, but does not
+> dsn <- RPPADesignFromParams(jnk, dp)
+> 
+> # why does this fail when the previous one works?
+> try( dp <- RPPADesignParams(1:3) )
+> 
+> # This lets us pass in things of the wrong length, and we only
+> # discover it later.
+> dp <- RPPADesignParams(1:3, factor(1:3))
+> try( dsn <- RPPADesignFromParams(jnk, dp) )
+Error in RPPADesignFromParams(jnk, dp) : 
+  arguments 'steps' (3) and 'series' (3) must be of length 768
+> 
+> # Why doesn't this crash? 
+> dp <- RPPADesignParams(1:768, factor(1:768))
+> dsn <- RPPADesignFromParams(jnk, dp)
+> image(dsn)
+> plot(jnk, dsn)
+> 
+> # Here we have 768 series each of step size 1. I bet this will break
+> # the fits later on...
+> dp <- RPPADesignParams(rep(1, 768), factor(1:768))
+> dsn <- RPPADesignFromParams(jnk, dp)
+> image(dsn)
+> plot(jnk, dsn)
+> 
+> ###########################
+> ## tests of center
+> 
+> # there is no reason to throw these errors
+> try( dp <- RPPADesignParams(center='x') )
+Error in RPPADesignParams(center = "x") : 
+  argument 'center' must be logical
+> try( dp <- RPPADesignParams(center=1) )
+Error in RPPADesignParams(center = 1) : argument 'center' must be logical
+> try( dp <- RPPADesignParams(center=c(TRUE, FALSE)) )
+Error in RPPADesignParams(center = c(TRUE, FALSE)) : 
+  argument 'center' must be of length 1
+> 
+> ###########################
+> ## tests of alias
+> 
