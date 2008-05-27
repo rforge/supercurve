@@ -51,6 +51,8 @@ RPPA <- function(filename, path='.', blanks=NULL) {
     ## MicroVigene introducing an extra header line in later versions of file
     ## :TODO: Something more sensible than hardcoding the two choices of the
     ## number of header lines....
+    ## By the way, what happens if someone uses something other than
+    ## MicroVigene (like ArrayVision or SPOT), when this whole thing breaks.
     get.num.header.lines <- function(filename) {
         line <- readLines(filename, n=1)
         mv.version <- as.numeric(strsplit(line, "[:blank:]")[[1]][3])
