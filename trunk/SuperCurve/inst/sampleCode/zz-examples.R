@@ -15,26 +15,27 @@ if (NET) {
 
 tABG <- matrix(NA, 3, 3)
 dimnames(tABG) <- list(c('ERK2', 'GSK3', 'JNK'), c('alpha', 'beta', 'gamma'))
-path <- "../inst/rppaTumorData"
+path <- system.file("rppaTumorData", package="SuperCurve")
 erk2 <- RPPA("ERK2.txt", path=path)
-tDesign <- RPPADesign(erk2, grouping="blockSample", center=TRUE, controls=list("neg con", "pos con"))
+tDesign <- RPPADesign(erk2, grouping="blockSample",
+                      center=TRUE, controls=list("neg con", "pos con"))
 sn <- seriesNames(tDesign)
 tValues <- matrix(NA, length(sn), 3)
-dimnames(tValues) <- list(substring(sn, 1, regexpr('\\\.', sn)-1),
+dimnames(tValues) <- list(substring(sn, 1, regexpr('\\.', sn)-1),
                           c('ERK2', 'GSK3', 'JNK'))
 rm(sn)
 
-fit <- RPPAFit(erk2, tDesign, measure=measure, method='q', verbose=TRUE)
+fit <- RPPAFit(erk2, tDesign, measure=measure, method='nls', verbose=TRUE)
 tABG['ERK2',] <- coef(fit)
 tValues[, 'ERK2'] <- fit@concentrations
 
 gsk3 <- RPPA("GSK3.txt", path=path)
-fit <- RPPAFit(gsk3, tDesign, measure=measure, method='q', verbose=TRUE)
+fit <- RPPAFit(gsk3, tDesign, measure=measure, method='nls', verbose=TRUE)
 tABG['GSK3',] <- coef(fit)
 tValues[, 'GSK3'] <- fit@concentrations
 
 jnk <- RPPA("JNK.txt", path=path)
-fit <- RPPAFit(jnk, tDesign, measure=measure, method='q', verbose=TRUE)
+fit <- RPPAFit(jnk, tDesign, measure=measure, method='nls', verbose=TRUE)
 tABG['JNK',] <- coef(fit)
 tValues[, 'JNK'] <- fit@concentrations
 
@@ -44,14 +45,14 @@ write.table(tValues, paste("fittedValues-tumor", type, "krc.tsv", sep="-"),
             row.names=TRUE, col.names=NA, sep="\t", quote=FALSE)
 
 
-save(erk2, jnk, gsk3, tDesign, file="rppaTumor.Rda")
+##OPTIONAL: save(erk2, jnk, gsk3, tDesign, file="rppaTumor.Rda")
 
 ######################################################################
 # 40 cell lines with 3 antibodies
 
 ABG <- matrix(NA, 3, 3)
 dimnames(ABG) <- list(c('AKT', 'ERK2', 'CTNNB1'), c('alpha', 'beta', 'gamma'))
-path40 <- "../inst/rppaCellData"
+path40 <- system.file("rppaCellData", package="SuperCurve")
 akt <- RPPA("AKT.txt", path=path40)
 # The design here does not follow any of our standard shorthands, since it has
 # interleaved 8-step dilution replicates contained in a single 4x4 subgrid
@@ -64,21 +65,21 @@ design40 <- RPPADesign(akt, steps=steps, series=series)
 rm(steps, rep.temp,series)
 sn <- seriesNames(design40)
 cvalues <- matrix(NA, length(sn), 3)
-dimnames(cvalues) <- list(  substring(sn, 1, regexpr('\\\.', sn)-1),
+dimnames(cvalues) <- list(  substring(sn, 1, regexpr('\\.', sn)-1),
                           c('AKT', 'ERK2', 'CTNNB1'))
 rm(sn)
 
-fit <- RPPAFit(akt, design40, measure=measure, method='q', verbose=TRUE)
+fit <- RPPAFit(akt, design40, measure=measure, method='nls', verbose=TRUE)
 ABG['AKT',] <- coef(fit)
 cvalues[, 'AKT'] <- fit@concentrations
 
 c.erk2 <- RPPA("ERK2no2.txt", path=path40)
-fit <- RPPAFit(c.erk2, design40, measure=measure, method='q', verbose=TRUE)
+fit <- RPPAFit(c.erk2, design40, measure=measure, method='nlrob', verbose=TRUE)
 ABG['ERK2',] <- coef(fit)
 cvalues[, 'ERK2'] <- fit@concentrations
 
 ctnnb1 <- RPPA("Bcatenin40breastcelllines.txt", path=path40)
-fit <- RPPAFit(ctnnb1, design40, measure=measure, method='q', verbose=TRUE)
+fit <- RPPAFit(ctnnb1, design40, measure=measure, method='nlrob', verbose=TRUE)
 ABG['CTNNB1',] <- coef(fit)
 cvalues[, 'CTNNB1'] <- fit@concentrations
 
