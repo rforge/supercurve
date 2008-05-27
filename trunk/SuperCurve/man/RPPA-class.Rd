@@ -75,7 +75,10 @@ colorbar=FALSE, col=terrain.colors(256), \dots)
       display locations match the row and column locations of the spot.
       Any measurement column can be displayed using this function. An
       optional color bar can be added; this will be placed at the right
-      edge. In order to display the color bar, the method uses the
+      edge.
+
+      :TBD: Is the following still correct since colorbar display code replaced??
+      In order to display the color bar, the method uses the
       \code{\link{layout}} function. Since \code{layout} works on the
       complete device, this prohibits the inclusion of an image with a
       color bar as one panel in a window of multiple plots.}

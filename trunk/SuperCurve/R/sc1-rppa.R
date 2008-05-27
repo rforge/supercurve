@@ -142,8 +142,6 @@ setMethod("image", "RPPA",
                      sQuote("main")))
     }
 
-    ## :KRC: This is overkill. If someone want to submit a number or vector,
-    ## why should we care? This is R, not C or Java.
     if (!is.logical(colorbar)) {
         stop(sprintf("argument %s must be logical",
                      sQuote("colorbar")))
