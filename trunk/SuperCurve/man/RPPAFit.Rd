@@ -20,7 +20,7 @@ RPPAFit(rppa,
         veryVerbose=FALSE,
         warnLevel=0,
         trim=TRUE,
-        model=c("logistic", "loess", "cobs"))
+        model="logistic")
 }
 \arguments{
   \item{rppa}{object of class \code{\link{RPPA}} containing the raw data

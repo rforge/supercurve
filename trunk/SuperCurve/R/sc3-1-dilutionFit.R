@@ -687,6 +687,16 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
 }
 
 
+.rppaModels <- new("environment")
+
+registerModel <- function(name, classname) {
+  assign(name, classname, envir=.rppaModels)
+}
+
+registerModel("logistic", "LogisticFitClass")
+registerModel("cobs",     "LoessFitClass")
+registerModel("loess",    "CobsFitClass")
+
 ##-----------------------------------------------------------------------------
 RPPAFit <- function(rppa,
                     design,
@@ -700,7 +710,7 @@ RPPAFit <- function(rppa,
                     veryVerbose=FALSE,
                     warnLevel=0,
                     trim=TRUE,
-                    model=c("logistic", "loess", "cobs")) {
+                    model='logistic') {
     ## Check arguments
     if (!inherits(rppa, "RPPA")) {
         stop(sprintf("argument %s must be object of class %s",
@@ -785,7 +795,16 @@ RPPAFit <- function(rppa,
                      sQuote("trim")))
     }
 
-    model <- match.arg(model)
+    if (!is.character(model)) {
+      stop(sprintf("argument %s must be a character string",
+                   sQuote("model")))
+    }
+    model <- model[1]
+    modelClass <- try( get(model, envir=.rppaModels) )
+    if (inherits(modelClass, "try-error")) {
+      stop(sprintf("argument %s must be the name of a registed fit class",
+                   sQuote("model")))
+    }
 
     ## Begin processing
 
@@ -838,12 +857,13 @@ RPPAFit <- function(rppa,
     ## class in order to omit the control spots.
     yval <- intensity[!.controlVector(design)]
 
-    fc <- switch(EXPR=model,
-                 logistic = new("LogisticFitClass"),
-                 loess = new("LoessFitClass"),
-                 cobs = new("CobsFitClass"),
-                 stop(sprintf("unrecognized model type %s",
-                              sQuote(model))))
+    fc <- new(modelClass)
+#    fc <- switch(EXPR=model,
+#                 logistic = new("LogisticFitClass"),
+#                 loess = new("LoessFitClass"),
+#                 cobs = new("CobsFitClass"),
+#                 stop(sprintf("unrecognized model type %s",
+#                              sQuote(model))))
 
     ## Do a two pass estimation, first using rough conc. estimates,
     ## then using better ones

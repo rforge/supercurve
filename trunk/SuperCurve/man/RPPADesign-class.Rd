@@ -1,6 +1,7 @@
 \name{RPPADesign-class}
 \alias{RPPADesign-class}
 \alias{RPPADesign}
+\alias{RPPADesignFromParams}
 \alias{image,RPPADesign-method}
 \alias{summary,RPPADesign-method}
 \alias{names,RPPADesign-method}
@@ -14,6 +15,8 @@
   set of RPPA slides was designed.
 }
 \usage{
+RPPADesignFromParams(raw, designparams)
+
 RPPADesign(raw,
            steps=rep(0, 1),
            series=factor(rep(0, 1)),
@@ -32,6 +35,7 @@ getSteps(design)
 }
 \arguments{
   \item{raw}{data frame, matrix, or object of class RPPA.}
+  \item{designparams}{An RPPADesignParams object}
   \item{steps}{numeric vector listing the dilution step associated with each
     spot, on a logarithmic scale.}
   \item{series}{character vector or factor identifying the dilution series
