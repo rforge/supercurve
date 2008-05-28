@@ -407,24 +407,6 @@ setMethod("names", "RPPADesign",
 
 
 if (FALSE) {
-  ## :KRC: why did we comment out .attachSlot,
-  ## and why did we have it in the first place?
-
-  ## :PLR: Commented out since not in use; not removed as its raison d'etre
-  ## unknown at time...
-    .attachslot <- function(x) {
-        xname <- substitute(x)
-        sl <- names(getSlots(class(x)))
-        slotnames <- paste(sl, " <<- ", xname, "@", sl, sep="")
-        for (i in slotnames) {
-            eval(parse(text=substitute(slotnames,
-                                       list(slotnames=slotnames))))
-        }
-    }
-}
-
-
-if (FALSE) {
   source("AllGenerics.R")
   source("sc1-rppa.R")
   source("sc2-design.R")
