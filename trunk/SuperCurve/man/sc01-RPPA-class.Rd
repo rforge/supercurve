@@ -22,7 +22,7 @@ colorbar=FALSE, col=terrain.colors(256), \dots)
   \item{path}{character string specifying the path from the current
     directory to the file. The default value assumes the file is
     contained in the current directory.}
-  \item{blanks}{logical vector specifying TBD}
+  \item{blanks}{logical vector; DEPRECATED}
   \item{object}{object of class \code{RPPA}}
   \item{x}{object of class \code{RPPA}}
   \item{measure}{character string containing the name of the measurement column
@@ -40,10 +40,10 @@ colorbar=FALSE, col=terrain.colors(256), \dots)
   from a MicroVigene input file using the \code{RPPA} generator function is
   guaranteed to contain at least 6 columns of information:
   \tabular{ll}{
-    \code{Main.Row} \tab logical location of spot on the array TBD \cr
-    \code{Main.Col} \tab logical location of spot on the array TBD \cr
-    \code{Sub.Row}  \tab logical location of spot on the array TBD \cr
-    \code{Sub.Col}  \tab logical location of spot on the array TBD \cr
+    \code{Main.Row} \tab logical location of spot on the array \cr
+    \code{Main.Col} \tab logical location of spot on the array \cr
+    \code{Sub.Row}  \tab logical location of spot on the array \cr
+    \code{Sub.Col}  \tab logical location of spot on the array \cr
     \code{Sample}   \tab unique identifier of sample spotted at location \cr
     \code{Mean.Net} \tab measurement representing background-corrected
                          mean intensity of the spot \cr
@@ -75,13 +75,7 @@ colorbar=FALSE, col=terrain.colors(256), \dots)
       display locations match the row and column locations of the spot.
       Any measurement column can be displayed using this function. An
       optional color bar can be added; this will be placed at the right
-      edge.
-
-      :TBD: Is the following still correct since colorbar display code replaced??
-      In order to display the color bar, the method uses the
-      \code{\link{layout}} function. Since \code{layout} works on the
-      complete device, this prohibits the inclusion of an image with a
-      color bar as one panel in a window of multiple plots.}
+      edge.}
   }
 }
 \value{

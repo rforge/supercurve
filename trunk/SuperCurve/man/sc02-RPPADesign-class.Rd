@@ -1,4 +1,6 @@
 \name{RPPADesign-class}
+\alias{RPPADesignParams-class}
+\alias{RPPADesignParams}
 \alias{RPPADesign-class}
 \alias{RPPADesign}
 \alias{RPPADesignFromParams}
@@ -9,10 +11,12 @@
 \alias{seriesNames}
 \alias{getSteps}
 \docType{class}
-\title{Class "RPPADesign"}
+\title{Class "RPPADesign" and Class "RPPADesignParams"}
 \description{
-  This class represents the information that describes how a particular
-  set of RPPA slides was designed.
+  The \code{RPPADEsign} class represents the information that describes
+  how a particular set of RPPA slides was designed. The
+  \code{RPPADesignParams} class is used to bundle the parameter set
+  together for easier re-use.
 }
 \usage{
 RPPADesignFromParams(raw, designparams)
@@ -25,6 +29,14 @@ RPPADesign(raw,
            alias=list(),
            center=FALSE,
            controls=list())
+
+RPPADesignParams(steps=rep(0,1),
+                 series=factor(rep(0,1)),
+                 grouping=c("byRow", "byCol", "bySample", "blockSample"),
+                 ordering=c("decreasing", "increasing"),
+                 alias=list(),
+                 center=FALSE,
+                 controls=list())
 
 seriesNames(design)
 getSteps(design)
@@ -107,8 +119,12 @@ getSteps(design)
   for each spot.
 }
 \section{Objects from the Class}{
-  Although objects of the class can be created by a direct call to \link{new},
-  the preferred method is to use the \code{RPPADesign} generator function.
+  Although objects of these classes can be created by a direct call to
+  \link{new}, the preferred method is to start with the
+  \code{RPPADesignParams} generator function, followed by the
+  \code{RPPADesignFromParams} function to construct the final
+  object. (In fact, the \code{RPPADesign} constructor is directly
+  implemented in this way.) 
 }
 \section{Slots}{
   \describe{
@@ -118,6 +134,12 @@ getSteps(design)
     \item{\code{controls}:}{list containing the character strings that
       identify control spots on the array. Controls are not included as part
       of any dilution series.}
+    \item{\code{alias}:}{See arguments above.}
+    \item{\code{center}:}{See arguments above.}
+    \item{\code{grouping}:}{See arguments above.}
+    \item{\code{ordering}:}{See arguments above.}
+    \item{\code{series}:}{See arguments above.}
+    \item{\code{steps}:}{See arguments above.}    
   }
 }
 \section{Methods}{
