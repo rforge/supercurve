@@ -11,16 +11,16 @@
 RPPAFit(rppa,
         design,
         measure,
+        model="logistic",
         xform=function(x) x,
         method=c("nls", "nlrob", "nlrq"),
+        trim=TRUE,
         ci=FALSE,
         ignoreNegative=TRUE,
         trace=FALSE,
         verbose=FALSE,
         veryVerbose=FALSE,
-        warnLevel=0,
-        trim=TRUE,
-        model="logistic")
+        warnLevel=0)
 }
 \arguments{
   \item{rppa}{object of class \code{\link{RPPA}} containing the raw data

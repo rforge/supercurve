@@ -8,16 +8,16 @@
 }
 \usage{
 RPPAFitParams(measure,
+              model="logistic",
               xform=function(x) x,
               method=c("nls", "nlrob", "nlrq"),
+              trim=TRUE,
               ci=FALSE,
               ignoreNegative=TRUE,
               trace=FALSE,
               verbose=FALSE,
               veryVerbose=FALSE,
-              warnLevel=0,
-              trim=TRUE,
-              model=c("logistic", "loess", "cobs"))
+              warnLevel=0)
 }
 \arguments{
   \item{measure}{character string identifying the column of the raw RPPA data
