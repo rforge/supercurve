@@ -43,14 +43,16 @@ RPPASet(path, designparams, fitparams, blanks=NULL)
 }
 \section{Slots}{
   \describe{
-    \item{\code{call}:}{Record of the function call used during contruction}
+    \item{\code{call}:}{object of class \code{call} specifying the function
+      call that was used during construction}
     \item{\code{version}:}{character string containing the version of this
       package used to construct the object}
-    \item{\code{design}:}{object of class RPPADesign, common to all the slides}
-    \item{\code{rppas}:}{array of objects of class RPPA}
-    \item{\code{fitparams}:}{object of class RPPAFitParams that was used to
-      construct the model fits}
-    \item{\code{fits}:}{array of fitted objects of class RPPAFit.}
+    \item{\code{design}:}{object of class \code{RPPADesign}, common to all
+      the slides}
+    \item{\code{rppas}:}{array of objects of class \code{RPPA}}
+    \item{\code{fitparams}:}{object of class \code{RPPAFitParams} that was
+      used to construct the model fits}
+    \item{\code{fits}:}{array of fitted objects of class \code{RPPAFit}}
   }
 }
 \section{Methods}{
@@ -62,7 +64,7 @@ RPPASet(path, designparams, fitparams, blanks=NULL)
   }
 }
 \value{
-  The \code{RPPASet} generator returns an object of the \code{RPPASet} class.
+  The \code{RPPASet} generator returns an object of class \code{RPPASet}.
 
   The \code{summary} method returns a summary of the underlying data
   frame.

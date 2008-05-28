@@ -25,8 +25,8 @@ data(rppaTumor)
 }
 \format{
   The objects \code{erk2}, \code{gsk3}, and \code{jnk} are objects
-  of the \code{\link{RPPA}} class. The object \code{tDesign} is an
-  object of the \code{\link{RPPADesign}} class.
+  of class \code{\link{RPPA}}. The object \code{tDesign} is an
+  object of class \code{\link{RPPADesign}}.
 }
 \source{Bryan Hennessey and Gordon Mills}
 \references{KRC}

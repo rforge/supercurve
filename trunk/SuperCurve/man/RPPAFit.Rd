@@ -106,8 +106,8 @@ RPPAFit(rppa,
   and evaluated, using the \code{\link{getConfidenceInterval}} function.
 }
 \value{
-  This function constructs and returns an object of the
-  \code{\link{RPPAFit}} class.
+  This function constructs and returns an object of class
+  \code{\link{RPPAFit}}.
 }
 \references{KRC}
 \author{Kevin R. Coombes <kcoombes@mdanderson.org>}

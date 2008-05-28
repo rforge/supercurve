@@ -145,8 +145,7 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
   The \code{image} method invisibly returns the object \code{x} on which
   it was invoked.
 
-  The \code{hist} method returns an object of the \code{histogram}
-  class.
+  The \code{hist} method returns an object of class \code{histogram}.
 
   The \code{plot} method invisibly returns the object \code{x} on which
   it was invoked.

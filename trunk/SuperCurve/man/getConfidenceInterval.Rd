@@ -10,12 +10,12 @@
 getConfidenceInterval(result, alpha=0.1, nSim=50)
 }
 \arguments{
-  \item{result}{A \code{\link{RPPAFit}} object representing the
+  \item{result}{object of class \code{\link{RPPAFit}} representing the
     result of fitting a four-parameter logistic model}
-  \item{alpha}{The desired significance of the confidence interval;
-    the width of the resulting interval is 1 - alpha.}
-  \item{nSim}{The number of times to resample the data in order to
-    estimate the confidence intervals.}
+  \item{alpha}{numeric scalar specifying desired significance of the
+    confidence interval; the width of the resulting interval is 1 - alpha.}
+  \item{nSim}{numeric scalar specifying number of times to resample the
+    data in order to estimate the confidence intervals.}
 }
 \details{
   In order to compute the confidence intervals, the function assumes
@@ -28,9 +28,9 @@ getConfidenceInterval(result, alpha=0.1, nSim=50)
   defined quantiles of the refit parameter sets.
 }
 \value{
-  An object of the \code{\link{RPPAFit}} class, containing updated
-  values for the slots \code{lower}, \code{upper}, and
-  \code{conf.width} that describe the confidence interval.
+  An object of class \code{\link{RPPAFit}}, containing updated values for the
+  slots \code{lower}, \code{upper}, and \code{conf.width} that describe the
+  confidence interval.
 }
 \references{KRC}
 \author{Kevin R. Coombes <kcoombes@mdanderson.org>}

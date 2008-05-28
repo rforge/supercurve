@@ -85,7 +85,7 @@ colorbar=FALSE, col=terrain.colors(256), \dots)
   }
 }
 \value{
-  The \code{RPPA} generator returns an object of the \code{RPPA} class.
+  The \code{RPPA} generator returns an object of class \code{RPPA}.
 
   The \code{summary} method returns a summary of the underlying data
   frame.
