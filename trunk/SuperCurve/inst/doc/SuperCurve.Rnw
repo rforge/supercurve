@@ -1,6 +1,6 @@
-%\VignetteIndexEntry{RPPA Primer, ver 0.9999}
+%\VignetteIndexEntry{RPPA Primer}
 %\VignetteKeywords{Preprocessing, Lysate Arrays}
-%\VignetteDepends{SuperCurve}
+%\VignetteDepends{methods, stats, utils, graphics, grDevices, MASS, cobs}
 %\VignettePackage{SuperCurve}
 \documentclass{article}
 
@@ -88,7 +88,7 @@ sample $i$, dilution step $j$, replicate $k$ can be fit as
 $$
   y_{ijk} = \alpha + \beta * g(\gamma(\delta_i + x_{ij})) + \epsilon_{ijk},
 $$
-where $g(x) = e^x/(1+e^x)$. The shape paramters of the 
+where $g(x) = e^x/(1+e^x)$. The shape parameters of the 
 logistic response curve, $\alpha$, $\beta$, and $\gamma$
 are common for all samples. The $x_{ij}$ are known
 offsets from the level of interest, such as the undiluted
@@ -142,8 +142,8 @@ proteins were chosen largely from the PI3K pathway,
 which is frequently disregulated in tumors. We're 
 going to focus on 3 arrays from this study, corresponding
 to the proteins AKT, $\beta$-catenin, and ERK2. These
-data are included as the \Robject{rppaCell} data file, 
-described as \Robject{rppaCellData}.  
+data are included as the \Robject{rppaCell} dataset, 
+described as \Robject{data?rppaCell}.  
 
 \subsection{Getting Started}
 
@@ -170,13 +170,13 @@ with the quantifications, feel free; these are also included.
 These also allow us to illustrate how an \Robject{RPPA} object can
 be constructed from a MicroVigene txt file:
 <<getStarted02>>=
-superHome <- system.file(package="SuperCurve");
-aktHome <- "rppaCellData/Akt.txt";
-aktTake2 <- RPPA(file=aktHome, path=superHome);
+filename <- "Akt.txt";
+directory <- system.file("rppaCellData", package="SuperCurve");
+aktTake2 <- RPPA(file=filename, path=directory);
 class(aktTake2);
 @
-%aktTake2 <- RPPA(file = "rppaCellData/AKT.txt",
-%    path = system.file(package = "SuperCurve");
+%aktTake2 <- RPPA(file="Akt.txt",
+%                 path=system.file("rppaCellData", package="SuperCurve"));
 This \Robject{RPPA} object is the same as {\tt akt}. Now, there's
 really not that much to an \Robject{RPPA} object:
 <<getStarted03>>=
@@ -213,16 +213,15 @@ to specify the position of the spot, {\tt Sample} to tell
 us what the software thinks was printed, and {\tt Mean.Net}
 as a background-corrected measure of spot intensity. 
 
-The constructor function is tuned for MicroVigene files
+The generator function is tuned for MicroVigene files
 at present. If we have other types of data files, we 
 might want to assemble an \Robject{RPPA} object more directly.
 <<getStarted05>>=
-aktRead <- paste(superHome,aktHome,sep="/");
-aktTemp <- read.table(file = aktRead,
-                      header = T, sep="\t", skip = 4, fill = T);
+filename <- "Akt.txt";
+aktTemp <- read.delim(file=file.path(directory, filename), skip=4);
 names(aktTemp)[5] <- "Sample";
-names(aktTemp)[6] <- "Mean.Net"; 
-aktTake3 <- new("RPPA", data = aktTemp, file = aktRead); 
+names(aktTemp)[6] <- "Mean.Net";
+aktTake3 <- new("RPPA", data=aktTemp, file=filename);
 @ 
 again, this \Robject{RPPA} object is just the same as
 the others that we have assembled for AKT. 
@@ -244,7 +243,7 @@ in each patch are different than the bottom 2 rows.
 To see how big the difference is, let's add a colorbar:
 \begin{center}
 <<getStarted07, fig=TRUE>>=
-image(akt,"Mean.Net",colorbar=TRUE);
+image(akt, "Mean.Net", colorbar=TRUE);
 @
 \end{center}
 The top 2 rows are decidedly brighter. This pattern 
@@ -261,7 +260,7 @@ as Mean.Net, measures of background (such as ``Vol.Bkg'')
 can often suggest potential problems. For example,   
 \begin{center}
 <<getStarted08, fig=TRUE>>=
-image(akt,"Vol.Bkg",colorbar=TRUE);
+image(akt, "Vol.Bkg", colorbar=TRUE);
 @
 \end{center}
 shows that something odd may have happened in the patch
@@ -277,16 +276,15 @@ as the size of the spot can vary). The scaled background
 values correspond to the difference between Mean.Total and Mean.Net.
 If desired, we can explore the exact relationship further:
 <<getStarted09, eval=FALSE>>=
-attach(akt@data);
-plot(Vol.Bkg / (Mean.Total - Mean.Net));
-detach("akt@data");
+with(akt@data,
+     plot(Vol.Bkg / (Mean.Total - Mean.Net)));
 @
 Similar checks of the background for the other \Robject{RPPA}
 objects show that there was a problem affecting the bottom 
 edge of the $\beta$-catenin slide, \Robject{ctnnb1}.
 \begin{center}
 <<getStarted10, fig=TRUE>>=
-image(ctnnb1,"Vol.Bkg",colorbar=TRUE);
+image(ctnnb1, "Vol.Bkg", colorbar=TRUE);
 @
 \end{center}
 Estimates for samples in these regions are decidedly suspect. 
@@ -317,10 +315,10 @@ spot on the array. \Robject{Sample} gives the name of the biological
 sample printed at the spot. \Robject{Steps} gives the dilution step
 of the spot within the sample in terms of a $\log_2$ offset relative
 to a reference point within the series. Finally, \Robject{Series} 
-lets us subset the measurments within a sample, if desired. To 
+lets us subset the measurements within a sample, if desired. To 
 make this clearer, let's take a look at the first few entries.
 <<getStarted13>>=
-design40@layout[1:17,];
+design40@layout[1:17, ];
 @ 
 For this array, the first 16 spots comprise the patch in the upper
 left hand corner, and all of these spots are derived from sample 1. 
@@ -351,15 +349,12 @@ low-level approach, such as reading the Sample information
 (and possibly the dilution levels as well) from a separate
 file. 
 <<getStarted15>>=
-superHome <- system.file(package="SuperCurve");
-aktHome <- "rppaCellData/Akt.txt";
-aktRead <- paste(superHome, aktHome, sep="/");
-aktTemp <- read.table(file=aktRead,
-                      header=T, sep="\t", skip=4, fill=T);
+directory <- system.file("rppaCellData", package="SuperCurve");
+filename <- "Akt.txt";
+aktTemp <- read.delim(file=file.path(directory, filename), skip=4);
 names(aktTemp)[5] <- "Sample";
-aktTemp <- aktTemp[, names(aktTemp) %in% 
-                   c("Main.Row", "Main.Col", "Sub.Row", "Sub.Col", 
-                     "Sample")];
+designColHdrs <- c("Main.Row", "Main.Col", "Sub.Row", "Sub.Col", "Sample");
+aktTemp <- aktTemp[, names(aktTemp) %in% designColHdrs];
 steps <- rep(c(rep(8:5, 2), rep(4:1, 2)), 40) - 4.5;
 rep.temp <- factor(paste('Rep', rep(rep(1:2, each=4), 80), sep=''));
 series <- factor(paste(as.character(aktTemp$Sample),
@@ -379,7 +374,7 @@ Rather ornate, but it pulls things together.
 
 \subsection{RPPAFit Details}
 
-Given an \Robject{RPPADesign} and an \Robject{RPPA}, we
+Given an \Robject{RPPA} and an \Robject{RPPADesign}, we
 can use a model to estimate the protein concentrations,
 producing an \Robject{RPPAFit}. The fitting function 
 requires that we specify the measure to be used, in
@@ -414,8 +409,8 @@ terms of both intensity (the default, or ``Y'')
 and log concentration (``X''). 
 \begin{center}
 <<getStarted22, fig=TRUE>>=
-plot(fitted(aktFit,'X'), fitted(aktFit)); # the main curve
-plot(fitted(aktFit,'X'), resid(aktFit)); # residuals
+plot(fitted(aktFit, 'X'), fitted(aktFit)); # the main curve
+plot(fitted(aktFit, 'X'), resid(aktFit)); # residuals
 @ 
 \end{center}
 There is clearly an increase in the variability 
@@ -440,8 +435,8 @@ background.
 %printed on this array, each sample was represented by 
 %two replicate series. This provides one quick check 
 %of consistency.
-%plot(aktFit@concentrations[seq(1,80,2)],
-%     aktFit@concentrations[seq(2,80,2)])
+%plot(aktFit@concentrations[seq(1, 80, 2)],
+%     aktFit@concentrations[seq(2, 80, 2)])
 
 We can also look at fits of each individual 
 series to the underlying response curve:
@@ -476,11 +471,11 @@ of an MA-plot, plotting the difference in replicates
 as a function of their average. 
 \begin{center}
 <<getStarted27, fig=TRUE>>=
-M1 <- (aktFit@concentrations[seq(2,80,2)] -
-       aktFit@concentrations[seq(1,80,2)]);
-A1 <- (aktFit@concentrations[seq(2,80,2)] +
-       aktFit@concentrations[seq(1,80,2)])/2;
-plot(A1,M1);
+M1 <- (aktFit@concentrations[seq(2, 80, 2)] -
+       aktFit@concentrations[seq(1, 80, 2)]);
+A1 <- (aktFit@concentrations[seq(2, 80, 2)] +
+       aktFit@concentrations[seq(1, 80, 2)]) / 2;
+plot(A1, M1);
 @  
 \end{center}
 
@@ -522,3 +517,4 @@ aktFitSample <- RPPAFit(akt, design40Sample, "Mean.Net");
 %A major issue for 
 
 \end{document}
+
