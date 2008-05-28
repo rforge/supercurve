@@ -34,8 +34,8 @@ getSteps(design)
 \S4method{plot}{RPPA,RPPADesign}(x, y, ...)
 }
 \arguments{
-  \item{raw}{data frame, matrix, or object of class RPPA.}
-  \item{designparams}{An RPPADesignParams object}
+  \item{raw}{data frame, matrix, or object of class \code{RPPA}.}
+  \item{designparams}{object of class \code{RPPADesignParams}.}
   \item{steps}{numeric vector listing the dilution step associated with each
     spot, on a logarithmic scale.}
   \item{series}{character vector or factor identifying the dilution series
@@ -70,15 +70,15 @@ getSteps(design)
     centered around 0.}
   \item{controls}{list containing the character strings that identify
     control spots on the array.}
-  \item{x}{object of class RPPADesign (or RPPA in plot method)}
-  \item{y}{object of class RPPADesign}
-  \item{object}{object of class RPPADesign}
-  \item{design}{object of class RPPADesign}
+  \item{x}{object of class \code{RPPADesign} (or \code{RPPA} in plot method)}
+  \item{y}{object of class \code{RPPADesign}}
+  \item{object}{object of class \code{RPPADesign}}
+  \item{design}{object of class \code{RPPADesign}}
   \item{\dots}{extra arguments for generic or plotting routines.}
 }
 \details{
   From their inception, reverse-phase protein array experiments have
-  spotted samples on the array in diluiton series. Thus, a critical aspect
+  spotted samples on the array in dilution series. Thus, a critical aspect
   of the design and analysis is to understand how the dilution series are
   placed on the array.
 
@@ -130,8 +130,9 @@ getSteps(design)
     \item{summary(object, \dots)}{The \code{summary} method lists the
       names of the control spots on the array and then prints a summary of the
       data frame describing the layout.}
-    \item{plot(x,y,...)}{Plot an RPPA object by showing its dilution
-      series with respect to the corresponding RPPADesign.}
+    \item{plot(x, y, \dots)}{Plot an object of class \code{RPPA} by showing
+      its dilution series with respect to the corresponding object of class
+      \code{RPPADesign}.}
   }
 }
 \value{
