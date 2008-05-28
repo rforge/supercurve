@@ -73,3 +73,8 @@ try( dp <- RPPADesignParams(center=c(TRUE, FALSE)) )
 
 ###########################
 ## tests of alias
+
+###########################
+## test of plot. main extra argument is "measure"
+
+try( plot(jnk, dsn, measure='bogus') )

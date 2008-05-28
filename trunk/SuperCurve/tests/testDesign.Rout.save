@@ -112,3 +112,14 @@ Error in RPPADesignParams(center = c(TRUE, FALSE)) :
 > ###########################
 > ## tests of alias
 > 
+> ###########################
+> ## test of plot. main extra argument is "measure"
+> 
+> try( plot(jnk, dsn, measure='bogus') )
+Error in plot.window(...) : need finite 'ylim' values
+In addition: Warning messages:
+1: In min(vert) : no non-missing arguments to min; returning Inf
+2: In max(vert) : no non-missing arguments to max; returning -Inf
+3: In min(x) : no non-missing arguments to min; returning Inf
+4: In max(x) : no non-missing arguments to max; returning -Inf
+> 
