@@ -88,7 +88,7 @@ RPPA(filename, path=".", blanks=NULL)
   which it was invoked.
 }
 \references{KRC}
-\author{Kevin R. Coombes <kcoombes@mdanderson.org>}
+\author{Kevin R. Coombes, \email{kcoombes@mdanderson.org}}
 \seealso{
   \code{\linkS4class{RPPAFit}},
   \code{\linkS4class{RPPADesign}}

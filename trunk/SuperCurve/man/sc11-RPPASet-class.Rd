@@ -70,7 +70,7 @@ RPPASet(path, designparams, fitparams, blanks=NULL)
   frame.
 }
 \references{KRC}
-\author{Kevin R. Coombes <kcoombes@mdanderson.org>}
+\author{Kevin R. Coombes, \email{kcoombes@mdanderson.org}}
 \seealso{
   \code{\link{RPPAFit}},
   \code{\link{RPPADesign}}

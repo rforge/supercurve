@@ -151,7 +151,7 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
   it was invoked.
 }
 \references{KRC}
-\author{Kevin R. Coombes <kcoombes@mdanderson.org>}
+\author{Kevin R. Coombes, \email{kcoombes@mdanderson.org}}
 \seealso{
   \code{\linkS4class{RPPA}},
   \code{\linkS4class{RPPADesign}},
