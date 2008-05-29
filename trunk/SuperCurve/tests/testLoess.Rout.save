@@ -1,0 +1,425 @@
+
+R version 2.7.0 (2008-04-22)
+Copyright (C) 2008 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(SuperCurve)
+Loading required package: MASS
+Loading required package: cobs
+Loading required package: SparseM
+Package SparseM (0.77) loaded.  To cite, see citation("SparseM")
+Loading required package: quantreg
+Loading required package: splines
+> 
+> ######################################
+> # load the tumor data
+> home <- system.file("rppaTripleData", package="SuperCurve")
+> 
+> # first locate the list of assays
+> # the name 'proteins' is required
+> # must include a column named 'Antibody'
+> proteins <- read.table(file.path(home, 'proteinAssay.tsv'),
++                        header=TRUE, sep='\t', as.is=TRUE)
+> dimnames(proteins)[[1]] <- as.character(proteins$Antibody)
+> 
+> for (i in 1:nrow(proteins)) {
++   temp <- RPPA(proteins$File[i], path=home)
++   assign(proteins$Antibody[i], temp, 1)
++ }
+> rm(i, temp)
+> 
+> ######################################
+> # work out the appropriate design layout
+> design <- RPPADesign(ACTB)
+> 
+> ######################################
+> # must define the 'model' to use
+> model <- "loess"
+> 
+> ######################################
+> # must define the 'measure' to use
+> measure <- "Mean.Net"
+> 
+> ######################################
+> # must define the 'method' to use
+> method <- "nls"
+> source("testRblock", echo=TRUE, max.deparse.len=1024)
+
+> ## 
+> ## testRblock
+> ##
+> 
+> ## NOTE: We cannot give this file a name ending in '.R', since that
+> ## would force 'R CMD check' to  try to run it as a standalone
+> ## test. Instead, we want to be able to reuse the code in a number of
+> ## different test runs, loading it with 'source'.
+> 
+> 
+> ############################################################################
+> ## assumes you have already defined the following variables before using
+> ## 'source' to run this code block:
+> ##    proteins (a data frame containing at least one column named 'Antibody'
+> ##    various RPPA objects, one for each antibody in the 'proteins' object
+> ##    design (an RPPADesign object)
+> ##    model (the statistical model to fit)
+> ##    method (the method used for the first pass of the fit)
+> ##    measure (the quantification measure to fit)
+> ############################################################################
+> 
+> ver <- packageDescription('SuperCurve', fields='Version')
+
+> cat(paste("\nTest of SuperCurve version", ver, "\n"))
+
+Test of SuperCurve version 0.9999 
+
+> cat(paste("model = ", model, "; method = ", method,
++             "; measure = ", measure, "\n", sep=""))
+model = loess; method = nls; measure = Mean.Net
+
+> for (i in 1:nrow(proteins)) {
++   itemName <- proteins$Antibody[i]
++   item <- eval(as.name(itemName))
++   temp <- try(RPPAFit(item, design, measure,
++                       method=method,
++                       model=model,
++                       ignoreNegative=FALSE,
++                       warnLevel=-1),
++               TRUE)
++   if(is(temp, 'try-error')) {
++     print(paste(itemName, measure, ver, 'FAILED'))
++     next
++   }
++   meansq <- mean(resid(temp)^2, na.rm=TRUE)
++   tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim = 0.1)
++   par(bg='white')
++   plot(temp, xlim=c(-15,15), main=paste(itemName, measure, ver),
++        sub=paste('Mean square residuals =', round(meansq)))
++   if (FALSE) {
++     dev.copy(png, file.path(paste(itemName, measure, ver, 'png', sep='.')),
++              width=640, height=640)
++     dev.off()
++   }
++   print(paste(itemName, measure, round(meansq), round(tmeansq)))
++ }
+[1] "ODC1 Mean.Net 116879 56624"
+[1] "ACTB Mean.Net 380157 149635"
+[1] "FAK Mean.Net 190535 75535"
+[1] "ACTB-gray Mean.Net 447417 218946"
+
+> rm(i, itemName, item, meansq, tmeansq)
+> 
+> method <- 'nlrob'
+> source("testRblock", echo=TRUE, max.deparse.len=1024)
+
+> ## 
+> ## testRblock
+> ##
+> 
+> ## NOTE: We cannot give this file a name ending in '.R', since that
+> ## would force 'R CMD check' to  try to run it as a standalone
+> ## test. Instead, we want to be able to reuse the code in a number of
+> ## different test runs, loading it with 'source'.
+> 
+> 
+> ############################################################################
+> ## assumes you have already defined the following variables before using
+> ## 'source' to run this code block:
+> ##    proteins (a data frame containing at least one column named 'Antibody'
+> ##    various RPPA objects, one for each antibody in the 'proteins' object
+> ##    design (an RPPADesign object)
+> ##    model (the statistical model to fit)
+> ##    method (the method used for the first pass of the fit)
+> ##    measure (the quantification measure to fit)
+> ############################################################################
+> 
+> ver <- packageDescription('SuperCurve', fields='Version')
+
+> cat(paste("\nTest of SuperCurve version", ver, "\n"))
+
+Test of SuperCurve version 0.9999 
+
+> cat(paste("model = ", model, "; method = ", method,
++             "; measure = ", measure, "\n", sep=""))
+model = loess; method = nlrob; measure = Mean.Net
+
+> for (i in 1:nrow(proteins)) {
++   itemName <- proteins$Antibody[i]
++   item <- eval(as.name(itemName))
++   temp <- try(RPPAFit(item, design, measure,
++                       method=method,
++                       model=model,
++                       ignoreNegative=FALSE,
++                       warnLevel=-1),
++               TRUE)
++   if(is(temp, 'try-error')) {
++     print(paste(itemName, measure, ver, 'FAILED'))
++     next
++   }
++   meansq <- mean(resid(temp)^2, na.rm=TRUE)
++   tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim = 0.1)
++   par(bg='white')
++   plot(temp, xlim=c(-15,15), main=paste(itemName, measure, ver),
++        sub=paste('Mean square residuals =', round(meansq)))
++   if (FALSE) {
++     dev.copy(png, file.path(paste(itemName, measure, ver, 'png', sep='.')),
++              width=640, height=640)
++     dev.off()
++   }
++   print(paste(itemName, measure, round(meansq), round(tmeansq)))
++ }
+Loading required package: robustbase
+[1] "ODC1 Mean.Net 173475 74148"
+[1] "ACTB Mean.Net 490953 173084"
+[1] "FAK Mean.Net 203615 78220"
+[1] "ACTB-gray Mean.Net 583130 234146"
+
+> rm(i, itemName, item, meansq, tmeansq)
+> 
+> method <- 'nlrq'
+> source("testRblock", echo=TRUE, max.deparse.len=1024)
+
+> ## 
+> ## testRblock
+> ##
+> 
+> ## NOTE: We cannot give this file a name ending in '.R', since that
+> ## would force 'R CMD check' to  try to run it as a standalone
+> ## test. Instead, we want to be able to reuse the code in a number of
+> ## different test runs, loading it with 'source'.
+> 
+> 
+> ############################################################################
+> ## assumes you have already defined the following variables before using
+> ## 'source' to run this code block:
+> ##    proteins (a data frame containing at least one column named 'Antibody'
+> ##    various RPPA objects, one for each antibody in the 'proteins' object
+> ##    design (an RPPADesign object)
+> ##    model (the statistical model to fit)
+> ##    method (the method used for the first pass of the fit)
+> ##    measure (the quantification measure to fit)
+> ############################################################################
+> 
+> ver <- packageDescription('SuperCurve', fields='Version')
+
+> cat(paste("\nTest of SuperCurve version", ver, "\n"))
+
+Test of SuperCurve version 0.9999 
+
+> cat(paste("model = ", model, "; method = ", method,
++             "; measure = ", measure, "\n", sep=""))
+model = loess; method = nlrq; measure = Mean.Net
+
+> for (i in 1:nrow(proteins)) {
++   itemName <- proteins$Antibody[i]
++   item <- eval(as.name(itemName))
++   temp <- try(RPPAFit(item, design, measure,
++                       method=method,
++                       model=model,
++                       ignoreNegative=FALSE,
++                       warnLevel=-1),
++               TRUE)
++   if(is(temp, 'try-error')) {
++     print(paste(itemName, measure, ver, 'FAILED'))
++     next
++   }
++   meansq <- mean(resid(temp)^2, na.rm=TRUE)
++   tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim = 0.1)
++   par(bg='white')
++   plot(temp, xlim=c(-15,15), main=paste(itemName, measure, ver),
++        sub=paste('Mean square residuals =', round(meansq)))
++   if (FALSE) {
++     dev.copy(png, file.path(paste(itemName, measure, ver, 'png', sep='.')),
++              width=640, height=640)
++     dev.off()
++   }
++   print(paste(itemName, measure, round(meansq), round(tmeansq)))
++ }
+[1] "ODC1 Mean.Net 173475 74148"
+[1] "ACTB Mean.Net 490953 173084"
+[1] "FAK Mean.Net 203615 78220"
+[1] "ACTB-gray Mean.Net 583130 234146"
+
+> rm(i, itemName, item, meansq, tmeansq)
+> 
+> ######################################
+> ## print the concentrations from the last fit. These will
+> ## automatically be compared with the saved output when we
+> ## run 'R CMD check'
+> temp@concentrations
+ Series.1.1.1  Series.1.1.2  Series.1.1.3  Series.1.1.4  Series.1.1.5 
+  -0.20839681   -0.25875159   -0.24888008    2.39401710    2.14606131 
+ Series.1.1.6  Series.1.2.1  Series.1.2.2  Series.1.2.3  Series.1.2.4 
+   2.52466105   -0.21129629   -0.09304015    0.14931719    2.62754260 
+ Series.1.2.5  Series.1.2.6  Series.1.3.1  Series.1.3.2  Series.1.3.3 
+   2.92988020    3.30710270    1.88824279    1.98968050    1.60004008 
+ Series.1.3.4  Series.1.3.5  Series.1.3.6  Series.1.4.1  Series.1.4.2 
+   3.41418560    3.73819172    3.95497451    3.07108490    3.44103092 
+ Series.1.4.3  Series.1.4.4  Series.1.4.5  Series.1.4.6  Series.1.5.1 
+   3.06651715    3.44669825    3.32049416    3.68750176    2.90356299 
+ Series.1.5.2  Series.1.5.3  Series.1.5.4  Series.1.5.5  Series.1.5.6 
+   3.12820061    2.85119424    2.47361566    2.76370155    3.02079705 
+ Series.1.6.1  Series.1.6.2  Series.1.6.3  Series.1.6.4  Series.1.6.5 
+   3.19019449    3.48123912    3.35982952    3.12744920    3.36213891 
+ Series.1.6.6  Series.1.7.1  Series.1.7.2  Series.1.7.3  Series.1.7.4 
+   3.42714455    3.72516984    3.61496778    3.53479151    6.25256072 
+ Series.1.7.5  Series.1.7.6  Series.1.8.1  Series.1.8.2  Series.1.8.3 
+   5.97796879    6.08574017    4.20898813    4.74092453    4.37425168 
+ Series.1.8.4  Series.1.8.5  Series.1.8.6  Series.1.9.1  Series.1.9.2 
+   4.59011836    4.23323887    4.53362730    4.35957800    4.17181927 
+ Series.1.9.3  Series.1.9.4  Series.1.9.5  Series.1.9.6 Series.1.10.1 
+   4.30714739    6.23983843    6.21685683    6.39593318    3.57543643 
+Series.1.10.2 Series.1.10.3 Series.1.10.4 Series.1.10.5 Series.1.10.6 
+   4.14188655    4.17810255    4.07603994    3.61711885    4.22034574 
+Series.1.11.1 Series.1.11.2 Series.1.11.3 Series.1.11.4 Series.1.11.5 
+   2.36351946    2.86788889    2.38753981    3.14855044    2.67093950 
+Series.1.11.6 Series.1.12.1 Series.1.12.2 Series.1.12.3 Series.1.12.4 
+   2.71895880    0.94892032    1.07844310    0.97033518    0.99904801 
+Series.1.12.5 Series.1.12.6  Series.2.1.1  Series.2.1.2  Series.2.1.3 
+   0.79977327    0.86153660    1.98965193    1.79536253    1.98467052 
+ Series.2.1.4  Series.2.1.5  Series.2.1.6  Series.2.2.1  Series.2.2.2 
+   0.43963942    0.81642839    0.93389300    1.69357807    1.49093045 
+ Series.2.2.3  Series.2.2.4  Series.2.2.5  Series.2.2.6  Series.2.3.1 
+   1.41748853    2.20998220    1.95656840    2.06138536    2.59598666 
+ Series.2.3.2  Series.2.3.3  Series.2.3.4  Series.2.3.5  Series.2.3.6 
+   2.47126359    2.40890563    1.95171904    1.86553799    1.81086295 
+ Series.2.4.1  Series.2.4.2  Series.2.4.3  Series.2.4.4  Series.2.4.5 
+   4.54522556    4.20342991    4.02754347    4.22742493    4.62793211 
+ Series.2.4.6  Series.2.5.1  Series.2.5.2  Series.2.5.3  Series.2.5.4 
+   4.88764502    4.43273042    4.36028698    4.10677380    4.39482631 
+ Series.2.5.5  Series.2.5.6  Series.2.6.1  Series.2.6.2  Series.2.6.3 
+   4.24798224    4.35285697    5.51339350    5.14026857    4.88194278 
+ Series.2.6.4  Series.2.6.5  Series.2.6.6  Series.2.7.1  Series.2.7.2 
+   4.70720410    4.57430021    4.48667587    6.16181966    6.12300340 
+ Series.2.7.3  Series.2.7.4  Series.2.7.5  Series.2.7.6  Series.2.8.1 
+   6.26338753    4.10356802    3.72200905    3.39107639    6.18464407 
+ Series.2.8.2  Series.2.8.3  Series.2.8.4  Series.2.8.5  Series.2.8.6 
+   5.98557123    5.56950662    3.97834012    3.74153407    3.45283104 
+ Series.2.9.1  Series.2.9.2  Series.2.9.3  Series.2.9.4  Series.2.9.5 
+   5.48067888    4.84266044    4.49596648    3.30468403    3.59499817 
+ Series.2.9.6 Series.2.10.1 Series.2.10.2 Series.2.10.3 Series.2.10.4 
+   3.35950028    1.56028223    1.22877197    0.89113817    1.71236615 
+Series.2.10.5 Series.2.10.6 Series.2.11.1 Series.2.11.2 Series.2.11.3 
+   1.55978434    1.54329253    1.55058220    1.11693835    1.20136246 
+Series.2.11.4 Series.2.11.5 Series.2.11.6 Series.2.12.1 Series.2.12.2 
+   1.30580891    0.93692842    1.03001989   -0.74541011   -1.21362623 
+Series.2.12.3 Series.2.12.4 Series.2.12.5 Series.2.12.6  Series.3.1.1 
+  -1.03121709   -0.66661059   -0.03829400    0.10785299    0.34900307 
+ Series.3.1.2  Series.3.1.3  Series.3.1.4  Series.3.1.5  Series.3.1.6 
+   0.77387719    0.69330538    2.70526515    2.82779725    2.75691333 
+ Series.3.2.1  Series.3.2.2  Series.3.2.3  Series.3.2.4  Series.3.2.5 
+   2.75395062    2.98038274    2.75996488    3.83378148    3.97334355 
+ Series.3.2.6  Series.3.3.1  Series.3.3.2  Series.3.3.3  Series.3.3.4 
+   4.11374172    2.97783309    3.01912789    2.49212129    4.99031554 
+ Series.3.3.5  Series.3.3.6  Series.3.4.1  Series.3.4.2  Series.3.4.3 
+   4.50309691    4.95584694    5.30282282    4.82794699    4.40100820 
+ Series.3.4.4  Series.3.4.5  Series.3.4.6  Series.3.5.1  Series.3.5.2 
+   4.45716922    4.12084608    4.50355260    4.19974475    4.00677142 
+ Series.3.5.3  Series.3.5.4  Series.3.5.5  Series.3.5.6  Series.3.6.1 
+   4.11604364    3.52297386    3.83701382    4.25826639    4.97882321 
+ Series.3.6.2  Series.3.6.3  Series.3.6.4  Series.3.6.5  Series.3.6.6 
+   5.33985168    4.82601540    4.34411607    4.62159224    4.74081438 
+ Series.3.7.1  Series.3.7.2  Series.3.7.3  Series.3.7.4  Series.3.7.5 
+   4.63003408    4.15816337    4.45505309    6.40787879    5.99007926 
+ Series.3.7.6  Series.3.8.1  Series.3.8.2  Series.3.8.3  Series.3.8.4 
+   6.70316931    4.77413971    4.48777230    4.17087216    5.90142353 
+ Series.3.8.5  Series.3.8.6  Series.3.9.1  Series.3.9.2  Series.3.9.3 
+   5.80552922    6.38836308    3.65857629    3.78459525    3.64962839 
+ Series.3.9.4  Series.3.9.5  Series.3.9.6 Series.3.10.1 Series.3.10.2 
+   6.12709129    6.61360665    7.31759291    3.79078201    3.69741126 
+Series.3.10.3 Series.3.10.4 Series.3.10.5 Series.3.10.6 Series.3.11.1 
+   3.91028821    3.30148476    3.61142717    3.85090540    3.27909397 
+Series.3.11.2 Series.3.11.3 Series.3.11.4 Series.3.11.5 Series.3.11.6 
+   3.42083451    3.35073293    2.67523162    2.89931464    2.98778026 
+Series.3.12.1 Series.3.12.2 Series.3.12.3 Series.3.12.4 Series.3.12.5 
+   1.54562543    2.05119264    1.88658892    2.38227164    2.62621666 
+Series.3.12.6  Series.4.1.1  Series.4.1.2  Series.4.1.3  Series.4.1.4 
+   2.21037194    1.54665073    1.14244511    1.31288525    2.84997435 
+ Series.4.1.5  Series.4.1.6  Series.4.2.1  Series.4.2.2  Series.4.2.3 
+   2.75838869    3.13140701    3.41865778    3.43207699    2.95318646 
+ Series.4.2.4  Series.4.2.5  Series.4.2.6  Series.4.3.1  Series.4.3.2 
+   3.37613228    3.37973502    3.15919239    3.59830526    3.69949141 
+ Series.4.3.3  Series.4.3.4  Series.4.3.5  Series.4.3.6  Series.4.4.1 
+   3.03234485    3.52313959    3.42491929    3.17539675    8.44352879 
+ Series.4.4.2  Series.4.4.3  Series.4.4.4  Series.4.4.5  Series.4.4.6 
+   6.40952674    5.60488968    6.44267228    5.90769588    5.38840670 
+ Series.4.5.1  Series.4.5.2  Series.4.5.3  Series.4.5.4  Series.4.5.5 
+   4.89359326    4.58008246    4.14091233    5.11978167    4.48395978 
+ Series.4.5.6  Series.4.6.1  Series.4.6.2  Series.4.6.3  Series.4.6.4 
+   4.43581482    4.14422833    4.10491533    4.26199036    4.48013365 
+ Series.4.6.5  Series.4.6.6  Series.4.7.1  Series.4.7.2  Series.4.7.3 
+   4.31210938    4.58431005    7.12418255    7.38059145    6.85906092 
+ Series.4.7.4  Series.4.7.5  Series.4.7.6  Series.4.8.1  Series.4.8.2 
+   4.83408362    4.84297263    3.70229105    7.16764445    7.22700924 
+ Series.4.8.3  Series.4.8.4  Series.4.8.5  Series.4.8.6  Series.4.9.1 
+   6.49421347    5.17369161    5.14816581    4.80204779    7.90574105 
+ Series.4.9.2  Series.4.9.3  Series.4.9.4  Series.4.9.5  Series.4.9.6 
+   7.88662722    7.10424741    5.00076582    4.30631228    3.93223118 
+Series.4.10.1 Series.4.10.2 Series.4.10.3 Series.4.10.4 Series.4.10.5 
+   0.77995341    0.83502766    0.73233941    0.81072133    1.12428621 
+Series.4.10.6 Series.4.11.1 Series.4.11.2 Series.4.11.3 Series.4.11.4 
+   0.61316079    0.66843844    0.01404885    0.25422497    0.97131970 
+Series.4.11.5 Series.4.11.6 Series.4.12.1 Series.4.12.2 Series.4.12.3 
+   0.92462934    0.05092160   -0.78980723   -0.63872007   -1.19565868 
+Series.4.12.4 Series.4.12.5 Series.4.12.6 
+  -0.55346949   -0.16887088   -0.45502039 
+> 
+> ######################################
+> ## This early design had each series repeated nine times,
+> ## three times within a subgrid and again in three adjacent
+> ## subgrids. Here we measure the variability of the
+> ## replicates.
+> d <- ACTB@data[seq(6, nrow(ACTB@data), by=6),]
+> attach(d)
+> foo <- paste("Series", Main.Row, Main.Col, Sub.Row, sep='.')
+> detach()
+> sum(foo==seriesNames(design))
+[1] 288
+> 
+> avgs <- tapply(temp@concentrations, list(d$Sample), mean)
+> spread <- tapply(temp@concentrations, list(d$Sample), sd)
+> res <- data.frame(Mean=avgs, SD=spread, CV=spread/abs(avgs))
+> res[order(res$SD),]
+                        Mean        SD         CV
+KM12L4             4.5007609 0.2195975 0.04879119
+PASW 480 10%01     3.1658727 0.2240210 0.07076121
+BT474 10%          3.1975873 0.2604796 0.08146129
+G26                3.6276157 0.2817714 0.07767399
+L3.6               3.1810601 0.3779980 0.11882768
+L3.6 10%           4.2673716 0.3886198 0.09106773
+SNB19              4.1152931 0.4041094 0.09819698
+SNB19 10%          4.1965372 0.4233100 0.10087127
+MDA468             1.9830931 0.4296081 0.21663538
+U251 10%           7.2388131 0.4499514 0.06215817
+U87 10%            6.3616371 0.4757831 0.07478941
+KM12C              4.5790661 0.5022964 0.10969408
+PASW 480 10%01 10% 4.6665587 0.5042266 0.10805106
+G26 10%            4.6380624 0.5326685 0.11484720
+SW 480 10%         2.9494449 0.5507211 0.18672026
+MDA231             3.0040685 0.6313310 0.21015867
+U251               5.6785820 0.6395091 0.11261775
+BT474              1.5606685 0.6462365 0.41407670
+Blank              0.2209736 0.7102662 3.21425782
+KM12L4 10%         5.0172094 0.7556960 0.15062079
+U87                5.6139870 0.8839783 0.15745999
+U87 EGFR 10%       2.9925055 0.9064334 0.30290115
+MDA231 10%         3.8511224 0.9072577 0.23558267
+Buffer             0.6694428 0.9913461 1.48085262
+MCF7               0.5118795 0.9983833 1.95042626
+MDA468 10%         2.6817826 1.0434432 0.38908568
+MCF7 10%           2.0888407 1.1296950 0.54082391
+U87 EGFR 0.5       2.5013414 1.3039138 0.52128584
+K562               2.5680346 1.3681995 0.53278079
+KM12C 10%          5.1759630 1.4549805 0.28110334
+> 

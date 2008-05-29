@@ -1,0 +1,299 @@
+
+R version 2.7.0 (2008-04-22)
+Copyright (C) 2008 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(SuperCurve)
+Loading required package: MASS
+Loading required package: cobs
+Loading required package: SparseM
+Package SparseM (0.77) loaded.  To cite, see citation("SparseM")
+Loading required package: quantreg
+Loading required package: splines
+> 
+> ######################################
+> # load the tumor data
+> home <- system.file("rppaTumorData", package="SuperCurve")
+> 
+> # first locate the list of assays
+> # the name 'proteins' is required
+> # must include a column named 'Antibody'
+> proteins <- read.table(file.path(home, 'proteinAssay.tsv'),
++                        header=TRUE, sep='\t', as.is=TRUE)
+> dimnames(proteins)[[1]] <- as.character(proteins$Antibody)
+> 
+> for (i in 1:nrow(proteins)) {
++   temp <- RPPA(proteins$File[i], path=home)
++   assign(proteins$Antibody[i], temp, 1)
++ }
+> rm(i, temp)
+> 
+> ######################################
+> # work out the appropriate design layout
+> design <- RPPADesign(ERK2, grouping="blockSample",
++                      center=TRUE, controls=list("neg con", "pos con"))
+> 
+> ######################################
+> # must define the 'model' to use
+> model <- "cobs"
+> 
+> ######################################
+> # must define the 'measure' to use
+> measure <- "Mean.Net"
+> 
+> ######################################
+> # must define the 'method' to use
+> method <- "nls"
+> source("testRblock", echo=TRUE, max.deparse.len=1024)
+
+> ## 
+> ## testRblock
+> ##
+> 
+> ## NOTE: We cannot give this file a name ending in '.R', since that
+> ## would force 'R CMD check' to  try to run it as a standalone
+> ## test. Instead, we want to be able to reuse the code in a number of
+> ## different test runs, loading it with 'source'.
+> 
+> 
+> ############################################################################
+> ## assumes you have already defined the following variables before using
+> ## 'source' to run this code block:
+> ##    proteins (a data frame containing at least one column named 'Antibody'
+> ##    various RPPA objects, one for each antibody in the 'proteins' object
+> ##    design (an RPPADesign object)
+> ##    model (the statistical model to fit)
+> ##    method (the method used for the first pass of the fit)
+> ##    measure (the quantification measure to fit)
+> ############################################################################
+> 
+> ver <- packageDescription('SuperCurve', fields='Version')
+
+> cat(paste("\nTest of SuperCurve version", ver, "\n"))
+
+Test of SuperCurve version 0.9999 
+
+> cat(paste("model = ", model, "; method = ", method,
++             "; measure = ", measure, "\n", sep=""))
+model = cobs; method = nls; measure = Mean.Net
+
+> for (i in 1:nrow(proteins)) {
++   itemName <- proteins$Antibody[i]
++   item <- eval(as.name(itemName))
++   temp <- try(RPPAFit(item, design, measure,
++                       method=method,
++                       model=model,
++                       ignoreNegative=FALSE,
++                       warnLevel=-1),
++               TRUE)
++   if(is(temp, 'try-error')) {
++     print(paste(itemName, measure, ver, 'FAILED'))
++     next
++   }
++   meansq <- mean(resid(temp)^2, na.rm=TRUE)
++   tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim = 0.1)
++   par(bg='white')
++   plot(temp, xlim=c(-15,15), main=paste(itemName, measure, ver),
++        sub=paste('Mean square residuals =', round(meansq)))
++   if (FALSE) {
++     dev.copy(png, file.path(paste(itemName, measure, ver, 'png', sep='.')),
++              width=640, height=640)
++     dev.off()
++   }
++   print(paste(itemName, measure, round(meansq), round(tmeansq)))
++ }
+[1] "ERK2 Mean.Net 269554 133616"
+[1] "GSK3 Mean.Net 290930 162856"
+[1] "JNK Mean.Net 267295 115206"
+
+> rm(i, itemName, item, meansq, tmeansq)
+> 
+> method <- 'nlrob'
+> source("testRblock", echo=TRUE, max.deparse.len=1024)
+
+> ## 
+> ## testRblock
+> ##
+> 
+> ## NOTE: We cannot give this file a name ending in '.R', since that
+> ## would force 'R CMD check' to  try to run it as a standalone
+> ## test. Instead, we want to be able to reuse the code in a number of
+> ## different test runs, loading it with 'source'.
+> 
+> 
+> ############################################################################
+> ## assumes you have already defined the following variables before using
+> ## 'source' to run this code block:
+> ##    proteins (a data frame containing at least one column named 'Antibody'
+> ##    various RPPA objects, one for each antibody in the 'proteins' object
+> ##    design (an RPPADesign object)
+> ##    model (the statistical model to fit)
+> ##    method (the method used for the first pass of the fit)
+> ##    measure (the quantification measure to fit)
+> ############################################################################
+> 
+> ver <- packageDescription('SuperCurve', fields='Version')
+
+> cat(paste("\nTest of SuperCurve version", ver, "\n"))
+
+Test of SuperCurve version 0.9999 
+
+> cat(paste("model = ", model, "; method = ", method,
++             "; measure = ", measure, "\n", sep=""))
+model = cobs; method = nlrob; measure = Mean.Net
+
+> for (i in 1:nrow(proteins)) {
++   itemName <- proteins$Antibody[i]
++   item <- eval(as.name(itemName))
++   temp <- try(RPPAFit(item, design, measure,
++                       method=method,
++                       model=model,
++                       ignoreNegative=FALSE,
++                       warnLevel=-1),
++               TRUE)
++   if(is(temp, 'try-error')) {
++     print(paste(itemName, measure, ver, 'FAILED'))
++     next
++   }
++   meansq <- mean(resid(temp)^2, na.rm=TRUE)
++   tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim = 0.1)
++   par(bg='white')
++   plot(temp, xlim=c(-15,15), main=paste(itemName, measure, ver),
++        sub=paste('Mean square residuals =', round(meansq)))
++   if (FALSE) {
++     dev.copy(png, file.path(paste(itemName, measure, ver, 'png', sep='.')),
++              width=640, height=640)
++     dev.off()
++   }
++   print(paste(itemName, measure, round(meansq), round(tmeansq)))
++ }
+Loading required package: robustbase
+[1] "ERK2 Mean.Net 451670 157788"
+[1] "GSK3 Mean.Net 728318 214931"
+[1] "JNK Mean.Net 491154 121022"
+
+> rm(i, itemName, item, meansq, tmeansq)
+> 
+> method <- 'nlrq'
+> source("testRblock", echo=TRUE, max.deparse.len=1024)
+
+> ## 
+> ## testRblock
+> ##
+> 
+> ## NOTE: We cannot give this file a name ending in '.R', since that
+> ## would force 'R CMD check' to  try to run it as a standalone
+> ## test. Instead, we want to be able to reuse the code in a number of
+> ## different test runs, loading it with 'source'.
+> 
+> 
+> ############################################################################
+> ## assumes you have already defined the following variables before using
+> ## 'source' to run this code block:
+> ##    proteins (a data frame containing at least one column named 'Antibody'
+> ##    various RPPA objects, one for each antibody in the 'proteins' object
+> ##    design (an RPPADesign object)
+> ##    model (the statistical model to fit)
+> ##    method (the method used for the first pass of the fit)
+> ##    measure (the quantification measure to fit)
+> ############################################################################
+> 
+> ver <- packageDescription('SuperCurve', fields='Version')
+
+> cat(paste("\nTest of SuperCurve version", ver, "\n"))
+
+Test of SuperCurve version 0.9999 
+
+> cat(paste("model = ", model, "; method = ", method,
++             "; measure = ", measure, "\n", sep=""))
+model = cobs; method = nlrq; measure = Mean.Net
+
+> for (i in 1:nrow(proteins)) {
++   itemName <- proteins$Antibody[i]
++   item <- eval(as.name(itemName))
++   temp <- try(RPPAFit(item, design, measure,
++                       method=method,
++                       model=model,
++                       ignoreNegative=FALSE,
++                       warnLevel=-1),
++               TRUE)
++   if(is(temp, 'try-error')) {
++     print(paste(itemName, measure, ver, 'FAILED'))
++     next
++   }
++   meansq <- mean(resid(temp)^2, na.rm=TRUE)
++   tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim = 0.1)
++   par(bg='white')
++   plot(temp, xlim=c(-15,15), main=paste(itemName, measure, ver),
++        sub=paste('Mean square residuals =', round(meansq)))
++   if (FALSE) {
++     dev.copy(png, file.path(paste(itemName, measure, ver, 'png', sep='.')),
++              width=640, height=640)
++     dev.off()
++   }
++   print(paste(itemName, measure, round(meansq), round(tmeansq)))
++ }
+[1] "ERK2 Mean.Net 451670 157788"
+[1] "GSK3 Mean.Net 728318 214931"
+[1] "JNK Mean.Net 491154 121022"
+
+> rm(i, itemName, item, meansq, tmeansq)
+> 
+> ######################################
+> ## print the concentrations from the last fit. These will
+> ## automatically be compared with the saved output when we
+> ## run 'R CMD check'
+> temp@concentrations
+  sample 1.1.1   sample 2.1.1   sample 3.1.2   sample 4.1.2   sample 5.1.3 
+   -6.18267346    -7.48692061    -3.91223382    -3.42633641    -4.75326033 
+  sample 6.1.3   sample 7.1.4   sample 8.1.4   sample 9.1.5  sample 10.1.5 
+   -7.33995095    -4.31618702    -6.75232906    -5.44651307    -9.55944021 
+ sample 11.1.6  sample 12.1.6  sample 13.1.7  sample 14.1.7  sample 15.1.8 
+   -6.53157484    -9.65788066    -5.43652596    -6.75070949    -6.92746891 
+ sample 16.1.8  sample 17.1.9  sample 18.1.9 sample 19.1.10 sample 20.1.10 
+   -2.87405194    -4.46299610    -3.47279609    -2.29451606    -7.45709049 
+sample 21.1.11 sample 22.1.11 sample 23.1.12 sample 24.1.12  sample 25.2.1 
+   -4.94082882    -5.51260300    -1.30721017    -6.30938124    -2.93105419 
+ sample 26.2.1  sample 27.2.2  sample 28.2.2  sample 29.2.3  sample 30.2.3 
+   -8.49074900    -3.55487181    -6.30020600    -3.47655296   -10.06259059 
+ sample 31.2.4  sample 32.2.4  sample 33.2.5  sample 34.2.5  sample 35.2.6 
+   -4.84161106    -5.89875622    -3.31194633    -4.42602564    -5.15282839 
+ sample 36.2.6  sample 37.2.7  sample 38.2.7  sample 39.2.8  sample 40.2.8 
+   -2.77638571    -3.42602564    -3.04362222    -1.07279831    -7.07460782 
+ sample 41.2.9  sample 42.2.9 sample 43.2.10 sample 44.2.10 sample 45.2.11 
+   -3.16737712    -3.71779609    -0.88114408    -3.46299610    -3.22317837 
+sample 46.2.11 sample 47.2.12 sample 48.2.12  sample 49.3.1  sample 50.3.1 
+   -7.93485361    -0.01617119    -1.99578616    -3.12391594    -3.58958851 
+ sample 51.3.2  sample 52.3.2  sample 53.3.3  sample 54.3.3  sample 55.3.4 
+   -3.34537606    -5.67825207    -3.55915665    -3.06254927    -3.21625318 
+ sample 56.3.4  sample 57.3.5  sample 58.3.5  sample 59.3.6  sample 60.3.6 
+   -5.55074680    -2.80670772    -3.02673472    -3.35807063    -3.55501653 
+ sample 61.3.7  sample 62.3.7  sample 63.3.8  sample 64.3.8  sample 65.3.9 
+   -3.00994988    -3.06701271    -2.88490800    -6.43930342    -3.68384876 
+ sample 66.3.9 sample 67.3.10 sample 68.3.10 sample 69.3.11 sample 70.3.11 
+   -5.15145379    -6.20436411    -6.32303720    -3.13890619    -4.31942049 
+sample 71.3.12 sample 72.3.12  sample 73.4.1  sample 74.4.1  sample 75.4.2 
+   -3.80743641    -6.50831723    -3.43718411    -6.72588419    -6.59068547 
+ sample 76.4.2  sample 77.4.3  sample 78.4.3  sample 79.4.4  sample 80.4.4 
+   -8.07970103    -4.89731433    -4.16327575    -2.22729025    -2.02538376 
+ sample 81.4.5  sample 82.4.5  sample 83.4.6  sample 84.4.6  sample 85.4.7 
+   -4.56434592    -8.59063308    -2.91531923    -4.34161535    -6.79413200 
+ sample 86.4.7  sample 87.4.8  sample 88.4.8  sample 89.4.9  sample 90.4.9 
+   -5.77195966    -5.45399619    -8.11860527    -5.20895081    -4.50446081 
+sample 91.4.10 sample 92.4.10 sample 93.4.11 sample 94.4.11 sample 95.4.12 
+   -3.22311856    -6.67217644    -3.90098647    -5.52114677    -7.49966133 
+sample 96.4.12 
+   -9.04698346 
+> 
