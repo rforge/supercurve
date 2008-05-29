@@ -262,8 +262,12 @@ registerModel <- function(name, classname) {
 }
 
 registerModel("logistic", "LogisticFitClass")
-registerModel("cobs",     "LoessFitClass")
-registerModel("loess",    "CobsFitClass")
+registerModel("cobs",     "CobsFitClass")
+registerModel("loess",    "LoessFitClass")
+# 29May2008 ESN--the code commented out below is wrong I believe.
+# I fixed it with the lines above.  
+#registerModel("cobs",     "LoessFitClass")
+#registerModel("loess",    "CobsFitClass")
 
 ##-----------------------------------------------------------------------------
 RPPAFitFromParams <- function(rppa, design, fitparams) {
