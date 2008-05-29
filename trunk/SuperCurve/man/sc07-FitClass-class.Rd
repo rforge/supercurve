@@ -6,7 +6,8 @@
 \docType{class}
 \title{Class "FitClass"}
 \description{
-  The FitClass class represents TBD.
+  The FitClass class represents the model that was fit in the \code{RPPAFit} routine.
+  Functions for use with the FitClass are only to be used internally.  
 }
 \usage{
 \S4method{fitSeries}{FitClass}(object, diln, intensity, est.conc, method="nls",
@@ -16,13 +17,13 @@
 }
 \arguments{
   \item{object}{object of (sub)class \code{FitClass}}
-  \item{diln}{numeric TBD}
-  \item{intensity}{numeric TBD}
-  \item{est.conc}{numeric TBD estimated concentration for dilution = 0}
-  \item{method}{character string specifying regression method to use TBD}
-  \item{silent}{logical scalar. If \code{TRUE}, TBD}
-  \item{trace}{logical scalar. If \code{TRUE}, TBD}
-  \item{conc}{numeric TBD}
+  \item{diln}{numeric vector of dilutions for series to be fit}
+  \item{intensity}{numeric vector of observed intensities for series to be fit}
+  \item{est.conc}{numeric estimated concentration for dilution = 0}
+  \item{method}{character string specifying regression method to use fit the series}
+  \item{silent}{logical scalar. If \code{TRUE}, report of error messages will not be suppressed in try(nlsmeth(...).)
+  \item{trace}{logical scalar. Used in \code{nls} method.}
+  \item{conc}{numeric vector containing current estimates of concentration for each series}
   \item{design}{object of class \code{RPPADesign} describing the layout
     of the array}
   \item{\dots}{extra arguments for generic routines}
