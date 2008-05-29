@@ -92,6 +92,8 @@ write.summary <- function(rppaset,
                           graphs=TRUE,
                           tiffdir=NULL) {
     ## Check arguments
+  
+    ## would not need this is it were a method....
     if (!inherits(rppaset, "RPPASet")) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppaset"), "RPPASet"))
@@ -117,30 +119,7 @@ write.summary <- function(rppaset,
                      sQuote("prefix")))
     }
 
-    if (!is.logical(graphs)) {
-        stop(sprintf("argument %s must be logical",
-                     sQuote("graphs")))
-    } else if (!(length(graphs) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("graphs")))
-    }
-
-    if (is.null(tiffdir)) {
-        ## Assume the tif images are in a sibling directory named "tif"
-        tiffdir <- file.path(path, "..", "tif")
-    }
-
-    if (!is.character(tiffdir)) {
-        stop(sprintf("argument %s must be character",
-                     sQuote("tiffdir")))
-    } else if (!(length(tiffdir) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("tiffdir")))
-    } else if (!file.exists(tiffdir)) {
-        ## :TODO: Add code to verify directory exists
-        stop(sprintf("directory %s does not exist",
-                     dQuote(tiffdir)))
-    }
+    graphs <- as.logical(graphs)[1]
 
     ## Begin processing
     conc <- .fitSlot(rppaset, "concentrations")
@@ -182,6 +161,22 @@ write.summary <- function(rppaset,
     write.csv(conc, file=file.path(path, filename))
 
     if (graphs) {
+      if (is.null(tiffdir)) {
+        ## Assume the tif images are in a sibling directory named "tif"
+        tiffdir <- file.path(path, "..", "tif")
+      }
+
+      if (!is.character(tiffdir)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("tiffdir")))
+      } else if (!(length(tiffdir) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("tiffdir")))
+      } else if (!file.exists(tiffdir)) {
+        stop(sprintf("directory %s does not exist",
+                     dQuote(tiffdir)))
+      }
+
         ## Save fit graphs
         op <- par(no.readonly=TRUE)
         par(mfrow=c(2, 1))
