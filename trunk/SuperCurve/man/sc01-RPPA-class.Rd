@@ -13,7 +13,7 @@
 RPPA(filename, path=".", blanks=NULL)
 \S4method{summary}{RPPA}(object, \dots)
 \S4method{image}{RPPA}(x, measure="Mean.Net", main=measure,
-colorbar=FALSE, col=terrain.colors(256), \dots)
+    colorbar=FALSE, col=terrain.colors(256), \dots)
 }
 \arguments{
   \item{filename}{character string specifying the name of a text file

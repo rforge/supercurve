@@ -12,8 +12,8 @@
 \docType{class}
 \title{Class "RPPAFit"}
 \description{
-  Objects of the \code{RPPAFit} class represent the results of
-  fitting a four-parameter logistic model to the dilution series in a
+  Objects of the \code{RPPAFit} class represent the results of fitting a
+  statistical model of response to the dilution series in a
   reverse-phase protein array experiment.
 }
 \usage{

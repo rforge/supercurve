@@ -13,14 +13,12 @@
 \docType{class}
 \title{Class "RPPADesign" and Class "RPPADesignParams"}
 \description{
-  The \code{RPPADEsign} class represents the information that describes
+  The \code{RPPADesign} class represents the information that describes
   how a particular set of RPPA slides was designed. The
   \code{RPPADesignParams} class is used to bundle the parameter set
   together for easier re-use.
 }
 \usage{
-RPPADesignFromParams(raw, designparams)
-
 RPPADesign(raw,
            steps=rep(0, 1),
            series=factor(rep(0, 1)),
@@ -37,6 +35,8 @@ RPPADesignParams(steps=rep(0,1),
                  alias=list(),
                  center=FALSE,
                  controls=list())
+
+RPPADesignFromParams(raw, designparams)
 
 seriesNames(design)
 getSteps(design)
@@ -61,8 +61,8 @@ getSteps(design)
                                 series \cr
       \code{"bySample"}    \tab each unique sample id is its own dilution
                                 series \cr
-      \code{"blockSample"} \tab all occurrences of sample id within subgrid
-                                refer to same dilution series \cr
+      \code{"blockSample"} \tab all occurrences of sample id in subgrid
+                                refer to same series \cr
     }}
   \item{ordering}{character string specifying arrangement of dilution series.
     Valid values are:
@@ -134,12 +134,12 @@ getSteps(design)
     \item{\code{controls}:}{list containing the character strings that
       identify control spots on the array. Controls are not included as part
       of any dilution series.}
-    \item{\code{alias}:}{See arguments above.}
-    \item{\code{center}:}{See arguments above.}
-    \item{\code{grouping}:}{See arguments above.}
-    \item{\code{ordering}:}{See arguments above.}
-    \item{\code{series}:}{See arguments above.}
-    \item{\code{steps}:}{See arguments above.}    
+    \item{\code{alias}:}{See corresponding argument above.}
+    \item{\code{center}:}{See corresponding argument above.}
+    \item{\code{grouping}:}{See corresponding argument above.}
+    \item{\code{ordering}:}{See corresponding argument above.}
+    \item{\code{series}:}{See corresponding argument above.}
+    \item{\code{steps}:}{See corresponding argument above.}    
   }
 }
 \section{Methods}{
