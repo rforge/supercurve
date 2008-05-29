@@ -1,0 +1,329 @@
+
+R version 2.7.0 (2008-04-22)
+Copyright (C) 2008 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(SuperCurve)
+Loading required package: MASS
+Loading required package: cobs
+Loading required package: SparseM
+Package SparseM (0.77) loaded.  To cite, see citation("SparseM")
+Loading required package: quantreg
+Loading required package: splines
+> 
+> ######################################
+> # load the data from the 40 cell lines
+> home <- system.file("rppaCellData", package="SuperCurve")
+> 
+> # first locate the list of assays
+> # the name 'proteins' is required
+> # must include a column named 'Antibody'
+> proteins <- read.table(file.path(home, 'proteinAssay.tsv'),
++                             header=TRUE, sep='\t', as.is=TRUE)
+> dimnames(proteins)[[1]] <- as.character(proteins$Antibody)
+> 
+> for (i in 1:nrow(proteins)) {
++   temp <- RPPA(proteins$File[i], path=home)
++   assign(proteins$Antibody[i], temp, 1)
++ }
+> rm(i, temp)
+> 
+> ######################################
+> # work out the appropriate design layout
+> 
+> steps <- rep(c(rep(8:5, 2), rep(4:1, 2)), 40) - 4.5
+> rep.temp <- factor(paste('Rep', rep(rep(1:2, each=4), 80), sep=''))
+> series <- factor(paste(as.character(AKT@data$Sample),
++                              as.character(rep.temp),
++                              sep='.'))
+> # the name 'design' is required'
+> design <- RPPADesign(AKT, steps=steps, series=series)
+> rm(steps, rep.temp, series)
+> 
+> ######################################
+> # must define the 'model' to use
+> model <- "logistic"
+> 
+> ######################################
+> # must define the 'measure' to use
+> measure <- "Mean.Net"
+> 
+> ######################################
+> # must define the 'method' to use
+> method <- "nls"
+> source("testRblock", echo=TRUE, max.deparse.len=1024)
+
+> ## 
+> ## testRblock
+> ##
+> 
+> ## NOTE: We cannot give this file a name ending in '.R', since that
+> ## would force 'R CMD check' to  try to run it as a standalone
+> ## test. Instead, we want to be able to reuse the code in a number of
+> ## different test runs, loading it with 'source'.
+> 
+> 
+> ############################################################################
+> ## assumes you have already defined the following variables before using
+> ## 'source' to run this code block:
+> ##    proteins (a data frame containing at least one column named 'Antibody'
+> ##    various RPPA objects, one for each antibody in the 'proteins' object
+> ##    design (an RPPADesign object)
+> ##    model (the statistical model to fit)
+> ##    method (the method used for the first pass of the fit)
+> ##    measure (the quantification measure to fit)
+> ############################################################################
+> 
+> ver <- packageDescription('SuperCurve', fields='Version')
+
+> cat(paste("\nTest of SuperCurve version", ver, "\n"))
+
+Test of SuperCurve version 0.9999 
+
+> cat(paste("model = ", model, "; method = ", method,
++             "; measure = ", measure, "\n", sep=""))
+model = logistic; method = nls; measure = Mean.Net
+
+> for (i in 1:nrow(proteins)) {
++   itemName <- proteins$Antibody[i]
++   item <- eval(as.name(itemName))
++   temp <- try(RPPAFit(item, design, measure,
++                       method=method,
++                       model=model,
++                       ignoreNegative=FALSE,
++                       warnLevel=-1),
++               TRUE)
++   if(is(temp, 'try-error')) {
++     print(paste(itemName, measure, ver, 'FAILED'))
++     next
++   }
++   meansq <- mean(resid(temp)^2, na.rm=TRUE)
++   tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim = 0.1)
++   par(bg='white')
++   plot(temp, xlim=c(-15,15), main=paste(itemName, measure, ver),
++        sub=paste('Mean square residuals =', round(meansq)))
++   if (FALSE) {
++     dev.copy(png, file.path(paste(itemName, measure, ver, 'png', sep='.')),
++              width=640, height=640)
++     dev.off()
++   }
++   print(paste(itemName, measure, round(meansq), round(tmeansq)))
++ }
+[1] "AKT Mean.Net 1431296 731954"
+[1] "ERK2 Mean.Net 6139134 2305947"
+[1] "CTNNB1 Mean.Net 3513461 1285953"
+
+> rm(i, itemName, item, meansq, tmeansq)
+Warning messages:
+1: In RPPAFitFromParams(rppa, design, params) :
+  number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+2: In RPPAFitFromParams(rppa, design, params) :
+  number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+3: In RPPAFitFromParams(rppa, design, params) :
+  number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+> 
+> method <- 'nlrob'
+> source("testRblock", echo=TRUE, max.deparse.len=1024)
+
+> ## 
+> ## testRblock
+> ##
+> 
+> ## NOTE: We cannot give this file a name ending in '.R', since that
+> ## would force 'R CMD check' to  try to run it as a standalone
+> ## test. Instead, we want to be able to reuse the code in a number of
+> ## different test runs, loading it with 'source'.
+> 
+> 
+> ############################################################################
+> ## assumes you have already defined the following variables before using
+> ## 'source' to run this code block:
+> ##    proteins (a data frame containing at least one column named 'Antibody'
+> ##    various RPPA objects, one for each antibody in the 'proteins' object
+> ##    design (an RPPADesign object)
+> ##    model (the statistical model to fit)
+> ##    method (the method used for the first pass of the fit)
+> ##    measure (the quantification measure to fit)
+> ############################################################################
+> 
+> ver <- packageDescription('SuperCurve', fields='Version')
+
+> cat(paste("\nTest of SuperCurve version", ver, "\n"))
+
+Test of SuperCurve version 0.9999 
+
+> cat(paste("model = ", model, "; method = ", method,
++             "; measure = ", measure, "\n", sep=""))
+model = logistic; method = nlrob; measure = Mean.Net
+
+> for (i in 1:nrow(proteins)) {
++   itemName <- proteins$Antibody[i]
++   item <- eval(as.name(itemName))
++   temp <- try(RPPAFit(item, design, measure,
++                       method=method,
++                       model=model,
++                       ignoreNegative=FALSE,
++                       warnLevel=-1),
++               TRUE)
++   if(is(temp, 'try-error')) {
++     print(paste(itemName, measure, ver, 'FAILED'))
++     next
++   }
++   meansq <- mean(resid(temp)^2, na.rm=TRUE)
++   tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim = 0.1)
++   par(bg='white')
++   plot(temp, xlim=c(-15,15), main=paste(itemName, measure, ver),
++        sub=paste('Mean square residuals =', round(meansq)))
++   if (FALSE) {
++     dev.copy(png, file.path(paste(itemName, measure, ver, 'png', sep='.')),
++              width=640, height=640)
++     dev.off()
++   }
++   print(paste(itemName, measure, round(meansq), round(tmeansq)))
++ }
+Loading required package: robustbase
+[1] "AKT Mean.Net 1732162 825629"
+[1] "ERK2 Mean.Net 7559750 3241301"
+[1] "CTNNB1 Mean.Net 6305768 1392899"
+
+> rm(i, itemName, item, meansq, tmeansq)
+Warning messages:
+1: In RPPAFitFromParams(rppa, design, params) :
+  number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+2: In RPPAFitFromParams(rppa, design, params) :
+  number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+3: In RPPAFitFromParams(rppa, design, params) :
+  number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+> 
+> method <- 'nlrq'
+> source("testRblock", echo=TRUE, max.deparse.len=1024)
+
+> ## 
+> ## testRblock
+> ##
+> 
+> ## NOTE: We cannot give this file a name ending in '.R', since that
+> ## would force 'R CMD check' to  try to run it as a standalone
+> ## test. Instead, we want to be able to reuse the code in a number of
+> ## different test runs, loading it with 'source'.
+> 
+> 
+> ############################################################################
+> ## assumes you have already defined the following variables before using
+> ## 'source' to run this code block:
+> ##    proteins (a data frame containing at least one column named 'Antibody'
+> ##    various RPPA objects, one for each antibody in the 'proteins' object
+> ##    design (an RPPADesign object)
+> ##    model (the statistical model to fit)
+> ##    method (the method used for the first pass of the fit)
+> ##    measure (the quantification measure to fit)
+> ############################################################################
+> 
+> ver <- packageDescription('SuperCurve', fields='Version')
+
+> cat(paste("\nTest of SuperCurve version", ver, "\n"))
+
+Test of SuperCurve version 0.9999 
+
+> cat(paste("model = ", model, "; method = ", method,
++             "; measure = ", measure, "\n", sep=""))
+model = logistic; method = nlrq; measure = Mean.Net
+
+> for (i in 1:nrow(proteins)) {
++   itemName <- proteins$Antibody[i]
++   item <- eval(as.name(itemName))
++   temp <- try(RPPAFit(item, design, measure,
++                       method=method,
++                       model=model,
++                       ignoreNegative=FALSE,
++                       warnLevel=-1),
++               TRUE)
++   if(is(temp, 'try-error')) {
++     print(paste(itemName, measure, ver, 'FAILED'))
++     next
++   }
++   meansq <- mean(resid(temp)^2, na.rm=TRUE)
++   tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim = 0.1)
++   par(bg='white')
++   plot(temp, xlim=c(-15,15), main=paste(itemName, measure, ver),
++        sub=paste('Mean square residuals =', round(meansq)))
++   if (FALSE) {
++     dev.copy(png, file.path(paste(itemName, measure, ver, 'png', sep='.')),
++              width=640, height=640)
++     dev.off()
++   }
++   print(paste(itemName, measure, round(meansq), round(tmeansq)))
++ }
+[1] "AKT Mean.Net 1732162 825629"
+[1] "ERK2 Mean.Net 7559750 3241301"
+[1] "CTNNB1 Mean.Net 6305768 1392899"
+
+> rm(i, itemName, item, meansq, tmeansq)
+Warning messages:
+1: In RPPAFitFromParams(rppa, design, params) :
+  number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+2: In RPPAFitFromParams(rppa, design, params) :
+  number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+3: In RPPAFitFromParams(rppa, design, params) :
+  number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+> 
+> ######################################
+> ## print the concentrations from the last fit. These will
+> ## automatically be compared with the saved output when we
+> ## run 'R CMD check'
+> temp@concentrations
+  sample1.Rep1   sample1.Rep2   sample2.Rep1   sample2.Rep2   sample3.Rep1 
+     -4.824837      -4.256606      -4.108986      -4.327691      -5.357863 
+  sample3.Rep2   sample4.Rep1   sample4.Rep2   sample5.Rep1   sample5.Rep2 
+     -5.242024      -6.380816      -6.341016      -6.781011      -6.626160 
+  sample6.Rep1   sample6.Rep2   sample7.Rep1   sample7.Rep2   sample8.Rep1 
+     -3.971750      -3.870750      -5.641479      -5.182403      -5.789299 
+  sample8.Rep2   sample9.Rep1   sample9.Rep2  sample10.Rep1  sample10.Rep2 
+     -5.473880      -4.769610      -4.582157      -3.922965      -3.488487 
+ sample11.Rep1  sample11.Rep2  sample12.Rep1  sample12.Rep2  sample13.Rep1 
+     -3.931412      -4.362417      -6.905376      -6.801670      -4.452210 
+ sample13.Rep2  sample14.Rep1  sample14.Rep2  sample15.Rep1  sample15.Rep2 
+     -4.574208      -4.169424      -4.823462      -3.731669      -3.929817 
+ sample16.Rep1  sample16.Rep2  sample17.Rep1  sample17.Rep2  sample18.Rep1 
+     -2.767139      -2.582966      -3.839086      -3.883563      -4.658058 
+ sample18.Rep2  sample19.Rep1  sample19.Rep2  sample20.Rep1  sample20.Rep2 
+     -3.934040      -2.946386      -3.297617      -3.618784      -3.080691 
+ sample21.Rep1  sample21.Rep2  sample22.Rep1  sample22.Rep2  sample23.Rep1 
+     -3.856747      -3.755945      -5.094920      -5.100047      -2.697043 
+ sample23.Rep2  sample24.Rep1  sample24.Rep2  sample25.Rep1  sample25.Rep2 
+     -2.700218      -3.290018      -3.463804      -4.399472      -4.061379 
+ sample26.Rep1  sample26.Rep2  sample27.Rep1  sample27.Rep2  sample28.Rep1 
+     -4.498614      -3.999322      -2.602059      -2.732133      -5.516943 
+ sample28.Rep2  sample29.Rep1  sample29.Rep2  sample30.Rep1  sample30.Rep2 
+     -5.315210      -3.831350      -3.500733      -3.257656      -3.353654 
+ sample31.Rep1  sample31.Rep2  sample32.Rep1  sample32.Rep2  sample33.Rep1 
+     -4.182019      -4.009022      -4.052158      -2.403508      -3.978447 
+ sample33.Rep2  sample34.Rep1  sample34.Rep2  sample35.Rep1  sample35.Rep2 
+     -2.905887      -4.691712      -3.817939      -3.628474      -3.701123 
+ sample36.Rep1  sample36.Rep2  sample37.Rep1  sample37.Rep2  sample38.Rep1 
+     -3.519038      -3.243858      -4.485974      -4.687659      -2.009297 
+ sample38.Rep2 sample 39.Rep1 sample 39.Rep2 sample 40.Rep1 sample 40.Rep2 
+     -2.658487      -1.003963      -1.559123      -3.742810      -4.118909 
+> 
+> ######################################
+> x <- temp@concentrations
+> rep1 <- which(regexpr("Rep1", names(x)) > 0)
+> rep2 <- which(regexpr("Rep2", names(x)) > 0)
+> cat("Difference between replicates\n")
+Difference between replicates
+> summary(x[rep1]-x[rep2])
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+-1.6490 -0.3325 -0.1024 -0.1289  0.1410  0.6540 
+> 

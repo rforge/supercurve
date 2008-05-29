@@ -32,7 +32,7 @@ exportMethods(plot)
 exportMethods(resid, residuals)
 exportMethods(summary)
 
-## Public methods
+## Public functions
 export(RPPA)
 export(RPPADesign)
 export(RPPADesignParams)
