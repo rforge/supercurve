@@ -34,13 +34,6 @@ Error in if (mv.version < 2900) 4 else 5 :
 In addition: Warning message:
 In get.num.header.lines(pathname) : NAs introduced by coercion
 > 
-> try( RPPA("Akt.txt", path=path, blanks='blank') )
-Error in `$<-.data.frame`(`*tmp*`, "Sample", value = structure(c("sample1",  : 
-  replacement has 641 rows, data has 640
-> try( RPPA("Akt.txt", path=path, blanks=700:710) )
-Error in `$<-.data.frame`(`*tmp*`, "Sample", value = c("sample1", "sample1",  : 
-  replacement has 710 rows, data has 640
-> 
 > akt <- RPPA("Akt.txt", path=path)
 > image(akt, colorbar=TRUE)
 > 

@@ -5,9 +5,6 @@ path <- system.file("rppaCellData", package="SuperCurve")
 try( RPPA("cellLineInfo.tsv") )
 try( RPPA("cellLineInfo.tsv", path=path) )
 
-try( RPPA("Akt.txt", path=path, blanks='blank') )
-try( RPPA("Akt.txt", path=path, blanks=700:710) )
-
 akt <- RPPA("Akt.txt", path=path)
 image(akt, colorbar=TRUE)
 
