@@ -36,7 +36,7 @@ setClass("LoessFitClass",
 ##
 ## Inputs
 ## dilutions and intensities for a single dilution series
-## est.conc  = starting estimated concentration for dilution = 0
+## est.conc = starting estimated concentration for dilution = 0
 ##
 ## Outputs
 ## est.conc = estimated concentration for dilution = 0

@@ -12,8 +12,8 @@
     verbose <- getOption("verbose")
     if (verbose) {
         local({
-            libraryPkgName <- function(pkgname, sep = "_") {
-                unlist(strsplit(pkgname, sep, fixed = TRUE))[1]
+            libraryPkgName <- function(pkgname, sep="_") {
+                unlist(strsplit(pkgname, sep, fixed=TRUE))[1]
             }
             packageDescription <- function(pkgname) {
                 fieldnames <- c("Title", "Version")

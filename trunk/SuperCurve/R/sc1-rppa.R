@@ -13,11 +13,9 @@ setClass("RPPA",
 ## Logically, it really should be nothing more than a couple lines, with
 ## a file object as the generator's sole argument.
 
-## :TODO: The blanks argument belongeth not here.
-
 ##-----------------------------------------------------------------------------
 ## Generates an RPPA object from a Microvigene .txt file.
-RPPA <- function(filename, path='.', blanks=NULL) {
+RPPA <- function(filename, path='.') {
     ## Check arguments
     if (!is.character(filename)) {
         stop(sprintf("argument %s must be character",
@@ -38,7 +36,6 @@ RPPA <- function(filename, path='.', blanks=NULL) {
         stop(sprintf("directory %s does not exist",
                      dQuote(path)))
     }
-    ## :TODO: Add checks for 'blanks' argument
 
     ## :TODO: Move code to read quantification file to external method
     ## from redesign
@@ -62,7 +59,7 @@ RPPA <- function(filename, path='.', blanks=NULL) {
 
     skip.lines <- get.num.header.lines(pathname)
     quant.df <- read.delim(pathname,
-                           quote='',
+                           quote="",
                            row.names=NULL,
                            skip=skip.lines)
 
@@ -79,22 +76,6 @@ RPPA <- function(filename, path='.', blanks=NULL) {
     newNames <- sub("bkg",     "Bkg",     newNames)
     newNames <- sub("dust",    "Dust",    newNames)
     dimnames(quant.df)[[2]] <- newNames
-
-    ## :TBD: Couldn't this be externalized? Perhaps add method to do exactly
-    ## same processing, removing need for extra argument...
-
-    #########
-    # Several sets of slides have large numbers of blanks which we want to
-    # exclude from the model fitting. The following procedure treats the
-    # blanks as controls, which realizes this purpose. Certainly, the sample
-    # name called 'control' must appear in the argument "control" in
-    # function "RPPADesignParams".
-    ######
-    if (!is.null(blanks)) {
-        quant.df$Sample <- as.character(quant.df$Sample)
-        quant.df$Sample[blanks] <- 'control'
-        quant.df$Sample <- as.factor(quant.df$Sample)
-    }
 
     ## :TBD: Add path to object? Convert to canonical format prior to doing so?
     ## :KRC: No, I just want the filename, not the full path. That is why the

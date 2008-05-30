@@ -161,21 +161,21 @@ write.summary <- function(rppaset,
     write.csv(conc, file=file.path(path, filename))
 
     if (graphs) {
-      if (is.null(tiffdir)) {
-        ## Assume the tif images are in a sibling directory named "tif"
-        tiffdir <- file.path(path, "..", "tif")
-      }
+        if (is.null(tiffdir)) {
+            ## Assume the tif images are in a sibling directory named "tif"
+            tiffdir <- file.path(path, "..", "tif")
+        }
 
-      if (!is.character(tiffdir)) {
-        stop(sprintf("argument %s must be character",
-                     sQuote("tiffdir")))
-      } else if (!(length(tiffdir) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("tiffdir")))
-      } else if (!file.exists(tiffdir)) {
-        stop(sprintf("directory %s does not exist",
-                     dQuote(tiffdir)))
-      }
+        if (!is.character(tiffdir)) {
+            stop(sprintf("argument %s must be character",
+                         sQuote("tiffdir")))
+        } else if (!(length(tiffdir) == 1)) {
+            stop(sprintf("argument %s must be of length 1",
+                         sQuote("tiffdir")))
+        } else if (!file.exists(tiffdir)) {
+            stop(sprintf("directory %s does not exist",
+                         dQuote(tiffdir)))
+        }
 
         ## Save fit graphs
         op <- par(no.readonly=TRUE)
@@ -283,8 +283,7 @@ setMethod("summary", "RPPASet",
 ## Create an RPPA set from a directory of slides.
 RPPASet <- function(path,
                     designparams,
-                    fitparams,
-                    blanks=NULL) {
+                    fitparams) {
     ## Check arguments
     if (!is.character(path)) {
         stop(sprintf("argument %s must be character",
@@ -307,7 +306,6 @@ RPPASet <- function(path,
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("fitparams"), "RPPAFitParams"))
     }
-    ## :TODO: Add checks for 'blanks' argument
 
     ## Begin processing
     call <- match.call()
@@ -334,9 +332,7 @@ RPPASet <- function(path,
     }
 
     message(paste("reading", slideFilenames[1]))
-    firstslide <- RPPA(slideFilenames[1],
-                       path=path,
-                       blanks)
+    firstslide <- RPPA(slideFilenames[1], path=path)
     design <- RPPADesignFromParams(firstslide,
                                    designparams)
 
@@ -354,9 +350,7 @@ RPPASet <- function(path,
     if (length(slideFilenames) > 1) {
         for (i in seq(2, length(slideFilenames))) {
             message(paste("reading", slideFilenames[i]))
-            rppas[[i]] <- RPPA(slideFilenames[i],
-                               path=path,
-                               blanks)
+            rppas[[i]] <- RPPA(slideFilenames[i], path=path)
         }
     }
 
