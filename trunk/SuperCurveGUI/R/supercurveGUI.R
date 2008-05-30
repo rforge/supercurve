@@ -248,10 +248,9 @@ supercurveGUI <- function() {
                     "loess",
                     "logistic")
 
-    ## :KRC: Should probably include blanks at this level
     controls <- .editBox(title="Controls",
                          message="Names of control spots",
-                         "control, pos con, neg con",
+                         "control, pos con, neg con, blank",
                          width=60)
     controls <- unlist(strsplit(controls, ","))
     for (i in seq(1, length(controls))) {
@@ -290,7 +289,7 @@ supercurveGUI <- function() {
                                                  controls=list(controls))
     fitparams <- SuperCurve::RPPAFitParams(measure=measure,
                                            ignoreNegative=FALSE,
-                                           method='nlrob',
+                                           method="nlrob",
                                            warnLevel=-1,
                                            model=model)
 
