@@ -33,7 +33,10 @@ getConfidenceInterval(result, alpha=0.1, nSim=50)
   confidence interval.
 }
 \references{KRC}
-\author{Kevin R. Coombes, \email{kcoombes@mdanderson.org}}
+\author{
+  Kevin R. Coombes \email{kcoombes@mdanderson.org},
+  P. Roebuck \email{plroebuck@mdanderson.org}
+}
 \seealso{
   \code{\link{RPPAFit-class}},
   \code{\link{RPPAFit}}

@@ -177,7 +177,10 @@ getSteps(design)
   the names of the unique (non-control) dilution series on the array.
 }
 \references{KRC}
-\author{Kevin R. Coombes, \email{kcoombes@mdanderson.org}}
+\author{
+  Kevin R. Coombes \email{kcoombes@mdanderson.org},
+  P. Roebuck \email{plroebuck@mdanderson.org}
+}
 \seealso{
   \code{\linkS4class{RPPA}}
 }

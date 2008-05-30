@@ -10,7 +10,7 @@
   reverse-phase protein array experiment.
 }
 \usage{
-RPPA(filename, path=".", blanks=NULL)
+RPPA(filename, path=".")
 \S4method{summary}{RPPA}(object, \dots)
 \S4method{image}{RPPA}(x, measure="Mean.Net", main=measure,
     colorbar=FALSE, col=terrain.colors(256), \dots)
@@ -22,7 +22,6 @@ RPPA(filename, path=".", blanks=NULL)
   \item{path}{character string specifying the path from the current
     directory to the file. The default value assumes the file is
     contained in the current directory.}
-  \item{blanks}{logical vector; DEPRECATED}
   \item{object}{object of class \code{RPPA}}
   \item{x}{object of class \code{RPPA}}
   \item{measure}{character string containing the name of the measurement column
@@ -88,7 +87,10 @@ RPPA(filename, path=".", blanks=NULL)
   which it was invoked.
 }
 \references{KRC}
-\author{Kevin R. Coombes, \email{kcoombes@mdanderson.org}}
+\author{
+  Kevin R. Coombes \email{kcoombes@mdanderson.org},
+  P. Roebuck \email{plroebuck@mdanderson.org}
+}
 \seealso{
   \code{\linkS4class{RPPAFit}},
   \code{\linkS4class{RPPADesign}}

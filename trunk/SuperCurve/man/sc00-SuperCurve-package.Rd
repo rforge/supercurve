@@ -24,7 +24,8 @@
   For a high-level summary of the changes for each revision, use
     \code{file.show(system.file("NEWS", package="SuperCurve"))}.
 }
-\author{Kevin R. Coombes, \email{kcoombes@mdanderson.org},
-  P. Roebuck, \email{plroebuck@mdanderson.org}}
+\author{
+  Kevin R. Coombes \email{kcoombes@mdanderson.org},
+  P. Roebuck \email{plroebuck@mdanderson.org}}
 \keyword{package}
 

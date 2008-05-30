@@ -158,7 +158,8 @@ RPPAFitFromParams(rppa,
   \code{RPPAFitParams}.
 }
 \references{KRC}
-\author{P. Roebuck, \email{plroebuck@mdanderson.org}
+\author{
+  P. Roebuck \email{plroebuck@mdanderson.org},
   Kevin R. Coombes \email{kcoombes@mdanderson.org}
 }
 \seealso{

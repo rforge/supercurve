@@ -33,7 +33,7 @@
   Class \code{\linkS4class{FitClass}}, directly.
 }
 \references{KRC}
-\author{P. Roebuck, \email{plroebuck@mdanderson.org}}
+\author{P. Roebuck \email{plroebuck@mdanderson.org}}
 \seealso{
   \code{\linkS4class{FitClass}}
 }

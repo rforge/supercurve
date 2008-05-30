@@ -23,7 +23,7 @@ write.summary(rppaset, path, prefix="supercurve", graphs=TRUE, tiffdir=NULL)
   directory to \code{path} named "tif".
 }
 \references{KRC}
-\author{P. Roebuck, \email{plroebuck@mdanderson.org}}
+\author{P. Roebuck \email{plroebuck@mdanderson.org}}
 \seealso{
   \code{\link{RPPASet}}
 }
