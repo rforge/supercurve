@@ -23,7 +23,7 @@
   \item{method}{character string specifying regression method to use fit the
     series}
   \item{silent}{logical scalar. If \code{TRUE}, report of error messages will
-    not be suppressed in try(nlsmeth(...).)}
+    not be suppressed in try(nlsmeth(...))}
   \item{trace}{logical scalar. Used in \code{nls} method.}
   \item{conc}{numeric vector containing current estimates of concentration for
     each series}

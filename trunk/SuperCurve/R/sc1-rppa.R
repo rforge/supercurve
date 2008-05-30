@@ -50,14 +50,15 @@ RPPA <- function(filename, path='.') {
     ## number of header lines....
     ## By the way, what happens if someone uses something other than
     ## MicroVigene (like ArrayVision or SPOT), when this whole thing breaks.
-    get.num.header.lines <- function(filename) {
+    getNumHeaderLines <- function(filename) {
         line <- readLines(filename, n=1)
+        ## :TODO: Check if line valid and error out if not...
         mv.version <- as.numeric(strsplit(line, "[:blank:]")[[1]][3])
         num.header.lines <- if (mv.version < 2900) 4 else 5
         return(num.header.lines)
     }
 
-    skip.lines <- get.num.header.lines(pathname)
+    skip.lines <- getNumHeaderLines(pathname)
     quant.df <- read.delim(pathname,
                            quote="",
                            row.names=NULL,
@@ -86,7 +87,7 @@ RPPA <- function(filename, path='.') {
     ## Create new class
     new("RPPA",
         data=quant.df,
-        file=filename)
+        file=basename(filename))
 }
 
 
@@ -192,7 +193,6 @@ setMethod("image", "RPPA",
 ##
 if (FALSE) {
   source("AllGenerics.R")
-  source("sc1-rppa.R")
   path <- "../inst/rppaTumorData"
   erk2 <- RPPA("ERK2.txt", path=path)
   summary(erk2)

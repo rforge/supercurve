@@ -9,7 +9,7 @@
 ## measure - name of column in rppa@data to view as intensity
 ##
 ##-----------------------------------------------------------------------------
-## All optional imnoputs are handled through RPPAFitParams
+## All optional inputs are handled through RPPAFitParams
 ##
 ## OPTIONAL INPUTS CONTROLLING THE ALGORITHM:
 ## model   - which statistical model to fit
@@ -49,12 +49,21 @@ RPPAFit <- function(rppa,
                     verbose=FALSE,
                     veryVerbose=FALSE,
                     warnLevel=0) {
-  ## Check arguments
-  ## [1] 'rppa' and 'design' are checked in the call to RPPAFitFromParams
-  ## [2] Everything else is checked in RPPAFitParams
-  params <- RPPAFitParams(measure, model, xform, method, trim, ci, ignoreNegative,
-                          trace, verbose, veryVerbose, warnLevel)
-  RPPAFitFromParams(rppa, design, params)
+    ## Check arguments
+    ## [1] 'rppa' and 'design' are checked in the call to RPPAFitFromParams
+    ## [2] Everything else is checked in RPPAFitParams
+    params <- RPPAFitParams(measure,
+                            model,
+                            xform,
+                            method,
+                            trim,
+                            ci,
+                            ignoreNegative,
+                            trace,
+                            verbose,
+                            veryVerbose,
+                            warnLevel)
+    RPPAFitFromParams(rppa, design, params)
 }
 
 ##-----------------------------------------------------------------------------
@@ -73,14 +82,14 @@ RPPAFitParams <- function(measure,
     ## Check arguments
   
     ## Start with the critical parameter, 'model', since it tells us which
-    ## statistical model we are suppoed to fit. At the time the curve is
+    ## statistical model we are supposed to fit. At the time the curve is
     ## fit, 'model' has to be the name of a registered FitClass. You could
     ## conceivably define your own class and register it after setting up the
     ## fit parameters. Because of that fact, we defer some checking until
     ## later (in RPPAFitFromParams).
     if (!is.character(model)) {
-      stop(sprintf("argument %s must be a character string",
-                   sQuote("model")))
+        stop(sprintf("argument %s must be a character string",
+                     sQuote("model")))
     }
     model <- model[1]
 
@@ -95,11 +104,11 @@ RPPAFitParams <- function(measure,
                      sQuote("measure")))
     }
 
-
     if (!is.function(xform)) {
         stop(sprintf("argument %s must be function",
                      sQuote("xform")))
     }
+
     ## Remaining parameters are less important, so we mostly just transform
     ## them into the correct type and length.
     method <- match.arg(method)
@@ -127,7 +136,6 @@ RPPAFitParams <- function(measure,
 }
 
 
-
 ##-----------------------------------------------------------------------------
 ## Compute a multiple of the logit transform.
 ## in practice, epsilon never changes.
@@ -151,35 +159,10 @@ RPPAFitParams <- function(measure,
     ## in practice, 'epsilon' never changes
 
     ## Check arguments
-    ## :KRC: This is a waste of effort, since this function is internal to the
-    ## package and we have complete control over what parameters are passed here.
-    ## Take the checks out and unclutter the code.
-  
-    if (!is.numeric(yval)) {
-        stop(sprintf("argument %s must be numeric",
-                     sQuote("yval")))
-    }
-
-    if (!inherits(design, "RPPADesign")) {
-        stop(sprintf("argument %s must be object of class %s",
-                     sQuote("design"), "RPPADesign"))
-    }
-
-    if (!is.logical(ignoreNegative)) {
-        stop(sprintf("argument %s must be logical",
-                     sQuote("ignoreNegative")))
-    } else if (!(length(ignoreNegative) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("ignoreNegative")))
-    }
-
-    if (!is.numeric(epsilon)) {
-        stop(sprintf("argument %s must be numeric",
-                     sQuote("epsilon")))
-    } else if (!(length(epsilon) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("epsilon")))
-    }
+    stopifnot(is.numeric(yval))
+    stopifnot(inherits(design, "RPPADesign"))
+    stopifnot(is.logical(ignoreNegative) && length(ignoreNegative) == 1)
+    stopifnot(is.numeric(epsilon))
 
     ## Begin processing
     if (ignoreNegative) {
@@ -214,9 +197,13 @@ RPPAFitParams <- function(measure,
         x <- ld[items]
         ## Only use valid values
         y <- x[!is.na(x) & !is.infinite(x)]
-        ## :TBD: What should be returned if x consists solely of NAs?
-        ## ychange / xchange
-        (max(y) - min(y)) / (max(steps) - min(steps))
+
+        if (all(is.na(y))) {
+            NA
+        } else {
+            ## ychange / xchange
+            (max(y) - min(y)) / (max(steps) - min(steps))
+        }
     }
 
     ## Initial estimate of the logistic slope across the dilution steps.
@@ -255,19 +242,27 @@ RPPAFitParams <- function(measure,
 
 
 ##-----------------------------------------------------------------------------
+## :TODO: Migrate this to .onLoad since it's singleton-like
+## :TBD: Shouldn't this be new.env() rather than new("environment")
 .rppaModels <- new("environment")
 
+## :TBD: Should this be extended such that names(classname) [if not NULL]
+## would return string to be displayed on supercurveGUI dialog?
+## For example, "Cobs" is displayed as "Monotone Increasing B-spline" in GUI
+## :TBD: Shouldn't this method be exported in NAMESPACE?
+##-----------------------------------------------------------------------------
+## Register names of what code will consider "valid" models.
 registerModel <- function(name, classname) {
-  assign(name, classname, envir=.rppaModels)
+    assign(name, classname, envir=.rppaModels)
 }
 
+## :TODO: Need routine to fetch all registered model names (for GUI)
+
+## :TODO: Migrate following to .onLoad since registration should occur once
 registerModel("logistic", "LogisticFitClass")
 registerModel("cobs",     "CobsFitClass")
 registerModel("loess",    "LoessFitClass")
-# 29May2008 ESN--the code commented out below is wrong I believe.
-# I fixed it with the lines above.  
-#registerModel("cobs",     "LoessFitClass")
-#registerModel("loess",    "CobsFitClass")
+
 
 ##-----------------------------------------------------------------------------
 RPPAFitFromParams <- function(rppa, design, fitparams) {
@@ -286,7 +281,8 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("fitparams"), "RPPAFitParams"))
     }
-    ## extract the already checked fit parameters
+
+    ## Extract the already checked fit parameters
     measure <- fitparams@measure
     model <- fitparams@model
     xform <- fitparams@xform
@@ -299,11 +295,11 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
     veryVerbose <- fitparams@veryVerbose
     warnLevel <- fitparams@warnLevel
 
-    ## Need to make certain that th 'model' is a registered FitClass.
-    modelClass <- try( get(model, envir=.rppaModels) )
+    ## Need to make certain that the 'model' is a registered FitClass
+    modelClass <- try(get(model, envir=.rppaModels))
     if (inherits(modelClass, "try-error")) {
-      stop(sprintf("argument %s must be the name of a registed fit class",
-                   sQuote("model")))
+        stop(sprintf("argument %s must be the name of a registed fit class",
+                     sQuote("model")))
     }
 
     ## Need to make sure that 'measure' refers to an actual data column
@@ -322,7 +318,6 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
     measure <- dn[temp]
 
     ## Begin processing
-
     l1 <- levels(design@layout$Sample)
     l2 <- levels(rppa@data$Sample)
     if (!(length(l1) == length(l2)) || sum(l1 != l2) > 0) {
@@ -356,13 +351,8 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
     ## class in order to omit the control spots.
     yval <- intensity[!.controlVector(design)]
 
+    ## Create new class
     fc <- new(modelClass)
-#    fc <- switch(EXPR=model,
-#                 logistic = new("LogisticFitClass"),
-#                 loess = new("LoessFitClass"),
-#                 cobs = new("CobsFitClass"),
-#                 stop(sprintf("unrecognized model type %s",
-#                              sQuote(model))))
 
     ## Do a two pass estimation, first using rough conc. estimates,
     ## then using better ones
@@ -378,6 +368,7 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
 
         ## Conditional on the response curve fit for the slide
         ## perform a separate fit of the EC50 values for each dilution series.
+    ## :TODO: Rest of comment is wrong.
         ## If the option 'bayesian' is true, then we allow different alpha's
         ## for each series to fine tune the baseline.  If 'bayesian' is false,
         ## then we perform a logit transform and compute a robust linear model.
@@ -462,5 +453,4 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
 
     result
 }
-
 

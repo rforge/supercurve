@@ -28,3 +28,4 @@ devFun(width=1.2, height=6)
 try( image(akt) )
 try( image(akt, colorbar=TRUE) )
 dev.off()
+
