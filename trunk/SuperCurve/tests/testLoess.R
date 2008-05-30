@@ -31,13 +31,13 @@ measure <- "Mean.Net"
 
 ######################################
 # must define the 'method' to use
-method <- "nls"
+method <- 'nlrq'
 source("testRblock", echo=TRUE, max.deparse.len=1024)
 
 method <- 'nlrob'
 source("testRblock", echo=TRUE, max.deparse.len=1024)
 
-method <- 'nlrq'
+method <- "nls"
 source("testRblock", echo=TRUE, max.deparse.len=1024)
 
 ######################################

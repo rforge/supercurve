@@ -62,7 +62,7 @@ Loading required package: splines
 > 
 > ######################################
 > # must define the 'method' to use
-> method <- "nls"
+> method <- 'nlrq'
 > source("testRblock", echo=TRUE, max.deparse.len=1024)
 
 > ## 
@@ -94,7 +94,7 @@ Test of SuperCurve version 0.9999
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))
-model = logistic; method = nls; measure = Mean.Net
+model = logistic; method = nlrq; measure = Mean.Net
 
 > for (i in 1:nrow(proteins)) {
 +   itemName <- proteins$Antibody[i]
@@ -121,9 +121,9 @@ model = logistic; method = nls; measure = Mean.Net
 +   }
 +   print(paste(itemName, measure, round(meansq), round(tmeansq)))
 + }
-[1] "AKT Mean.Net 1431296 731954"
-[1] "ERK2 Mean.Net 6139134 2305947"
-[1] "CTNNB1 Mean.Net 3513461 1285953"
+[1] "AKT Mean.Net 1732162 825629"
+[1] "ERK2 Mean.Net 7559750 3241301"
+[1] "CTNNB1 Mean.Net 6305768 1392899"
 
 > rm(i, itemName, item, meansq, tmeansq)
 Warning messages:
@@ -207,7 +207,7 @@ Warning messages:
 3: In RPPAFitFromParams(rppa, design, params) :
   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
 > 
-> method <- 'nlrq'
+> method <- "nls"
 > source("testRblock", echo=TRUE, max.deparse.len=1024)
 
 > ## 
@@ -239,7 +239,7 @@ Test of SuperCurve version 0.9999
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))
-model = logistic; method = nlrq; measure = Mean.Net
+model = logistic; method = nls; measure = Mean.Net
 
 > for (i in 1:nrow(proteins)) {
 +   itemName <- proteins$Antibody[i]
@@ -266,9 +266,9 @@ model = logistic; method = nlrq; measure = Mean.Net
 +   }
 +   print(paste(itemName, measure, round(meansq), round(tmeansq)))
 + }
-[1] "AKT Mean.Net 1732162 825629"
-[1] "ERK2 Mean.Net 7559750 3241301"
-[1] "CTNNB1 Mean.Net 6305768 1392899"
+[1] "AKT Mean.Net 1431296 731954"
+[1] "ERK2 Mean.Net 6139134 2305947"
+[1] "CTNNB1 Mean.Net 3513461 1285953"
 
 > rm(i, itemName, item, meansq, tmeansq)
 Warning messages:
@@ -285,37 +285,37 @@ Warning messages:
 > ## run 'R CMD check'
 > temp@concentrations
   sample1.Rep1   sample1.Rep2   sample2.Rep1   sample2.Rep2   sample3.Rep1 
-     -4.824837      -4.256606      -4.108986      -4.327691      -5.357863 
+     -5.189203      -4.571174      -3.540543      -3.597989      -4.085489 
   sample3.Rep2   sample4.Rep1   sample4.Rep2   sample5.Rep1   sample5.Rep2 
-     -5.242024      -6.380816      -6.341016      -6.781011      -6.626160 
+     -4.110430      -6.723754      -6.859526      -6.859526      -6.859526 
   sample6.Rep1   sample6.Rep2   sample7.Rep1   sample7.Rep2   sample8.Rep1 
-     -3.971750      -3.870750      -5.641479      -5.182403      -5.789299 
+     -3.512757      -3.455699      -5.242024      -5.116250      -6.156980 
   sample8.Rep2   sample9.Rep1   sample9.Rep2  sample10.Rep1  sample10.Rep2 
-     -5.473880      -4.769610      -4.582157      -3.922965      -3.488487 
+     -6.086051      -4.625255      -4.541034      -4.013864      -3.698095 
  sample11.Rep1  sample11.Rep2  sample12.Rep1  sample12.Rep2  sample13.Rep1 
-     -3.931412      -4.362417      -6.905376      -6.801670      -4.452210 
+     -3.522084      -3.826595      -6.859526      -6.859526      -3.557976 
  sample13.Rep2  sample14.Rep1  sample14.Rep2  sample15.Rep1  sample15.Rep2 
-     -4.574208      -4.169424      -4.823462      -3.731669      -3.929817 
+     -4.161234      -3.357265      -3.634020      -3.860112      -4.029794 
  sample16.Rep1  sample16.Rep2  sample17.Rep1  sample17.Rep2  sample18.Rep1 
-     -2.767139      -2.582966      -3.839086      -3.883563      -4.658058 
+     -3.005238      -2.514870      -3.565964      -3.848513      -4.630889 
  sample18.Rep2  sample19.Rep1  sample19.Rep2  sample20.Rep1  sample20.Rep2 
-     -3.934040      -2.946386      -3.297617      -3.618784      -3.080691 
+     -3.880663      -2.851356      -2.833665      -3.509073      -3.361744 
  sample21.Rep1  sample21.Rep2  sample22.Rep1  sample22.Rep2  sample23.Rep1 
-     -3.856747      -3.755945      -5.094920      -5.100047      -2.697043 
+     -2.841583      -2.709704      -4.045323      -3.920595      -3.482188 
  sample23.Rep2  sample24.Rep1  sample24.Rep2  sample25.Rep1  sample25.Rep2 
-     -2.700218      -3.290018      -3.463804      -4.399472      -4.061379 
+     -3.559575      -3.532315      -3.572903      -4.422278      -4.247519 
  sample26.Rep1  sample26.Rep2  sample27.Rep1  sample27.Rep2  sample28.Rep1 
-     -4.498614      -3.999322      -2.602059      -2.732133      -5.516943 
+     -4.108233      -4.205388      -3.006433      -2.780560      -5.728008 
  sample28.Rep2  sample29.Rep1  sample29.Rep2  sample30.Rep1  sample30.Rep2 
-     -5.315210      -3.831350      -3.500733      -3.257656      -3.353654 
+     -6.133534      -3.723649      -3.487512      -3.027667      -3.400615 
  sample31.Rep1  sample31.Rep2  sample32.Rep1  sample32.Rep2  sample33.Rep1 
-     -4.182019      -4.009022      -4.052158      -2.403508      -3.978447 
+     -3.540857      -3.632343      -2.925101      -2.457449      -3.730153 
  sample33.Rep2  sample34.Rep1  sample34.Rep2  sample35.Rep1  sample35.Rep2 
-     -2.905887      -4.691712      -3.817939      -3.628474      -3.701123 
+     -3.288381      -3.949293      -3.994723      -3.515440      -3.842061 
  sample36.Rep1  sample36.Rep2  sample37.Rep1  sample37.Rep2  sample38.Rep1 
-     -3.519038      -3.243858      -4.485974      -4.687659      -2.009297 
+     -3.145478      -3.203006      -4.055407      -4.048758      -2.544709 
  sample38.Rep2 sample 39.Rep1 sample 39.Rep2 sample 40.Rep1 sample 40.Rep2 
-     -2.658487      -1.003963      -1.559123      -3.742810      -4.118909 
+     -2.879488      -1.405081      -1.769023      -3.693348      -4.157927 
 > 
 > ######################################
 > x <- temp@concentrations
@@ -324,6 +324,6 @@ Warning messages:
 > cat("Difference between replicates\n")
 Difference between replicates
 > summary(x[rep1]-x[rep2])
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--1.6490 -0.3325 -0.1024 -0.1289  0.1410  0.6540 
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+-0.750200 -0.135700  0.012470  0.001151  0.196500  0.603300 
 > 
