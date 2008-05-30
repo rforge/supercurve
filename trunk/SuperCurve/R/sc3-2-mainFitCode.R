@@ -367,11 +367,7 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
         fc <- fitSlide(fc, conc=xval, intensity=yval, method=method)
 
         ## Conditional on the response curve fit for the slide
-        ## perform a separate fit of the EC50 values for each dilution series.
-    ## :TODO: Rest of comment is wrong.
-        ## If the option 'bayesian' is true, then we allow different alpha's
-        ## for each series to fine tune the baseline.  If 'bayesian' is false,
-        ## then we perform a logit transform and compute a robust linear model.
+        ## Perform a separate fit of EC50 values for each dilution series.
         steps <- getSteps(design)
         series <- seriesNames(design)
         pass2 <- rep(NA, length(series))
