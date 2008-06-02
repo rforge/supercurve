@@ -72,12 +72,14 @@ getSteps(design)
       \code{"increasing"} \tab arranged in order of increasing
                                concentrations \cr
     }}
-  \item{alias}{list or data frame with the following required
-    named components:
-    \tabular{ll}{
-      \code{Alias}  \tab TBD description \cr
-      \code{Sample} \tab TBD description \cr
-    }}
+  \item{alias}{optional list or data frame for attaching sample labels or biologically relevant descriptors to the
+  dilution series.}  
+  %with the following required
+  %  named components:
+  %  \tabular{ll}{
+  %    \code{Alias}  \tab TBD description \cr
+  %    \code{Sample} \tab TBD description \cr
+  %  }}
   \item{center}{logical scalar. If \code{TRUE}, then dilution steps are
     centered around 0.}
   \item{controls}{list containing the character strings that identify

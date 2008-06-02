@@ -69,8 +69,9 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
     \item{\code{method}:}{character string containing the name of the
       method that was used to estimate the upper and lower limit
       parameters in the model}
-    \item{\code{trimset}:}{TBD}
-    \item{\code{model}:}{object of class \code{FitClass} TBD}
+    \item{\code{trimset}:}{numeric vector of length 4 containing the low and high intensities
+    and the low and concentrations that mark the trimming boundaries.}
+    \item{\code{model}:}{object of class \code{FitClass} unique to the model that was fit}
     \item{\code{concentrations}:}{numeric vector of estimates of the relative
       log concentration of protein present in each sample}
     \item{\code{lower}:}{numeric vector containing the lower bounds on the
@@ -136,7 +137,9 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
   The \code{summary} method has no return value.
 
   The \code{coef} and \code{coefficients} methods return a named vector
-  of length three.
+  of length three with logisitic curve coefficients for models of class LogisticFitClass.  
+  A value of NULL is returned
+  for models of class CobsFitClass and LoessFitClass.
 
   The \code{fitted} method returns a numeric vector.
 
