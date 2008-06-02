@@ -4,21 +4,21 @@
 \docType{class}
 \title{Class "LogisticFitClass"}
 \description{
-  The LogisticFitClass class represents TBD.
+  The LogisticFitClass class represents models that were fit with the logistic model.
 }
 \usage{
 \S4method{fitted}{LogisticFitClass}(object, conc, \dots)
 } 
 \arguments{
   \item{object}{object of class \code{LogisticFitClass}}
-  \item{conc}{numeric TBD}
+  \item{conc}{numeric vector containing estimates of the log concentration for each dilution series}
   \item{\dots}{extra arguments for generic routines}
 }
-\section{Methods}{
-  \describe{
-    \item{fitted(object, conc, \dots)}{TBD} 
-  }
-}
+%\section{Methods}{
+%  \describe{
+%    \item{fitted(object, conc, \dots)}{TBD} 
+%  }
+%}
 \section{Objects from the Class}{
   Objects are created internally by calls to the methods
   \code{\link[=FitClass-class]{fitSlide}} or \code{\link{RPPAFit}}.

@@ -2,7 +2,8 @@
 \alias{write.summary}
 \title{TBD}
 \description{
-  This function TBD.
+  This function produces a graphical summary for each array in an RPPASet and summarizes the
+  quantification results into one file.  
 }
 \usage{
 write.summary(rppaset, path, prefix="supercurve", graphs=TRUE, tiffdir=NULL)
@@ -18,10 +19,11 @@ write.summary(rppaset, path, prefix="supercurve", graphs=TRUE, tiffdir=NULL)
     corresponding to the TEXT quantification files}
 }
 \details{
-  TBD
   If \code{tiffdir} is \code{NULL}, the directory is assumed to be a sibling
   directory to \code{path} named "tif".
 }
+% ESN we might need more details about how this works.
+
 \references{KRC}
 \author{P. Roebuck \email{plroebuck@mdanderson.org}}
 \seealso{

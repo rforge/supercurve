@@ -4,28 +4,28 @@
 \docType{class}
 \title{Class "LoessFitClass"}
 \description{
-  The LoessFitClass class represents TBD.
+  The LoessFitClass class represents models that were fit with the nonparametric model.
 }
 \usage{
 \S4method{fitted}{LoessFitClass}(object, conc, \dots)
 } 
 \arguments{
   \item{object}{object of class \code{LoessFitClass}}
-  \item{conc}{numeric TBD}
+  \item{conc}{numeric vector containing estimates of the log concentration for each dilution series}
   \item{\dots}{extra arguments for generic routines}
 }
-\section{Methods}{
-  \describe{
-    \item{fitted(object, conc, \dots)}{TBD} 
-  }
-}
+%\section{Methods}{
+%  \describe{
+%    \item{fitted(object, conc, \dots)}{TBD} 
+%  }
+%}
 \section{Objects from the Class}{
   Objects are created internally by calls to the methods
   \code{\link[=FitClass-class]{fitSlide}} or \code{\link{RPPAFit}}.
 } 
 \section{Slots}{
   \describe{
-    \item{\code{model}:}{Object of class \code{loess} TBD }
+    \item{\code{model}:}{Object of class \code{loess} summarizing loess fit }
   }
 }
 \section{Extends}{
