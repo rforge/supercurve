@@ -9,74 +9,42 @@ setClass("RPPA",
                              file="character"))
 
 
-## :TODO: Change API to accept file object, replacing filename/path args
-## Logically, it really should be nothing more than a couple lines, with
-## a file object as the generator's sole argument.
-
 ##-----------------------------------------------------------------------------
 ## Generates an RPPA object from a Microvigene .txt file.
-RPPA <- function(filename, path='.') {
+RPPA <- function(file, path=".") {
     ## Check arguments
-    if (!is.character(filename)) {
-        stop(sprintf("argument %s must be character",
-                     sQuote("filename")))
-    } else if (!(length(filename) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("filename")))
+    if (is.character(file)) {
+        if (!(length(file) == 1)) {
+            stop(sprintf("argument %s must be of length 1",
+                         sQuote("file")))
+        }
+
+        if (!is.character(path)) {
+            stop(sprintf("argument %s must be character",
+                         sQuote("path")))
+        } else if (!(length(path) == 1)) {
+            stop(sprintf("argument %s must be of length 1",
+                         sQuote("path")))
+        }
+
+        if (substring(file, 1, 1) == .Platform$file.sep) {
+            warning(sprintf("argument %s should not be absolute pathname",
+                            sQuote("file")))
+        }
+
+        pathname <- file.path(path, file)
+        if (!file.exists(pathname)) {
+            stop(sprintf("file %s does not exist",
+                         dQuote(pathname)))
+        }
+
+        ## Convert to connection object
+        file <- file(pathname, "r")
+        on.exit(close(file))
     }
 
-    if (!is.character(path)) {
-        stop(sprintf("argument %s must be character",
-                     sQuote("path")))
-    } else if (!(length(path) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("path")))
-    } else if (!file.exists(path)) {
-        ## :TODO: Add code to verify directory exists
-        stop(sprintf("directory %s does not exist",
-                     dQuote(path)))
-    }
-
-    ## :TODO: Move code to read quantification file to external method
-    ## from redesign
-    pathname <- file.path(path, filename)
-    if (!file.exists(pathname)) {
-        stop(sprintf("file %s does not exist",
-                     dQuote(pathname)))
-    }
-
-    ## MicroVigene introducing an extra header line in later versions of file
-    ## :TODO: Something more sensible than hardcoding the two choices of the
-    ## number of header lines....
-    ## By the way, what happens if someone uses something other than
-    ## MicroVigene (like ArrayVision or SPOT), when this whole thing breaks.
-    getNumHeaderLines <- function(filename) {
-        line <- readLines(filename, n=1)
-        ## :TODO: Check if line valid and error out if not...
-        mv.version <- as.numeric(strsplit(line, "[:blank:]")[[1]][3])
-        num.header.lines <- if (mv.version < 2900) 4 else 5
-        return(num.header.lines)
-    }
-
-    skip.lines <- getNumHeaderLines(pathname)
-    quant.df <- read.delim(pathname,
-                           quote="",
-                           row.names=NULL,
-                           skip=skip.lines)
-
-    ## :TODO: Replace hardcoded substitutions below with algorithmic equivalent
-    ## from redesign
-    quant.df <- quant.df[, 1:(ncol(quant.df)-1)]
-    newNames <- dimnames(quant.df)[[2]]
-    newNames <- sub("GeneID",  "Sample",  newNames)
-    newNames <- sub("mean_",   "Mean.",   newNames)
-    newNames <- sub("vol_",    "Vol.",    newNames)
-    newNames <- sub("median_", "Median.", newNames)
-    newNames <- sub("net",     "Net",     newNames)
-    newNames <- sub("total",   "Total",   newNames)
-    newNames <- sub("bkg",     "Bkg",     newNames)
-    newNames <- sub("dust",    "Dust",    newNames)
-    dimnames(quant.df)[[2]] <- newNames
+    ## Read quantification file
+    quant.df <- readQuantification(file)
 
     ## :TBD: Add path to object? Convert to canonical format prior to doing so?
     ## :KRC: No, I just want the filename, not the full path. That is why the
@@ -87,7 +55,7 @@ RPPA <- function(filename, path='.') {
     ## Create new class
     new("RPPA",
         data=quant.df,
-        file=basename(filename))
+        file=basename(summary(file)$description))
 }
 
 
@@ -102,7 +70,7 @@ setMethod("summary", "RPPA",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("image", "RPPA",
+setMethod("image", signature(x="RPPA"),
           function(x,
                    measure="Mean.Net",
                    main=measure,
