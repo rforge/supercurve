@@ -50,7 +50,7 @@ setMethod("summary", "RPPAFit",
 ## Provides a geographic plot of some measure computed from the fit.
 ## Default is to image the (raw) residuals, with options for other forms
 ## of the residuals or for the fitted concentrations (X) or intensities (Y).
-setMethod("image", "RPPAFit",
+setMethod("image", signature(x="RPPAFit"),
           function(x,
                    measure=c("Residuals",
                              "ResidualsR2",
@@ -198,34 +198,11 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
                    type=c("cloud", "series", "individual", "steps", "resid"),
                    xlab='Log Concentration',
                    ylab='Intensity',
-                   colors=NULL,
+                   col=NULL,
                    xform=function(x) { x },
                    ...) {
     ## Check arguments
     type <- match.arg(type)
-
-    ## :KRC: NAybody who passes in crap fopr xlan or ylab deserves whatever
-    ## bad things happen. Why do we have all this argument-checking code.
-    ## R is not C#. It is not strongly typed. Why should we try to make it
-    ## be strongly typed?
-    if (!is.character(xlab)) {
-        stop(sprintf("argument %s must be character",
-                     sQuote("xlab")))
-    } else if (!(length(xlab) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("xlab")))
-    }
-
-    if (!is.character(ylab)) {
-        stop(sprintf("argument %s must be character",
-                     sQuote("ylab")))
-    } else if (!(length(ylab) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("ylab")))
-    }
-
-    ## :TODO: colors
-    ## :KRC: Why is this 'colors' rather than 'col' anyway?
 
     if (!is.function(xform)) {
         stop(sprintf("argument %s must be function",
@@ -273,15 +250,15 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
         abline(h=trimset$hi.intensity)
 
         if (type == "series") {
-            if (is.null(colors)) {
-                colors <- hcl(seq(0, 360, length=9)[1:8], c=65, l=65)
+            if (is.null(col)) {
+                col <- hcl(seq(0, 360, length=9)[1:8], c=65, l=65)
             }
             i <- 0
-            ncol <- length(colors)
+            ncol <- length(col)
             for (this in series) {
                 i <- (i %% ncol) + 1
                 items <- x@design@layout$Series == this
-                lines(xval[items], yraw[items], col=colors[i], type='b')
+                lines(xval[items], yraw[items], col=col[i], type='b')
             }
             lines(sort(xval), sort(yval), lwd=2)
         }
