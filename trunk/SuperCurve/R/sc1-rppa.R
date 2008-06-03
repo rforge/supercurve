@@ -116,6 +116,9 @@ setMethod("image", "RPPA",
     } else if (!(length(measure) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("measure")))
+    } else if (!(measure %in% colnames(x@data))) {
+        stop(sprintf("invalid measure %s",
+                     sQuote(measure)))
     }
 
     if (!is.character(main)) {

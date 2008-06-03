@@ -311,6 +311,9 @@ setMethod("plot", signature(x="RPPA", y="RPPADesign"),
     } else if (!(length(measure) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("measure")))
+    } else if (!(measure %in% colnames(x@data))) {
+        stop(sprintf("invalid measure %s",
+                     sQuote(measure)))
     }
 
     if (!is.character(main)) {
@@ -324,12 +327,6 @@ setMethod("plot", signature(x="RPPA", y="RPPADesign"),
     ## Begin processing
     vert <- x@data[, measure]
     horz <- y@layout$Steps
-
-    ########
-    ##The following were modified by Wenbin Liu:
-    # Sometimes there are many (e.g., hundreds of) appearances of 'control'
-    # in the Sample column and the original max(horz) will mess up the plot.
-    #######
 
     is.ctrl <- .controlVector(y)  # Get the indexes of the control spots
     par(mfrow=c(1, 1))  # Avoid existing partitions of graphic device
