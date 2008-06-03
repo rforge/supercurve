@@ -185,6 +185,7 @@ image(fit.nls)
 image(fit.nls, measure="Residuals")
 plot(fit.nls, type="cloud")
 
+## :TBD: Why recreate exact same fit as above?
 fit.q <- RPPAFit(erk2, design, "Mean.Net")
 hist(fit.q, type="StdRes")
 plot(fit.q, type="series")
