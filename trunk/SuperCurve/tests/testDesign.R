@@ -27,7 +27,7 @@ dsn <- RPPADesignFromParams(jnk, dp)
 plot(jnk, dsn)
 
 ## Putting a vector into a list (instead of making a list) seems to work
-## just fine. I really don't see why6 it should....
+## just fine. I really don't see why it should....
 ## Apparently, we were clever enough to include an 'unlist' in the
 ## .controlVector function. 
 dp <- RPPADesignParams(grouping='bySample',
@@ -77,4 +77,5 @@ try( dp <- RPPADesignParams(center=c(TRUE, FALSE)) )
 ###########################
 ## test of plot. main extra argument is "measure"
 
-try( plot(jnk, dsn, measure='bogus') )
+try( plot(jnk, dsn, measure="bogus") ) # invalid measure
+
