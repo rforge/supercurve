@@ -450,3 +450,13 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
     result
 }
 
+
+##-----------------------------------------------------------------------------
+## Extracts model coefficients from objects returned by modeling functions.
+setMethod("coef", "RPPAFit",
+          function(object,
+                   ...) {
+    callGeneric(object@model)
+})
+
+

@@ -81,6 +81,16 @@ setMethod("trimConc", "FitClass",
 })
 
 
+##-----------------------------------------------------------------------------
+## Extracts model coefficients from objects returned by modeling functions.
+## N.B.: Should be overridden by classes that have coefficients!
+setMethod("coef", "FitClass",
+          function(object,
+                   ...) {
+    NULL
+})
+
+
 ###################################################################
 ## Utility fuctions used to implement methods for derived classes
 ## :KRC: Should these be used for the FitClass method so we can
@@ -455,7 +465,7 @@ setMethod("fitSlide", "LogisticFitClass",
                    conc,
                    intensity,
                    ...) {
-    cf <- as.list(object@coefficients)
+    cf <- as.list(coef(object))
 
     if (cf$gamma == 0) {
         ## Initialize coefficients
@@ -547,5 +557,14 @@ setMethod("trimConc", "LogisticFitClass",
          hi.intensity=hi.intensity,
          lo.conc=lo.conc,
          hi.conc=hi.conc)
+})
+
+
+##-----------------------------------------------------------------------------
+## Extracts model coefficients from LogisticFitClass.
+setMethod("coef", "LogisticFitClass",
+          function(object,
+                   ...) {
+    object@coefficients
 })
 

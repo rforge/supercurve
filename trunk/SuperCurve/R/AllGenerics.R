@@ -7,13 +7,13 @@
 ## S3 or non-generics converted to S4
 ##
 
-## defined for: nothing. so why is it here?
+## defined for: FitClass, LogisticFitClass, RPPAFit
 if (!isGeneric("coef")) {
     setGeneric("coef",
                function(object, ...) standardGeneric("coef"))
 }
 
-## defined for: nothing. so why is it here?
+## defined for: FitClass, LogisticFitClass, RPPAFit
 if (!isGeneric("coefficients")) {
     setGeneric("coefficients",
                function(object, ...) standardGeneric("coefficients"))
