@@ -29,7 +29,6 @@ data(rppaTumor)
   of class \code{\link{RPPA}}. The object \code{tDesign} is an
   object of class \code{\link{RPPADesign}}.
 }
-%\source{Bryan Hennessey and Gordon Mills}
 \source{Doris Swank and Gordon Mills}
 \references{KRC}
 \keyword{datasets}

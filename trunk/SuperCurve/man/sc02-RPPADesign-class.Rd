@@ -1,15 +1,15 @@
 \name{RPPADesign-class}
 \alias{RPPADesignParams-class}
-\alias{RPPADesignParams}
 \alias{RPPADesign-class}
 \alias{RPPADesign}
 \alias{RPPADesignFromParams}
+\alias{RPPADesignParams}
 \alias{image,RPPADesign-method}
-\alias{summary,RPPADesign-method}
 \alias{names,RPPADesign-method}
 \alias{plot,RPPA,RPPADesign-method}
-\alias{seriesNames}
+\alias{summary,RPPADesign-method}
 \alias{getSteps}
+\alias{seriesNames}
 \docType{class}
 \title{Class "RPPADesign" and Class "RPPADesignParams"}
 \description{
@@ -38,12 +38,12 @@ RPPADesignParams(steps=rep(0,1),
 
 RPPADesignFromParams(raw, designparams)
 
-seriesNames(design)
 getSteps(design)
+seriesNames(design)
 \S4method{image}{RPPADesign}(x, \dots)
-\S4method{summary}{RPPADesign}(object, \dots)
 \S4method{names}{RPPADesign}(x)
 \S4method{plot}{RPPA,RPPADesign}(x, y, ...)
+\S4method{summary}{RPPADesign}(object, \dots)
 }
 \arguments{
   \item{raw}{data frame, matrix, or object of class \code{RPPA}.}
@@ -72,14 +72,13 @@ getSteps(design)
       \code{"increasing"} \tab arranged in order of increasing
                                concentrations \cr
     }}
-  \item{alias}{optional list or data frame for attaching sample labels or biologically relevant descriptors to the
-  dilution series.}  
-  %with the following required
-  %  named components:
-  %  \tabular{ll}{
-  %    \code{Alias}  \tab TBD description \cr
-  %    \code{Sample} \tab TBD description \cr
-  %  }}
+  \item{alias}{optional list or data frame for attaching sample labels or
+    biologically relevant descriptors to the dilution series with the
+    following required named components:
+    \tabular{ll}{
+      \code{Alias}  \tab TBD description \cr
+      \code{Sample} \tab TBD description \cr
+    }}
   \item{center}{logical scalar. If \code{TRUE}, then dilution steps are
     centered around 0.}
   \item{controls}{list containing the character strings that identify
@@ -136,12 +135,12 @@ getSteps(design)
     \item{\code{controls}:}{list containing the character strings that
       identify control spots on the array. Controls are not included as part
       of any dilution series.}
-    \item{\code{alias}:}{See corresponding argument above.}
-    \item{\code{center}:}{See corresponding argument above.}
-    \item{\code{grouping}:}{See corresponding argument above.}
-    \item{\code{ordering}:}{See corresponding argument above.}
-    \item{\code{series}:}{See corresponding argument above.}
-    \item{\code{steps}:}{See corresponding argument above.}    
+    \item{\code{alias}:}{see corresponding argument above}
+    \item{\code{center}:}{see corresponding argument above}
+    \item{\code{grouping}:}{see corresponding argument above}
+    \item{\code{ordering}:}{see corresponding argument above}
+    \item{\code{series}:}{see corresponding argument above}
+    \item{\code{steps}:}{see corresponding argument above}    
   }
 }
 \section{Methods}{
@@ -151,12 +150,12 @@ getSteps(design)
       different dilution steps, and laid out in the same pattern as the rows
       and columns of the array. This provides a visual check that the design
       has been specified correctly.}
-    \item{summary(object, \dots)}{The \code{summary} method lists the
-      names of the control spots on the array and then prints a summary of the
-      data frame describing the layout.}
     \item{plot(x, y, \dots)}{Plot an object of class \code{RPPA} by showing
       its dilution series with respect to the corresponding object of class
       \code{RPPADesign}.}
+    \item{summary(object, \dots)}{The \code{summary} method lists the
+      names of the control spots on the array and then prints a summary of the
+      data frame describing the layout.}
   }
 }
 \value{
@@ -166,10 +165,10 @@ getSteps(design)
   The \code{image} method invisibly returns the displayed matrix of
   dilution steps.
 
+  The \code{names} method returns a character vector.
+
   The \code{summary} method returns the summary object of the
   \code{layout} data frame.
-
-  The \code{names} method returns a character vector.
 
   The \code{getSteps} function returns a numeric vector containing, for
   each non-control spot, the step represented by that spot in its dilution
@@ -203,10 +202,9 @@ plot(erk2, design)
 
 path <- system.file("rppaCellData", package="SuperCurve")
 akt <- RPPA("Akt.txt", path=path)
-# Uses duplicate 8-step dilution series within 4x4 subgrids.
-# They are interleaved, with top two identical rows containing
-# the first 4 steps and the bottom two identical rows
-# containing the last 4 steps.
+## Uses duplicate 8-step dilution series within 4x4 subgrids.
+## They are interleaved, with top two identical rows containing the first
+## 4 steps and the bottom two identical rows containing the last 4 steps.
 steps <- rep(c(rep(8:5, 2), rep(4:1, 2)), 40) - 4.5
 rep.temp <- factor(paste('Rep', rep(rep(1:2, each=4), 80), sep=''))
 series <- factor(paste(as.character(akt@data$Sample),

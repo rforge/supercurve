@@ -2,7 +2,6 @@
 \alias{RPPASet-class}
 \alias{RPPASet}
 \alias{summary,RPPASet-method}
-\alias{image,RPPASet-method}
 \docType{class}
 \title{Class "RPPASet"}
 \description{
@@ -64,8 +63,7 @@ RPPASet(path, designparams, fitparams)
 \value{
   The \code{RPPASet} generator returns an object of class \code{RPPASet}.
 
-  The \code{summary} method returns a summary of the underlying data
-  frame.
+  The \code{summary} method returns a summary of the underlying data frame.
 }
 \references{KRC}
 \author{

@@ -1,8 +1,8 @@
 \name{RPPA-class}
 \alias{RPPA-class}
 \alias{RPPA}
-\alias{summary,RPPA-method}
 \alias{image,RPPA-method}
+\alias{summary,RPPA-method}
 \docType{class}
 \title{Class "RPPA"}
 \description{
@@ -10,18 +10,19 @@
   reverse-phase protein array experiment.
 }
 \usage{
-RPPA(filename, path=".")
-\S4method{summary}{RPPA}(object, \dots)
+RPPA(file, path=".")
 \S4method{image}{RPPA}(x, measure="Mean.Net", main=measure,
     colorbar=FALSE, col=terrain.colors(256), \dots)
+\S4method{summary}{RPPA}(object, \dots)
 }
 \arguments{
-  \item{filename}{character string specifying the name of a text file
+  \item{file}{character string or \link{connection} specifying text file
     containing MicroVigene quantifications of a reverse-phase protein array
     experiment}
   \item{path}{character string specifying the path from the current
     directory to the file. The default value assumes the file is
-    contained in the current directory.}
+    contained in the current directory. If \code{file} is a connection,
+    this argument is ignored.}
   \item{object}{object of class \code{RPPA}}
   \item{x}{object of class \code{RPPA}}
   \item{measure}{character string containing the name of the measurement column
@@ -64,8 +65,6 @@ RPPA(filename, path=".")
 }
 \section{Methods}{
   \describe{
-    \item{summary(object, \dots)}{The summary method prints a summary of
-      the underlying data frame.}
     \item{image(x, measure="Mean.Net", main=measure, colorbar=FALSE,
       col=terrain.colors(256), \dots)}{The image method produces a
       "geographic" image of the measurement column named by the
@@ -75,16 +74,17 @@ RPPA(filename, path=".")
       Any measurement column can be displayed using this function. An
       optional color bar can be added; this will be placed at the right
       edge.}
+    \item{summary(object, \dots)}{The summary method prints a summary of
+      the underlying data frame.}
   }
 }
 \value{
   The \code{RPPA} generator returns an object of class \code{RPPA}.
 
-  The \code{summary} method returns a summary of the underlying data
-  frame.
-
   The \code{image} method invisibly returns the \code{RPPA} object on
   which it was invoked.
+
+  The \code{summary} method returns a summary of the underlying data frame.
 }
 \references{KRC}
 \author{

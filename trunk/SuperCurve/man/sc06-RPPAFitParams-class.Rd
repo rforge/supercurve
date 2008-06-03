@@ -4,14 +4,14 @@
 \alias{RPPAFitFromParams}
 \alias{RPPAFit}
 \docType{class}
-\title{Fitting Dilution Curves to Protein Lysate Arrays, With Class "RPPAFitParams"}
+\title{Fitting Dilution Curves to Protein Lysate Arrays with Class "RPPAFitParams"}
 \description{
   The \code{RPPAFit} function fits an intensity response model to the
-  dilution series in a reverse-phase protein array
-  experiment. Individual sample concentrations are estimated by matching
-  individual sample dilution series to the overall logistic response for
-  the slide. The \code{RPPAFitParams} class is a ocnvenient place to
-  wrap the parameters that control the modeol fit inot a reusable object.
+  dilution series in a reverse-phase protein array experiment. Individual
+  sample concentrations are estimated by matching individual sample
+  dilution series to the overall logistic response for the slide.
+  The \code{RPPAFitParams} class is a convenient place to wrap the parameters
+  that control the model fit into a reusable object.
 }
 \usage{
 RPPAFit(rppa,
@@ -94,7 +94,6 @@ RPPAFitFromParams(rppa,
     won't cause failure but will give us a chance to figure out which dilution
     series are failing. Setting \code{warnLevel} to two or greater may change
     the values returned.}
-
 }
 \details{
   The basic mathematical model is given by \deqn{Y = f(X-\delta_i),}
@@ -176,7 +175,7 @@ design <- RPPADesign(erk2,
                      controls=list("neg con", "pos con"))
 fit.nls <- RPPAFit(erk2, design, "Mean.Net")
 summary(fit.nls)
-##coef(fit.nls)   ## :BUG: method 'coef' doesn't work
+coef(fit.nls)
 }
 \keyword{models}
 \keyword{regression}

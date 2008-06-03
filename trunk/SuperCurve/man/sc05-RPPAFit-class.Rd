@@ -1,14 +1,14 @@
 \name{RPPAFit-class}
 \alias{RPPAFit-class}
-\alias{summary,RPPAFit-method}
 \alias{coef,RPPAFit-method}
 \alias{coefficients,RPPAFit-method}
 \alias{fitted,RPPAFit-method}
-\alias{residuals,RPPAFit-method}
-\alias{resid,RPPAFit-method}
-\alias{image,RPPAFit-method}
 \alias{hist,RPPAFit-method}
+\alias{image,RPPAFit-method}
 \alias{plot,RPPAFit,missing-method}
+\alias{resid,RPPAFit-method}
+\alias{residuals,RPPAFit-method}
+\alias{summary,RPPAFit-method}
 \docType{class}
 \title{Class "RPPAFit"}
 \description{
@@ -17,17 +17,19 @@
   reverse-phase protein array experiment.
 }
 \usage{
-\S4method{summary}{RPPAFit}(object, \dots)
 \S4method{coef}{RPPAFit}(object, \dots)
 \S4method{coefficients}{RPPAFit}(object, \dots)
 \S4method{fitted}{RPPAFit}(object, type=c("Y", "y", "X", "x"), \dots)
-\S4method{residuals}{RPPAFit}(object, type=c("raw", "standardized", "linear"), \dots)
-\S4method{resid}{RPPAFit}(object, \dots)
-\S4method{image}{RPPAFit}(x, type=c("Residuals", "StdRes", "X", "Y"), \dots)
-\S4method{hist}{RPPAFit}(x, type=c("Residuals", "StdRes"),
+\S4method{hist}{RPPAFit}(x, type=c("Residuals", "StdRes", "ResidualsR2"),
   xlab=NULL, main=NULL, \dots)
+\S4method{image}{RPPAFit}(x, type=c("Residuals", "ResidualsR2", "StdRes", "X", "Y"), \dots)
 \S4method{plot}{RPPAFit,missing}(x, y, type=c("cloud", "series", "individual"),
-xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
+  xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
+\S4method{resid}{RPPAFit}(object, type=c("raw", "standardized", "r2"),
+  \dots)
+\S4method{residuals}{RPPAFit}(object, type=c("raw", "standardized", "r2"),
+  \dots)
+\S4method{summary}{RPPAFit}(object, \dots)
 }
 \arguments{
   \item{object}{object of class \code{RPPAFit}}
@@ -69,9 +71,11 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
     \item{\code{method}:}{character string containing the name of the
       method that was used to estimate the upper and lower limit
       parameters in the model}
-    \item{\code{trimset}:}{numeric vector of length 4 containing the low and high intensities
-    and the low and concentrations that mark the trimming boundaries.}
-    \item{\code{model}:}{object of class \code{FitClass} unique to the model that was fit}
+    \item{\code{trimset}:}{numeric vector of length 4 containing the
+      low and high intensities and the low and high concentrations that
+      mark the trimming boundaries}
+    \item{\code{model}:}{object of class \code{FitClass} unique to the
+      model that was fit}
     \item{\code{concentrations}:}{numeric vector of estimates of the relative
       log concentration of protein present in each sample}
     \item{\code{lower}:}{numeric vector containing the lower bounds on the
@@ -92,9 +96,9 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
 }
 \section{Methods}{
   \describe{
-    \item{summary(object, \dots)}{Print a summary of the \code{RPPAFit}
-      object. At present, this only reports the function call used to
-      fit the model.}
+    \item{coef(object, \dots)}{Extracts model coefficients from objects
+      returned by modeling functions.}
+    \item{coefficients(object, \dots)}{An alias for \code{coef}.}
     \item{fitted(object, type=c("Y", "y", "X", "x"), \dots)}{Extract the
       fitted values of the model. This process is more complicated
       than it may seem at first, since we are estimating values on
@@ -105,22 +109,15 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
       returned when \code{type} is set to either uppercase or
       lowercase 'x'. In the notation used above to describe the model,
       these fitted values are given by \eqn{X_i = X - \delta_i}.}
-    \item{residuals(object, type=c("raw", "standardized"), \dots)}{
-      Report the residual errors. The 'raw' residuals are defined
-      as the difference between the observed intensities and the
-      fitted intensities, as computed by the \code{fitted} function.
-      The 'standardized' residuals are obtained by standardizing the
-      raw residuals.}
-    \item{resid(object, \dots)}{An alias for \code{residuals}.}
+    \item{hist(x, type=c("Residuals", "StdRes"), xlab=NULL, main=NULL,
+      \dots)}{The \code{hist} method produces a histogram of
+      the residuals. The exact form of the residuals being displayed
+      depends on the value of the \code{type} argument.}
     \item{image(x, type=c("Residuals", "StdRes", "X", "Y"), \dots)}{
       The \code{image} method produces a 'geographic' plot of the
       residuals or of the fitted values, depending on the value of the
       \code{type} argument. The implementation reuses code from the
       \code{image} method for an \code{\link{RPPA}} object.}
-    \item{hist(x, type=c("Residuals", "StdRes"), xlab=NULL, main=NULL,
-      \dots)}{The \code{hist} method produces a histogram of
-      the residuals. The exact form of the residuals being displayed
-      depends on the value of the \code{type} argument.}
     \item{plot(x, y, type=c("cloud", "series", "individual"),
       xlab="Log Concentration", ylab="Intensity", \dots)}{
       The \code{plot} method produces a diagnostic plot of the model fit.
@@ -131,27 +128,36 @@ xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
       dilution series. The 'individual' plot produces separate graphs
       for each dilution series, laying each one alongside the jointly
       fitted sigmoid curve.}
+    \item{resid(object, type=c("raw", "standardized"), \dots)}{
+      An alias for \code{residuals}.}
+    \item{residuals(object, type=c("raw", "standardized"), \dots)}{
+      Report the residual errors. The 'raw' residuals are defined
+      as the difference between the observed intensities and the
+      fitted intensities, as computed by the \code{fitted} function.
+      The 'standardized' residuals are obtained by standardizing the
+      raw residuals.}
+    \item{summary(object, \dots)}{Print a summary of the \code{RPPAFit}
+      object. At present, this only reports the function call used to
+      fit the model.}
   }
 }
 \value{
-  The \code{summary} method has no return value.
-
-  The \code{coef} and \code{coefficients} methods return a named vector
-  of length three with logisitic curve coefficients for models of class LogisticFitClass.  
-  A value of NULL is returned
-  for models of class CobsFitClass and LoessFitClass.
+  The \code{coef} and \code{coefficients} methods return the numeric model
+  coefficients from objects returned by modeling functions.
 
   The \code{fitted} method returns a numeric vector.
 
-  The \code{resid} and \code{residuals} methods return a numeric vector.
+  The \code{hist} method returns an object of class \code{histogram}.
 
   The \code{image} method invisibly returns the object \code{x} on which
   it was invoked.
 
-  The \code{hist} method returns an object of class \code{histogram}.
-
   The \code{plot} method invisibly returns the object \code{x} on which
   it was invoked.
+
+  The \code{resid} and \code{residuals} methods return a numeric vector.
+
+  The \code{summary} method has no return value.
 }
 \references{KRC}
 \author{
@@ -182,8 +188,8 @@ fit.q <- RPPAFit(erk2, design, "Mean.Net")
 hist(fit.q, type="StdRes")
 plot(fit.q, type="series")
 
-##coef(fit.nls)   ## :BUG: method 'coef' doesn't work
-##coef(fit.q)   ## :BUG: method 'coef' doesn't work
+coef(fit.nls)
+coef(fit.q)
 
 plot(fitted(fit.q), resid(fit.q))
 }

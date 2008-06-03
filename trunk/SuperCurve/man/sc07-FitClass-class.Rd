@@ -1,5 +1,7 @@
 \name{FitClass-class}
 \alias{FitClass-class}
+\alias{coef,FitClass-method}
+\alias{coefficients,FitClass-method}
 \alias{fitSeries,FitClass-method}
 \alias{fitSlide,FitClass-method}
 \alias{trimConc,FitClass-method}
@@ -10,6 +12,8 @@
   routine. Functions for use with the FitClass are only to be used internally.  
 }
 \usage{
+\S4method{coef}{FitClass}(object, \dots)
+\S4method{coefficients}{FitClass}(object, \dots)
 \S4method{fitSeries}{FitClass}(object, diln, intensity, est.conc, method="nls",
                                silent=TRUE, trace=FALSE, \dots)
 \S4method{fitSlide}{FitClass}(object, conc, intensity, \dots)
@@ -33,6 +37,10 @@
 }
 \section{Methods}{
   \describe{
+    \item{coef(object, \dots)}{Extracts model coefficients from objects
+      returned by modeling functions. Returns \code{NULL} if subclass does
+      not override.}
+    \item{coefficients(object, \dots)}{An alias for \code{coef}.}
     \item{fitSeries(object, diln, intensity, est.conc, method="nls",
       silent=TRUE, trace=FALSE, \dots)}{Finds the concentration for an
       individual dilution series given the curve fit for the slide.}
