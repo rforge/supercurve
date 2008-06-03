@@ -22,7 +22,7 @@
 \S4method{fitted}{RPPAFit}(object, type=c("Y", "y", "X", "x"), \dots)
 \S4method{hist}{RPPAFit}(x, type=c("Residuals", "StdRes", "ResidualsR2"),
   xlab=NULL, main=NULL, \dots)
-\S4method{image}{RPPAFit}(x, type=c("Residuals", "ResidualsR2", "StdRes", "X", "Y"), \dots)
+\S4method{image}{RPPAFit}(x, measure=c("Residuals", "ResidualsR2", "StdRes", "X", "Y"), \dots)
 \S4method{plot}{RPPAFit,missing}(x, y, type=c("cloud", "series", "individual"),
   xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
 \S4method{resid}{RPPAFit}(object, type=c("raw", "standardized", "r2"),
@@ -36,13 +36,14 @@
   \item{x}{object of class \code{RPPAFit}}
   \item{type}{character string describing the type of fitted values,
     residuals, images, histograms, or plots}
+  \item{measure}{character string specifying measure to compute from fit}
   \item{xlab}{graphics parameter specifying how the x-axis should be labeled}
   \item{ylab}{graphics parameter specifying how the y-axis should be labeled}
   \item{main}{character string specifying title for the plot}
   \item{y}{not used}
   \item{colors}{graphics parameter, used only if \code{type='series'},
     to color the lines connecting different dilution series.
-    Eight default colors are used if the argument is NULL.}
+    Eight default colors are used if the argument is \code{NULL}.}
   \item{\dots}{extra arguments for generic or plotting routines}
 }
 \details{
@@ -113,10 +114,10 @@
       \dots)}{The \code{hist} method produces a histogram of
       the residuals. The exact form of the residuals being displayed
       depends on the value of the \code{type} argument.}
-    \item{image(x, type=c("Residuals", "StdRes", "X", "Y"), \dots)}{
+    \item{image(x, measure=c("Residuals", "StdRes", "X", "Y"), \dots)}{
       The \code{image} method produces a 'geographic' plot of the
       residuals or of the fitted values, depending on the value of the
-      \code{type} argument. The implementation reuses code from the
+      \code{measure} argument. The implementation reuses code from the
       \code{image} method for an \code{\link{RPPA}} object.}
     \item{plot(x, y, type=c("cloud", "series", "individual"),
       xlab="Log Concentration", ylab="Intensity", \dots)}{
