@@ -90,7 +90,7 @@ Loading required package: splines
 
 > cat(paste("\nTest of SuperCurve version", ver, "\n"))
 
-Test of SuperCurve version 0.9999 
+Test of SuperCurve version 1.0-0 
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))
@@ -162,7 +162,7 @@ Warning messages:
 
 > cat(paste("\nTest of SuperCurve version", ver, "\n"))
 
-Test of SuperCurve version 0.9999 
+Test of SuperCurve version 1.0-0 
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))
@@ -235,7 +235,7 @@ Warning messages:
 
 > cat(paste("\nTest of SuperCurve version", ver, "\n"))
 
-Test of SuperCurve version 0.9999 
+Test of SuperCurve version 1.0-0 
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))
@@ -283,39 +283,39 @@ Warning messages:
 > ## print the concentrations from the last fit. These will
 > ## automatically be compared with the saved output when we
 > ## run 'R CMD check'
-> temp@concentrations
+> round(temp@concentrations, digits=4)
   sample1.Rep1   sample1.Rep2   sample2.Rep1   sample2.Rep2   sample3.Rep1 
-     -5.189203      -4.571174      -3.540543      -3.597989      -4.085489 
+       -5.1892        -4.5712        -3.5405        -3.5980        -4.0855 
   sample3.Rep2   sample4.Rep1   sample4.Rep2   sample5.Rep1   sample5.Rep2 
-     -4.110430      -6.723754      -6.859526      -6.859526      -6.859526 
+       -4.1104        -6.7238        -6.8595        -6.8595        -6.8595 
   sample6.Rep1   sample6.Rep2   sample7.Rep1   sample7.Rep2   sample8.Rep1 
-     -3.512757      -3.455699      -5.242024      -5.116250      -6.156980 
+       -3.5128        -3.4557        -5.2420        -5.1163        -6.1570 
   sample8.Rep2   sample9.Rep1   sample9.Rep2  sample10.Rep1  sample10.Rep2 
-     -6.086051      -4.625255      -4.541034      -4.013864      -3.698095 
+       -6.0861        -4.6253        -4.5410        -4.0139        -3.6981 
  sample11.Rep1  sample11.Rep2  sample12.Rep1  sample12.Rep2  sample13.Rep1 
-     -3.522084      -3.826595      -6.859526      -6.859526      -3.557976 
+       -3.5221        -3.8266        -6.8595        -6.8595        -3.5580 
  sample13.Rep2  sample14.Rep1  sample14.Rep2  sample15.Rep1  sample15.Rep2 
-     -4.161234      -3.357265      -3.634020      -3.860112      -4.029794 
+       -4.1612        -3.3573        -3.6340        -3.8601        -4.0298 
  sample16.Rep1  sample16.Rep2  sample17.Rep1  sample17.Rep2  sample18.Rep1 
-     -3.005238      -2.514870      -3.565964      -3.848513      -4.630889 
+       -3.0052        -2.5149        -3.5660        -3.8485        -4.6309 
  sample18.Rep2  sample19.Rep1  sample19.Rep2  sample20.Rep1  sample20.Rep2 
-     -3.880663      -2.851356      -2.833665      -3.509073      -3.361744 
+       -3.8807        -2.8514        -2.8337        -3.5091        -3.3617 
  sample21.Rep1  sample21.Rep2  sample22.Rep1  sample22.Rep2  sample23.Rep1 
-     -2.841583      -2.709704      -4.045323      -3.920595      -3.482188 
+       -2.8416        -2.7097        -4.0453        -3.9206        -3.4822 
  sample23.Rep2  sample24.Rep1  sample24.Rep2  sample25.Rep1  sample25.Rep2 
-     -3.559575      -3.532315      -3.572903      -4.422278      -4.247519 
+       -3.5596        -3.5323        -3.5729        -4.4223        -4.2475 
  sample26.Rep1  sample26.Rep2  sample27.Rep1  sample27.Rep2  sample28.Rep1 
-     -4.108233      -4.205388      -3.006433      -2.780560      -5.728008 
+       -4.1082        -4.2054        -3.0064        -2.7806        -5.7280 
  sample28.Rep2  sample29.Rep1  sample29.Rep2  sample30.Rep1  sample30.Rep2 
-     -6.133534      -3.723649      -3.487512      -3.027667      -3.400615 
+       -6.1335        -3.7236        -3.4875        -3.0277        -3.4006 
  sample31.Rep1  sample31.Rep2  sample32.Rep1  sample32.Rep2  sample33.Rep1 
-     -3.540857      -3.632343      -2.925101      -2.457449      -3.730153 
+       -3.5409        -3.6323        -2.9251        -2.4574        -3.7302 
  sample33.Rep2  sample34.Rep1  sample34.Rep2  sample35.Rep1  sample35.Rep2 
-     -3.288381      -3.949293      -3.994723      -3.515440      -3.842061 
+       -3.2884        -3.9493        -3.9947        -3.5154        -3.8421 
  sample36.Rep1  sample36.Rep2  sample37.Rep1  sample37.Rep2  sample38.Rep1 
-     -3.145478      -3.203006      -4.055407      -4.048758      -2.544709 
+       -3.1455        -3.2030        -4.0554        -4.0488        -2.5447 
  sample38.Rep2 sample 39.Rep1 sample 39.Rep2 sample 40.Rep1 sample 40.Rep2 
-     -2.879488      -1.405081      -1.769023      -3.693348      -4.157927 
+       -2.8795        -1.4051        -1.7690        -3.6933        -4.1579 
 > 
 > ######################################
 > x <- temp@concentrations

@@ -30,6 +30,11 @@ model <- "loess"
 measure <- "Mean.Net"
 
 ######################################
+# loess is very slow; we are only going to test
+# a single protein.
+proteins <- proteins[nrow(proteins),]
+
+######################################
 # must define the 'method' to use
 method <- 'nlrq'
 source("testRblock", echo=TRUE, max.deparse.len=1024)
@@ -44,7 +49,7 @@ source("testRblock", echo=TRUE, max.deparse.len=1024)
 ## print the concentrations from the last fit. These will
 ## automatically be compared with the saved output when we
 ## run 'R CMD check'
-temp@concentrations
+round(temp@concentrations, digits=4)
 
 ######################################
 ## This early design had each series repeated nine times,
@@ -60,4 +65,4 @@ sum(foo==seriesNames(design))
 avgs <- tapply(temp@concentrations, list(d$Sample), mean)
 spread <- tapply(temp@concentrations, list(d$Sample), sd)
 res <- data.frame(Mean=avgs, SD=spread, CV=spread/abs(avgs))
-res[order(res$SD),]
+round(res[order(res$SD),], digits=4)

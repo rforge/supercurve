@@ -52,7 +52,7 @@ source("testRblock", echo=TRUE, max.deparse.len=1024)
 ## print the concentrations from the last fit. These will
 ## automatically be compared with the saved output when we
 ## run 'R CMD check'
-temp@concentrations
+round(temp@concentrations, digits=4)
 
 ######################################
 x <- temp@concentrations

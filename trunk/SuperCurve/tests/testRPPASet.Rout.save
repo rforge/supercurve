@@ -15,6 +15,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
+> options(warn=1)
 > library(SuperCurve)
 Loading required package: MASS
 Loading required package: cobs
@@ -27,11 +28,11 @@ Loading required package: splines
 > designparams <- RPPADesignParams(grouping="blockSample",
 +                                  center=TRUE,
 +                                  controls=list("neg con", "pos con"))
-> fitparams <- RPPAFitParams(measure = "Mean.Net",
-+                            model = 'logistic',
-+                            method = 'nlrob',
-+                            ignoreNegative = FALSE,
-+                            warnLevel = -1)
+> fitparams <- RPPAFitParams(measure="Mean.Net",
++                            model="logistic",
++                            method="nlrob",
++                            ignoreNegative=FALSE,
++                            warnLevel=-1)
 > fitset <- RPPASet(path, designparams, fitparams)
 reading ERK2.txt
 reading GSK3.txt
@@ -42,7 +43,7 @@ fitting GSK3.txt - Please wait.
 fitting JNK.txt - Please wait.
 > 
 > write.summary(fitset,
-+               path = 'results',
-+               prefix = "testing",
++               path="results",
++               prefix="testing",
 +               graphs=FALSE)
 > 
