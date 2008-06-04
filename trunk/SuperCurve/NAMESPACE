@@ -21,6 +21,7 @@ exportClasses(RPPADesignParams)
 exportClasses(RPPAFit)
 exportClasses(RPPAFitParams)
 exportClasses(RPPASet)
+exportClasses(FitClass)
 
 ## S4 methods
 exportMethods(coef, coefficients)
