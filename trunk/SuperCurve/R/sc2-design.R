@@ -50,23 +50,6 @@ RPPADesignParams <- function(steps=rep(0, 1),
         stop(sprintf("argument %s must be list or data.frame",
                      sQuote("alias")))
     }
-    if (length(alias) < 1) {
-        alias <- list(Alias=levels(raw$Sample),
-                      Sample=levels(factor(tolower(as.character(raw$Sample)))))
-    } else {
-        reqdNames <- c("Alias", "Sample")
-        if (!(length(alias) >= length(reqdNames))) {
-            stop(sprintf("argument %s must be of length %d or greater",
-                         sQuote("alias"), length(reqdNames)))
-        } else if (!(all(reqdNames %in% names(alias)))) {
-            missingNames <- reqdNames[!reqdNames %in% names(alias)]
-            stop(sprintf(ngettext(length(missingNames),
-                                  "argument %s missing component: %s",
-                                  "argument %s missing components: %s"),
-                         sQuote("alias"), paste(missingNames, collapse=", ")))
-        }
-    }
-
     if (!is.logical(center)) {
         stop(sprintf("argument %s must be logical",
                      sQuote("center")))
@@ -117,6 +100,23 @@ RPPADesignFromParams <- function(raw, designparams) {
     alias    <- designparams@alias
     center   <- designparams@center
     controls <- designparams@controls
+
+    if (length(alias) < 1) {
+        alias <- list(Alias=levels(raw$Sample),
+                      Sample=levels(factor(tolower(as.character(raw$Sample)))))
+    } else {
+        reqdNames <- c("Alias", "Sample")
+        if (!(length(alias) >= length(reqdNames))) {
+            stop(sprintf("argument %s must be of length %d or greater",
+                         sQuote("alias"), length(reqdNames)))
+        } else if (!(all(reqdNames %in% names(alias)))) {
+            missingNames <- reqdNames[!reqdNames %in% names(alias)]
+            stop(sprintf(ngettext(length(missingNames),
+                                  "argument %s missing component: %s",
+                                  "argument %s missing components: %s"),
+                         sQuote("alias"), paste(missingNames, collapse=", ")))
+        }
+    }
 
     ## Begin processing
     raw.df <- data.frame(raw[, c("Main.Row",
