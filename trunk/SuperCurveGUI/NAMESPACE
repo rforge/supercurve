@@ -7,4 +7,4 @@
 
 ## Public methods
 export(supercurveGUI)
-
+export(sc)

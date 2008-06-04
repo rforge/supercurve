@@ -303,3 +303,4 @@ supercurveGUI <- function() {
                               tiffdir=tiffdir)
 }
 
+sc <- supercurveGUI
