@@ -214,12 +214,14 @@ write.summary <- function(rppaset,
                      xlim=c(-15, 15)))
 
             ## Mark R^2 = 0.4 and below as red.
-            try(image(rppaset@fits[[i]],
+            krc <- rppaset@fits[[i]]
+            imageRPPA <- getMethod("image", class(krc))            
+            imageRPPA(krc,
                       col=RYG,
                       main="",
                       measure="ResidualsR2",
                       xlab="Residuals R^2",
-                      zlim=c(0.4, 1)))
+                      zlim=c(0.4, 1))
 
             filename <- paste(paste(prefix, protein, sep="_"),
                               "png",
