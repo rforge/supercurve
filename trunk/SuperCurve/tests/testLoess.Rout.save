@@ -87,7 +87,7 @@ Loading required package: splines
 
 > cat(paste("\nTest of SuperCurve version", ver, "\n"))
 
-Test of SuperCurve version 1.0-0 
+Test of SuperCurve version 1.0.1 
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))
@@ -118,7 +118,7 @@ model = loess; method = nlrq; measure = Mean.Net
 +   }
 +   print(paste(itemName, measure, round(meansq), round(tmeansq)))
 + }
-[1] "ACTB-gray Mean.Net 566072 255936"
+[1] "ACTB-gray Mean.Net 469633 205774"
 
 > rm(i, itemName, item, meansq, tmeansq)
 > 
@@ -150,7 +150,7 @@ model = loess; method = nlrq; measure = Mean.Net
 
 > cat(paste("\nTest of SuperCurve version", ver, "\n"))
 
-Test of SuperCurve version 1.0-0 
+Test of SuperCurve version 1.0.1 
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))
@@ -182,9 +182,26 @@ model = loess; method = nlrob; measure = Mean.Net
 +   print(paste(itemName, measure, round(meansq), round(tmeansq)))
 + }
 Loading required package: robustbase
-[1] "ACTB-gray Mean.Net 566072 255936"
+[1] "ACTB-gray Mean.Net 438465 212956"
 
 > rm(i, itemName, item, meansq, tmeansq)
+Warning messages:
+1: In nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+2: In nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+3: In nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+4: In nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+5: In nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+6: In nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+7: In nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+8: In nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
 > 
 > method <- "nls"
 > source("testRblock", echo=TRUE, max.deparse.len=1024)
@@ -214,7 +231,7 @@ Loading required package: robustbase
 
 > cat(paste("\nTest of SuperCurve version", ver, "\n"))
 
-Test of SuperCurve version 1.0-0 
+Test of SuperCurve version 1.0.1 
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))

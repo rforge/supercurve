@@ -1,5 +1,6 @@
 \name{RPPAFitParams-class}
 \alias{RPPAFitParams-class}
+\alias{summary,RPPAFitParams-method}
 \alias{RPPAFitParams}
 \alias{RPPAFitFromParams}
 \alias{RPPAFit}
@@ -43,6 +44,8 @@ RPPAFitParams(measure,
 RPPAFitFromParams(rppa,
                   design,
                   fitparams)
+
+\S4method{summary}{RPPAFitParams}(object, \dots)
 }
 \arguments{
   \item{rppa}{object of class \code{\link{RPPA}} containing the raw data
@@ -94,6 +97,8 @@ RPPAFitFromParams(rppa,
     won't cause failure but will give us a chance to figure out which dilution
     series are failing. Setting \code{warnLevel} to two or greater may change
     the values returned.}
+  \item{object}{object of class \code{RPPAFitParams}}
+  \item{\dots}{extra arguments for generic summary routine}
 }
 \details{
   The basic mathematical model is given by \deqn{Y = f(X-\delta_i),}
@@ -133,6 +138,12 @@ RPPAFitFromParams(rppa,
   Although objects of the class can be created by a direct call to
   \link{new}, the preferred method is to use the \code{RPPAFitParams}
   function.
+}
+\section{Methods}{
+  \describe{
+    \item{summary(object, \dots)}{Print a summary of the
+      \code{RPPAFitParams} object.} 
+  }
 }
 \section{Slots}{
   \describe{

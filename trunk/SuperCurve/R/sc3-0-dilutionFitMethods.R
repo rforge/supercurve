@@ -143,7 +143,7 @@ setMethod("coef", "FitClass",
     ## :TBD: Isn't writing into global environment considered rude?
     assign(".RPPA.fit.model", object, env=.GlobalEnv)
 
-    tmp <- try(nlsmeth(Y ~ .slide.model(Steps+X),
+    tmp <- try(nlsmeth(Y ~ SuperCurve:::.slide.model(Steps+X),
                        data=data.frame(Y=intensity,
                                        Steps=diln),
                        start=list(X=est.conc),

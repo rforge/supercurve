@@ -259,6 +259,8 @@ registerModel <- function(name, classname) {
 ## :TODO: Need routine to fetch all registered model names (for GUI)
 
 ## :TODO: Migrate following to .onLoad since registration should occur once
+## :KRC: NO! The interface needs ot be exposed properly for other people
+## to register models. Don't move anything until we figure that part out...
 registerModel("logistic", "LogisticFitClass")
 registerModel("cobs",     "CobsFitClass")
 registerModel("loess",    "LoessFitClass")

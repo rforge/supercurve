@@ -39,8 +39,54 @@ reading GSK3.txt
 reading JNK.txt
 fitting ERK2.txt - Please wait.
 Loading required package: robustbase
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
 fitting GSK3.txt - Please wait.
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
 fitting JNK.txt - Please wait.
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
 > 
 > write.summary(fitset,
 +               path="results",

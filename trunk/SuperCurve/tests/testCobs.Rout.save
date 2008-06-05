@@ -83,7 +83,7 @@ Loading required package: splines
 
 > cat(paste("\nTest of SuperCurve version", ver, "\n"))
 
-Test of SuperCurve version 1.0-0 
+Test of SuperCurve version 1.0.1 
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))
@@ -114,9 +114,9 @@ model = cobs; method = nlrq; measure = Mean.Net
 +   }
 +   print(paste(itemName, measure, round(meansq), round(tmeansq)))
 + }
-[1] "ERK2 Mean.Net 422869 155179"
-[1] "GSK3 Mean.Net 765991 230940"
-[1] "JNK Mean.Net 493724 121665"
+[1] "ERK2 Mean.Net 295256 121668"
+[1] "GSK3 Mean.Net 390348 159965"
+[1] "JNK Mean.Net 327466 100243"
 
 > rm(i, itemName, item, meansq, tmeansq)
 > 
@@ -148,7 +148,7 @@ model = cobs; method = nlrq; measure = Mean.Net
 
 > cat(paste("\nTest of SuperCurve version", ver, "\n"))
 
-Test of SuperCurve version 1.0-0 
+Test of SuperCurve version 1.0.1 
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))
@@ -180,11 +180,12 @@ model = cobs; method = nlrob; measure = Mean.Net
 +   print(paste(itemName, measure, round(meansq), round(tmeansq)))
 + }
 Loading required package: robustbase
-[1] "ERK2 Mean.Net 422869 155179"
-[1] "GSK3 Mean.Net 765991 230940"
-[1] "JNK Mean.Net 493724 121665"
+[1] "ERK2 Mean.Net 263983 124538"
+[1] "GSK3 Mean.Net 315415 156073"
+[1] "JNK Mean.Net 293567 104538"
 
 > rm(i, itemName, item, meansq, tmeansq)
+There were 28 warnings (use warnings() to see them)
 > 
 > method <- "nls"
 > source("testRblock", echo=TRUE, max.deparse.len=1024)
@@ -214,7 +215,7 @@ Loading required package: robustbase
 
 > cat(paste("\nTest of SuperCurve version", ver, "\n"))
 
-Test of SuperCurve version 1.0-0 
+Test of SuperCurve version 1.0.1 
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))

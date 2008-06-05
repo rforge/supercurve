@@ -43,8 +43,18 @@ setMethod("summary", "RPPAFit",
               "\n",
               as.character(list(object@call))),
         "\n")
+    cat("Fitting parametsrs\n")
+    cat(paste("Measure:", object@measure, "\n"))
+    cat(paste("Method:",  object@method, "\n"))
+    cat(paste("Model:",   class(object@model), "\n"))
 })
 
+setMethod("summary", "RPPAFitParams", function(object,...) {
+    cat("Fitting parametsrs\n")
+    cat(paste("Measure:", object@measure, "\n"))
+    cat(paste("Method:",  object@method, "\n"))
+    cat(paste("Model:",   object@model, "\n"))
+})
 
 ##-----------------------------------------------------------------------------
 ## Provides a geographic plot of some measure computed from the fit.

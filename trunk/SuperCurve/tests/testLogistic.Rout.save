@@ -90,7 +90,7 @@ Loading required package: splines
 
 > cat(paste("\nTest of SuperCurve version", ver, "\n"))
 
-Test of SuperCurve version 1.0-0 
+Test of SuperCurve version 1.0.1 
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))
@@ -121,9 +121,9 @@ model = logistic; method = nlrq; measure = Mean.Net
 +   }
 +   print(paste(itemName, measure, round(meansq), round(tmeansq)))
 + }
-[1] "AKT Mean.Net 1732162 825629"
-[1] "ERK2 Mean.Net 7559750 3241301"
-[1] "CTNNB1 Mean.Net 6305768 1392899"
+[1] "AKT Mean.Net 1543259 694292"
+[1] "ERK2 Mean.Net 6277215 2330189"
+[1] "CTNNB1 Mean.Net 4737648 928592"
 
 > rm(i, itemName, item, meansq, tmeansq)
 Warning messages:
@@ -131,7 +131,9 @@ Warning messages:
   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
 2: In RPPAFitFromParams(rppa, design, params) :
   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
-3: In RPPAFitFromParams(rppa, design, params) :
+3: In lsfit(x, y, d^2, int = FALSE) : 'X' matrix was collinear
+4: In lsfit(x, y, d^2, int = FALSE) : 'X' matrix was collinear
+5: In RPPAFitFromParams(rppa, design, params) :
   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
 > 
 > method <- 'nlrob'
@@ -162,7 +164,7 @@ Warning messages:
 
 > cat(paste("\nTest of SuperCurve version", ver, "\n"))
 
-Test of SuperCurve version 1.0-0 
+Test of SuperCurve version 1.0.1 
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))
@@ -194,18 +196,12 @@ model = logistic; method = nlrob; measure = Mean.Net
 +   print(paste(itemName, measure, round(meansq), round(tmeansq)))
 + }
 Loading required package: robustbase
-[1] "AKT Mean.Net 1732162 825629"
-[1] "ERK2 Mean.Net 7559750 3241301"
-[1] "CTNNB1 Mean.Net 6305768 1392899"
+[1] "AKT Mean.Net 1457191 689323"
+[1] "ERK2 Mean.Net 6139545 2305429"
+[1] "CTNNB1 Mean.Net 3931938 1054908"
 
 > rm(i, itemName, item, meansq, tmeansq)
-Warning messages:
-1: In RPPAFitFromParams(rppa, design, params) :
-  number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
-2: In RPPAFitFromParams(rppa, design, params) :
-  number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
-3: In RPPAFitFromParams(rppa, design, params) :
-  number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+There were 33 warnings (use warnings() to see them)
 > 
 > method <- "nls"
 > source("testRblock", echo=TRUE, max.deparse.len=1024)
@@ -235,7 +231,7 @@ Warning messages:
 
 > cat(paste("\nTest of SuperCurve version", ver, "\n"))
 
-Test of SuperCurve version 1.0-0 
+Test of SuperCurve version 1.0.1 
 
 > cat(paste("model = ", model, "; method = ", method,
 +             "; measure = ", measure, "\n", sep=""))
