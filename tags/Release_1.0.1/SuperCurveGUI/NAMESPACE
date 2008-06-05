@@ -1,0 +1,10 @@
+###
+### NAMESPACE
+###
+
+## :TODO: Explicitly import the functions we need from the SuperCurve package.
+## The 'summary' method is critical, because of the use of generics.
+
+## Public methods
+export(supercurveGUI)
+export(sc)
