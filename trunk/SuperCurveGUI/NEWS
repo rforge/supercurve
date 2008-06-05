@@ -6,6 +6,18 @@
 	**************************************************
 
 
+		CHANGES IN SUPERCURVEGUI VERSION 1.0.1
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+
+NEW FEATURES
+
+    o	Added sc() as alias for supercurveGUI() for backwards
+	compatibility.
+
+
 		CHANGES IN SUPERCURVEGUI VERSION 1.0.0
 
 

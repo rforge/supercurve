@@ -304,3 +304,4 @@ supercurveGUI <- function() {
 }
 
 sc <- supercurveGUI
+
