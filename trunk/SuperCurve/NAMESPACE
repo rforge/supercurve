@@ -25,6 +25,7 @@ exportClasses(FitClass)
 
 ## S4 methods
 exportMethods(coef, coefficients)
+exportMethods(dim)
 exportMethods(fitted)
 exportMethods(hist)
 exportMethods(image)
