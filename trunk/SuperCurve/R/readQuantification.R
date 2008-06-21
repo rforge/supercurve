@@ -6,7 +6,7 @@
 ##-----------------------------------------------------------------------------
 ## Reads quantification datafiles and returns data frame containing
 ## the desired information
-readQuantification <- function(file, software=c("microvigene")) {
+readQuantification <- function(file, software) {
     ## Check arguments
     if (!inherits(file, "connection")) {
         stop(sprintf("argument %s must be connection",
@@ -21,6 +21,9 @@ readQuantification <- function(file, software=c("microvigene")) {
                      sQuote("software")))
     } else if (!(length(software) == 1)) {
         stop(sprintf("argument %s must be of length 1",
+                     sQuote("software")))
+    } else if (!(nchar(software) >= 1)) {
+        stop(sprintf("argument %s must not be empty string",
                      sQuote("software")))
     }
 

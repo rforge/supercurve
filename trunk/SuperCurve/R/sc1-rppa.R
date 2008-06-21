@@ -10,8 +10,8 @@ setClass("RPPA",
 
 
 ##-----------------------------------------------------------------------------
-## Generates an RPPA object from a Microvigene .txt file.
-RPPA <- function(file, path=".") {
+## Generates an RPPA object from a quantification file.
+RPPA <- function(file, path=".", software="microvigene") {
     ## Check arguments
     if (is.character(file)) {
         if (!(length(file) == 1)) {
@@ -44,7 +44,7 @@ RPPA <- function(file, path=".") {
     }
 
     ## Read quantification file
-    quant.df <- readQuantification(file)
+    quant.df <- readQuantification(file, software)
 
     ## :TBD: Add path to object? Convert to canonical format prior to doing so?
     ## :KRC: No, I just want the filename, not the full path. That is why the

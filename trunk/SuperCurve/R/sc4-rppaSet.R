@@ -285,7 +285,8 @@ setMethod("summary", "RPPASet",
 ## Create an RPPA set from a directory of slides.
 RPPASet <- function(path,
                     designparams,
-                    fitparams) {
+                    fitparams,
+                    software="microvigene") {
     ## Check arguments
     if (!is.character(path)) {
         stop(sprintf("argument %s must be character",
@@ -334,7 +335,7 @@ RPPASet <- function(path,
     }
 
     message(paste("reading", slideFilenames[1]))
-    firstslide <- RPPA(slideFilenames[1], path=path)
+    firstslide <- RPPA(slideFilenames[1], path=path, software=software)
     design <- RPPADesignFromParams(firstslide,
                                    designparams)
 
@@ -352,7 +353,7 @@ RPPASet <- function(path,
     if (length(slideFilenames) > 1) {
         for (i in seq(2, length(slideFilenames))) {
             message(paste("reading", slideFilenames[i]))
-            rppas[[i]] <- RPPA(slideFilenames[i], path=path)
+            rppas[[i]] <- RPPA(slideFilenames[i], path=path, software=software)
         }
     }
 
