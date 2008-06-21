@@ -70,8 +70,8 @@ setMethod("dim", signature="RPPA",
 setMethod("summary", "RPPA",
           function(object,
                    ...) {
-    cat(sprintf("An RPPA object loaded from file %s",
-                dQuote(object@file)), "\n")
+    cat(sprintf("An %s object loaded from file %s",
+                class(object), dQuote(object@file)), "\n")
     cat("\n")
     print(dim(object))
     cat("\n")
