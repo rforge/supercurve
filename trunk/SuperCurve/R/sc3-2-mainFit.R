@@ -160,7 +160,7 @@ RPPAFitParams <- function(measure,
 
     ## Check arguments
     stopifnot(is.numeric(yval))
-    stopifnot(inherits(design, "RPPADesign"))
+    stopifnot(is.RPPADesign(design))
     stopifnot(is.logical(ignoreNegative) && length(ignoreNegative) == 1)
     stopifnot(is.numeric(epsilon))
 
@@ -269,17 +269,17 @@ registerModel("loess",    "LoessFitClass")
 ##-----------------------------------------------------------------------------
 RPPAFitFromParams <- function(rppa, design, fitparams) {
     ## Check arguments
-    if (!inherits(rppa, "RPPA")) {
+    if (!is.RPPA(rppa)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppa"), "RPPA"))
     }
 
-    if (!inherits(design, "RPPADesign")) {
+    if (!is.RPPADesign(design)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("design"), "RPPADesign"))
     }
 
-    if (!inherits(fitparams, "RPPAFitParams")) {
+    if (!is.RPPAFitParams(fitparams)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("fitparams"), "RPPAFitParams"))
     }

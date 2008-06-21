@@ -14,7 +14,7 @@ spatialNorm <- function(rppa,
                         gamma=0.1,
                         plot.surface=FALSE) {
     ## Check arguments
-    if (!inherits(rppa, "RPPA")) {
+    if (!is.RPPA(rppa)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppa"), "RPPA"))
     }

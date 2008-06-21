@@ -10,6 +10,12 @@ setClass("RPPA",
 
 
 ##-----------------------------------------------------------------------------
+is.RPPA <- function(x) {
+    inherits(x, "RPPA")
+}
+
+
+##-----------------------------------------------------------------------------
 ## Generates an RPPA object from a quantification file.
 RPPA <- function(file, path=".", software="microvigene") {
     ## Check arguments

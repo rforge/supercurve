@@ -11,6 +11,8 @@ setClass("RPPADesign",
                              sampleMap="character",
                              controls="list"))
 
+
+##=============================================================================
 setClass("RPPADesignParams",
          representation=list(steps="numeric",
                              series="factor",
@@ -19,6 +21,18 @@ setClass("RPPADesignParams",
                              alias="list",
                              center="logical",
                              controls="list"))
+
+
+##-----------------------------------------------------------------------------
+is.RPPADesign <- function(x) {
+    inherits(x, "RPPADesign")
+}
+
+
+##-----------------------------------------------------------------------------
+is.RPPADesignParams <- function(x) {
+    inherits(x, "RPPADesignParams")
+}
 
 
 ##-----------------------------------------------------------------------------
@@ -79,7 +93,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
 ##-----------------------------------------------------------------------------
 RPPADesignFromParams <- function(raw, designparams) {
     ## If RPPA object, use its data slot value
-    if (inherits(raw, "RPPA")) {
+    if (is.RPPA(raw)) {
         raw <- raw@data
     }
 
@@ -89,7 +103,7 @@ RPPADesignFromParams <- function(raw, designparams) {
                      sQuote("raw")))
     }
 
-    if (!inherits(designparams, "RPPADesignParams")) {
+    if (!is.RPPADesignParams(designparams)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("designparams"), "RPPADesignParams"))
     }
@@ -379,7 +393,7 @@ setMethod("plot", signature(x="RPPA", y="RPPADesign"),
 ##-----------------------------------------------------------------------------
 .controlVector <- function(design) {
     ## Check arguments
-    if (!inherits(design, "RPPADesign")) {
+    if (!is.RPPADesign(design)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("design"), "RPPADesign"))
     }
@@ -396,7 +410,7 @@ setMethod("plot", signature(x="RPPA", y="RPPADesign"),
 ##-----------------------------------------------------------------------------
 seriesNames <- function(design) {
     ## Check arguments
-    if (!inherits(design, "RPPADesign")) {
+    if (!is.RPPADesign(design)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("design"), "RPPADesign"))
     }
@@ -411,7 +425,7 @@ seriesNames <- function(design) {
 ##-----------------------------------------------------------------------------
 getSteps <- function(design) {
     ## Check arguments
-    if (!inherits(design, "RPPADesign")) {
+    if (!is.RPPADesign(design)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("design"), "RPPADesign"))
     }

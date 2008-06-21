@@ -16,10 +16,16 @@ setClass("RPPASet",
 
 
 ##-----------------------------------------------------------------------------
+is.RPPASet <- function(x) {
+    inherits(x, "RPPASet")
+}
+
+
+##-----------------------------------------------------------------------------
 ## Returns a slot in the array of fits as a simple matrix view.
 .fitSlot <- function(rppaset, sl) {
     ## Check arguments
-    stopifnot(inherits(rppaset, "RPPASet"))
+    stopifnot(is.RPPASet(rppaset))
     stopifnot(is.character(sl) && length(sl) == 1)
 
     if (!(sl %in% slotNames(rppaset@fits[[1]]))) {
@@ -94,7 +100,7 @@ write.summary <- function(rppaset,
     ## Check arguments
   
     ## would not need this is it were a method....
-    if (!inherits(rppaset, "RPPASet")) {
+    if (!is.RPPASet(rppaset)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppaset"), "RPPASet"))
     }
@@ -300,12 +306,12 @@ RPPASet <- function(path,
                      dQuote(path)))
     }
 
-    if (!inherits(designparams, "RPPADesignParams")) {
+    if (!is.RPPADesignParams(designparams)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("designparams"), "RPPADesignParams"))
     }
 
-    if (!inherits(fitparams, "RPPAFitParams")) {
+    if (!is.RPPAFitParams(fitparams)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("fitparams"), "RPPAFitParams"))
     }

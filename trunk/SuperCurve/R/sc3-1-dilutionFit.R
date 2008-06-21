@@ -21,6 +21,8 @@ setClass("RPPAFit",
                              warn="character",
                              version="character"))
 
+
+##=============================================================================
 setClass("RPPAFitParams",
          representation=list(measure="character",
                              xform="function",
@@ -35,8 +37,16 @@ setClass("RPPAFitParams",
                              model="character"))
 
 
-is.RPPAFit <- function(x) inherits(x, "RPPAFit")
-is.RPPAFitParams <- function(x) inherits(x, "RPPAFitParams")
+##-----------------------------------------------------------------------------
+is.RPPAFit <- function(x) {
+    inherits(x, "RPPAFit")
+}
+
+
+##-----------------------------------------------------------------------------
+is.RPPAFitParams <- function(x) {
+    inherits(x, "RPPAFitParams")
+}
 
 
 ##-----------------------------------------------------------------------------
@@ -360,7 +370,7 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
 ##-----------------------------------------------------------------------------
 getConfidenceInterval <- function(result, alpha=0.10, nSim=50) {
     ## Check arguments
-    if (!inherits(result, "RPPAFit")) {
+    if (!is.RPPAFit(result)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("result"), "RPPAFit"))
     }
