@@ -35,26 +35,23 @@ setClass("RPPAFitParams",
                              model="character"))
 
 
+is.RPPAFit <- function(x) inherits(x, "RPPAFit")
+is.RPPAFitParams <- function(x) inherits(x, "RPPAFitParams")
+
+
 ##-----------------------------------------------------------------------------
 setMethod("summary", "RPPAFit",
           function(object,
                    ...) {
-    cat(paste("An RPPAFit object constructed via the function call:",
-              "\n",
-              as.character(list(object@call))),
-        "\n")
-    cat("Fitting parametsrs\n")
-    cat(paste("Measure:", object@measure, "\n"))
-    cat(paste("Method:",  object@method, "\n"))
-    cat(paste("Model:",   class(object@model), "\n"))
+    cat("An RPPAFit object constructed via the function call:", "\n")
+    cat(" ", as.character(list(object@call)), "\n")
+    cat("with fitting parameters:", "\n")
+    cat(" ", sprintf("measure: %s", object@measure), "\n")
+    cat(" ", sprintf("method:  %s", object@method), "\n")
+    cat(" ", sprintf("model:   %s", class(object@model)), "\n")
+    invisible(NULL)
 })
 
-setMethod("summary", "RPPAFitParams", function(object,...) {
-    cat("Fitting parametsrs\n")
-    cat(paste("Measure:", object@measure, "\n"))
-    cat(paste("Method:",  object@method, "\n"))
-    cat(paste("Model:",   object@model, "\n"))
-})
 
 ##-----------------------------------------------------------------------------
 ## Provides a geographic plot of some measure computed from the fit.
@@ -233,7 +230,7 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
     if (type == "cloud" || type == "series") {
         min.conc <- trimset$lo.conc
         max.conc <- trimset$hi.conc
-        # Can someone explain what the next if statement is doing, and why?
+        ## :TBD: Can someone explain what this if statement is doing, and why?
         if (!hasArg(sub)) {
             autosub <- paste('(Conc > -5) Trimmed Mean R^2 =',
                              format(mean(x@ss.ratio[x@concentrations > -5],
