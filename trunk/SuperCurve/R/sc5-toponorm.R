@@ -129,7 +129,6 @@ spatialNorm <- function(rppa,
     }
 
     ## Valid range is probably [0..2] [passed directly to mgcv::gam()]
-    ## Enforce gamma > 0
     if (!is.numeric(gamma)) {
         stop(sprintf("argument %s must be numeric",
                      sQuote("gamma")))
@@ -186,9 +185,9 @@ spatialNorm <- function(rppa,
     ## If computed background cutoff too low, use a larger quartile
     if (bgCut <= 100) {
         ## :BUG?: Undefined - buffer
-        bgCut <- quantile(buffer, .99)
+        bgCut <- quantile(bg, .99)
         if (bgCut <= 100) {
-            bgCut <- max(buffer[-which.max(buffer)])
+            bgCut <- max(bg[-which.max(bg)])
         }
     }
 
@@ -254,22 +253,11 @@ spatialNorm <- function(rppa,
             }
 
             if (is.na(place)) {
-                ## :TBD: Can both of these conditions be true?
-                ## :ESN: No, because surface constrained so they don't "cross"
-
                 if (x >= vec[1]) {
                     place <- 0
-                }
-                if (x <= vec[n]) {
+                } else if (x <= vec[n]) {
                     place <- n
                 }
-
-                ## :PLR: Thus...
-                #place <- if (x >= vec[1]) {
-                #             0
-                #         } else if (x <= vec[n]) {
-                #             n
-                #         }
             }
         }
 
