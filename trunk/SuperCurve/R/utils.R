@@ -4,6 +4,7 @@
 
 
 ##-----------------------------------------------------------------------------
+## Used to enable providing consistent naming for measures.
 .capwords <- function(s, strict=FALSE) {
     cap <- function(s) {
         paste(toupper(substring(s, 1, 1)),
@@ -25,6 +26,7 @@
 
 
 ##-----------------------------------------------------------------------------
+## Specifies measures used for determining location on lysate array.
 .locationColnames <- function() {
     return(c("Main.Row",
              "Main.Col",
@@ -34,6 +36,7 @@
 
 
 ##-----------------------------------------------------------------------------
+## Returns dimensions of slide layout as numeric vector.
 .dimOfLayout <- function(layout) {
     ## Check arguments
     stopifnot(is.data.frame(layout))
