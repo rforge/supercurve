@@ -1,6 +1,5 @@
 \name{RPPAFitParams-class}
 \alias{RPPAFitParams-class}
-\alias{summary,RPPAFitParams-method}
 \alias{RPPAFitParams}
 \alias{RPPAFitFromParams}
 \alias{RPPAFit}
@@ -44,8 +43,6 @@ RPPAFitParams(measure,
 RPPAFitFromParams(rppa,
                   design,
                   fitparams)
-
-\S4method{summary}{RPPAFitParams}(object, \dots)
 }
 \arguments{
   \item{rppa}{object of class \code{\link{RPPA}} containing the raw data
@@ -97,8 +94,6 @@ RPPAFitFromParams(rppa,
     won't cause failure but will give us a chance to figure out which dilution
     series are failing. Setting \code{warnLevel} to two or greater may change
     the values returned.}
-  \item{object}{object of class \code{RPPAFitParams}}
-  \item{\dots}{extra arguments for generic summary routine}
 }
 \details{
   The basic mathematical model is given by \deqn{Y = f(X-\delta_i),}
@@ -115,7 +110,7 @@ RPPAFitFromParams(rppa,
 
   Next, we fit an overall response curve for the slide \eqn{f} using the
   estimated concentrations and observed intensities \eqn{Y = f(\delta_i)}.
-  The model for  \eqn{f} is specified in the \eqn{model} parameter.
+  The model for \eqn{f} is specified in the \eqn{model} parameter.
 
   Next, we update the estimates of the individual \eqn{\delta_i} using our
   improved fitted model \eqn{f} for the overall slide response curve. These
@@ -139,12 +134,6 @@ RPPAFitFromParams(rppa,
   \link{new}, the preferred method is to use the \code{RPPAFitParams}
   function.
 }
-\section{Methods}{
-  \describe{
-    \item{summary(object, \dots)}{Print a summary of the
-      \code{RPPAFitParams} object.} 
-  }
-}
 \section{Slots}{
   \describe{
     \item{\code{measure}:}{character; see arguments above}
@@ -161,8 +150,8 @@ RPPAFitFromParams(rppa,
   }
 }
 \value{
-  The functions \code{RPPAFit} and \code{RPPAFitFromParams} construct
-  and returns an object of class \code{\link{RPPAFit}}.
+  The \code{RPPAFit} generator and \code{RPPAFitFromParams} function return
+  an object of class \code{\link{RPPAFit}}.
 
   The \code{RPPAFitParams} generator returns an object of class
   \code{RPPAFitParams}.
@@ -192,5 +181,4 @@ coef(fit.nls)
 \keyword{regression}
 \keyword{nonlinear}
 \keyword{robust}
-
 
