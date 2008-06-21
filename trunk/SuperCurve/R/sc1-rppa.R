@@ -60,12 +60,24 @@ RPPA <- function(file, path=".") {
 
 
 ##-----------------------------------------------------------------------------
+setMethod("dim", signature="RPPA",
+          function(x) {
+    .dimOfLayout(x@data)
+})
+
+
+##-----------------------------------------------------------------------------
 setMethod("summary", "RPPA",
           function(object,
                    ...) {
-    cat(sprintf("An RPPA object loaded from %s", dQuote(object@file)),
-        "\n\n")
-    summary(object@data)
+    cat(sprintf("An RPPA object loaded from file %s",
+                dQuote(object@file)), "\n")
+    cat("\n")
+    print(dim(object))
+    cat("\n")
+    unneededColnames <- c(.locationColnames(), "Sample")
+    summarizable <- !colnames(object@data) %in% unneededColnames
+    print(summary(object@data[summarizable]))
 })
 
 
