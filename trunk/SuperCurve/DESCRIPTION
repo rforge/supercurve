@@ -1,12 +1,16 @@
 Package: SuperCurve
+<<<<<<< .mine
+Version: 1.1.0
+=======
 Version: 1.0.1
+>>>>>>> .r187
 Date: 2008/06/06
 Title: SuperCurve Package
 Author: Kevin R. Coombes, Shannon Neeley, Corwin Joy, Jianhua Hu, Keith Baggerly, and P. Roebuck.
 Maintainer: P. Roebuck <proebuck@mdanderson.org>
 Description: A package to analyze reverse phase protein lysate arrays.
 Depends: R (>= 2.7), methods, stats, utils, graphics, grDevices, MASS, cobs
-Suggests: quantreg, splines, robustbase
+Suggests: quantreg, splines, robustbase, mgcv
 SystemRequirements: ImageMagick
 License: file LICENSE
 LazyLoad: yes
