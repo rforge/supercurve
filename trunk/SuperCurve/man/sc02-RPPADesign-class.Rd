@@ -4,6 +4,7 @@
 \alias{RPPADesign}
 \alias{RPPADesignFromParams}
 \alias{RPPADesignParams}
+\alias{dim,RPPADesign-method}
 \alias{image,RPPADesign-method}
 \alias{names,RPPADesign-method}
 \alias{plot,RPPA,RPPADesign-method}
@@ -40,6 +41,7 @@ RPPADesignFromParams(raw, designparams)
 
 getSteps(design)
 seriesNames(design)
+\S4method{dim}{RPPADesign}(x)
 \S4method{image}{RPPADesign}(x, \dots)
 \S4method{names}{RPPADesign}(x)
 \S4method{plot}{RPPA,RPPADesign}(x, y, ...)
@@ -145,22 +147,25 @@ seriesNames(design)
 }
 \section{Methods}{
   \describe{
-    \item{image(x, \dots)}{The \code{image} method produces a two-dimensional
-      graphical display of the layout design. Colors are used to represent
-      different dilution steps, and laid out in the same pattern as the rows
-      and columns of the array. This provides a visual check that the design
-      has been specified correctly.}
-    \item{plot(x, y, \dots)}{Plot an object of class \code{RPPA} by showing
+    \item{dim(x)}{Returns the dimensions of the underlying data frame.}
+    \item{image(x, \dots)}{Produces a two-dimensional graphical display
+      of the layout design. Colors are used to represent different dilution
+      steps, and laid out in the same pattern as the rows and columns of
+      the array. This provides a visual check that the design has been
+      specified correctly.}
+    \item{plot(x, y, \dots)}{Plots an object of class \code{RPPA} by showing
       its dilution series with respect to the corresponding object of class
       \code{RPPADesign}.}
-    \item{summary(object, \dots)}{The \code{summary} method lists the
-      names of the control spots on the array and then prints a summary of the
-      data frame describing the layout.}
+    \item{summary(object, \dots)}{Lists the names of the control spots
+      on the array and then prints a summary of the data frame describing
+      the layout.}
   }
 }
 \value{
   The \code{RPPADesign} generator returns an object of class
   \code{RPPADesign}.
+
+  The \code{dim} method returns a numeric vector of length 4.
 
   The \code{image} method invisibly returns the displayed matrix of
   dilution steps.
@@ -189,6 +194,7 @@ seriesNames(design)
 path <- system.file("rppaTumorData", package="SuperCurve")
 erk2 <- RPPA("ERK2.txt", path=path)
 design <- RPPADesign(erk2, grouping="blockSample", center=TRUE)
+dim(design)
 image(design)
 summary(design)
 
@@ -211,6 +217,7 @@ series <- factor(paste(as.character(akt@data$Sample),
                              as.character(rep.temp),
                              sep='.'))
 design40 <- RPPADesign(akt, steps=steps, series=series)
+dim(design40)
 image(design40)
 summary(design40)
 }

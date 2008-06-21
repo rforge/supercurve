@@ -1,6 +1,7 @@
 \name{RPPA-class}
 \alias{RPPA-class}
 \alias{RPPA}
+\alias{dim,RPPA-method}
 \alias{image,RPPA-method}
 \alias{summary,RPPA-method}
 \docType{class}
@@ -10,19 +11,21 @@
   reverse-phase protein array experiment.
 }
 \usage{
-RPPA(file, path=".")
+RPPA(file, path=".", software="microvigene")
+\S4method{dim}{RPPA}(x)
 \S4method{image}{RPPA}(x, measure="Mean.Net", main=measure,
     colorbar=FALSE, col=terrain.colors(256), \dots)
 \S4method{summary}{RPPA}(object, \dots)
 }
 \arguments{
   \item{file}{character string or \link{connection} specifying text file
-    containing MicroVigene quantifications of a reverse-phase protein array
-    experiment}
+    containing quantifications of a reverse-phase protein array experiment}
   \item{path}{character string specifying the path from the current
     directory to the file. The default value assumes the file is
     contained in the current directory. If \code{file} is a connection,
     this argument is ignored.}
+  \item{software}{character string specifying the software used to generate
+    the quantification file (see section \sQuote{Details} below)}
   \item{object}{object of class \code{RPPA}}
   \item{x}{object of class \code{RPPA}}
   \item{measure}{character string containing the name of the measurement column
@@ -37,8 +40,8 @@ RPPA(file, path=".")
 }
 \details{
   The data frame slot (\code{data}) in a valid RPPA object constructed
-  from a MicroVigene input file using the \code{RPPA} generator function is
-  guaranteed to contain at least 6 columns of information:
+  from a quantification file using the \code{RPPA} generator function
+  is guaranteed to contain at least 6 columns of information:
   \tabular{ll}{
     \code{Main.Row} \tab logical location of spot on the array \cr
     \code{Main.Col} \tab logical location of spot on the array \cr
@@ -49,7 +52,17 @@ RPPA(file, path=".")
                          mean intensity of the spot \cr
   } 
   The first four components (taken together) give the logical location of a
-  spot on an array.  Additional columns may be included or may be added later.
+  spot on an array. Additional columns may be included or may be added later.
+
+  Other methods can be specified to read the quantification files. The
+  \code{software} argument is used in the selection of the actual method
+  to perform this function. For example, if the argument value is \dQuote{foo},
+  the code will attempt to invoke method \code{read.foo} to read the file.
+  The method will be passed a connection object to the file and should
+  return a data frame containing the file's data. The method will be searched
+  for in the global namespace, then within the package itself. The default
+  value selects method \code{read.microvigene}, which this package provides
+  to read \emph{MicroVigene} quantification files in text format.
 }
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to \link{new},
@@ -58,28 +71,30 @@ RPPA(file, path=".")
 \section{Slots}{
   \describe{
     \item{\code{data}:}{data.frame containing the contents of a
-      MicroVigene or other quantification file}
+      quantification file}
     \item{\code{file}:}{character string specifying the name of the file that
       the data was loaded from}
   }
 }
 \section{Methods}{
   \describe{
+    \item{dim(x)}{Returns the dimensions of the underlying data frame.}
     \item{image(x, measure="Mean.Net", main=measure, colorbar=FALSE,
-      col=terrain.colors(256), \dots)}{The image method produces a
-      "geographic" image of the measurement column named by the
-      \code{measure} argument. The colors in the image represent the
-      intensity of the measurement at each spot on the array, and the
-      display locations match the row and column locations of the spot.
-      Any measurement column can be displayed using this function. An
-      optional color bar can be added; this will be placed at the right
-      edge.}
-    \item{summary(object, \dots)}{The summary method prints a summary of
-      the underlying data frame.}
+      col=terrain.colors(256), \dots)}{Produces a "geographic" image
+      of the measurement column named by the \code{measure} argument.
+      The colors in the image represent the intensity of the measurement
+      at each spot on the array, and the display locations match the row
+      and column locations of the spot. Any measurement column can be
+      displayed using this function. An optional color bar can be added;
+      this will be placed at the right edge.}
+    \item{summary(object, \dots)}{Prints a summary of the underlying
+      data frame.}
   }
 }
 \value{
   The \code{RPPA} generator returns an object of class \code{RPPA}.
+
+  The \code{dim} method returns a numeric vector of length 4.
 
   The \code{image} method invisibly returns the \code{RPPA} object on
   which it was invoked.
@@ -98,6 +113,7 @@ RPPA(file, path=".")
 \examples{
 path <- system.file("rppaTumorData", package="SuperCurve")
 erk2 <- RPPA("ERK2.txt", path=path)
+dim(erk2)
 summary(erk2)
 image(erk2)
 image(erk2, colorbar=TRUE)

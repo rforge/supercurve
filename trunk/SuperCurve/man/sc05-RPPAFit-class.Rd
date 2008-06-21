@@ -100,7 +100,7 @@
     \item{coef(object, \dots)}{Extracts model coefficients from objects
       returned by modeling functions.}
     \item{coefficients(object, \dots)}{An alias for \code{coef}.}
-    \item{fitted(object, type=c("Y", "y", "X", "x"), \dots)}{Extract the
+    \item{fitted(object, type=c("Y", "y", "X", "x"), \dots)}{Extracts the
       fitted values of the model. This process is more complicated
       than it may seem at first, since we are estimating values on
       both the \eqn{X} and \eqn{Y} axes. By default, the fitted
@@ -111,35 +111,34 @@
       lowercase 'x'. In the notation used above to describe the model,
       these fitted values are given by \eqn{X_i = X - \delta_i}.}
     \item{hist(x, type=c("Residuals", "StdRes"), xlab=NULL, main=NULL,
-      \dots)}{The \code{hist} method produces a histogram of
-      the residuals. The exact form of the residuals being displayed
-      depends on the value of the \code{type} argument.}
+      \dots)}{Produces a histogram of the residuals. The exact form of the
+      residuals being displayed depends on the value of the \code{type}
+      argument.}
     \item{image(x, measure=c("Residuals", "StdRes", "X", "Y"), \dots)}{
-      The \code{image} method produces a 'geographic' plot of the
-      residuals or of the fitted values, depending on the value of the
-      \code{measure} argument. The implementation reuses code from the
-      \code{image} method for an \code{\link{RPPA}} object.}
+      Produces a 'geographic' plot of either the residuals or the fitted
+      values, depending on the value of the \code{measure} argument. The
+      implementation reuses code from the \code{image} method for an
+      \code{\link{RPPA}} object.}
     \item{plot(x, y, type=c("cloud", "series", "individual"),
       xlab="Log Concentration", ylab="Intensity", \dots)}{
-      The \code{plot} method produces a diagnostic plot of the model fit.
-      The default \code{type}, 'cloud', simply plots the fitted \eqn{X} values
-      against the observed \eqn{Y} values as a cloud of points around
-      the jointly estimated sigmoid curve. The 'series' plot uses
-      different colored lines to join points belonging to the same
-      dilution series. The 'individual' plot produces separate graphs
-      for each dilution series, laying each one alongside the jointly
-      fitted sigmoid curve.}
+      Produces a diagnostic plot of the model fit. The default \code{type},
+      'cloud', simply plots the fitted \eqn{X} values against the observed
+      \eqn{Y} values as a cloud of points around the jointly estimated
+      sigmoid curve. The 'series' plot uses different colored lines to join
+      points belonging to the same dilution series. The 'individual' plot
+      produces separate graphs for each dilution series, laying each one
+      alongside the jointly fitted sigmoid curve.}
     \item{resid(object, type=c("raw", "standardized"), \dots)}{
       An alias for \code{residuals}.}
     \item{residuals(object, type=c("raw", "standardized"), \dots)}{
-      Report the residual errors. The 'raw' residuals are defined
+      Reports the residual errors. The 'raw' residuals are defined
       as the difference between the observed intensities and the
       fitted intensities, as computed by the \code{fitted} function.
       The 'standardized' residuals are obtained by standardizing the
       raw residuals.}
-    \item{summary(object, \dots)}{Print a summary of the \code{RPPAFit}
-      object. At present, this only reports the function call used to
-      fit the model.}
+    \item{summary(object, \dots)}{Prints a summary of the \code{RPPAFit}
+      object. At present, this reports the function call used to fit the
+      model and important fitting parameters.}
   }
 }
 \value{
@@ -158,7 +157,7 @@
 
   The \code{resid} and \code{residuals} methods return a numeric vector.
 
-  The \code{summary} method has no return value.
+  The \code{summary} method invisibly returns \code{NULL}.
 }
 \references{KRC}
 \author{
