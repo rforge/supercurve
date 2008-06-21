@@ -43,7 +43,8 @@ is.RPPAFitParams <- function(x) inherits(x, "RPPAFitParams")
 setMethod("summary", "RPPAFit",
           function(object,
                    ...) {
-    cat("An RPPAFit object constructed via the function call:", "\n")
+    cat(sprintf("An %s object constructed via the function call:",
+                class(object)), "\n")
     cat(" ", as.character(list(object@call)), "\n")
     cat("with fitting parameters:", "\n")
     cat(" ", sprintf("measure: %s", object@measure), "\n")
