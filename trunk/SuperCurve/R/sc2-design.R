@@ -5,7 +5,8 @@
 
 ##=============================================================================
 setClass("RPPADesign",
-         representation=list(layout="data.frame",
+         representation=list(call="call",
+                             layout="data.frame",
                              alias="list",
                              sampleMap="character",
                              controls="list"))
@@ -119,6 +120,8 @@ RPPADesignFromParams <- function(raw, designparams) {
     }
 
     ## Begin processing
+    call <- match.call()
+
     raw.df <- data.frame(raw[, c("Main.Row",
                                  "Main.Col",
                                  "Sub.Row",
@@ -228,6 +231,7 @@ RPPADesignFromParams <- function(raw, designparams) {
 
     ## Create new class
     new("RPPADesign",
+        call=call,
         layout=raw.df,
         alias=alias,
         sampleMap=sampleMap,
@@ -262,13 +266,36 @@ RPPADesign <- function(raw,
 
 
 ##-----------------------------------------------------------------------------
+setMethod("dim", "RPPADesign",
+          function(x) {
+    .dimOfLayout(x@layout)
+})
+
+
+##-----------------------------------------------------------------------------
 setMethod("summary", "RPPADesign",
           function(object,
                    ...) {
-    cat("An RPPA design object with controls:", "\n")
-    print(unlist(object@controls))
+    cat(sprintf("An %s object constructed via the function call:",
+                class(object)), "\n")
+    ## :TODO: Revisit this when class versioning is in place
+    funccall <- if ("call" %in% slotNames(object)) {
+                    as.character(list(object@call))
+                } else {
+                    "unknown"
+                }
+    cat(" ", funccall, "\n")
+    if (length(object@controls) != 0) {
+        cat("with controls:", "\n")
+        cat(sprintf("  %s\n",
+                    unlist(object@controls), sep=""))
+    }
     cat("\n")
-    summary(object@layout)
+    print(dim(object))
+    cat("\n")
+    unneededColnames <- c(.locationColnames(), "Sample")
+    summarizable <- !colnames(object@layout) %in% unneededColnames
+    print(summary(object@layout[summarizable]))
 })
 
 
