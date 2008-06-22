@@ -20,7 +20,7 @@
     filename <- tclvalue(tkgetOpenFile(title=title,
                                        filetypes=filetypes,
                                        initialdir=initialdir))
-    if (!nchar(filename)) {
+    if (!nzchar(filename)) {
         NULL
     } else {
         dirname(filename)
@@ -40,7 +40,7 @@
 
     directory <- tclvalue(tkchooseDirectory(title=title,
                                             initialdir=initialdir))
-    if (!nchar(directory)) {
+    if (!nzchar(directory)) {
         NULL
     } else {
         directory
@@ -213,7 +213,7 @@
 ##      be.
 supercurveGUI <- function() {
 
-    .path <- if (nchar(scdir <- Sys.getenv("SC_DIR")) > 1) {
+    .path <- if (nzchar(scdir <- Sys.getenv("SC_DIR"))) {
                  scdir
              } else {
                  NULL
