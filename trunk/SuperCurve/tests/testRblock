@@ -1,14 +1,14 @@
-## 
-## testRblock
-##
+###
+### TESTRBLOCK
+###
 
 ## NOTE: We cannot give this file a name ending in '.R', since that
-## would force 'R CMD check' to  try to run it as a standalone
-## test. Instead, we want to be able to reuse the code in a number of
+## would force 'R CMD check' to  try to run it as a standalone test.
+## Instead, we want to be able to reuse the code in a number of
 ## different test runs, loading it with 'source'.
 
 
-############################################################################
+###############################################################################
 ## assumes you have already defined the following variables before using
 ## 'source' to run this code block:
 ##    proteins (a data frame containing at least one column named 'Antibody'
@@ -17,7 +17,7 @@
 ##    model (the statistical model to fit)
 ##    method (the method used for the first pass of the fit)
 ##    measure (the quantification measure to fit)
-############################################################################
+###############################################################################
 
 ver <- packageDescription('SuperCurve', fields='Version')
 cat(paste("\nTest of SuperCurve version", ver, "\n"))
@@ -50,3 +50,4 @@ for (i in 1:nrow(proteins)) {
 }
 
 rm(i, itemName, item, meansq, tmeansq)
+

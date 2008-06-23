@@ -1,3 +1,8 @@
+###
+### TESTRPPASET.R
+###
+
+
 options(warn=1)
 library(SuperCurve)
 
@@ -16,3 +21,4 @@ write.summary(fitset,
               path="results",
               prefix="testing",
               graphs=FALSE)
+

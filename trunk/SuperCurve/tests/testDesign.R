@@ -1,3 +1,9 @@
+###
+### TESTDESIGN.R
+###
+
+
+options(warn=1)
 library(SuperCurve)
 
 ## Get a valid RPPA object to get started

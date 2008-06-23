@@ -1,3 +1,9 @@
+###
+### TESTFIT.R
+###
+
+
+options(warn=1)
 library(SuperCurve)
 
 ## Get a valid RPPA object to get started
@@ -38,3 +44,4 @@ fit <- RPPAFitFromParams(jnk, dsn, fp)
 fp <- RPPAFitParams("Mean.Net", model="logistic", method="nlrq")
 summary(fp)
 fit <- RPPAFitFromParams(jnk, dsn, fp)
+

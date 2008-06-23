@@ -1,3 +1,17 @@
+###
+### TESTLOGISTIC.R
+###
+
+
+if (!nzchar(Sys.getenv("SUPERCURVE_FULL_TEST"))) {
+    cat(">>>>                <<<<")
+    cat(">>>>  Test skipped  <<<<")
+    cat(">>>>                <<<<")
+    message(sprintf("To run all package tests, define %s environment variable",
+                    dQuote("SUPERCURVE_FULL_TEST")))
+    q("no")
+}
+options(warn=1)
 library(SuperCurve)
 
 ######################################
@@ -60,3 +74,4 @@ rep1 <- which(regexpr("Rep1", names(x)) > 0)
 rep2 <- which(regexpr("Rep2", names(x)) > 0)
 cat("Difference between replicates\n")
 summary(x[rep1]-x[rep2])
+

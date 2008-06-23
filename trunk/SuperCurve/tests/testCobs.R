@@ -1,3 +1,17 @@
+###
+### TESTCOBS.R
+###
+
+
+if (!nzchar(Sys.getenv("SUPERCURVE_FULL_TEST"))) {
+    cat(">>>>                <<<<")
+    cat(">>>>  Test skipped  <<<<")
+    cat(">>>>                <<<<")
+    message(sprintf("To run all package tests, define %s environment variable",
+                    dQuote("SUPERCURVE_FULL_TEST")))
+    q("no")
+}
+options(warn=1)
 library(SuperCurve)
 
 ######################################
@@ -46,3 +60,4 @@ source("testRblock", echo=TRUE, max.deparse.len=1024)
 ## automatically be compared with the saved output when we
 ## run 'R CMD check'
 round(temp@concentrations, digits=4)
+
