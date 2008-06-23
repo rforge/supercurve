@@ -73,9 +73,11 @@ RPPADesignParams <- function(steps=rep(0, 1),
                      sQuote("center")))
     }
 
-    if (!is.list(controls)) {
-        stop(sprintf("argument %s must be list",
+    if (!(is.list(controls) || is.character(controls))) {
+        stop(sprintf("argument %s must be character or list",
                      sQuote("controls")))
+    } else if (is.character(controls)) {
+        controls <- as.list(controls)
     }
 
     ## Create new class

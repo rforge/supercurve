@@ -84,7 +84,8 @@ seriesNames(design)
   \item{center}{logical scalar. If \code{TRUE}, then dilution steps are
     centered around 0.}
   \item{controls}{list containing the character strings that identify
-    control spots on the array.}
+    control spots on the array. \code{RPPADesignParams} will also coerce a
+    character vector appropriately.}
   \item{x}{object of class \code{RPPADesign} (or \code{RPPA} in plot method)}
   \item{y}{object of class \code{RPPADesign}}
   \item{object}{object of class \code{RPPADesign}}
@@ -124,10 +125,9 @@ seriesNames(design)
 \section{Objects from the Class}{
   Although objects of these classes can be created by a direct call to
   \link{new}, the preferred method is to start with the
-  \code{RPPADesignParams} generator function, followed by the
-  \code{RPPADesignFromParams} function to construct the final
-  object. (In fact, the \code{RPPADesign} constructor is directly
-  implemented in this way.) 
+  \code{RPPADesignParams} generator, followed by the
+  \code{RPPADesignFromParams} function to construct the final object
+  (the \code{RPPADesign} generator is directly implemented in this way).
 }
 \section{Slots}{
   \describe{
@@ -147,7 +147,7 @@ seriesNames(design)
 }
 \section{Methods}{
   \describe{
-    \item{dim(x)}{Returns the dimensions of the underlying data frame.}
+    \item{dim(x)}{Returns the dimensions of the slide layout.}
     \item{image(x, \dots)}{Produces a two-dimensional graphical display
       of the layout design. Colors are used to represent different dilution
       steps, and laid out in the same pattern as the rows and columns of
@@ -157,7 +157,7 @@ seriesNames(design)
       its dilution series with respect to the corresponding object of class
       \code{RPPADesign}.}
     \item{summary(object, \dots)}{Lists the names of the control spots
-      on the array and then prints a summary of the data frame describing
+      on the array and prints a summary of the data frame describing
       the layout.}
   }
 }
