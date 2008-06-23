@@ -296,10 +296,18 @@ setMethod("summary", "RPPADesign",
                 class(object)), "\n")
     ## :TODO: Revisit this when class versioning is in place
     funccall <- if ("call" %in% slotNames(object)) {
-                    as.character(list(object@call))
-                } else {
-                    "unknown"
+                    ## :HACK: Workaround until versioning implemented!
+                    ## slotNames() checks class definition of the object, not
+                    ## the object itself. As the current implementation of R
+                    ## stores slots as attributes, ...
+                    if ("call" %in% names(attributes(object))) {
+                        as.character(list(object@call))
+                    }
                 }
+    if (is.null(funccall)) {
+        funccall <- "unknown"
+    }
+
     cat(" ", funccall, "\n")
     if (length(object@controls) != 0) {
         cat("with controls:", "\n")
