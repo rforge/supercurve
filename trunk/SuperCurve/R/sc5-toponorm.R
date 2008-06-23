@@ -192,6 +192,7 @@ spatialNorm <- function(rppa,
     }
 
     ## Remove positive controls less than computed background cutoff
+    items <- mydata$Sample %in% unlist(poscon)
     is.na(mydata[items, 'Mean.Net']) <- mydata[items, 'Mean.Net'] < bgCut
 
     ## :TBD: Need to change how we identify different levels of positive control
@@ -341,7 +342,8 @@ spatialNorm <- function(rppa,
     ## Perform scaling to each of the positive control surfaces
     adj <- matrix(NA, nrow=nrow(mydata), ncol=nDilut)
     for (i in seq(1, nDilut)) {
-        x <- mydata[, measure]
+        x <- rppa@data[,measure]
+	    #x <- mydata[, measure] #this won't work because we earlier changed some of mydata[,measure] to NA
         s1 <- eval(as.name(paste("surface", i, sep="")))
         adj[, i] <- (x / s1) * median(s1)
     }
