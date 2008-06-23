@@ -4,9 +4,9 @@
 
 
 if (!nzchar(Sys.getenv("SUPERCURVE_FULL_TEST"))) {
-    cat(">>>>                <<<<")
-    cat(">>>>  Test skipped  <<<<")
-    cat(">>>>                <<<<")
+    cat(">>>>                <<<<", "\n")
+    cat(">>>>  Test skipped  <<<<", "\n")
+    cat(">>>>                <<<<", "\n")
     message(sprintf("To run all package tests, define %s environment variable",
                     dQuote("SUPERCURVE_FULL_TEST")))
     q("no")
