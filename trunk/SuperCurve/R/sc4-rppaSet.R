@@ -316,54 +316,73 @@ RPPASet <- function(path,
                      sQuote("fitparams"), "RPPAFitParams"))
     }
 
+    ## :TBD: Should this get the list of slides from a file ('proteinAssay.tsv'
+    ## or 'targets.txt') instead of assuming all .txt files are slides?
+    getQuantificationFilenames <- function(path) {
+        ## Assumes all .txt files in the directory are slides
+        txt.re <- ".*[tT][xX][tT]$"
+        list.files(path=path, pattern=txt.re)
+    }
+
     ## Begin processing
     call <- match.call()
 
-    ## Assumes all .txt files in the directory are slides
-    slideFilenames <- {
-                          txt.re <- ".*[tT][xX][tT]$"
-                          list.files(path=path, pattern=txt.re)
-                      }
+    ## Get filenames of slides to process
+    slideFilenames <- getQuantificationFilenames(path)
+    if (length(slideFilenames) == 0) {
+        stop(sprintf("no quantification files found in directory %s",
+                     dQuote(path)))
+    }
 
     ## Load alias information in directory
     if (length(designparams@alias) < 1) {
-        layoutInfoPathname <- file.path(path, "layoutInfo.tsv")
-        if (file.exists(layoutInfoPathname)) {
-            sampleLayout <- try(read.delim(layoutInfoPathname,
+        pathname <- file.path(path, "layoutInfo.tsv")
+        if (file.exists(pathname)) {
+            sampleLayout <- try(read.delim(pathname,
                                            quote="",
                                            row.names=NULL))
-            ## :TBD: If the above fails, what should happen?
-            ## Would appear this would crash and burn here...
-            al <- list(Alias=sampleLayout$Alias,
-                       Sample=sampleLayout$Sample)
-            designparams@alias <- al
+            if (is.data.frame(sampleLayout)) {
+                designparams@alias <- list(Alias=sampleLayout$Alias,
+                                           Sample=sampleLayout$Sample)
+            } else {
+                warning(sprintf("cannot import alias information from file %s",
+                                dQuote(pathname)))
+            }
+            rm(sampleLayout)
         }
+        rm(pathname)
     }
 
-    message(paste("reading", slideFilenames[1]))
-    firstslide <- RPPA(slideFilenames[1], path=path, software=software)
-    design <- RPPADesignFromParams(firstslide,
-                                   designparams)
-
-    ## Plot the first slide as a quick design check
-    ## :TBD: Should this be plotting the requested measure instead?
-    plot(firstslide,
-         design,
-         "Mean.Total",
-         main=slideFilenames[1])
-
+    ## Load slides to process
     ## :TBD: Why was this construct used and not 'vector("list", numslides)'
     ## Is the dimension attribute used?
-    rppas <- array(list(), c(length(slideFilenames)), slideFilenames)
-    rppas[[1]] <- firstslide
-    if (length(slideFilenames) > 1) {
-        for (i in seq(2, length(slideFilenames))) {
-            message(paste("reading", slideFilenames[i]))
-            rppas[[i]] <- RPPA(slideFilenames[i], path=path, software=software)
+    rppas <- array(list(), length(slideFilenames), slideFilenames)
+    for (i in seq(1, length(slideFilenames))) {
+        slideFilename <- slideFilenames[i]
+
+        message(paste("reading", slideFilename))
+        rppas[[i]] <- RPPA(slideFilename, path=path, software=software)
+
+        ## If this is first slide read...
+        if (i == 1) {
+            firstslide <- rppas[[1]]
+
+            ## Create design
+            design <- RPPADesignFromParams(firstslide, designparams)
+
+            ## Plot the first slide as a quick design check
+            ## :TBD: Should this be plotting the requested measure instead?
+            plot(firstslide,
+                 design,
+                 "Mean.Total",
+                 main=slideFilename)
+            rm(firstslide)
         }
+        rm(slideFilename)
     }
 
-    fits <- array(list(), c(length(slideFilenames)), slideFilenames)
+    ## Create fits
+    fits <- array(list(), length(slideFilenames), slideFilenames)
     for (i in seq(1, length(slideFilenames))) {
         message(paste("fitting", slideFilenames[i], "-", "Please wait."))
         fits[[i]] <- RPPAFitFromParams(rppas[[i]],
