@@ -1,19 +1,30 @@
+% NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
+% likely to be overwritten.
+%
 %\VignetteIndexEntry{RPPA Primer}
 %\VignetteKeywords{Preprocessing, Lysate Arrays}
-%\VignetteDepends{methods, stats, utils, graphics, grDevices, MASS, cobs}
+%\VignetteDepends{methods, stats, utils, graphics, grDevices, MASS, cobs, mgcv}
 %\VignettePackage{SuperCurve}
 \documentclass{article}
 
 \usepackage{hyperref}
 
-\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+%\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+%\newcommand{\Rpackage}[1]{{\textit{#1}}}
+
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rcode}[1]{{\texttt{#1}}}
+\newcommand{\Rfunarg}[1]{{\textit{#1}}}
+\newcommand{\Rfunction}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\textit{#1}}}
 \newcommand{\Robject}[1]{{\texttt{#1}}}
-\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rpackage}[1]{{\textsf{#1}}}
+
+\begin{document}
 
 \title{Beginning Lysate Array Doc}
 \author{Keith Baggerly}
-
-\begin{document}
+\date {June 2008}
 
 \maketitle
 \tableofcontents
@@ -106,16 +117,16 @@ sample concentrations.
 
 There are 3 key classes in the SuperCurve package:
 \begin{itemize}
-  \item \Robject{RPPA}, representing the quantification of an array,
-  \item \Robject{RPPADesign}, specifying where each sample/dilution
+  \item \Rclass{RPPA}, representing the quantification of an array,
+  \item \Rclass{RPPADesign}, specifying where each sample/dilution
         step combination is printed on the array, and
-  \item \Robject{RPPAFit}, the results of fitting the SuperCurve
-        model to an \Robject{RPPA}, \Robject{RPPADesign} combination.
+  \item \Rclass{RPPAFit}, the results of fitting the SuperCurve
+        model to an \Rclass{RPPA}, \Rclass{RPPADesign} combination.
 \end{itemize}
 More details can be found in the documentation for 
-\Robject{RPPA}, \Robject{RPPA-class},
-\Robject{RPPADesign}, \Robject{RPPADesign-class},
-\Robject{RPPAFit}, and \Robject{RPPAFit-class},
+\Rfunction{RPPA}, \Rclass{RPPA-class},
+\Rfunction{RPPADesign}, \Rclass{RPPADesign-class},
+\Rfunction{RPPAFit}, and \Rclass{RPPAFit-class},
 but we will attempt to cover the high points below. 
 
 %Unfortunately, 
@@ -143,7 +154,7 @@ which is frequently disregulated in tumors. We're
 going to focus on 3 arrays from this study, corresponding
 to the proteins AKT, $\beta$-catenin, and ERK2. These
 data are included as the \Robject{rppaCell} dataset, 
-described as \Robject{data?rppaCell}.  
+described as \Rcode{data?rppaCell}.  
 
 \subsection{Getting Started}
 
@@ -153,32 +164,30 @@ data(rppaCell)
 ls()
 @
 There are two types of objects in the data file. First, we have an 
-\Robject{RPPADesign} object, {\tt design40}, giving the layout of
-the array. For each spot, this specifies what sample has 
-been printed, and what the dilution level offset of that 
-spot is (in $\log_2$ units) relative to the reference 
-level we're trying to estimate. Second, we have several
-\Robject{RPPA} objects, {\tt akt}, {\tt c.erk2}, and {\tt ctnnb1},
-each containing the spot-level quantifications supplied
-by the microarray image quantification software. These arrays
+\Rclass{RPPADesign} object, \Robject{design40}, giving the layout of
+the array. For each spot, this specifies what sample has been printed,
+ and what the dilution level offset of that spot is (in $\log_2$ units)
+relative to the reference level we're trying to estimate. Second,
+we have several \Rclass{RPPA} objects, \Robject{akt}, \Robject{c.erk2},
+and \Robject{ctnnb1}, each containing the spot-level quantifications
+supplied by the microarray image quantification software. These arrays
 were quantified using MicroVigene. 
 
 \subsection{RPPA Details}
 
 If you'd like to take a look at the initial text files
 with the quantifications, feel free; these are also included.
-These also allow us to illustrate how an \Robject{RPPA} object can
-be constructed from a MicroVigene txt file:
+These also allow us to illustrate how an \Rclass{RPPA} object can
+be constructed from a MicroVigene .txt file:
 <<getStarted02>>=
 filename <- "Akt.txt";
 directory <- system.file("rppaCellData", package="SuperCurve");
 aktTake2 <- RPPA(file=filename, path=directory);
 class(aktTake2);
+isTRUE(all.equal(akt, aktTake2, check.attributes=FALSE));
 @
-%aktTake2 <- RPPA(file="Akt.txt",
-%                 path=system.file("rppaCellData", package="SuperCurve"));
-This \Robject{RPPA} object is the same as {\tt akt}. Now, there's
-really not that much to an \Robject{RPPA} object:
+This \Rclass{RPPA} object is the same as \Robject{akt}. Now,
+there's really not that much to an \Rclass{RPPA} object:
 <<getStarted03>>=
 slotNames(aktTake2);
 aktTake2@file;
@@ -194,39 +203,51 @@ the file the data was acquired from.
 %it yourself. In most cases, we will supply accessor functions 
 %to extract the bits of an object that we will need.
 
-Now, we've seen what the {\tt file} slot contains, but
-what about {\tt data}? As mentioned above, it's simply
-a data frame, with named components corresponding for 
+Now, we've seen what the \Robject{file} slot contains, but
+what about the \Robject{data} slot? As mentioned above, it's
+simply a data frame, with named components corresponding for 
 the most part to measurements associated with each spot. 
-Several of the functions that act on \Robject{RPPA} objects have 
-a "measure" argument, and they're simply looking for 
+Several of the functions that act on \Rclass{RPPA} objects have 
+a \Rfunarg{measure} argument, and they're simply looking for 
 the name of the appropriate component. What do we have 
 here? 
 <<getStarted04>>=
 summary(aktTake2)
 names(aktTake2@data)
 @
-Most of the columns have ready interpretations, but 
-the first 6 here are special. An \Robject{RPPA} object must have
-{\tt Main.Row}, {\tt Main.Col}, {\tt Sub.Row}, and {\tt Sub.Col} 
-to specify the position of the spot, {\tt Sample} to tell 
-us what the software thinks was printed, and {\tt Mean.Net}
-as a background-corrected measure of spot intensity. 
+Most of the columns have ready interpretations, but the first
+six here are special. An \Rclass{RPPA} object must have
+\Robject{Main.Row}, \Robject{Main.Col}, \Robject{Sub.Row},
+and \Robject{Sub.Col} to specify the position of the spot,
+\Robject{Sample} to tell us what the software thinks was
+printed, and \Robject{Mean.Net} as a background-corrected
+measure of spot intensity. 
 
-The generator function is tuned for MicroVigene files
-at present. If we have other types of data files, we 
+The generator function is tuned for reading MicroVigene files
+at present. If we have other types of data files, we can use
+the \Rfunarg{software} argument of the \Rfunction{RPPA}
+generator to invoke our own function to populate the \Robject{data}
+manually. The function must take a \Rclass{connection} object
+and return a \Rclass{data.frame} object. 
+
+instead.
 might want to assemble an \Robject{RPPA} object more directly.
 <<getStarted05>>=
+read.user <- function(file) {
+    df <- read.delim(file, skip=4);
+    names(df)[5] <- "Sample";
+    names(df)[6] <- "Mean.Net";
+    return(df);
+}
 filename <- "Akt.txt";
-aktTemp <- read.delim(file=file.path(directory, filename), skip=4);
-names(aktTemp)[5] <- "Sample";
-names(aktTemp)[6] <- "Mean.Net";
-aktTake3 <- new("RPPA", data=aktTemp, file=filename);
+directory <- system.file("rppaCellData", package="SuperCurve");
+aktTake3 <- RPPA(file=filename, path=directory, software="user");
+isTRUE(all.equal(akt, aktTake3, check.attributes=FALSE));
 @ 
-again, this \Robject{RPPA} object is just the same as
+again, this \Rclass{RPPA} object is just the same as
 the others that we have assembled for AKT. 
 
-Given an \Robject{RPPA}, one of the first things we
+Given an \Rclass{RPPA} object, one of the first things we
 can do is simply {\em look} at the data, by checking
 heatmap images of the quantifications spatially arranged
 to match their positioning on the array. 
@@ -256,7 +277,7 @@ first 4 dilution steps, and the bottom 2 rows are replicates
 of the last 4. We'll return to the design shortly. 
 
 In addition to measures of foreground intensity such
-as Mean.Net, measures of background (such as ``Vol.Bkg'')
+as ``Mean.Net'', measures of background (such as ``Vol.Bkg'')
 can often suggest potential problems. For example,   
 \begin{center}
 <<getStarted08, fig=TRUE>>=
@@ -264,7 +285,7 @@ image(akt, "Vol.Bkg", colorbar=TRUE);
 @
 \end{center}
 shows that something odd may have happened in the patch
-at Main.Row 3, Main.Col 6 (try calling \Rfunction{image}
+at Main.Row 3, Main.Col 6 (try calling \Rmethod{image}
 with ``Main.Row'' or ``Main.Col'' as the measure to get
 a better feel for the coordinates, if needed). Thus, 
 we'll pay special attention to the results from this 
@@ -279,7 +300,7 @@ If desired, we can explore the exact relationship further:
 with(akt@data,
      plot(Vol.Bkg / (Mean.Total - Mean.Net)));
 @
-Similar checks of the background for the other \Robject{RPPA}
+Similar checks of the background for the other \Rclass{RPPA}
 objects show that there was a problem affecting the bottom 
 edge of the $\beta$-catenin slide, \Robject{ctnnb1}.
 \begin{center}
@@ -291,17 +312,17 @@ Estimates for samples in these regions are decidedly suspect.
 
 \subsection{RPPADesign Details}
 
-Now, the \Robject{RPPA} objects are only part of the story;
+Now, the \Rclass{RPPA} objects are only part of the story;
 we can't proceed to quantify the different samples unless
 we know the layout of the samples on the array. This information
-is contained in an \Robject{RPPADesign} object, here 
+is contained in an \Rclass{RPPADesign} object, here 
 \Robject{design40}. Let's take a closer look at that. 
 <<getStarted11>>=
 class(design40);
 slotNames(design40);
 class(design40@layout);
 @ 
-The \Robject{RPPADesign} object has 4 slots: \Robject{layout}, 
+The \Rclass{RPPADesign} object has four slots: \Robject{layout}, 
 \Robject{alias}, \Robject{sampleMap}, and \Robject{controls}.
 Of these, the most important is \Robject{layout}, which is a 
 data frame specifying what is printed at each spot. If we take
@@ -331,7 +352,7 @@ we produce an estimate for each series; series from the same sample
 should yield similar values. The pattern shown here is repeated
 for the other patches on the array. 
 
-The trickiest part of constructing an \Robject{RPPADesign} object 
+The trickiest part of constructing an \Rclass{RPPADesign} object 
 is often the specification of the dilution pattern and the 
 grouping into series. For example, 
 <<getStarted14>>=
@@ -342,12 +363,11 @@ series <- factor(paste(as.character(akt@data$Sample),
                        sep='.'));
 design40Take2 <- RPPADesign(akt, steps=steps, series=series);
 @ 
-This version of the constructor extracts some of the 
-needed layout information from the \Robject{RPPA} object itself. 
-Now, we can construct an \Robject{RPPADesign} using a more
-low-level approach, such as reading the Sample information
-(and possibly the dilution levels as well) from a separate
-file. 
+This version of the generator extracts some of the needed layout
+information from the \Rclass{RPPA} object itself. Now, we can
+construct an \Rclass{RPPADesign} object using a more low-level
+approach, such as reading the sample information (and possibly
+the dilution levels as well) from a separate file. 
 <<getStarted15>>=
 directory <- system.file("rppaCellData", package="SuperCurve");
 filename <- "Akt.txt";
@@ -374,11 +394,11 @@ Rather ornate, but it pulls things together.
 
 \subsection{RPPAFit Details}
 
-Given an \Robject{RPPA} and an \Robject{RPPADesign}, we
-can use a model to estimate the protein concentrations,
-producing an \Robject{RPPAFit}. The fitting function 
+Given an \Rclass{RPPA} object and an \Rclass{RPPADesign} object,
+we can use a model to estimate the protein concentrations,
+producing an \Rclass{RPPAFit} object. The fitting function 
 requires that we specify the measure to be used, in
-addition to the \Robject{RPPA} and \Robject{RPPADesign}. 
+addition to the \Rclass{RPPA} and \Rclass{RPPADesign} objects. 
 <<getStarted20>>=
 aktFit <- RPPAFit(akt, design40, "Mean.Net");
 class(aktFit);
@@ -488,7 +508,7 @@ splitting things up!
 
 % Revisit with design ``bySample''
 The main thing this requires is a slightly different
-\Robject{RPPADesign}, grouping all spots from a single
+\Rclass{RPPADesign} object, grouping all spots from a single
 sample together. 
 <<getStarted28>>=
 steps <- rep(c(rep(8:5, 2), rep(4:1, 2)), 40) - 4.5;
@@ -514,7 +534,12 @@ aktFitSample <- RPPAFit(akt, design40Sample, "Mean.Net");
 
 %\section{Areas Under Development}
 %
-%A major issue for 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{\textbf Note:} This document was generated using the \Rfunction{Sweave}
+function from the R \Rpackage{tools} package. The source file is in the
+\Rfunction{/doc} directory of the package \Rpackage{SuperCurve}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}
 
