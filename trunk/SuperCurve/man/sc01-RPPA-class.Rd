@@ -78,7 +78,7 @@ RPPA(file, path=".", software="microvigene")
 }
 \section{Methods}{
   \describe{
-    \item{dim(x)}{Returns the dimensions of the underlying data frame.}
+    \item{dim(x)}{Returns the dimensions of the slide layout.}
     \item{image(x, measure="Mean.Net", main=measure, colorbar=FALSE,
       col=terrain.colors(256), \dots)}{Produces a "geographic" image
       of the measurement column named by the \code{measure} argument.
