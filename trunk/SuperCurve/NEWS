@@ -1,6 +1,60 @@
 			Dear Emacs, please make this -*-Text-*- mode!
 	**************************************************
 	*						 *
+	*	       1.1 SERIES NEWS			 *
+	*						 *
+	**************************************************
+
+
+		CHANGES IN SUPERCURVE VERSION 1.1.0
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+
+NEW FEATURES
+
+    o	Added first draft of spatialNorm() function for
+	topographical normalization.
+
+    o	Added 'software' argument to RPPA() and RPPASet() generators
+	to enable user-defined function to handle reading data
+	from quantification files.
+
+    o	Added dim(RPPA) and dim(RPPADesign) methods which return
+	the slide layout dimensions.
+
+    o	Updated the summary(RPPA), summary(RPPADesign), and
+	summary(RPPAFit) methods to produce better summary information.
+	Removed summary(RPPAFitParams) method as output was sometimes
+	incorrect depending on how object was created.
+
+    o	Added 'call' slot to RPPADesign object.
+
+    o	Added metadata from the quantification file to the RPPA
+	'data' slot object.
+
+    o	Updated tests for FitClass derived objects such that they
+	now require that SUPERCURVE_FULL_TEST environment variable
+	be defined. This was done in an effort to reduce the time
+	required to run R CMD check for the package.
+
+    o	Modified code such that the RPPADesignParams() generator
+	now allows the 'controls' argument to also be specified
+	as a character vector.
+
+    o	Vignette updated to current code.
+
+
+BUG FIXES
+
+    o	Corrected code within RPPASet() generator to handle directory
+	with no quantification files and handle bad/invalid layout
+	information file.
+
+
+	**************************************************
+	*						 *
 	*	       1.0 SERIES NEWS			 *
 	*						 *
 	**************************************************
@@ -80,7 +134,7 @@ BUG FIXES
     o	Identifies if non-MicroVigene datafile is passed to RPPA() generator.
 
     o	Checks that 'measure' argument to image(RPPA) method specifies
-	a valid column name from its "data" slot.
+	a valid column name from its 'data' slot.
 
 
 
