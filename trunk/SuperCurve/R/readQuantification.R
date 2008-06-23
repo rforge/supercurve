@@ -22,7 +22,7 @@ readQuantification <- function(file, software) {
     } else if (!(length(software) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("software")))
-    } else if (!(nchar(software) >= 1)) {
+    } else if (!(nzchar(software))) {
         stop(sprintf("argument %s must not be empty string",
                      sQuote("software")))
     }
@@ -90,8 +90,13 @@ read.microvigene <- function(file) {
     }
 
     getMicroVigeneVersion <- function(pathname) {
-        line <- readLines(pathname, n=1)
+        line <- readLines(pathname, n=1, ok=FALSE)
         mv.version <- as.numeric(strsplit(line, "[:blank:]")[[1]][3])
+    }
+
+    getTimestamp <- function(pathname) {
+        line <- readLines(pathname, n=3, ok=FALSE)[3]
+        timestamp <- as.POSIXct(line, format="%m/%d/%Y %I:%M:%S %p")
     }
 
     getNumHeaderLines <- function(mv.version) {
@@ -101,7 +106,6 @@ read.microvigene <- function(file) {
 
     ## Begin processing
     pathname <- summary(file)$description
-    mvvers <- getMicroVigeneVersion(pathname)
 
     ## Check if this is really a MicroVigene datafile
     if (!isMicroVigene(pathname)) {
@@ -110,6 +114,7 @@ read.microvigene <- function(file) {
     }
 
     ## Read data from file
+    mvvers <- getMicroVigeneVersion(pathname)
     mvdata.df <- read.delim(file,
                             quote="",
                             row.names=NULL,
@@ -125,8 +130,10 @@ read.microvigene <- function(file) {
     colnames(mvdata.df) <- .capwords(make.names(colnames(mvdata.df),
                                                 allow_=FALSE))
 
-    ## Annotate data frame with version
-    attr(mvdata.df, "version") <- mvvers
+    ## Annotate data frame with metadata
+    attr(mvdata.df, "software")  <- "microvigene"
+    attr(mvdata.df, "version")   <- mvvers
+    attr(mvdata.df, "timestamp") <- getTimestamp(pathname)
 
     return(mvdata.df)
 }
