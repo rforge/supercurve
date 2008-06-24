@@ -15,19 +15,23 @@
 ##            name of the protein(s) to be used must also be supplied.
 ##   vs     - variable slope normalization. Here the sample median
 ##            is used along with a multiplicate gamma
-normalize <- function(data,    ## :FIXME: argument named 'data' - bad idea
+normalize <- function(concs,
                       method=c("median", "house", "vs"),
                       protein=NULL) {
     ## Check arguments
-    if (!(is.matrix(data) || is.data.frame(data))) {
+    if (is.RPPASet(concs)) {
+        ## :TODO: assemble matrix of concentrations from all fits in object
+    }
+    if (!(is.matrix(concs) || is.data.frame(concs))) {
         stop(sprintf("argument %s must be matrix-like",
-                     sQuote("data")))
+                     sQuote("concs")))
     }
 
-    ## :TBD: What are qualifications for this argument?
     if (!(is.character(protein))) {
         stop(sprintf("argument %s must be character",
-                     sQuote("data")))
+                     sQuote("protein")))
+    } else {
+        ## :TODO: verify any protein named in argument is column of 'concs'
     }
 
     method <- match.arg(method)
@@ -38,6 +42,7 @@ normalize <- function(data,    ## :FIXME: argument named 'data' - bad idea
     ## has already had the column median swept out from its columns.
     ## It outputs estimates of the gammas (multiplicative protein effects).
     estimateGamma <- function(Xhat) {
+        stopifnot(is.matrix(Xhat) || is.data.frame(Xhat))
 
         nCol <- ncol(Xhat)
         gamma <- matrix(0, nrow=nCol, ncol=nCol)
@@ -79,27 +84,27 @@ normalize <- function(data,    ## :FIXME: argument named 'data' - bad idea
 
 
     ## Begin processsing
-    rowMedian <- apply(data, 1, median, na.rm=TRUE)
-    colMedian <- apply(data, 2, median, na.rm=TRUE)
+    rowMedian <- apply(concs, 1, median, na.rm=TRUE)
+    colMedian <- apply(concs, 2, median, na.rm=TRUE)
 
-    data <- sweep(data, 2, colMedian)
+    concs <- sweep(concs, 2, colMedian)
     gamma <- NULL
     houseMedian <- NULL
 
     dataNorm <- switch(EXPR=method,
-                       median = sweep(data, 1, rowMedian),
+                       median = sweep(concs, 1, rowMedian),
                        house  = {
                                     ## housekeeping normalization
-                                    houseMedian <- apply(data[, protein],
+                                    houseMedian <- apply(concs[, protein],
                                                          1,
                                                          median,
                                                          na.rm=TRUE)
-                                    sweep(data, 1, houseMedian, "-")
+                                    sweep(concs, 1, houseMedian, "-")
                                 },
                        vs     = {
                                     ## variable slope normalization
-                                    gamma <- estimateGamma(data)
-                                    temp <- sweep(data, 2, gamma, "/")
+                                    gamma <- estimateGamma(concs)
+                                    temp <- sweep(concs, 2, gamma, "/")
                                     sweep(temp, 1, rowMedian, "-")
                                 },
                        stop(sprintf("unrecognized normalization method %s",
