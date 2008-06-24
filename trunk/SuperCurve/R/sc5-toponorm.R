@@ -6,7 +6,7 @@
 ##-----------------------------------------------------------------------------
 spatialNorm <- function(rppa,
                         measure="Mean.Net",
-                        nDilut=1,
+                        ndilut=1,
                         poscon=list(), ## should be among darkest of array
                         negcon=NULL,   ## no protein
                         cutoff=0.8,
@@ -30,12 +30,12 @@ spatialNorm <- function(rppa,
                      sQuote(measure)))
     }
 
-    if (!is.numeric(nDilut)) {
+    if (!is.numeric(ndilut)) {
         stop(sprintf("argument %s must be numeric",
-                     sQuote("nDilut")))
-    } else if (!(length(nDilut) == 1)) {
+                     sQuote("ndilut")))
+    } else if (!(length(ndilut) == 1)) {
         stop(sprintf("argument %s must be of length 1",
-                     sQuote("nDilut")))
+                     sQuote("ndilut")))
     }
 
     ## Transform character vector to list, if necessary 
@@ -197,7 +197,7 @@ spatialNorm <- function(rppa,
 
     ## :TBD: Need to change how we identify different levels of positive control
     ## (we probably should use Sub.Row to identify these spots)
-    for (i in seq(1, nDilut)) {
+    for (i in seq(1, ndilut)) {
         temp <- positives
         ## :TODO: Magic # (6)
         temp <- temp[temp$Sub.Row == (i) | temp$Sub.Row == (i+6), ]
@@ -213,7 +213,7 @@ spatialNorm <- function(rppa,
     if (plot.surface) {
         temprppa <- rppa
         par(ask=TRUE)
-        for (i in seq(1, nDilut)) {
+        for (i in seq(1, ndilut)) {
             x <- paste("surface", i, sep="")
             temprppa@data[, x] <- eval(as.name(x))
             ## :TODO: Annotate plot axes
@@ -223,8 +223,8 @@ spatialNorm <- function(rppa,
     }
 
     ## Constrain the surfaces so they do not cross
-    if (nDilut > 1) {
-        for (i in seq(2, nDilut)) {
+    if (ndilut > 1) {
+        for (i in seq(2, ndilut)) {
             s2 <- eval(as.name(paste("surface", i, sep="")))
             s1 <- eval(as.name(paste("surface", (i-1), sep="")))
             s2[s1 < s2] <- s1[s1 < s2] - runif(1)
@@ -283,7 +283,6 @@ spatialNorm <- function(rppa,
 
         item <- value[1]
         mn <- value[2]
-        #vec <- value[3:length(value)]
         vec <- value[-(1:2)]
         n <- length(vec)
 
@@ -312,7 +311,6 @@ spatialNorm <- function(rppa,
 
         item <- value[1]
         p <- value[2]
-        #vec <- value[3:length(value)]
         vec <- value[-(1:2)]
         n <- length(vec)
 
@@ -329,7 +327,7 @@ spatialNorm <- function(rppa,
     ## Organize the matrix for input into the "which.bin" function
     mn <- rppa@data[, measure]
     surf <- mn
-    for (i in seq(1, nDilut)) {
+    for (i in seq(1, ndilut)) {
         x <- eval(as.name(paste("surface", i, sep="")))
         surf <- cbind(surf, x)
     }
@@ -340,10 +338,9 @@ spatialNorm <- function(rppa,
     p <- apply(myvalue, 1, getp)
 
     ## Perform scaling to each of the positive control surfaces
-    adj <- matrix(NA, nrow=nrow(mydata), ncol=nDilut)
-    for (i in seq(1, nDilut)) {
+    adj <- matrix(NA, nrow=nrow(mydata), ncol=ndilut)
+    for (i in seq(1, ndilut)) {
         x <- rppa@data[,measure]
-	    #x <- mydata[, measure] #this won't work because we earlier changed some of mydata[,measure] to NA
         s1 <- eval(as.name(paste("surface", i, sep="")))
         adj[, i] <- (x / s1) * median(s1)
     }

@@ -36,6 +36,17 @@
 
 
 ##-----------------------------------------------------------------------------
+## Specifies measures capable of being used for fits.
+## N.B.: use intersection of this with what is actually available in data.frame
+.fitColnames <- function() {
+    return(c("Mean.Net",
+             "Mean.Total",
+             "Median.Net",
+             "Median.Total"))
+}
+
+
+##-----------------------------------------------------------------------------
 ## Returns dimensions of slide layout as numeric vector.
 .dimOfLayout <- function(layout) {
     ## Check arguments
