@@ -2,31 +2,71 @@
 ### MKRPPACELLDATASET.R
 ###
 
+
 local({
+    ##-------------------------------------------------------------------------
+    makeRPPAs <- function(antibody,
+                          filename,
+                          datadir,
+                          xform=function(x) tolower(x)) {
+        ## Check argumments
+        stopifnot(is.character(antibody) && length(antibody) == 1)
+        stopifnot(is.character(filename) && length(filename) == 1)
+        stopifnot(is.character(datadir) && length(datadir) == 1)
+        stopifnot(is.function(xform))
+
+        ## Begin processing
+        assign(varname <- make.names(xform(antibody)),
+               RPPA(filename, path=datadir),
+               envir=environment(makeRPPAs))
+
+        return(varname)
+    }
+
+
     ##
     ## 40 cell lines with 3 antibodies
     ##
 
-    cell40data.dir <- system.file("rppaCellData", package="SuperCurve")
-    akt    <- RPPA("Akt.txt", path=cell40data.dir)
-    c.erk2 <- RPPA("ERK2no2.txt", path=cell40data.dir)
-    ctnnb1 <- RPPA("Bcatenin40breastcelllines.txt", path=cell40data.dir)
+    instdata.dir <- system.file("rppaCellData", package="SuperCurve")
+    proteinassayfile <- file.path(instdata.dir, "proteinAssay.tsv")
+    proteinassay.df <- read.delim(proteinassayfile)
+
+    rppas <- apply(proteinassay.df,
+                   1,
+                   function(proteinassay, datadir) {
+                       makeRPPAs(proteinassay[1],
+                                 proteinassay[2],
+                                 datadir,
+                                 xform=function(varname) {
+                                     ## Distinguish from tumor data variable
+                                     if (varname == "ERK2") {
+                                         varname <- "c.erk2"
+                                     }
+                                     tolower(varname)
+                                 })
+                   },
+                   instdata.dir)
 
     ## The design here does not follow any of our standard shorthands,
     ## since it has interleaved 8-step dilution replicates contained
     ## in a single 4x4 subgrid
+    rppa <- get(rppas[1])
     steps <- rep(c(rep(8:5, 2), rep(4:1, 2)), 40) - 4.5
     rep.temp <- factor(paste('Rep', rep(rep(1:2, each=4), 80), sep=''))
-    series <- factor(paste(as.character(akt@data$Sample),
+    series <- factor(paste(as.character(rppa@data$Sample),
                            as.character(rep.temp),
                            sep='.'))
-    design40 <- RPPADesign(akt,
-                           steps=steps,
-                           series=series)
+
+    assign(design <- "design40",
+           RPPADesign(rppa,
+                      steps=steps,
+                      series=series))
     rm(steps, rep.temp, series)
 
-    dataset <- file.path(system.file("data", package="SuperCurve"),
-                         "rppaCell.rda")
-    save(akt, c.erk2, ctnnb1, design40, file=dataset)
+    ## Update package data directory
+    filename <- paste(sub("Data$", "", basename(instdata.dir)), "rda", sep=".")
+    dataset <- file.path(system.file("data", package="SuperCurve"), filename)
+    save(list=c(rppas, design), file=dataset)
 })
 
