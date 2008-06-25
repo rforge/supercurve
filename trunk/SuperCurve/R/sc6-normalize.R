@@ -1,5 +1,5 @@
 ###
-### VSN.R
+### NORMALIZE.R
 ###
 
 
@@ -20,21 +20,33 @@ normalize <- function(concs,
                       protein=NULL) {
     ## Check arguments
     if (is.RPPASet(concs)) {
-        ## :TODO: assemble matrix of concentrations from all fits in object
+        ## Assemble matrix of concentrations from all fits in object
+        concs <- .fitSlot(concs, "concentrations")
+        ## :FIXME: Unfortunately, this has columns of filenames, not antibodies
+        ## Information available in 'proteinAssay.tsv' but no path here...
     }
     if (!(is.matrix(concs) || is.data.frame(concs))) {
         stop(sprintf("argument %s must be matrix-like",
                      sQuote("concs")))
     }
 
-    if (!(is.character(protein))) {
-        stop(sprintf("argument %s must be character",
-                     sQuote("protein")))
-    } else {
-        ## :TODO: verify any protein named in argument is column of 'concs'
+    method <- match.arg(method)
+
+    if (method == "house") {
+        if (!is.character(protein)) {
+            stop(sprintf("argument %s must be character",
+                         sQuote("protein")))
+        } else if (!all(protein %in% colnames(concs))) {
+            missingNames <- protein[!protein %in% colnames(concs)]
+            stop(sprintf(ngettext(length(missingNames),
+                                  "argument %s specifies invalid %s column name: %s",
+                                  "argument %s specifies invalid %s column names: %s"),
+                         sQuote("protein"),
+                         sQuote("concs"),
+                         paste(missingNames, collapse=", ")))
+        }
     }
 
-    method <- match.arg(method)
 
     ## Estimates the multiplicative gamma terms from variable slope
     ## normalization. It takes as input the data matrix (with samples in
@@ -95,7 +107,7 @@ normalize <- function(concs,
                        median = sweep(concs, 1, rowMedian),
                        house  = {
                                     ## housekeeping normalization
-                                    houseMedian <- apply(concs[, protein],
+                                    houseMedian <- apply(as.matrix(concs[, protein]),
                                                          1,
                                                          median,
                                                          na.rm=TRUE)
