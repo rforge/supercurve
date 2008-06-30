@@ -42,10 +42,9 @@ local({
                    },
                    instdata.dir)
 
-    ## :TODO: Need actual design for this data. [Placeholder below]
     assign(design <- "tripledesign",
            RPPADesign(rppa <- get(rppas[1]),
-                      grouping="blockSample",
+                      grouping="byRow",
                       controls=list("Buffer",
                                     "Blank")))
 
