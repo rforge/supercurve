@@ -1,4 +1,3 @@
-### hui modify it
 
 if(!exists("NET")) {
   NET <- TRUE
