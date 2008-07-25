@@ -51,41 +51,152 @@ is.RPPASet <- function(x) {
 
 
 ##-----------------------------------------------------------------------------
-## Merge output graphs with source tiff files
-.mergeGraphAndImage <- function(protein, prefix, outputdir, tiffdir) {
-    stopifnot(is.character(protein)   && length(protein) == 1)
+## Get antibody names
+.getAntibodyNames <- function(rppaset) {
+    ## Check arguments
+    stopifnot(is.RPPASet(rppaset))
+
+    ## Begin processing
+    slideFilenames <- rownames(rppaset@fits)
+    ## Remove filename extensions
+    sub(".[Tt][Xx][Tt]$", "", slideFilenames)
+}
+
+
+##-----------------------------------------------------------------------------
+## Create the fit graphs and save them as PNG files
+.createFitGraphs <- function(rppaset, path, prefix) {
+    ## Check arguments
+    stopifnot(is.RPPASet(rppaset))
+    stopifnot(is.character(path)   && length(path) == 1)
+    stopifnot(is.character(prefix) && length(prefix) == 1)
+
+    ## Begin processing
+    saved.par <- par(no.readonly=TRUE)
+    on.exit(par(saved.par))
+
+    par(bg="white",
+        mfrow=c(2, 1))
+
+    ## Use red/yellow/green palette for residual plots.
+    ## From RColorBrewer palette RdYlGn
+    RYG <- c("#A50026",
+             "#D73027",
+             "#F46D43",
+             "#FDAE61",
+             "#FEE08B",
+             "#FFFFBF",
+             "#D9EF8B",
+             "#A6D96A",
+             "#66BD63",
+             "#1A9850",
+             "#006837")
+
+    fitxform <- rppaset@fitparams@xform
+    antibodies <- .getAntibodyNames(rppaset)
+    for (i in seq(1, length(antibodies))) {
+        antibody <- antibodies[i]
+        rppafit <- rppaset@fits[[i]]
+
+        ptitle <- paste(rppafit@measure,
+                        ":  ",
+                        antibody,
+                        sep="")
+
+        ## :TBD: Any good reason why these are produced to screen
+        ## first anyway? Why not just create plots as disk files
+        ## and avoid the device copy since only the last image
+        ## is still visible at the end of the run?
+
+        ## First pair of plots
+        try(plot(rppafit,
+                 main=ptitle,
+                 xform=fitxform,
+                 xlim=c(-15, 15)))
+
+        ## Mark R^2 = 0.4 and below as red.
+        imageRPPAFit <- getMethod("image", class(rppafit))            
+        imageRPPAFit(rppafit,
+                     col=RYG,
+                     main="",
+                     measure="ResidualsR2",
+                     xlab="Residuals R^2",
+                     zlim=c(0.4, 1))
+
+        filename <- paste(paste(prefix, antibody, sep="_"),
+                          "png",
+                          sep=".")
+        dev.copy(png,
+                 file.path(path, filename),
+                 width=640,
+                 height=640)
+        dev.off()
+
+        ## Second pair of plots
+        try(plot(rppafit,
+                 main=ptitle,
+                 type="resid",
+                 xform=fitxform,
+                 xlim=c(-15, 15)))
+        try(plot(rppafit,
+                 main=ptitle,
+                 type="steps",
+                 xform=fitxform,
+                 xlim=c(-15, 15)))
+
+        filename <- paste(paste(prefix, antibody, "2", sep="_"),
+                          "png",
+                          sep=".")
+        dev.copy(png,
+                 file.path(path, filename),
+                 width=640,
+                 height=640)
+        dev.off()
+    }
+}
+
+
+##-----------------------------------------------------------------------------
+## Merge output graphs with source tiff file, save it as JPG file
+.mergeGraphsAndImage <- function(antibody, prefix, outputdir, tiffdir) {
+    ## Check arguments
+    stopifnot(is.character(antibody)  && length(antibody) == 1)
     stopifnot(is.character(prefix)    && length(prefix) == 1)
     stopifnot(is.character(outputdir) && length(outputdir) == 1)
     stopifnot(is.character(tiffdir)   && length(tiffdir) == 1)
 
-    filename <- paste(protein, "tif", sep=".")
+    ## Begin processing
+    filename <- paste(antibody, "tif", sep=".")
     tiff <- file.path(tiffdir, filename)
 
-    filename <- paste(paste(prefix, protein, sep="_"),
+    filename <- paste(paste(prefix, antibody, sep="_"),
                       "png",
                       sep=".")
     pg1 <- file.path(outputdir, filename)
 
-    filename <- paste(paste(prefix, protein, "2", sep="_"),
+    filename <- paste(paste(prefix, antibody, "2", sep="_"),
                       "png",
                       sep=".")
     pg2 <- file.path(outputdir, filename)
 
-    filename <- paste(protein, "jpg", sep=".")
+    filename <- paste(antibody, "jpg", sep=".")
     output <- file.path(outputdir, filename)
 
-    ## convert $pg1 $pg2 +append $tiff -append -quality 100 $output
-    message(paste("merging tiff for", protein))
-    command <- paste('convert ',
+    ## Use ImageMagick 'convert' binary to perform merge
+    message(paste("merging tiff for", antibody))
+    command <- paste('convert',
                      shQuote(pg1),
-                     ' ',
                      shQuote(pg2),
-                     ' +append ',
+                     '+append',
                      shQuote(tiff),
-                     ' -append -quality 100 ',
-                     shQuote(output),
-                     sep="")
-    return(rc <- system(command))
+                     '-append',
+                     '-quality 100',
+                     shQuote(output))
+    return(rc <- switch(EXPR=.Platform$OS.type,
+                        unix=system(command),
+                        windows=shell(command),
+                        stop(sprintf("unrecognized operating system %s",
+                                     sQuote(.Platform$OS.type)))))
 }
 
 
@@ -184,86 +295,12 @@ write.summary <- function(rppaset,
         }
 
         ## Save fit graphs
-        op <- par(no.readonly=TRUE)
-        par(mfrow=c(2, 1))
+        .createFitGraphs(rppaset, path, prefix)
 
-        ## Use red/yellow/green palette for residual plots.
-        ## From RColorBrewer palette RdYlGn
-        RYG <- c("#A50026",
-                 "#D73027",
-                 "#F46D43",
-                 "#FDAE61",
-                 "#FEE08B",
-                 "#FFFFBF",
-                 "#D9EF8B",
-                 "#A6D96A",
-                 "#66BD63",
-                 "#1A9850",
-                 "#006837")
-
-        proteins <- {
-                        slideFilenames <- rownames(rppaset@fits)
-                        ## Remove filename extensions
-                        sub(".[Tt][Xx][Tt]$", "", slideFilenames)
-                    }
-        for (i in seq(1, length(proteins))) {
-            protein <- proteins[i]
-            ptitle <- paste(rppaset@fits[[i]]@measure,
-                            ":  ",
-                            protein,
-                            sep="")
-
-            ## First pair of plots
-            try(plot(rppaset@fits[[i]],
-                     main=ptitle,
-                     xform=rppaset@fitparams@xform,
-                     xlim=c(-15, 15)))
-
-            ## Mark R^2 = 0.4 and below as red.
-            rppafit <- rppaset@fits[[i]]
-            imageRPPAFit <- getMethod("image", class(rppafit))            
-            imageRPPAFit(rppafit,
-                         col=RYG,
-                         main="",
-                         measure="ResidualsR2",
-                         xlab="Residuals R^2",
-                         zlim=c(0.4, 1))
-
-            filename <- paste(paste(prefix, protein, sep="_"),
-                              "png",
-                              sep=".")
-            dev.copy(png,
-                     file.path(path, filename),
-                     width=640,
-                     height=640)
-            dev.off()
-
-            ## Second pair of plots
-            try(plot(rppaset@fits[[i]],
-                     main=ptitle,
-                     type="resid",
-                     xform=rppaset@fitparams@xform,
-                     xlim=c(-15, 15)))
-            try(plot(rppaset@fits[[i]],
-                     main=ptitle,
-                     type="steps",
-                     xform=rppaset@fitparams@xform,
-                     xlim=c(-15, 15)))
-
-            filename <- paste(paste(prefix, protein, "2", sep="_"),
-                              "png",
-                              sep=".")
-            dev.copy(png,
-                     file.path(path, filename),
-                     width=640,
-                     height=640)
-            dev.off()
-        }
-        par(op)
-
-        ## Use ImageMagick to merge output graphs with source tiff files
-        for (i in seq(1, length(proteins))) {
-            rc <- .mergeGraphAndImage(proteins[i], prefix, path, tiffdir)
+        ## Merge output graphs with source tiff file for each antibody
+        antibodies <- .getAntibodyNames(rppaset)
+        for (i in seq(1, length(antibodies))) {
+            rc <- .mergeGraphsAndImage(antibodies[i], prefix, path, tiffdir)
             if (rc == 32512) {
                 warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH", sQuote("convert")))
                 message("some output files may be missing")
