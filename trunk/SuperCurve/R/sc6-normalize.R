@@ -45,6 +45,11 @@ normalize <- function(concs,
                          sQuote("concs"),
                          paste(missingNames, collapse=", ")))
         }
+    } else {
+        if (!is.null(protein)) {
+            warning(sprintf("argument %s ignored when using method=%s",
+                            sQuote("protein"), dQuote(method)))
+        }
     }
 
 
