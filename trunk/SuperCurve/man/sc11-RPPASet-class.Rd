@@ -92,7 +92,7 @@ fitparams <- RPPAFitParams(measure="Mean.Net",
                            warnLevel=-1,
                            verbose=FALSE)
 
-parentdir <- "Y:/MyData"
+parentdir <- file.path("C:", "MyData")
 txtdir <- file.path(parentdir, "txt")     # quantification files
 imgdir <- file.path(parentdir, "tif")     # and corresponding image files
 outdir <- file.path(parentdir, "results") # output files
