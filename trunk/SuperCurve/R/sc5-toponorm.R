@@ -165,10 +165,11 @@ spatialNorm <- function(rppa,
     ## Create data frame with row/column indices used for predicting surface
     pd <- data.frame(Row=mydata$Row, Col=mydata$Col)
 
+    ### The following three lines are not necessary(YH) 
     ## Find the positive controls
-    positives <- mydata
-    items <- mydata$Sample %in% unlist(poscon)
-    positives <- positives[items, ]
+    #positives <- mydata
+    #items <- mydata$Sample %in% unlist(poscon)
+    #positives <- positives[items, ]
 
     ## Identify noise region
     bg <- if (is.null(negcon)) {
@@ -194,14 +195,22 @@ spatialNorm <- function(rppa,
     ## Remove positive controls less than computed background cutoff
     items <- mydata$Sample %in% unlist(poscon)
     is.na(mydata[items, 'Mean.Net']) <- mydata[items, 'Mean.Net'] < bgCut
+    ###Find positive controls here (YH)
+    positives <- mydata[items,]
 
+    
     ## :TBD: Need to change how we identify different levels of positive control
     ## (we probably should use Sub.Row to identify these spots)
     for (i in seq(1, ndilut)) {
         temp <- positives
         ## :TODO: Magic # (6)
         temp <- temp[temp$Sub.Row == (i) | temp$Sub.Row == (i+6), ]
-        b1 <- gam(Mean.Net ~ s(Row, Col, bs="ts", k=k),
+        ### Make choice of k robust in case that the number of available spots is less than k (YH). 
+        adjK <- k
+        spotCount <- sum(!is.na(temp[,measure]))
+        if(spotCount < k) adjK <- round(spotCount/3)
+        
+        b1 <- gam(Mean.Net ~ s(Row, Col, bs="ts", k=adjK),
                   data=temp,
                   gamma=gamma)
         assign(paste("surface", i, sep=""),
