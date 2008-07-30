@@ -8,4 +8,4 @@
 ## Public methods
 export(supercurveGUI)
 export(sc)
-
+export(rd)
