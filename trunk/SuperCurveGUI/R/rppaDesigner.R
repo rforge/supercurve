@@ -2,10 +2,18 @@ require(tcltk)
 
 ##################################################################
 # so we can track which functions are called by various events
+
 dbg <- tclVar(0)
-debug <- function() {
+
+# this function simply does not work. Reading tclvalue(dbg) always
+# returns an NA, even thnough the value was explcitly set.
+.rdDebug <- function() {
   x <- tclvalue(dbg)
-  as.numeric(x)
+  x <- as.numeric(x)
+  if (is.na(x)) {
+    x <- -1
+  }
+  x
 }
 
 hues <- c(0, 120, 240, 60, 180) # useful color choices
@@ -18,7 +26,7 @@ rdEnviron <- .GlobalEnv
 # the frame itself intact so it can be refilled. It would be nice if
 # some such function already existed in Tcl/Tk.
 cleanup <- function(frame) {
-  if(debug() > 1) cat('cleanup\n')
+  if(.rdDebug() > 1) cat('cleanup\n')
   nsub <- get("num.subwin", env=frame$env)
   while (nsub > 0) {
     child <- paste(frame$ID, nsub, sep='.')
@@ -32,9 +40,9 @@ cleanup <- function(frame) {
 # This block of functions handles the grid display, which involves
 # changing the displayed color of the buttons.
 
-mygrid <- matrix(NA, 1, 1)  # variable to hold the current state
-                            # of the subgrid
-altgrid <- matrix(NA, 1, 1) # alternative colors
+# variables to hold the state of the subgrid
+assign('mygrid', matrix(NA, 1, 1), rdEnviron)  # current colors
+assign('altgrid', matrix(NA, 1, 1), rdEnviron) # alternative colors
 
 # Used to mark/paint the buttons in the right frame. Works for marking
 # blanks, buffer, negative controls, single-level positive controls, or
@@ -71,7 +79,7 @@ pressButton <- function() {
     # :KRC: next version should allow arbitrarily many,
     # but require matching low intensity spots
     high <- as.character(tclvalue(highest))
-    if (debug()) cat(paste("Highest:", high, "\n"))
+    if (.rdDebug() > 0) cat(paste("Highest:", high, "\n"))
     if (high == '') {         # nothing marked yet
       swapGrids(i, j)
       tclvalue(highest) <- who
@@ -79,7 +87,7 @@ pressButton <- function() {
       swapGrids(i,j)
       tclvalue(highest) <- ''
     } else {                  # mark new, so unmark old
-      if (debug()) cat("old for new\n")
+      if (.rdDebug() > 0) cat("old for new\n")
       swapGrids(i,j)
       button <- strsplit(high, '-')[[1]]
       i <- as.numeric(button[[2]])
@@ -89,7 +97,7 @@ pressButton <- function() {
     }
   } else if (tclvalue(state) == "lastpc") { # finish dilution series
     low <- tclvalue(lowest)
-    if (debug()) cat(paste("Lowest:", low, "\n"))
+    if (.rdDebug() > 0) cat(paste("Lowest:", low, "\n"))
     if (low != '') {
       tkmessageBox(message="Changing your mind here is not (yet) allowed")
       return(-1)
@@ -100,27 +108,27 @@ pressButton <- function() {
     hi <- as.numeric(temp[[2]])
     hj <- as.numeric(temp[[4]])
     if (i == hi) { # all in one row
-      if (debug()) cat("  one row\n")
+      if (.rdDebug() > 0) cat("  one row\n")
       n <- 1 + abs(j-hj)
       colors <- hcl(300, 85, seq(30, 100, length=n))
       g <- mygrid
       for (p in 1:n) {
         sign <- abs(hj-j)/(hj-j)
         id <- paste(right.frame$ID, i, y <- hj - sign*(p-1), sep='.')
-        if (debug()) cat(paste("sign =", sign, ";  id =", id, "\n"))
+        if (.rdDebug() > 0) cat(paste("sign =", sign, ";  id =", id, "\n"))
         tkconfigure(id, background=colors[p])
         g[i,y] <- colors[p]
       }
       assign('mygrid', g, rdEnviron)
     } else if (j == hj) { # all in one column
-      if (debug()) cat("  one col\n")
+      if (.rdDebug() > 0) cat("  one col\n")
       n <- 1 + abs(i-hi)
       colors <- hcl(300, 85, seq(30, 100, length=n))
       g <- mygrid
       for (p in 1:n) {
         sign <- abs(hi-i)/(hi-i)
         id <- paste(right.frame$ID, x <- hi - sign*(p-1), j, sep='.')
-        if (debug()) cat(paste("sign =", sign, ";  id =", id, "\n"))
+        if (.rdDebug() > 0) cat(paste("sign =", sign, ";  id =", id, "\n"))
         tkconfigure(id, background=colors[p])
         g[x, j] <- colors[p]
       }
@@ -215,7 +223,7 @@ markLowPC <- function() {
 # in the application is handled in the left frame. Also, the right frame
 # starts out invisible until the user specifies the dimensions.
 createSubgrid <- function() {
-  if(debug()) cat('createSubgrid\n')
+  if(.rdDebug() > 0) cat('createSubgrid\n')
   mod <- function(i, n) {
     # we modify the usual '%%' operator so it can be used to index into
     # arrays, which start at position 1 in R.
@@ -254,7 +262,7 @@ createSubgrid <- function() {
 # to put the values of variables into the command invoked when you
 # press the button. I really have no idea why this works....
 createRow <- function(parent, n, tag="S", hue=0) {
-  if(debug() > 1) cat('createRow\n')
+  if(.rdDebug() > 1) cat('createRow\n')
   colors <- hcl(hue, 85, seq(30, 100, length=n))
   for (i in 1:n) {
     myname <- paste(tag, i, sep='-')
@@ -272,7 +280,7 @@ createRow <- function(parent, n, tag="S", hue=0) {
 ##################################################################
 # After setting the grid size, mark the different kinds of negative controls
 step2 <- function() {
-  if(debug()) cat('step2\n')
+  if(.rdDebug() > 0) cat('step2\n')
   if (tclvalue(state) == "initial") { # grid not yet made
     tkmessageBox(message="You have to create the grid first!")
   } else if (tclvalue(state) == "gridmade") {
@@ -299,7 +307,7 @@ step2 <- function() {
 # This is pure control-flow, since the next steps depend on whether
 # we have one level of positive control, or many.
 step3 <- function() {
-  if(debug()) cat('step3\n')
+  if(.rdDebug() > 0) cat('step3\n')
   if (!(tclvalue(state) %in% c('ready2mark', 'blank', 'buffer', 'nc'))) {
     tkmessageBox(message="I seem to have gotten myself into an impossible state.")
   }
@@ -321,7 +329,7 @@ step3 <- function() {
 # Key point is to switch based on whether (a) we have one kind of positive
 # control or (b) they live in a dilution series of their own.
 step4 <- function() {
-  if(debug()) cat('step4\n')
+  if(.rdDebug() > 0) cat('step4\n')
   cleanup(left.frame)
   multi <- tclvalue("multi")
   if (multi > 0) { # there is a dilution series
@@ -349,7 +357,7 @@ step4 <- function() {
 # We only get here in the dilution series case, aftter marking the
 # high-intensity starting point
 remainder <- function() {
-  if (debug()) cat("remainder\n")
+  if (.rdDebug() > 0) cat("remainder\n")
   if (tclvalue("multi") == 0) {
     tkmessageBox(message="This cannot happen")
     return(-1)
@@ -374,7 +382,7 @@ remainder <- function() {
 ##################################################################
 # Here is rte final step, where we can choose to save the results.
 step5 <- function() {
-  if(debug()) cat('step5\n')
+  if(.rdDebug() > 0) cat('step5\n')
   cleanup(left.frame)
   tclvalue(state) <- "finished1"
   tkpack(
@@ -424,7 +432,7 @@ lookup <- function(x) {
   } else {
     base$"#890099" <- "PosCon1"
   }
-  if(debug()) assign('base', base, rdEnviron)
+  if(.rdDebug() > 0) assign('base', base, rdEnviron)
   val <- base[x]
   val[is.na(val)] <- "Sample"
   val
@@ -436,14 +444,14 @@ lookup <- function(x) {
 # of using the higher level R intyerface, we have to go back down to the
 # low-level interface through '.Tcl'.
 saveIt <- function() {
-  if(debug()) cat('saveIt\n')
+  if(.rdDebug() > 0) cat('saveIt\n')
   .Tcl( "set types {{{Text Files} {.txt}} {{All Files} {*}}}" )
   cmd <- 'tk_getSaveFile -filetypes $types'
   where <- as.character(.Tcl(cmd))
   if (length(where)==0 || where == '') { # user canceled the save dialog
     return(-1)
   } else { # ready to actually save the results
-    if (debug()) cat(paste("Saving to", where, "\n"))
+    if (.rdDebug() > 0) cat(paste("Saving to", where, "\n"))
     nr <- nrow(mygrid)
     nc <- ncol(mygrid)
     stuff <- data.frame(SubRow=rep(1:nr, nc),
