@@ -15,6 +15,14 @@
 ##            name of the protein(s) to be used must also be supplied.
 ##   vs     - variable slope normalization. Here the sample median
 ##            is used along with a multiplicate gamma
+
+## :KRC: Should be called somethging different; there are "normalize"
+## functions for every technology in the universe. The name should at
+## least include "rppa" somewhere.
+
+## :KRC: Want to "register" normalization methods, so having a "method"
+## argument sort of defeats that idea. Those are three different
+## functions that should each be registered.
 normalize <- function(concs,
                       method=c("median", "house", "vs"),
                       protein=NULL) {
