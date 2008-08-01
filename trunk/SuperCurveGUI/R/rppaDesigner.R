@@ -392,11 +392,6 @@ step5 <- function() {
          )
 }
 
-# if we "quit without saving" ...
-finished <- function() {
-  tkdestroy(top)
-}
-
 # in order to save, we have to convert the displayed colors
 # (from mygrid) into something meaningful.
 lookup <- function(x) {
@@ -460,6 +455,14 @@ saveIt <- function() {
     # :KRC: should we add some error checking?
     write.table(stuff, file=where, sep="\t", quote=FALSE, col.names=NA)
   }
+  finsihed()
+}
+
+# if we "quit without saving" ...
+finished <- function() {
+  if (.rdDebug() > 0) cat("finished\n")
+  tclvalue(signaling) <- "finished"
+  if (.rdDebug() > 0) cat(paste("signaling:", tclvalue(signaling), "\n"))
   tkdestroy(top)
 }
 
@@ -491,4 +494,6 @@ rd <- function() {
          pady='3')
   tkbind(cr, "<Return>", createSubgrid) # note the undocumented syntax ...
   tkbind(ok, "<Return>", step2)
+  assign('signaling', tclVar("0"), rdEnviron)
+  tkwait.variable(signaling)
 }
