@@ -386,10 +386,12 @@ step5 <- function() {
   cleanup(left.frame)
   tclvalue(state) <- "finished1"
   tkpack(
-         tkbutton(left.frame, text="Save and Close", command=saveIt),
-         tkbutton(left.frame, text="Quit Without Saving", command=finished),
+         s <- tkbutton(left.frame, text="Save and Close", command=saveIt),
+         q <- tkbutton(left.frame, text="Quit Without Saving", command=finished),
          pady='8'
          )
+  tkbind(s, "<Return>", saveIt)
+  tkbind(q, "<Return>", finished)
 }
 
 # in order to save, we have to convert the displayed colors
@@ -461,8 +463,6 @@ saveIt <- function() {
 # if we "quit without saving" ...
 finished <- function() {
   if (.rdDebug() > 0) cat("finished\n")
-  tclvalue(signaling) <- "finished"
-  if (.rdDebug() > 0) cat(paste("signaling:", tclvalue(signaling), "\n"))
   tkdestroy(top)
 }
 
@@ -494,6 +494,5 @@ rd <- function() {
          pady='3')
   tkbind(cr, "<Return>", createSubgrid) # note the undocumented syntax ...
   tkbind(ok, "<Return>", step2)
-  assign('signaling', tclVar("0"), rdEnviron)
-  tkwait.variable(signaling)
+  tkwait.window(top)
 }
