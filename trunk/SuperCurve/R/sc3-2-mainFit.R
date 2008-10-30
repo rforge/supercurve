@@ -1,5 +1,5 @@
 ##
-## Constructors for RPPAFit class
+## MAINFIT.R
 ##
 
 ##-----------------------------------------------------------------------------
@@ -15,8 +15,8 @@
 ## model   - which statistical model to fit
 ## method  - how to fit the alpha and beta values.
 ## xform   - function used to transform the values before fitting
-## trim    - if true, trim the concentrations; otherwise, concentrations will
-##           not be trimmed / bounded.
+## trim    - if 0, concentrations will not be trimmed / bounded; otherwise,
+##           trim the concentrations using this value as the trim level.
 ## ci      - if true, calculate a 90% confidence interval for the LC50
 ##           supercurve values
 ## ignoreNegative - if true, then values below zero are converted to NA before
@@ -35,14 +35,14 @@
 
 ##-----------------------------------------------------------------------------
 ## Refactored this to improve maintainability; everything now happens once.
-## Retain this constructor for backwards compatablity.
+## Retain this generator for backwards compatibility.
 RPPAFit <- function(rppa,
                     design,
                     measure,
-                    model='logistic',
+                    model="logistic",
                     xform=function(x) x,
                     method=c("nls", "nlrob", "nlrq"),
-                    trim=TRUE,
+                    trim=2,
                     ci=FALSE,
                     ignoreNegative=TRUE,
                     trace=FALSE,
@@ -72,7 +72,7 @@ RPPAFitParams <- function(measure,
                           model="logistic",
                           xform=function(x) x,
                           method=c("nls", "nlrob", "nlrq"),
-                          trim=TRUE,
+                          trim=2,
                           ci=FALSE,
                           ignoreNegative=TRUE,
                           trace=FALSE,
@@ -117,8 +117,18 @@ RPPAFitParams <- function(measure,
     trace <- as.logical(trace)[1]
     verbose <- as.logical(verbose)[1]
     veryVerbose <- as.logical(veryVerbose)[1]
-    warnlevel <- as.integer(warnLevel)[1]
-    trim <- as.logical(trim)[1]
+    warnLevel <- as.integer(warnLevel)[1]
+
+    trim <- if (is.logical(trim) && isTRUE(trim[1])) {
+                ## Substitute numeric equivalent for original behavior
+                formals(RPPAFitParams)$trim
+            } else {
+                as.numeric(trim)[1]
+            }
+    if (is.na(trim) || trim < 0) {
+        stop(sprintf("argument %s must be a non-negative quantity",
+                     sQuote("trim")))
+    }
 
     ## Create new class
     new("RPPAFitParams",
@@ -178,7 +188,7 @@ RPPAFitParams <- function(measure,
     ## HERE IS THE PROBLEM!
     ## Quantiles forces a double trim in conjunction with calcLogitz
     ## and epsilon above, artificially shrinking alpha and beta
-    ## Try to match vresion 0.12
+    ## Try to match version 0.12
     # lBot <- quantile(temp, probs=c(.05), na.rm=TRUE)
     # lTop <- quantile(temp, probs=c(.95), na.rm=TRUE)
 
@@ -300,7 +310,7 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
     ## Need to make certain that the 'model' is a registered FitClass
     modelClass <- try(get(model, envir=.rppaModels))
     if (inherits(modelClass, "try-error")) {
-        stop(sprintf("argument %s must be the name of a registed fit class",
+        stop(sprintf("argument %s must be the name of a registered fit class",
                      sQuote("model")))
     }
 
@@ -338,13 +348,12 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
     passer    <- first$passer
     gamma.est <- first$gamma
     if (verbose) {
-        cat(paste('Completed first pass. Parameters:\n\tlBot =',
-                  first$lBot,
-                  '\n\tlTop =',
-                  first$lTop,
-                  '\n\tG =',
-                  first$gamma,
-                  '\n\n'))
+        cat(paste("Completed first pass. Parameters:",
+                  paste("\t", "lBot =", first$lBot),
+                  paste("\t", "lTop =", first$lTop),
+                  paste("\t", "G =", first$gamma),
+                  "\n",
+                  sep="\n"))
         flush.console()
     }
 
@@ -358,7 +367,7 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
 
     ## Do a two pass estimation, first using rough conc. estimates,
     ## then using better ones
-    for (pass in 1:2) {
+    for (pass in seq_len(2)) {
         xval <- if (pass == 1) {
                     getSteps(design) + passer[names(design)]
                 } else {
@@ -376,7 +385,7 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
 
         names(pass2) <- series
         ss.ratio <- pass2
-        warn2  <- rep('', length(series))
+        warn2  <- rep("", length(series))
         names(warn2) <- series
         for (this in series) {
             items <- names(design) == this
@@ -399,9 +408,9 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
         }
 
         if (verbose) {
-            cat('Finished estimating EC50 values. Coefficients:\n')
+            cat("Finished estimating EC50 values. Coefficients:", "\n")
             print(summary(pass2))
-            cat('SS Ratio:\n')
+            cat("SS Ratio:", "\n")
             print(summary(ss.ratio))
             flush.console()
         }
@@ -428,11 +437,16 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
                   warn=warn2,
                   version=packageDescription("SuperCurve", fields="Version"))
 
-    if (trim) {
+    if (trim > 0) {
+        if (verbose) {
+            cat("Trimming concentrations...", "\n")
+            flush.console()
+        }
         tc <- trimConc(fc,
                        conc=fitted(result, "X"),
                        intensity=intensity,
-                       design=design)
+                       design=design,
+                       trimLevel=trim)
         series.conc <- result@concentrations
         series.conc[series.conc < tc$lo.conc] <- tc$lo.conc
         series.conc[series.conc > tc$hi.conc] <- tc$hi.conc

@@ -16,7 +16,7 @@
 ##   vs     - variable slope normalization. Here the sample median
 ##            is used along with a multiplicate gamma
 
-## :KRC: Should be called somethging different; there are "normalize"
+## :KRC: Should be called something different; there are "normalize"
 ## functions for every technology in the universe. The name should at
 ## least include "rppa" somewhere.
 
@@ -92,14 +92,14 @@ normalize <- function(concs,
         ind <- which(upper, arr.ind=TRUE)
 
         design <- matrix(0, ncol=nCol, nrow=nrow(ind))
-        for (i in seq(1, nrow(ind))) {
+        for (i in seq_len(nrow(ind))) {
             design[i, ind[i, 1]] <- -1
             design[i, ind[i, 2]] <- 1
         }
 
         loggamma <- log(gamma[upper])
 
-        newrow <- rep((1/nCol), nCol)
+        newrow <- rep((1 / nCol), nCol)
         nonsingular <- rbind(newrow, design)
         lestimateMean <- qr.solve(nonsingular, c(0, loggamma))
 

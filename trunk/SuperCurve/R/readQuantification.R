@@ -49,7 +49,7 @@ readQuantification <- function(file, software) {
 
     ## The datafile format for each row must contain the four values
     ## needed to specify the logical location of a spot on an array,
-    ## the unique identifer of the sample at that location, and an
+    ## the unique identifier of the sample at that location, and an
     ## unspecified numeric measurement. Additional columns may be present.
 
     quant.df <- if (is.function(readMethod)) {

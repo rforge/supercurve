@@ -25,7 +25,7 @@ proteins <- read.table(file.path(home, 'proteinAssay.tsv'),
                             header=TRUE, sep='\t', as.is=TRUE)
 dimnames(proteins)[[1]] <- as.character(proteins$Antibody)
 
-for (i in 1:nrow(proteins)) {
+for (i in seq_len(nrow(proteins))) {
   temp <- RPPA(proteins$File[i], path=home)
   assign(proteins$Antibody[i], temp, 1)
 }

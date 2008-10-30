@@ -20,7 +20,7 @@ RPPAFit(rppa,
         model="logistic",
         xform=function(x) x,
         method=c("nls", "nlrob", "nlrq"),
-        trim=TRUE,
+        trim=2,
         ci=FALSE,
         ignoreNegative=TRUE,
         trace=FALSE,
@@ -32,7 +32,7 @@ RPPAFitParams(measure,
               model="logistic",
               xform=function(x) x,
               method=c("nls", "nlrob", "nlrq"),
-              trim=TRUE,
+              trim=2,
               ci=FALSE,
               ignoreNegative=TRUE,
               trace=FALSE,
@@ -75,10 +75,12 @@ RPPAFitFromParams(rppa,
       \code{"nlrq"}  \tab uses \code{nlrq} which is robust median regression
                           from \pkg{quantreg} package \cr
     }}
-  \item{trim}{logical scalar specifying if concentrations should be trimmed.
-    If \code{TRUE}, concentrations will be trimmed to reflect min and max
-    concentrations we can estimate given the background noise; otherwise,
-    raw concentrations are returned without trimming.}
+  \item{trim}{numeric or logical scalar specifying trim level for
+    concentrations. If positive, concentrations will be trimmed to reflect
+    min and max concentrations we can estimate given the background noise.
+    If \code{TRUE}, the trim level defaults to \code{2}, which was originally
+    the hardcoded value; otherwise, raw concentrations are returned without
+    trimming.}
   \item{ci}{logical scalar. If \code{TRUE}, compute 90\% confidence intervals
     on the concentration estimates.}
   \item{ignoreNegative}{logical scalar. If \code{TRUE}, convert negative values
@@ -145,7 +147,7 @@ RPPAFitFromParams(rppa,
     \item{\code{verbose}:}{logical; see arguments above}
     \item{\code{veryVerbose}:}{logical; see arguments above}
     \item{\code{warnLevel}:}{numeric; see arguments above}
-    \item{\code{trim}:}{logical; see arguments above}
+    \item{\code{trim}:}{numeric; see arguments above}
     \item{\code{model}:}{character; see arguments above}
   }
 }

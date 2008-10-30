@@ -335,8 +335,8 @@ setMethod("image", signature(x="RPPADesign"),
     geo.steps <- tapply(data.df$Steps,
                         list(xspot, yspot),
                         mean)
-    image(1:mx,
-          1:my,
+    image(seq_len(mx),
+          seq_len(my),
           geo.steps,
           ...)
     abline(h=(0.5 + seq(0, my, length=1+max(data.df$Main.Row))))
@@ -389,9 +389,8 @@ setMethod("plot", signature(x="RPPA", y="RPPADesign"),
          ylab="Intensity")
     series <- y@layout$Series
     s <- seriesNames(y) # Strip out control spots
-    rows <- length(s)
-    bow <- rainbow(rows)
-    for (i in seq(1, rows)) {
+    bow <- rainbow(length(s))
+    for (i in seq_along(s)) {
         lines(x=horz[series == s[i]],
               y=vert[series == s[i]],
               col=bow[i],

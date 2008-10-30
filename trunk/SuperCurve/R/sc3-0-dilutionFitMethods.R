@@ -75,6 +75,7 @@ setMethod("trimConc", "FitClass",
                    conc,
                    intensity,
                    design,
+                   trimLevel,
                    ...) {
     stop(sprintf("%s must be implemented by any subclass of %s",
                  sQuote("trimConc"), sQuote("FitClass")))
@@ -92,7 +93,7 @@ setMethod("coef", "FitClass",
 
 
 ###################################################################
-## Utility fuctions used to implement methods for derived classes
+## Utility functions used to implement methods for derived classes
 ## :KRC: Should these be used for the FitClass method so we can
 ## both document them and use them if we decide to develop new
 ## and improved fitting algorithms in the future?
@@ -157,7 +158,7 @@ setMethod("coef", "FitClass",
         warn <- "unavoidable nls-error"
         resids <- 0
     } else {
-        ## Model fitting succeded, so we can continue
+        ## Model fitting succeeded, so we can continue
         warn <- ""
         est.conc <- coef(tmp)
         resids <- residuals(tmp)
@@ -170,36 +171,43 @@ setMethod("coef", "FitClass",
 
 
 ##-----------------------------------------------------------------------------
+## Returns estimate of background noise.
+.est.bg.noise <- function(object,
+                          conc,
+                          intensity,
+                          trimLevel) {
+    ## Trim the concentration estimates to bound lower and upper
+    ## concentration estimates at the limits of what can be detected
+    ## given our background noise.
+    r <- fitted(object, conc) - intensity  # residuals
+    s <- mad(r, na.rm=TRUE)
+
+    ## Use trim level * (median absolute deviation of residuals)
+    ## as estimate for background noise
+    trim <- trimLevel * s
+}
+
+
+##-----------------------------------------------------------------------------
 .generic.trim <- function(object,
                           conc,
                           intensity,
                           design,
+                          trimLevel,
                           ...) {
-    ## Trim the concentration estimates to bound lower and upper
-    ## concentration estimates at the limits of what can be detected
-    ## given our background noise.
+    trim <- .est.bg.noise(object, conc, intensity, trimLevel)
 
-    max.step <- max(getSteps(design))
-    min.step <- min(getSteps(design))
-    r <- fitted(object, conc) - intensity  # residuals
-    s <- mad(r, na.rm=TRUE)
+    ## Determine high and low intensities
     lBot <- quantile(intensity, probs=c(.01), na.rm=TRUE)
     lTop <- quantile(intensity, probs=c(.99), na.rm=TRUE)
-
-    ## Use trim * (median absolute deviation of residuals)
-    ## as estimate for background noise
-
-    ## By default, trim is set to 2.
-    ## Trim is arbitrary, and was based on trying
-    ## multiple cutoff levels across multiple slides.
-
-    trim <- 2 * s
     lo.intensity <- lBot + trim
 
     ## In practice, we rarely see the response "top out".
     ## Do not trim at the top end.
     # hi.intensity <- lTop - trim
     hi.intensity <- max(intensity)
+
+    ## Determine high and low concentrations
 
     ## Search fitted model to find conc corresponding to lo.intensity
     lo.conc <- bisection.search(min(conc, na.rm=TRUE),
@@ -210,6 +218,7 @@ setMethod("coef", "FitClass",
                                 f.extra=object,
                                 tol=0.1)$x
     ## Adjust min allowable conc to point at undiluted spot
+    max.step <- max(getSteps(design))
     lo.conc <- lo.conc - max.step
 
     hi.conc <- bisection.search(min(conc, na.rm=TRUE),
@@ -219,8 +228,8 @@ setMethod("coef", "FitClass",
                                 },
                                 f.extra=object,
                                 tol=0.1)$x
-    ## :TBD: comment right?
-    ## Adjust min allowable conc to point at most dilute spot
+    ## Adjust max allowable conc to point at most dilute spot
+    min.step <- min(getSteps(design))
     hi.conc <- hi.conc - min.step
 
     list(lo.intensity=lo.intensity,
@@ -284,13 +293,15 @@ setMethod("fitSeries", "LoessFitClass",
 
 
 ##-----------------------------------------------------------------------------
+## Trim level default based on trying various cutoff levels on multiple slides.
 setMethod("trimConc", "LoessFitClass",
           function(object,
                    conc,
                    intensity,
                    design,
+                   trimLevel=2,  # arbitrary based on experimentation
                    ...) {
-    .generic.trim(object, conc, intensity, design, ...)
+    .generic.trim(object, conc, intensity, design, trimLevel, ...)
 })
 
 
@@ -373,7 +384,7 @@ setMethod("fitted", "CobsFitClass",
                                         method="quick",
                                         na.last=NA)
                          u <- rep(NA, n)
-                         u[o] <- 1:n
+                         u[o] <- seq_along(conc.pred)
                          cobs.intensity <- predict(fit, conc.pred[o])[, "fit"]
                          cobs.intensity[u]
                      } else {
@@ -417,13 +428,15 @@ setMethod("fitSeries", "CobsFitClass",
 
 
 ##-----------------------------------------------------------------------------
+## Trim level default based on trying various cutoff levels on multiple slides.
 setMethod("trimConc", "CobsFitClass",
           function(object,
                    conc,
                    intensity,
                    design,
+                   trimLevel=2,  # arbitrary based on experimentation
                    ...) {
-    .generic.trim(object, conc, intensity, design, ...)
+    .generic.trim(object, conc, intensity, design, trimLevel, ...)
 })
 
 
@@ -451,7 +464,7 @@ setMethod("trimConc", "CobsFitClass",
     lBot <- quantile(intensity, probs=c(.05), na.rm=TRUE)
     lTop <- quantile(intensity, probs=c(.95), na.rm=TRUE)
     p.alpha <- lBot
-    p.beta  <- lTop-lBot
+    p.beta  <- lTop - lBot
     p.gamma <- log(2)  # Assume linear response on log2 scale as first guess
     list(alpha=p.alpha,
          beta=p.beta,
@@ -525,33 +538,26 @@ setMethod("fitSeries", "LogisticFitClass",
 
 
 ##-----------------------------------------------------------------------------
+## Trim level default based on trying various cutoff levels on multiple slides.
 setMethod("trimConc", "LogisticFitClass",
           function(object,
                    conc,
                    intensity,
                    design,
+                   trimLevel=2,  # arbitrary based on experimentation
                    ...) {
-    ## Trim the concentration estimates to bound lower and upper
-    ## concentration estimates at the limits of what can be detected
-    ## given our background noise.
     cf <- as.list(object@coefficients)
-    max.step <- max(getSteps(design))
-    min.step <- min(getSteps(design))
-    r <- fitted(object, conc) - intensity  # residuals
-    s <- mad(r, na.rm=TRUE)
+    trim <- .est.bg.noise(object, conc, intensity, trimLevel) / cf$beta
 
-    ## Use trim * (median absolute deviation of residuals)
-    ## as estimate for background noise
-
-    ## By default, trim is set to 2.
-    ## Trim is arbitrary, and was based on trying
-    ## multiple cutoff levels across multiple slides.
-    trim <- 2 * s / cf$beta
-    lo.conc <- .lp(trim) / cf$gamma - max.step
-    hi.conc <- .lp(1-trim) / cf$gamma - min.step
-
+    ## Determine high and low intensities
     lo.intensity <- cf$alpha + cf$beta * trim
     hi.intensity <- cf$alpha + cf$beta - cf$beta * trim
+
+    ## Determine high and low concentrations
+    max.step <- max(getSteps(design))
+    lo.conc <- .lp(trim) / cf$gamma - max.step
+    min.step <- min(getSteps(design))
+    hi.conc <- .lp(1-trim) / cf$gamma - min.step
 
     list(lo.intensity=lo.intensity,
          hi.intensity=hi.intensity,

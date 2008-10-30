@@ -17,7 +17,7 @@
 \S4method{fitSeries}{FitClass}(object, diln, intensity, est.conc, method="nls",
                                silent=TRUE, trace=FALSE, \dots)
 \S4method{fitSlide}{FitClass}(object, conc, intensity, \dots)
-\S4method{trimConc}{FitClass}(object, conc, intensity, design, \dots)
+\S4method{trimConc}{FitClass}(object, conc, intensity, design, trimLevel, \dots)
 }
 \arguments{
   \item{object}{object of (sub)class \code{FitClass}}
@@ -33,6 +33,7 @@
     each series}
   \item{design}{object of class \code{RPPADesign} describing the layout
     of the array}
+  \item{trimLevel}{numeric scalar multiplied to MAD :TBD:}
   \item{\dots}{extra arguments for generic routines}
 }
 \section{Methods}{
@@ -47,7 +48,7 @@
     \item{fitSlide(object, conc, intensity, \dots)}{Uses the concentration and
       intensity series for an entire slide to fit a curve for the slide of
       intensity = f(conc).}
-    \item{trimConc(object, conc, intensity, design, \dots)}{Returns
+    \item{trimConc(object, conc, intensity, design, trimLevel, \dots)}{Returns
       concentration and intensity cutoffs for the model.}
   }
 }

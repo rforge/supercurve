@@ -41,7 +41,7 @@ is.RPPASet <- function(x) {
                   ncol=length(rownames(rppaset@fits)))
     rownames(mat) <- colnames(t(eval(parse(text=expr))))
 
-    for (j in seq(1, ncol(mat))) {
+    for (j in seq_len(ncol(mat))) {
         expr <- paste("rppaset@fits[[j]]@", sl, sep="")
         mat[, j] <- eval(parse(text=expr))
     }
@@ -94,7 +94,7 @@ is.RPPASet <- function(x) {
 
     fitxform <- rppaset@fitparams@xform
     antibodies <- .getAntibodyNames(rppaset)
-    for (i in seq(1, length(antibodies))) {
+    for (i in seq_along(antibodies)) {
         antibody <- antibodies[i]
         rppafit <- rppaset@fits[[i]]
 
@@ -299,10 +299,11 @@ write.summary <- function(rppaset,
 
         ## Merge output graphs with source tiff file for each antibody
         antibodies <- .getAntibodyNames(rppaset)
-        for (i in seq(1, length(antibodies))) {
+        for (i in seq_along(antibodies)) {
             rc <- .mergeGraphsAndImage(antibodies[i], prefix, path, tiffdir)
             if (rc == 32512) {
-                warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH", sQuote("convert")))
+                warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH",
+                                sQuote("convert")))
                 message("some output files may be missing")
                 break
             }
@@ -394,7 +395,7 @@ RPPASet <- function(path,
     ## :TBD: Why was this construct used and not 'vector("list", numslides)'
     ## Is the dimension attribute used?
     rppas <- array(list(), length(slideFilenames), slideFilenames)
-    for (i in seq(1, length(slideFilenames))) {
+    for (i in seq_along(slideFilenames)) {
         slideFilename <- slideFilenames[i]
 
         message(paste("reading", slideFilename))
@@ -420,7 +421,7 @@ RPPASet <- function(path,
 
     ## Create fits
     fits <- array(list(), length(slideFilenames), slideFilenames)
-    for (i in seq(1, length(slideFilenames))) {
+    for (i in seq_along(slideFilenames)) {
         message(paste("fitting", slideFilenames[i], "-", "Please wait."))
         fits[[i]] <- RPPAFitFromParams(rppas[[i]],
                                        design=design,

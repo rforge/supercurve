@@ -1,6 +1,31 @@
 			Dear Emacs, please make this -*-Text-*- mode!
 	**************************************************
 	*						 *
+	*	       1.2 SERIES NEWS			 *
+	*						 *
+	**************************************************
+
+
+		CHANGES IN SUPERCURVE VERSION 1.2.0
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+
+NEW FEATURES
+
+    o	Modified the trimConc(FitClass) generic method to require
+	additional 'trimLevel' argument (and methods for each
+	provided FitClass subclasses).
+
+    o	Modified the 'trim' argument of both RPPAFit() and
+	RPPAFitParams() generators to handle passing a numeric scalar.
+	This change also impacts the RPPAFitParams class definition
+	as its slot there changed from logical to numeric type.
+
+
+	**************************************************
+	*						 *
 	*	       1.1 SERIES NEWS			 *
 	*						 *
 	**************************************************

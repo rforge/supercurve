@@ -19,18 +19,12 @@ try( image(akt, colorbar='red') ) # okay here?
 
 try( image(akt, measure="bogus") ) # invalid measure
 
-# Why is there still no command that works easily across
-# operating/display systems to open a new plotting window
-# of fixed width?
-devName <- getOption("device")
-if (exists(devName, .GlobalEnv)) {
-  devFun <- get(devName, .GlobalEnv)
-} else if (exists(devName, asNamespace("grDevices"))) {
-  devFun <- get(devName, asNamespace("grDevices"))
+if (getRversion() < "2.8.0") {
+    cat("Using outdated version of R...", "\n")
+    pdf(width=1.2, height=6)
 } else {
-  devFun <- pdf
+    dev.new(width=1.2, height=6)
 }
-devFun(width=1.2, height=6)
 try( image(akt) )
 try( image(akt, colorbar=TRUE) )
 dev.off()

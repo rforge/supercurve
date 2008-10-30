@@ -25,7 +25,7 @@ proteins <- read.table(file.path(home, 'proteinAssay.tsv'),
                        header=TRUE, sep='\t', as.is=TRUE)
 dimnames(proteins)[[1]] <- as.character(proteins$Antibody)
 
-for (i in 1:nrow(proteins)) {
+for (i in seq_len(nrow(proteins))) {
   temp <- RPPA(proteins$File[i], path=home)
   assign(proteins$Antibody[i], temp, 1)
 }
@@ -46,7 +46,7 @@ measure <- "Mean.Net"
 ######################################
 # loess is very slow; we are only going to test
 # a single protein.
-proteins <- proteins[nrow(proteins),]
+proteins <- proteins[nrow(proteins), ]
 
 ######################################
 # must define the 'method' to use
@@ -70,14 +70,14 @@ round(temp@concentrations, digits=4)
 ## three times within a subgrid and again in three adjacent
 ## subgrids. Here we measure the variability of the
 ## replicates.
-d <- ACTB@data[seq(6, nrow(ACTB@data), by=6),]
+d <- ACTB@data[seq(6, nrow(ACTB@data), by=6), ]
 attach(d)
 foo <- paste("Series", Main.Row, Main.Col, Sub.Row, sep='.')
 detach()
-sum(foo==seriesNames(design))
+sum(foo == seriesNames(design))
 
 avgs <- tapply(temp@concentrations, list(d$Sample), mean)
 spread <- tapply(temp@concentrations, list(d$Sample), sd)
 res <- data.frame(Mean=avgs, SD=spread, CV=spread/abs(avgs))
-round(res[order(res$SD),], digits=4)
+round(res[order(res$SD), ], digits=4)
 

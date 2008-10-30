@@ -186,7 +186,7 @@ spatialNorm <- function(rppa,
     ## If computed background cutoff too low, use a larger quartile
     if (bgCut <= 100) {
         ## :BUG?: Undefined - buffer
-        bgCut <- quantile(bg, .99)
+        bgCut <- quantile(bg, 0.99)
         if (bgCut <= 100) {
             bgCut <- max(bg[-which.max(bg)])
         }
@@ -196,19 +196,22 @@ spatialNorm <- function(rppa,
     items <- mydata$Sample %in% unlist(poscon)
     is.na(mydata[items, 'Mean.Net']) <- mydata[items, 'Mean.Net'] < bgCut
     ###Find positive controls here (YH)
-    positives <- mydata[items,]
+    positives <- mydata[items, ]
 
     
     ## :TBD: Need to change how we identify different levels of positive control
     ## (we probably should use Sub.Row to identify these spots)
-    for (i in seq(1, ndilut)) {
+    for (i in seq_len(ndilut)) {
         temp <- positives
         ## :TODO: Magic # (6)
         temp <- temp[temp$Sub.Row == (i) | temp$Sub.Row == (i+6), ]
-        ### Make choice of k robust in case that the number of available spots is less than k (YH). 
+        ## Make choice of k robust in case that the number of
+        ## available spots is less than k (YH). 
         adjK <- k
-        spotCount <- sum(!is.na(temp[,measure]))
-        if(spotCount < k) adjK <- round(spotCount/3)
+        spotCount <- sum(!is.na(temp[, measure]))
+        if (spotCount < k) {
+            adjK <- round(spotCount / 3)
+        }
         
         b1 <- gam(Mean.Net ~ s(Row, Col, bs="ts", k=adjK),
                   data=temp,
@@ -222,7 +225,7 @@ spatialNorm <- function(rppa,
     if (plot.surface) {
         temprppa <- rppa
         par(ask=TRUE)
-        for (i in seq(1, ndilut)) {
+        for (i in seq_len(ndilut)) {
             x <- paste("surface", i, sep="")
             temprppa@data[, x] <- eval(as.name(x))
             ## :TODO: Annotate plot axes
@@ -245,7 +248,7 @@ spatialNorm <- function(rppa,
     ##-------------------------------------------------------------------------
     ## :TODO: But what does method "do"?
     ## The "which.bin" function takes as input a vector
-    ## whose first value is the meaure to be corrected
+    ## whose first value is the measure to be corrected
     ## (either Mean.Net or Mean.Total) and the others
     ## values at each level of predicted surface.
     ## Returns the surface to which each spot is closest in intensity
@@ -256,7 +259,7 @@ spatialNorm <- function(rppa,
         vec <- value[-1]
         n <- length(vec)
         place <- NA
-        for (i in seq(1, n-1)) {
+        for (i in seq_len(n-1)) {
             if (vec[i] > x && x > vec[i+1]) {
                 place <- i
                 break
@@ -279,7 +282,7 @@ spatialNorm <- function(rppa,
     ## :TODO: But what does method "do"?
     ## The "getp" function takes as input a vector
     ## whose first value is the output from the "which.bin" function,
-    ## the second is the meaure to be corrected
+    ## the second is the measure to be corrected
     ## (either Mean.Net or Mean.Total) and the others
     ## values at each level of predicted surface.
     ## :TODO: Reword the following...
@@ -308,7 +311,7 @@ spatialNorm <- function(rppa,
     ## The "getadj" function takes as input a vector
     ## whose first value is the output from the "which.bin" function,
     ## the second is output from the "getp" function and the third
-    ## is the meaure to be corrected
+    ## is the measure to be corrected
     ## (either Mean.Net or Mean.Total). The other values are the corrected
     ## measure values. If we want to correct the Mean.Net values of each
     ## spot, then the fourth column of the input matrix is the Mean.Net value
@@ -336,7 +339,7 @@ spatialNorm <- function(rppa,
     ## Organize the matrix for input into the "which.bin" function
     mn <- rppa@data[, measure]
     surf <- mn
-    for (i in seq(1, ndilut)) {
+    for (i in seq_len(ndilut)) {
         x <- eval(as.name(paste("surface", i, sep="")))
         surf <- cbind(surf, x)
     }
@@ -348,7 +351,7 @@ spatialNorm <- function(rppa,
 
     ## Perform scaling to each of the positive control surfaces
     adj <- matrix(NA, nrow=nrow(mydata), ncol=ndilut)
-    for (i in seq(1, ndilut)) {
+    for (i in seq_len(ndilut)) {
         x <- rppa@data[,measure]
         s1 <- eval(as.name(paste("surface", i, sep="")))
         adj[, i] <- (x / s1) * median(s1)

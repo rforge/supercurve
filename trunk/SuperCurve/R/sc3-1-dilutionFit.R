@@ -1,5 +1,5 @@
 ###
-### RPPAFit and RPPAFitParams class definitions and methods
+### DILUTIONFIT.R
 ###
 
 
@@ -33,7 +33,7 @@ setClass("RPPAFitParams",
                              verbose="logical",
                              veryVerbose="logical",
                              warnLevel="numeric",
-                             trim="logical",
+                             trim="numeric",
                              model="character"))
 
 
@@ -185,7 +185,7 @@ setMethod("hist", "RPPAFit",
         xlab <- type
     }
     if (is.null(main)) {
-        main <- paste('Histogram of', type)
+        main <- paste("Histogram of", type)
     }
     translate <- c("raw", "standardized", "r2")
     names(translate) <- c("Residuals", "StdRes", "ResidualsR2")
@@ -214,8 +214,8 @@ setMethod("hist", "RPPAFit",
 setMethod("plot", signature(x="RPPAFit", y="missing"),
           function(x, y,
                    type=c("cloud", "series", "individual", "steps", "resid"),
-                   xlab='Log Concentration',
-                   ylab='Intensity',
+                   xlab="Log Concentration",
+                   ylab="Intensity",
                    col=NULL,
                    xform=function(x) { x },
                    ...) {
@@ -232,8 +232,8 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
     max.step <- max(getSteps(x@design))
     min.step <- min(getSteps(x@design))
 
-    xval <- fitted(x, 'x')
-    yval <- fitted(x, 'y')
+    xval <- fitted(x, "x")
+    yval <- fitted(x, "y")
     yraw <- xform(x@rppa@data[, x@measure])
     series <- seriesNames(x@design)
     steps <- getSteps(x@design)
@@ -243,14 +243,15 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
         max.conc <- trimset$hi.conc
         ## :TBD: Can someone explain what this if statement is doing, and why?
         if (!hasArg(sub)) {
-            autosub <- paste('(Conc > -5) Trimmed Mean R^2 =',
+            autosub <- paste("(Conc > -5) Trimmed Mean R^2 =",
                              format(mean(x@ss.ratio[x@concentrations > -5],
                                          trim=0.1),
                                     digits=3),
-                             ', Min / Max Valid Conc. =',
+                             ", Min / Max Valid Conc. =",
                              round(min.conc, 2),
-                             '/',
+                             "/",
                              round(max.conc, 2))
+            ## :TODO: add 'autosub' to dots and remove one of these plot calls
             plot(xval, yraw,
                  xlab="",
                  ylab=ylab,
@@ -276,7 +277,7 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
             for (this in series) {
                 i <- (i %% ncol) + 1
                 items <- x@design@layout$Series == this
-                lines(xval[items], yraw[items], col=col[i], type='b')
+                lines(xval[items], yraw[items], col=col[i], type="b")
             }
             lines(sort(xval), sort(yval), lwd=2)
         }
@@ -291,13 +292,13 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
                  ylim=c(ymin, ymax))
             lines(sort(xval), sort(yval), col=model.color)
             ## :PLR: Replaced text() with title(). Something else wanted?
-            title(sub=paste('SS Ratio =', format(x@ss.ratio[this], digits=4)))
+            title(sub=paste("SS Ratio =", format(x@ss.ratio[this], digits=4)))
             points(x@concentrations[this],
                    x@intensities[this],
-                   col='red',
+                   col="red",
                    pch=16)
             items <- x@design@layout$Series == this
-            lines(xval[items], yraw[items], type='b')
+            lines(xval[items], yraw[items], type="b")
         }
         lines(sort(xval), sort(yval), lwd=2)
     } else if (type == "steps") {
@@ -347,12 +348,12 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
         vals <- s$coefficients["xval", c("Estimate", "Pr(>|t|)")]
         subt <- paste("abs(Residual) Slope:",
                       round(vals[1], 2),
-                      ", p-value = ",
+                      ", p-value =",
                       round(vals[2], 3))
         plot(xval, r,
              sub=subt,
              xlab=xlab,
-             ylab='Residual Instensity',
+             ylab="Residual Intensity",
              ...)
         abline(h=0, col=model.color)
         abline(l, col="red")
@@ -417,7 +418,7 @@ getConfidenceInterval <- function(result, alpha=0.10, nSim=50) {
         yhat <- yval[items]
 
         sim <- rep(NA, nSim)
-        for (j in seq(1, nSim)) {
+        for (j in seq_len(nSim)) {
             ## Sample the residuals
             resid.boot <- rnorm(sum(items), 0, sigma[items])
             ## Add resid.boot to y_hat;  refit;
