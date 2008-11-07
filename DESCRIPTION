@@ -1,0 +1,13 @@
+Package: SlideDesignerGUI
+Version: 1.0-0
+Date: 2008/11/07
+Title: Slide Designer GUI package
+Author: P. Roebuck, based on earlier work by Kevin R. Coombes
+Maintainer: P. Roebuck <proebuck@mdanderson.org>
+Description: Graphical User Interface for recording layout of a slide design.
+Depends: R (>= 2.7), tcltk
+SystemRequirements: Tcl/Tk
+License: file LICENSE
+LazyLoad: yes
+Collate: tkutil.R slideDesignerGUI.R zzz.R
+
