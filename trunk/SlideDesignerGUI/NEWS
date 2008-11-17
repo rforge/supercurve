@@ -6,6 +6,18 @@
 	**************************************************
 
 
+		CHANGES IN SLIDEDESIGNERGUI VERSION 1.0.1
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+
+BUG FIXES
+
+    o	Changed first four column names of TSV file to match those
+	expected by SuperCurve package.
+
+
 		CHANGES IN SLIDEDESIGNERGUI VERSION 1.0.0
 
 

@@ -1766,8 +1766,8 @@ colorSamplesByDilution <- function(df) {
 
     ## Update subgrid button widget backgrounds to appropriate dilution colors
     subgrid.frame <- scrollframe_interior()
-    for (subrow in seq_len(max(df$SubRow))) {
-        x.sample <- which(with(df, SubRow==subrow & SpotType=="Sample"))
+    for (subrow in seq_len(max(df$Sub.Row))) {
+        x.sample <- which(with(df, Sub.Row==subrow & SpotType=="Sample"))
         if (length(x.sample) > 0) {
             lastAliasInRow <- df$SampleAlias[x.sample[length(x.sample)]]
             ngroups <- groupFromAlias(lastAliasInRow)
@@ -1780,8 +1780,8 @@ colorSamplesByDilution <- function(df) {
                                 value=TRUE)
                 colors <- generateSampleDilutionColors(length(aliases))
                 x.which <- which(df$SampleAlias[x.sample] %in% aliases)
-                for (subcol in df$SubCol[x.sample[x.which]]) {
-                    x.colors <- df$SubCol[x.sample[x.which]] %in% subcol
+                for (subcol in df$Sub.Col[x.sample[x.which]]) {
+                    x.colors <- df$Sub.Col[x.sample[x.which]] %in% subcol
                     tkconfigure(id <- sprintf("%s.%d.%d",
                                               subgrid.frame$ID,
                                               subrow, subcol),
@@ -2008,13 +2008,13 @@ addDilutionLevels <- function(df, step) {
     ## - If SpotType==Sample, Dilution=intensity and divide intensity by step.
     ## - If SpotType!=Sample, reset intensity (to maximum).
 
-    for (subrow in seq_len(max(df$SubRow))) {
+    for (subrow in seq_len(max(df$Sub.Row))) {
         intensity <- 100
         samp.series <- as.integer(1)
         samp.pos <- as.integer(1)
         used <- FALSE
-        for (subcol in seq_len(max(df$SubCol))) {
-            idx <- which(with(df, SubRow == subrow & SubCol == subcol))
+        for (subcol in seq_len(max(df$Sub.Col))) {
+            idx <- which(with(df, Sub.Row == subrow & Sub.Col == subcol))
 
             if (df$SpotType[idx] == "Sample") {
                 df$SampleAlias[idx] <- sprintf("Sample-%d-%d-%d",
@@ -2050,8 +2050,8 @@ assembleSubgrid <- function(dsr) {
     nr <- nrow(colorgrid)
     nc <- ncol(colorgrid)
 
-    subgrid.df <- data.frame(SubRow=as.integer(rep(1:nr, nc)),
-                             SubCol=as.integer(rep(1:nc, each=nr)),
+    subgrid.df <- data.frame(Sub.Row=as.integer(rep(1:nr, nc)),
+                             Sub.Col=as.integer(rep(1:nc, each=nr)),
                              SampleAlias=I(""),
                              SpotType=as.factor(spottype(colorgrid)),
                              ControlLevel=as.numeric(NA),
@@ -2103,8 +2103,8 @@ createGrid <- function(subgrid.df) {
     grid.df <- NULL
     for (mr in seq_len(nmainrow)) {
         for (mc in seq_len(nmaincol)) {
-            tmp.df <- cbind(MainRow=as.integer(mr),
-                            MainCol=as.integer(mc),
+            tmp.df <- cbind(Main.Row=as.integer(mr),
+                            Main.Col=as.integer(mc),
                             subgrid.df)
 
             grid.df <- if (is.null(grid.df)) {
