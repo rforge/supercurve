@@ -222,9 +222,11 @@ write.summary <- function(rppaset,
     } else if (!(length(path) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("path")))
-    } else if (!file.exists(path)) {
-        ## :TODO: Add code to verify directory exists
+    } else if (!(file.exists(path) & file.info(path)$isdir)) {
         stop(sprintf("directory %s does not exist",
+                     dQuote(path)))
+    } else if (!(file.access(path, mode=2) == 0))) {
+        stop(sprintf("directory %s is not writable",
                      dQuote(path)))
     }
 
@@ -289,7 +291,7 @@ write.summary <- function(rppaset,
         } else if (!(length(tiffdir) == 1)) {
             stop(sprintf("argument %s must be of length 1",
                          sQuote("tiffdir")))
-        } else if (!file.exists(tiffdir)) {
+        } else if (!(file.exists(tiffdir) & file.info(path)$isdir)) {
             stop(sprintf("directory %s does not exist",
                          dQuote(tiffdir)))
         }
@@ -338,8 +340,7 @@ RPPASet <- function(path,
     } else if (!(length(path) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("path")))
-    } else if (!file.exists(path)) {
-        ## :TODO: Add code to verify directory exists
+    } else if (!(file.exists(path) & file.info(path)$isdir)) {
         stop(sprintf("directory %s does not exist",
                      dQuote(path)))
     }
