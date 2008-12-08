@@ -122,6 +122,31 @@ RPPADesignParams <- function(steps=rep(0, 1),
 
 
 ##-----------------------------------------------------------------------------
+## Returns a string representation of this instance. The content and format of
+## the returned string may vary between versions. Returned string may be
+## empty, but never null.
+setMethod("paramString", "RPPADesignParams",
+          function(object,
+                   slots=slotNames(object),
+                   ...) {
+    stopifnot(is.character(slots) && length(slots) >= 1)
+
+    ## :TODO: Implementation currently ignores the 'slots' argument
+    ## and returns string containing parameters from various slots.
+    ## as though:
+    ##     slotsToDisplay <- c("grouping", "ordering", "center", "controls")
+    ##     paramString(dp, slotsToDisplay)
+    ##
+    controls <- paste(object@controls, collapse=", ")
+    paste(paste("grouping:", shQuote(object@grouping)), "\n",
+          paste("ordering:", shQuote(object@ordering)), "\n",
+          paste("center:", object@center), "\n",
+          paste("controls:", shQuote(controls)), "\n",
+          sep="")
+})
+
+
+##-----------------------------------------------------------------------------
 RPPADesignFromParams <- function(raw,
                                  designparams) {
     ## If RPPA object, use its data slot value

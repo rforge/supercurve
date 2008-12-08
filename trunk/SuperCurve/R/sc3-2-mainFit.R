@@ -174,6 +174,32 @@ RPPAFitParams <- function(measure,
 
 
 ##-----------------------------------------------------------------------------
+## Returns a string representation of this instance. The content and format of
+## the returned string may vary between versions. Returned string may be
+## empty, but never null.
+setMethod("paramString", "RPPAFitParams",
+          function(object,
+                   slots=slotNames(object),
+                   ...) {
+    ## :TODO: Implementation currently ignores the 'slots' argument and
+    ## returns string containing parameters from various slots as though:
+    ##
+    ##     slotsToDisplay <- c("measure", "model", "method", "trim",
+    ##                         "ci", "ignoreNegative", "warnLevel")
+    ##     paramString(fp, slotsToDisplay)
+    ##
+    paste(paste("measure:", shQuote(object@measure)), "\n",
+          paste("model:", shQuote(object@model)), "\n",
+          paste("method:", shQuote(object@method)), "\n",
+          paste("trim:", object@trim), "\n",
+          paste("ci:", object@ci), "\n",
+          paste("ignoreNegative:", object@ignoreNegative), "\n",
+          paste("warnLevel:", object@warnLevel), "\n",
+          sep="")
+})
+
+
+##-----------------------------------------------------------------------------
 ## Compute a multiple of the logit transform.
 ## in practice, epsilon never changes.
 .calcLogitz <- function(data, alpha, beta, gamma, epsilon=0.001) {
@@ -358,9 +384,7 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
     ## Need to make certain that the 'model' is a registered FitClass
     modelClass <- tryCatch(getRegisteredModel(model),
                            error=function(e) {
-                               errmsgfmt <- paste("argument %s must be name",
-                                                  "of a registered fit class")
-                               stop(sprintf(errmsgfmt,
+                               stop(sprintf("argument %s must be name of a registered fit class",
                                             sQuote("model")))
                            })
 
