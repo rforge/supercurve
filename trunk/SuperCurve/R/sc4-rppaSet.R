@@ -225,7 +225,7 @@ write.summary <- function(rppaset,
     } else if (!(file.exists(path) & file.info(path)$isdir)) {
         stop(sprintf("directory %s does not exist",
                      dQuote(path)))
-    } else if (!(file.access(path, mode=2) == 0))) {
+    } else if (!(file.access(path, mode=2) == 0)) {
         stop(sprintf("directory %s is not writable",
                      dQuote(path)))
     }
@@ -377,17 +377,18 @@ RPPASet <- function(path,
     if (length(designparams@alias) < 1) {
         pathname <- file.path(path, "layoutInfo.tsv")
         if (file.exists(pathname)) {
-            sampleLayout <- try(read.delim(pathname,
-                                           quote="",
-                                           row.names=NULL))
-            if (is.data.frame(sampleLayout)) {
-                designparams@alias <- list(Alias=sampleLayout$Alias,
-                                           Sample=sampleLayout$Sample)
-            } else {
-                warning(sprintf("cannot import alias information from file %s",
-                                dQuote(pathname)))
-            }
-            rm(sampleLayout)
+            tryCatch({
+                         sampleLayout <- read.delim(pathname,
+                                                    quote="",
+                                                    row.names=NULL)
+                         designparams@alias <- list(Alias=sampleLayout$Alias,
+                                                    Sample=sampleLayout$Sample)
+                         rm(sampleLayout)
+                     },
+                     error=function(e) {
+                         warning(sprintf("cannot import alias information from file %s",
+                                         dQuote(pathname)))
+                     })
         }
         rm(pathname)
     }
