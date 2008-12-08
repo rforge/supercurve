@@ -115,6 +115,10 @@ setMethod("image", signature(x="RPPA"),
                      sQuote("main")))
     }
 
+    if (is.numeric(colorbar)) {
+        colorbar <- as.logical(colorbar)
+    }
+
     if (!is.logical(colorbar)) {
         stop(sprintf("argument %s must be logical",
                      sQuote("colorbar")))
