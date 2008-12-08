@@ -36,10 +36,10 @@ plot(jnk, dsn)
 ## just fine. I really don't see why it should....
 ## Apparently, we were clever enough to include an 'unlist' in the
 ## .controlVector function. 
-dp <- RPPADesignParams(grouping='bySample',
-                       controls=list(c('neg con', 'pos con', 'blanks')))
-dsn <- RPPADesignFromParams(jnk, dp)
-plot(jnk, dsn)
+#dp <- RPPADesignParams(grouping='bySample',
+#                       controls=list(c('neg con', 'pos con', 'blanks')))
+#dsn <- RPPADesignFromParams(jnk, dp)
+#plot(jnk, dsn)
 
 ###########################
 ## tests of 'steps' and 'series'
@@ -84,4 +84,5 @@ try( dp <- RPPADesignParams(center=c(TRUE, FALSE)) )
 ## test of plot. main extra argument is "measure"
 
 try( plot(jnk, dsn, measure="bogus") ) # invalid measure
+
 
