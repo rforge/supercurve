@@ -1,16 +1,16 @@
 ###
-### TOPONORM.R
+### TOPONORM.R - Used before RPPAFit, one slide at a time.
 ###
 
 
 ##-----------------------------------------------------------------------------
 spatialNorm <- function(rppa,
                         design,
-                        measure="Mean.Net",
+                        measure=c("Mean.Net", "Mean.Total"),
                         cutoff=0.8,
                         k=100,
                         gamma=0.1,
-                        plot.surface=FALSE) {
+                        plotSurface=FALSE) {
     ## Check arguments
     if (!is.RPPA(rppa)) {
         stop(sprintf("argument %s must be object of class %s",
@@ -20,18 +20,21 @@ spatialNorm <- function(rppa,
     if (!is.RPPADesign(design)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("design"), "RPPADesign"))
+    } else {
+        reqdNames <- c("SpotType", "Dilution")
+        if (!(all(reqdNames %in% colnames(design@layout)))) {
+            message(sprintf("package %s can be used to generate the missing information in the %s object required to use this method",
+                            sQuote("slideDesignerGUI"),
+                            class(design)))
+            missingNames <- reqdNames[!reqdNames %in% colnames(design@layout)]
+            stop(sprintf(ngettext(length(missingNames),
+                                  "argument %s missing required column: %s",
+                                  "argument %s missing required columns: %s"),
+                         sQuote("design"), paste(missingNames, collapse=", ")))
+        }
     }
 
-    if (!is.character(measure)) {
-        stop(sprintf("argument %s must be character",
-                     sQuote("measure")))
-    } else if (!(length(measure) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("measure")))
-    } else if (!(measure %in% colnames(rppa@data))) {
-        stop(sprintf("invalid measure %s",
-                     sQuote(measure)))
-    }
+    measure <- match.arg(measure)
 
     if (!is.numeric(cutoff)) {
         stop(sprintf("argument %s must be numeric",
@@ -66,18 +69,15 @@ spatialNorm <- function(rppa,
                      sQuote("gamma")))
     }
 
-    if (!is.logical(plot.surface)) {
+    if (!is.logical(plotSurface)) {
         stop(sprintf("argument %s must be logical",
-                     sQuote("plot.surface")))
-    } else if (!(length(plot.surface) == 1)) {
+                     sQuote("plotSurface")))
+    } else if (!(length(plotSurface) == 1)) {
         stop(sprintf("argument %s must be of length 1",
-                     sQuote("plot.surface")))
+                     sQuote("plotSurface")))
     }
 
     ## Begin processing
-
-    ## :TBD: Add required 'mgcv' package to Suggests or Depends?
-    ## :TBD: What exactly do we use from this package?
     if (!require(mgcv)) {
         stop(sprintf("%s package required for fitting the GAM in the %s method",
                      sQuote("mgcv"), sQuote("spatialNorm")))
@@ -85,27 +85,27 @@ spatialNorm <- function(rppa,
 
     ## Set up the row and column variables
     mydata <- rppa@data
-    mydata$Row <- (mydata$Main.Row-1)*max(mydata$Sub.Row) + mydata$Sub.Row
-    mydata$Col <- (mydata$Main.Col-1)*max(mydata$Sub.Col) + mydata$Sub.Col
+    mydata$Row <- with(mydata, (Main.Row-1)*max(Sub.Row) + Sub.Row)
+    mydata$Col <- with(mydata, (Main.Col-1)*max(Sub.Col) + Sub.Col)
 
     ## Create data frame with row/column indices used for predicting surface
     pd <- data.frame(Row=mydata$Row, Col=mydata$Col)
 
     ## Borrow SpotType and Dilution information from design
     layout <- design@layout
-    newdata <- merge(mydata, layout, by=c(.locationColnames(), "Sample"))
+    mydata <- merge(mydata, layout, by=c(.locationColnames(), "Sample"))
 
     ## Find all negative controls
-    negcon <- with(newdata, SpotType == "Blank" |
-                            SpotType == "Buffer" |
-                            SpotType == "NegCtrl")
+    negcon <- with(mydata, SpotType == "Blank" |
+                           SpotType == "Buffer" |
+                           SpotType == "NegCtrl")
 
     ## Identify noise region
     bg <- if (sum(negcon) == 0) {
               ## Use background to compute noise region
               mydata$Mean.Total - mydata$Mean.Net
           } else {
-              newdata$Mean.Net[negcon]
+              mydata[[measure]][negcon]
           }
 
     ## Compute background cutoff using the quantile of 'cutoff' argument
@@ -119,59 +119,69 @@ spatialNorm <- function(rppa,
         }
     }
 
+    ## :NOTE: This code seems to assume that only one positive control
+    ## series exists on a slide. If multiple exist, they would seem to
+    ## be blended together by this method, which may not be desirable.
+
     ## Remove positive controls less than computed background cutoff
-    poscon <- newdata$SpotType == "PosCtrl"
-    is.na(newdata[poscon, measure]) <- newdata[poscon, measure] < bgCut
-    positives <- newdata[poscon, ]
+    poscon <- mydata$SpotType == "PosCtrl"
+    is.na(mydata[poscon, measure]) <- mydata[poscon, measure] < bgCut
+    positives <- mydata[poscon, ]
 
     ## Determine positive control dilutions
     dilutions <- sort(unique(positives$Dilution), decreasing=TRUE)
-    ndilut <- length(dilutions)
+    ndilutions <- length(dilutions)
+
+    ## Create surface names
+    surfaces <- sapply(dilutions,
+                       function(dilution) {
+                           paste("surface", dilution, sep="")
+                       })
 
     ## Fits a generalized additive model to estimate a surface
     ## from positive controls
-    for (i in dilutions) {
-        pcsub <- positives
-        pcsub <- pcsub[pcsub$Dilution == i, ]
+    for (dilution in dilutions) {
+        pcsub <- subset(positives, Dilution == dilution, drop=FALSE)
+
         ## Make choice of k robust in case that the number of
         ## available spots is less than k (YH).
         adjK <- k
         spotCount <- sum(!is.na(pcsub[, measure]))
         if (spotCount < k) {
-            adjK <- round(spotCount / 3)  ## :TODO: Magic # (3)
+            adjK <- round(spotCount / 3)  ## arbitrary magic number
         }
 
         b1 <- gam(Mean.Net ~ s(Row, Col, bs="ts", k=adjK),
                   data=pcsub,
                   gamma=gamma)
-        surface <- paste("surface", i, sep="")
-        ## :TBD: Is assignment visible in global namespace?
+        surface <- paste("surface", dilution, sep="")
         assign(surface, predict.gam(b1, newdata=pd))
     }
 
     ## Plot the different surfaces
     ## :TBD: What's the best way to organize various levels of surface plots?
-    if (plot.surface) {
+    if (plotSurface) {
         temprppa <- rppa
         par(ask=TRUE)
-        for (i in dilutions) {
-            surface <- paste("surface", i, sep="")
+        for (surface in surfaces) {
             temprppa@data[, surface] <- eval(as.name(surface))
-            ## :TODO: Annotate plot axes
-            image(temprppa, surface, colorbar=TRUE)
+            image(temprppa,
+                  colorbar=TRUE,
+                  measure=surface,
+                  xlab="",
+                  ylab="")
         }
         par(ask=FALSE)
     }
 
     ## Constrain the surfaces so they do not cross
-    if (ndilut > 1) {
-        for (i in seq(2, ndilut)) {
-            surface <- paste("surface", dilutions[i], sep="")
-            prev.surface <- paste("surface", dilutions[i-1], sep="")
+    if (ndilutions > 1) {
+        for (i in seq(2, ndilutions)) {
+            surface <- surfaces[i]
+            prev.surface <- surfaces[i-1]
             s2 <- eval(as.name(surface))
             s1 <- eval(as.name(prev.surface))
             s2[s1 < s2] <- s1[s1 < s2] - 0.5
-            ## :TBD: Is assignment visible in global namespace?
             assign(surface, s2)
         }
     }
@@ -221,7 +231,6 @@ spatialNorm <- function(rppa,
     ## If the spot to be corrected falls between the two surfaces, the value
     ## returned is the fraction it falls between the two surfaces;
     ## otherwise, a 0 is returned.
-
     getp <- function(value) {
         stopifnot(is.numeric(value) && length(value) >= 3)
 
@@ -268,42 +277,52 @@ spatialNorm <- function(rppa,
     }
 
 
-    if (ndilut > 1) {
-        ## Organize matrix for input into "which.bin" function
-        mn <- rppa@data[, measure]
-        surf <- mn
-        for (i in dilutions) {
-            surface <- paste("surface", i, sep="")
-            x <- eval(as.name(surface))
-            surf <- cbind(surf, x)
-        }
+    ##-------------------------------------------------------------------------
+    ## Scales measurement using values of surface
+    scaleBySurface <- function(x, surface, n=1) {
+        stopifnot(is.numeric(x))
+        stopifnot(is.character(surface))
+        stopifnot(is.numeric(n))
 
-        ## Find closest positive control surface and fraction
-        ## between two surfaces
-        place <- apply(surf, 1, which.bin)
-        myvalue <- cbind(place, surf)
-        p <- apply(myvalue, 1, getp)
-
-        ## Perform scaling on each positive control surface
-        adj <- matrix(NA, nrow=nrow(mydata), ncol=ndilut)
-        for (i in seq_len(ndilut)) {
-            x <- rppa@data[, measure]
-            surface <- paste("surface", dilutions[i], sep="")
-            s1 <- eval(as.name(surface))
-            adj[, i] <- (x / s1) * median(s1)
-        }
-
-        ## Now retrieve appropriate adjustment based on the
-        ## closest positive control surface and the fraction
-        ## between two surfaces as computed by "getadj" function.
-        myadjust <- cbind(place, p, adj)
-        adjustment <- apply(myadjust, 1, getadj)
-    } else {
-        x <- rppa@data[, measure]
-        surface <- paste("surface", dilutions, sep="")
-        s1 <- eval(as.name(surface))
-        adjustment <- (x / s1) * median(s1)
+        s1 <- eval.parent(as.name(surface), n=n)
+        stopifnot(is.numeric(s1))
+        (x / s1) * median(s1)
     }
+
+
+    adjustment <- if (ndilutions > 1) {
+                      ## Organize matrix for input into "which.bin" function
+                      input.mat <- as.matrix(rppa@data[, measure])
+                      for (surface in surfaces) {
+                          s1 <- eval(as.name(surface))
+                          input.mat <- cbind(input.mat, s1)
+                      }
+                      dimnames(input.mat) <- list(NULL,
+                                                  c("measure", surfaces))
+
+                      ## Find closest positive control surface and fraction
+                      ## between two surfaces
+                      place <- apply(input.mat, 1, which.bin)
+                      values.mat <- cbind(place, input.mat)
+                      rownames(values.mat) <- NULL
+                      p <- apply(values.mat, 1, getp)
+
+                      ## Perform scaling on each positive control surface
+                      x <- rppa@data[, measure]
+                      adj <- sapply(surfaces, scaleBySurface, x=x, n=3)
+                      dimnames(adj) <- list(NULL, 
+                                            paste("adj", dilutions, sep=""))
+
+                      ## Now retrieve appropriate adjustment based on the
+                      ## closest positive control surface and the fraction
+                      ## between two surfaces as computed by "getadj" function.
+                      adjust.mat <- cbind(place, p, adj)
+                      rownames(adjust.mat) <- NULL
+                      apply(adjust.mat, 1, getadj)
+                  } else {
+                      x <- rppa@data[, measure]
+                      as.numeric(scaleBySurface(x, surfaces[1]))
+                  }
 
     rppa@data$Spatial.Norm <- adjustment
 
