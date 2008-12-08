@@ -58,13 +58,33 @@ RPPADesignParams <- function(steps=rep(0, 1),
                      sQuote("series")))
     }
 
-    grouping <- match.arg(grouping)
-    ordering <- match.arg(ordering)
+    if (all(c(length(steps), length(series)) == 1)) {
+        grouping <- match.arg(grouping)
+        ordering <- match.arg(ordering)
+
+        ## Further checking deferred until paired with data.frame...
+    } else if (any(c(length(steps), length(series)) == 1)) {
+        stop(sprintf("arguments %s and %s must both be specified if either is",
+                     sQuote("steps"),
+                     sQuote("series")))
+    } else {
+        ## Unnecessary when steps and series are specified
+        grouping <- as.character(NA)
+        ordering <- as.character(NA)
+        center <- as.logical(NA)
+
+       ## Further checking deferred until paired with data.frame...
+    }
 
     if (!(is.list(alias) || is.data.frame(alias))) {
         stop(sprintf("argument %s must be list or data.frame",
                      sQuote("alias")))
     }
+
+    if (is.numeric(center)) {
+        center <- as.logical(center)
+    }
+
     if (!is.logical(center)) {
         stop(sprintf("argument %s must be logical",
                      sQuote("center")))
@@ -76,9 +96,18 @@ RPPADesignParams <- function(steps=rep(0, 1),
     if (!(is.list(controls) || is.character(controls))) {
         stop(sprintf("argument %s must be character or list",
                      sQuote("controls")))
+    } else if (is.list(controls)) {
+        if (any(sapply(controls, is.character) == FALSE)) {
+            stop(sprintf("argument %s components must be character",
+                         sQuote("controls")))
+        } else if (any(sapply(controls, length) > 1)) {
+            stop(sprintf("argument %s components must be of length 1",
+                         sQuote("controls")))
+        }
     } else if (is.character(controls)) {
         controls <- as.list(controls)
     }
+
 
     ## Create new class
     new("RPPADesignParams",
@@ -93,7 +122,8 @@ RPPADesignParams <- function(steps=rep(0, 1),
 
 
 ##-----------------------------------------------------------------------------
-RPPADesignFromParams <- function(raw, designparams) {
+RPPADesignFromParams <- function(raw,
+                                 designparams) {
     ## If RPPA object, use its data slot value
     if (is.RPPA(raw)) {
         raw <- raw@data
@@ -143,8 +173,7 @@ RPPADesignFromParams <- function(raw, designparams) {
                                  "Sub.Row",
                                  "Sub.Col",
                                  "Sample")])
-    if (length(steps) < 2 &&
-        length(series) < 2) {
+    if (all(c(length(steps), length(series)) == 1)) {
         steps <- rep(NA, nrow(raw))
         series <- rep(NA, nrow(raw))
         if (grouping == "byRow") {
@@ -209,9 +238,7 @@ RPPADesignFromParams <- function(raw, designparams) {
                 steps[where] <- steps[where] - max(steps[where])
             }
         }
-
-    } else if (length(steps) < 2 ||
-               length(series) < 2) {
+    } else if (any(c(length(steps), length(series)) == 1)) {
         stop(sprintf("arguments %s and %s must both be specified if either is",
                      sQuote("steps"),
                      sQuote("series")))
@@ -244,6 +271,13 @@ RPPADesignFromParams <- function(raw, designparams) {
                                   }))
     sampleMap <- tolower(sampleMap)
     names(sampleMap) <- levels(series)
+
+    ## Specify datatype of location columns
+    storage.mode(raw.df$Main.Row) <- "integer"
+    storage.mode(raw.df$Main.Col) <- "integer"
+    storage.mode(raw.df$Sub.Row) <- "integer"
+    storage.mode(raw.df$Sub.Col) <- "integer"
+
 
     ## Create new class
     new("RPPADesign",
