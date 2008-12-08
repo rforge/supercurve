@@ -3,6 +3,7 @@
 \alias{RPPAFitParams}
 \alias{RPPAFitFromParams}
 \alias{RPPAFit}
+\alias{paramString,RPPAFitParams-method}
 \docType{class}
 \title{Fitting Dilution Curves to Protein Lysate Arrays with Class "RPPAFitParams"}
 \description{
@@ -43,6 +44,8 @@ RPPAFitParams(measure,
 RPPAFitFromParams(rppa,
                   design,
                   fitparams)
+
+\S4method{paramString}{RPPAFitParams}(object, ...)
 }
 \arguments{
   \item{rppa}{object of class \code{\link{RPPA}} containing the raw data
@@ -96,6 +99,8 @@ RPPAFitFromParams(rppa,
     won't cause failure but will give us a chance to figure out which dilution
     series are failing. Setting \code{warnLevel} to two or greater may change
     the values returned.}
+  \item{object}{object of class \code{RPPAFitParams}}
+  \item{\dots}{extra arguments for generic routines.}
 }
 \details{
   The basic mathematical model is given by \deqn{Y = f(X-\delta_i),}
@@ -151,12 +156,25 @@ RPPAFitFromParams(rppa,
     \item{\code{model}:}{character; see arguments above}
   }
 }
+\section{Methods}{
+  \describe{
+    \item{paramString(object)}{Returns string representation of object.}
+  }
+}
 \value{
   The \code{RPPAFit} generator and \code{RPPAFitFromParams} function return
   an object of class \code{\link{RPPAFit}}.
 
   The \code{RPPAFitParams} generator returns an object of class
   \code{RPPAFitParams}.
+
+  The \code{paramString} method returns a character vector, possibly
+  empty but never \code{NULL}.
+}
+\section{Warning}{
+  The \code{paramString} method should not be called by user except for
+  informational purposes. The content and format of the returned string
+  may vary between different versions of this package.
 }
 \references{KRC}
 \author{

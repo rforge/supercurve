@@ -7,6 +7,7 @@
 \alias{dim,RPPADesign-method}
 \alias{image,RPPADesign-method}
 \alias{names,RPPADesign-method}
+\alias{paramString,RPPADesignParams-method}
 \alias{plot,RPPA,RPPADesign-method}
 \alias{summary,RPPADesign-method}
 \alias{getSteps}
@@ -44,6 +45,7 @@ seriesNames(design)
 \S4method{dim}{RPPADesign}(x)
 \S4method{image}{RPPADesign}(x, \dots)
 \S4method{names}{RPPADesign}(x)
+\S4method{paramString}{RPPADesignParams}(object, ...)
 \S4method{plot}{RPPA,RPPADesign}(x, y, ...)
 \S4method{summary}{RPPADesign}(object, \dots)
 }
@@ -88,7 +90,8 @@ seriesNames(design)
     character vector appropriately.}
   \item{x}{object of class \code{RPPADesign} (or \code{RPPA} in plot method)}
   \item{y}{object of class \code{RPPADesign}}
-  \item{object}{object of class \code{RPPADesign}}
+  \item{object}{object of class \code{RPPADesign} (or \code{RPPADesignParams}
+    in \code{paramString} method)}
   \item{design}{object of class \code{RPPADesign}}
   \item{\dots}{extra arguments for generic or plotting routines.}
 }
@@ -142,7 +145,7 @@ seriesNames(design)
     \item{\code{grouping}:}{see corresponding argument above}
     \item{\code{ordering}:}{see corresponding argument above}
     \item{\code{series}:}{see corresponding argument above}
-    \item{\code{steps}:}{see corresponding argument above}    
+    \item{\code{steps}:}{see corresponding argument above}
   }
 }
 \section{Methods}{
@@ -153,6 +156,7 @@ seriesNames(design)
       steps, and laid out in the same pattern as the rows and columns of
       the array. This provides a visual check that the design has been
       specified correctly.}
+    \item{paramString(object)}{Returns string representation of object.}
     \item{plot(x, y, \dots)}{Plots an object of class \code{RPPA} by showing
       its dilution series with respect to the corresponding object of class
       \code{RPPADesign}.}
@@ -172,6 +176,9 @@ seriesNames(design)
 
   The \code{names} method returns a character vector.
 
+  The \code{paramString} method returns a character vector, possibly
+  empty but never \code{NULL}.
+
   The \code{summary} method returns the summary object of the
   \code{layout} data frame.
 
@@ -181,6 +188,11 @@ seriesNames(design)
 
   The \code{seriesNames} function returns a character vector containing
   the names of the unique (non-control) dilution series on the array.
+}
+\section{Warning}{
+  The \code{paramString} method should not be called by user except for
+  informational purposes. The content and format of the returned string
+  may vary between different versions of this package.
 }
 \references{KRC}
 \author{
