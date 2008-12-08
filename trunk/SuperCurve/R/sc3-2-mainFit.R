@@ -2,6 +2,29 @@
 ## MAINFIT.R
 ##
 
+
+##
+## Module Variables
+##
+## :TODO: Migrate this to .onLoad since it's singleton-like
+.ModelEnv <- new.env(hash=TRUE)
+
+
+##
+## Private Methods
+##
+
+##-----------------------------------------------------------------------------
+## Returns private environment for storing registered models
+modelenv <- function() {
+    return(.ModelEnv)
+}
+
+
+##
+## Public Methods
+##
+
 ##-----------------------------------------------------------------------------
 ## REQUIRED INPUTS:
 ## rppa    - an RPPA object
@@ -119,6 +142,10 @@ RPPAFitParams <- function(measure,
     veryVerbose <- as.logical(veryVerbose)[1]
     warnLevel <- as.integer(warnLevel)[1]
 
+    if (!(is.numeric(trim) || is.logical(trim))) {
+        stop(sprintf("argument %s must be numeric (or logical)",
+                     sQuote("trim")))
+    }
     trim <- if (is.logical(trim) && isTRUE(trim[1])) {
                 ## Substitute numeric equivalent for original behavior
                 formals(RPPAFitParams)$trim
@@ -251,29 +278,50 @@ RPPAFitParams <- function(measure,
 }
 
 
-##-----------------------------------------------------------------------------
-## :TODO: Migrate this to .onLoad since it's singleton-like
-## :TBD: Shouldn't this be new.env() rather than new("environment")
-.rppaModels <- new("environment")
-
-## :TBD: Should this be extended such that names(classname) [if not NULL]
-## would return string to be displayed on supercurveGUI dialog?
-## For example, "Cobs" is displayed as "Monotone Increasing B-spline" in GUI
 ## :TBD: Shouldn't this method be exported in NAMESPACE?
 ##-----------------------------------------------------------------------------
-## Register names of what code will consider "valid" models.
-registerModel <- function(name, classname) {
-    assign(name, classname, envir=.rppaModels)
+## Returns model associated with key for invocation.
+getRegisteredModel <- function(key) {
+    return(classname <- getRegisteredObject(key,
+                                            envir=modelenv(),
+                                            "classname")$classname)
 }
 
-## :TODO: Need routine to fetch all registered model names (for GUI)
 
-## :TODO: Migrate following to .onLoad since registration should occur once
-## :KRC: NO! The interface needs to be exposed properly for other people
-## to register models. Don't move anything until we figure that part out...
-registerModel("logistic", "LogisticFitClass")
-registerModel("cobs",     "CobsFitClass")
-registerModel("loess",    "LoessFitClass")
+##-----------------------------------------------------------------------------
+## Returns label associated with key for display by user interface.
+getRegisteredModelLabel <- function(key) {
+    return(ui.label <- getRegisteredObject(key,
+                                           envir=modelenv(),
+                                           "classname")$ui.label)
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns vector containing "keys" for all registered models.
+getRegisteredModelKeys <- function() {
+    keys <- getRegisteredObjectKeys(envir=modelenv())
+    if (length(keys) == 0) {
+        stop("no registered models exist")
+    }
+
+    return(keys)
+}
+
+
+##-----------------------------------------------------------------------------
+## Registers specific model for use by SuperCurve package.
+## Register names of what code will consider "valid" models.
+registerModel <- function(key,
+                          classname,
+                          ui.label=names(key)) {
+    if (is.null(ui.label)) {
+        ui.label <- key
+    }
+    ui.label <- as.character(ui.label)[1]
+    
+    registerClassname(key, classname, ui.label=ui.label, envir=modelenv())
+}
 
 
 ##-----------------------------------------------------------------------------
@@ -308,11 +356,13 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
     warnLevel <- fitparams@warnLevel
 
     ## Need to make certain that the 'model' is a registered FitClass
-    modelClass <- try(get(model, envir=.rppaModels))
-    if (inherits(modelClass, "try-error")) {
-        stop(sprintf("argument %s must be the name of a registered fit class",
-                     sQuote("model")))
-    }
+    modelClass <- tryCatch(getRegisteredModel(model),
+                           error=function(e) {
+                               errmsgfmt <- paste("argument %s must be name",
+                                                  "of a registered fit class")
+                               stop(sprintf(errmsgfmt,
+                                            sQuote("model")))
+                           })
 
     ## Need to make sure that 'measure' refers to an actual data column
     if (missing("measure")) {
@@ -475,4 +525,15 @@ setMethod("coef", "RPPAFit",
     callGeneric(object@model)
 })
 
+
+##
+## Initialization
+##
+
+## :TODO: Migrate following to .onLoad since registration should occur once
+## :KRC: NO! The interface needs to be exposed properly for other people
+## to register models. Don't move anything until we figure that part out...
+registerModel("logistic", "LogisticFitClass", "Logistic")
+registerModel("cobs",     "CobsFitClass", "Monotone Increasing B-spline")
+registerModel("loess",    "LoessFitClass", "Loess")
 
