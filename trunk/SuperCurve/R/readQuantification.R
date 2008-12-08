@@ -74,6 +74,12 @@ readQuantification <- function(file, software) {
                      nexpectedRows))
     }
 
+    ## Specify datatype of location columns
+    storage.mode(quant.df$Main.Row) <- "integer"
+    storage.mode(quant.df$Main.Col) <- "integer"
+    storage.mode(quant.df$Sub.Row) <- "integer"
+    storage.mode(quant.df$Sub.Col) <- "integer"
+
     return(quant.df)
 }
 
