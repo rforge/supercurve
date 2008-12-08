@@ -14,27 +14,32 @@ importFrom("stats", fitted)
 importFrom("stats", loess)
 importFrom("stats", resid, residuals)
 
-## Public Classes
+## Public classes
+exportClasses(Directory)  # not intended for public consumption
+exportClasses(FitClass)
 exportClasses(RPPA)
 exportClasses(RPPADesign)
 exportClasses(RPPADesignParams)
 exportClasses(RPPAFit)
 exportClasses(RPPAFitParams)
 exportClasses(RPPASet)
-exportClasses(FitClass)
+exportClasses(SuperCurveSettings)
 
 ## S4 methods
 exportMethods(coef, coefficients)
+exportMethods(coerce)
 exportMethods(dim)
 exportMethods(fitted)
 exportMethods(hist)
 exportMethods(image)
 exportMethods(names)
+exportMethods(paramString)
 exportMethods(plot)
 exportMethods(resid, residuals)
 exportMethods(summary)
 
 ## Public functions
+export(Directory)
 export(RPPA)
 export(RPPADesign)
 export(RPPADesignParams)
@@ -43,8 +48,28 @@ export(RPPAFit)
 export(RPPAFitParams)
 export(RPPAFitFromParams)
 export(RPPASet)
+export(SuperCurveSettings)
 export(getConfidenceInterval)
 export(getSteps)
 export(seriesNames)
 export(write.summary)
+
+## Registration functions (generic)
+export(getRegisteredMethod)
+export(getRegisteredMethodKeys)
+export(getRegisteredObject)
+export(getRegisteredObjectKeys)
+export(registerClassname)
+export(registerMethod)
+
+## Registration functions (specific)
+export(getRegisteredModel)
+export(getRegisteredModelKeys)
+export(getRegisteredModelLabel)
+export(registerModel)
+
+export(getRegisteredNormalizationMethod)
+export(getRegisteredNormalizationMethodKeys)
+export(getRegisteredNormalizationMethodLabel)
+export(registerNormalizationMethod)
 
