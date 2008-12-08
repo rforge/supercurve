@@ -5,10 +5,8 @@
 
 ##-----------------------------------------------------------------------------
 spatialNorm <- function(rppa,
+                        design,
                         measure="Mean.Net",
-                        ndilut=1,
-                        poscon=list(), ## should be among darkest of array
-                        negcon=NULL,   ## no protein
                         cutoff=0.8,
                         k=100,
                         gamma=0.1,
@@ -17,6 +15,11 @@ spatialNorm <- function(rppa,
     if (!is.RPPA(rppa)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppa"), "RPPA"))
+    }
+
+    if (!is.RPPADesign(design)) {
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("design"), "RPPADesign"))
     }
 
     if (!is.character(measure)) {
@@ -28,83 +31,6 @@ spatialNorm <- function(rppa,
     } else if (!(measure %in% colnames(rppa@data))) {
         stop(sprintf("invalid measure %s",
                      sQuote(measure)))
-    }
-
-    if (!is.numeric(ndilut)) {
-        stop(sprintf("argument %s must be numeric",
-                     sQuote("ndilut")))
-    } else if (!(length(ndilut) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("ndilut")))
-    }
-
-    ## Transform character vector to list, if necessary 
-    if (is.character(poscon)) {
-        poscon <- as.list(poscon)
-    }
-
-    ## poscon
-    ## - cannot be checked for order
-    ## - list() at least one element [in df$Sample]
-    if (!is.list(poscon)) {
-        stop(sprintf("argument %s must be list",
-                     sQuote("poscon")))
-    } else if (!(length(poscon) >= 1)) {
-        stop(sprintf("argument %s must be of length 1 or greater",
-                     sQuote("poscon")))
-    } else {
-        components <- unlist(poscon)
-        sampleNames <- levels(rppa@data$Sample)
-        if (!(all(components %in% sampleNames))) {
-            invalidNames <- sampleNames[!components %in% sampleNames]
-            stop(sprintf(ngettext(length(invalidNames),
-                                  "argument %s invalid component: %s",
-                                  "argument %s invalid components: %s"),
-                         sQuote("poscon"),
-                         paste(invalidNames, collapse=", ")))
-        }
-    }
-
-    ## negcon
-    ## - should be spot
-    ## - list() at least one element [in df$Sample], or NULL, or missing
-    if (!(is.null(negcon) || missing(negcon))) {
-
-        ## Transform character vector to list, if necessary
-        if (is.character(negcon)) {
-            negcon <- as.list(negcon)
-        }
-
-        if (!is.list(negcon)) {
-            stop(sprintf("argument %s must be list",
-                         sQuote("negcon")))
-        } else if (!(length(negcon) >= 1)) {
-            stop(sprintf("argument %s must be of length 1 or greater",
-                         sQuote("negcon")))
-        } else {
-            components <- unlist(negcon)
-            sampleNames <- levels(rppa@data$Sample)
-            if (!(all(components %in% sampleNames))) {
-                invalidNames <- sampleNames[!components %in% sampleNames]
-                stop(sprintf(ngettext(length(invalidNames),
-                                      "argument %s invalid component: %s",
-                                      "argument %s invalid components: %s"),
-                             sQuote("negcon"),
-                             paste(invalidNames, collapse=", ")))
-            } else {
-                ## No components can be in both control lists
-                posComponents <- unlist(poscon)
-                if (any(components %in% posComponents)) {
-                    invalidNames <- components[!components %in% posComponents]
-                    stop(sprintf(ngettext(length(invalidNames),
-                                          "component %s in both argument %s and %s",
-                                          "components %s in both argument %s and %s"),
-                                 paste(invalidNames, collapse=", "),
-                                 sQuote("poscon"),
-                                 sQuote("negcon")))
-                }
-            }
-        }
     }
 
     if (!is.numeric(cutoff)) {
@@ -165,19 +91,21 @@ spatialNorm <- function(rppa,
     ## Create data frame with row/column indices used for predicting surface
     pd <- data.frame(Row=mydata$Row, Col=mydata$Col)
 
-    ### The following three lines are not necessary(YH) 
-    ## Find the positive controls
-    #positives <- mydata
-    #items <- mydata$Sample %in% unlist(poscon)
-    #positives <- positives[items, ]
+    ## Borrow SpotType and Dilution information from design
+    layout <- design@layout
+    newdata <- merge(mydata, layout, by=c(.locationColnames(), "Sample"))
+
+    ## Find all negative controls
+    negcon <- with(newdata, SpotType == "Blank" |
+                            SpotType == "Buffer" |
+                            SpotType == "NegCtrl")
 
     ## Identify noise region
-    bg <- if (is.null(negcon)) {
+    bg <- if (sum(negcon) == 0) {
               ## Use background to compute noise region
               mydata$Mean.Total - mydata$Mean.Net
           } else {
-              items <- mydata$Sample %in% unlist(negcon)
-              mydata$Mean.Net[items]
+              newdata$Mean.Net[negcon]
           }
 
     ## Compute background cutoff using the quantile of 'cutoff' argument
@@ -185,7 +113,6 @@ spatialNorm <- function(rppa,
 
     ## If computed background cutoff too low, use a larger quartile
     if (bgCut <= 100) {
-        ## :BUG?: Undefined - buffer
         bgCut <- quantile(bg, 0.99)
         if (bgCut <= 100) {
             bgCut <- max(bg[-which.max(bg)])
@@ -193,31 +120,33 @@ spatialNorm <- function(rppa,
     }
 
     ## Remove positive controls less than computed background cutoff
-    items <- mydata$Sample %in% unlist(poscon)
-    is.na(mydata[items, 'Mean.Net']) <- mydata[items, 'Mean.Net'] < bgCut
-    ###Find positive controls here (YH)
-    positives <- mydata[items, ]
+    poscon <- newdata$SpotType == "PosCtrl"
+    is.na(newdata[poscon, measure]) <- newdata[poscon, measure] < bgCut
+    positives <- newdata[poscon, ]
 
-    
-    ## :TBD: Need to change how we identify different levels of positive control
-    ## (we probably should use Sub.Row to identify these spots)
-    for (i in seq_len(ndilut)) {
-        temp <- positives
-        ## :TODO: Magic # (6)
-        temp <- temp[temp$Sub.Row == (i) | temp$Sub.Row == (i+6), ]
+    ## Determine positive control dilutions
+    dilutions <- sort(unique(positives$Dilution), decreasing=TRUE)
+    ndilut <- length(dilutions)
+
+    ## Fits a generalized additive model to estimate a surface
+    ## from positive controls
+    for (i in dilutions) {
+        pcsub <- positives
+        pcsub <- pcsub[pcsub$Dilution == i, ]
         ## Make choice of k robust in case that the number of
-        ## available spots is less than k (YH). 
+        ## available spots is less than k (YH).
         adjK <- k
-        spotCount <- sum(!is.na(temp[, measure]))
+        spotCount <- sum(!is.na(pcsub[, measure]))
         if (spotCount < k) {
-            adjK <- round(spotCount / 3)
+            adjK <- round(spotCount / 3)  ## :TODO: Magic # (3)
         }
-        
+
         b1 <- gam(Mean.Net ~ s(Row, Col, bs="ts", k=adjK),
-                  data=temp,
+                  data=pcsub,
                   gamma=gamma)
-        assign(paste("surface", i, sep=""),
-               predict.gam(b1, newdata=pd))
+        surface <- paste("surface", i, sep="")
+        ## :TBD: Is assignment visible in global namespace?
+        assign(surface, predict.gam(b1, newdata=pd))
     }
 
     ## Plot the different surfaces
@@ -225,11 +154,11 @@ spatialNorm <- function(rppa,
     if (plot.surface) {
         temprppa <- rppa
         par(ask=TRUE)
-        for (i in seq_len(ndilut)) {
-            x <- paste("surface", i, sep="")
-            temprppa@data[, x] <- eval(as.name(x))
+        for (i in dilutions) {
+            surface <- paste("surface", i, sep="")
+            temprppa@data[, surface] <- eval(as.name(surface))
             ## :TODO: Annotate plot axes
-            image(temprppa, x, colorbar=TRUE)
+            image(temprppa, surface, colorbar=TRUE)
         }
         par(ask=FALSE)
     }
@@ -237,10 +166,13 @@ spatialNorm <- function(rppa,
     ## Constrain the surfaces so they do not cross
     if (ndilut > 1) {
         for (i in seq(2, ndilut)) {
-            s2 <- eval(as.name(paste("surface", i, sep="")))
-            s1 <- eval(as.name(paste("surface", (i-1), sep="")))
-            s2[s1 < s2] <- s1[s1 < s2] - runif(1)
-            assign(paste("surface", i, sep=""), s2)
+            surface <- paste("surface", dilutions[i], sep="")
+            prev.surface <- paste("surface", dilutions[i-1], sep="")
+            s2 <- eval(as.name(surface))
+            s1 <- eval(as.name(prev.surface))
+            s2[s1 < s2] <- s1[s1 < s2] - 0.5
+            ## :TBD: Is assignment visible in global namespace?
+            assign(surface, s2)
         }
     }
 
@@ -336,32 +268,43 @@ spatialNorm <- function(rppa,
     }
 
 
-    ## Organize the matrix for input into the "which.bin" function
-    mn <- rppa@data[, measure]
-    surf <- mn
-    for (i in seq_len(ndilut)) {
-        x <- eval(as.name(paste("surface", i, sep="")))
-        surf <- cbind(surf, x)
+    if (ndilut > 1) {
+        ## Organize matrix for input into "which.bin" function
+        mn <- rppa@data[, measure]
+        surf <- mn
+        for (i in dilutions) {
+            surface <- paste("surface", i, sep="")
+            x <- eval(as.name(surface))
+            surf <- cbind(surf, x)
+        }
+
+        ## Find closest positive control surface and fraction
+        ## between two surfaces
+        place <- apply(surf, 1, which.bin)
+        myvalue <- cbind(place, surf)
+        p <- apply(myvalue, 1, getp)
+
+        ## Perform scaling on each positive control surface
+        adj <- matrix(NA, nrow=nrow(mydata), ncol=ndilut)
+        for (i in seq_len(ndilut)) {
+            x <- rppa@data[, measure]
+            surface <- paste("surface", dilutions[i], sep="")
+            s1 <- eval(as.name(surface))
+            adj[, i] <- (x / s1) * median(s1)
+        }
+
+        ## Now retrieve appropriate adjustment based on the
+        ## closest positive control surface and the fraction
+        ## between two surfaces as computed by "getadj" function.
+        myadjust <- cbind(place, p, adj)
+        adjustment <- apply(myadjust, 1, getadj)
+    } else {
+        x <- rppa@data[, measure]
+        surface <- paste("surface", dilutions, sep="")
+        s1 <- eval(as.name(surface))
+        adjustment <- (x / s1) * median(s1)
     }
 
-    ## Find closest positive control surface and fraction between two surfaces
-    place <- apply(surf, 1, which.bin)
-    myvalue <- cbind(place, surf)
-    p <- apply(myvalue, 1, getp)
-
-    ## Perform scaling to each of the positive control surfaces
-    adj <- matrix(NA, nrow=nrow(mydata), ncol=ndilut)
-    for (i in seq_len(ndilut)) {
-        x <- rppa@data[,measure]
-        s1 <- eval(as.name(paste("surface", i, sep="")))
-        adj[, i] <- (x / s1) * median(s1)
-    }
-
-    ## Now retrieve appropriate adjustment based on the closest positive
-    ## control surface and the fraction between two surfaces as computed
-    ## by the "getadj" function.
-    myadjust <- cbind(place, p, adj)
-    adjustment <- apply(myadjust, 1, getadj)
     rppa@data$Spatial.Norm <- adjustment
 
     return(rppa)
