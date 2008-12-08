@@ -278,6 +278,35 @@ RPPADesignFromParams <- function(raw,
     storage.mode(raw.df$Sub.Row) <- "integer"
     storage.mode(raw.df$Sub.Col) <- "integer"
 
+    ## If controls contains a pathname, attempt to merge the columns
+    ## from slide design file and determine control names automatically.
+    if (length(controls) == 1) {
+        slidedesignPathname <- controls[[1]]
+        if (file.exists(slidedesignPathname)) {
+            tryCatch({
+                    slidedesign.df <- read.delim(slidedesignPathname)
+                    dim.raw.df <- .dimOfLayout(raw.df)
+                    dim.slidedesign.df <- .dimOfLayout(slidedesign.df)
+                    if (!identical(dim.raw.df, dim.slidedesign.df)) {
+                        stop(sprintf("dim of argument %s (%s) must match that of slide design (%s)",
+                                     sQuote("raw"),
+                                     paste(dim.raw.df, collapse="x"),
+                                     paste(dim.slidedesign.df, collapse="x")))
+                    }
+                    raw.df <- merge(raw.df, slidedesign.df)
+                    ctrlnames <- as.character(with(raw.df,
+                                                   Sample[SpotType != "Sample"]))
+                    controls <- as.list(unique(ctrlnames))
+                    rm(ctrlnames)
+                },
+                error=function(e) {
+                    stop(sprintf("cannot load slide design data from file %s - %s",
+                                 dQuote(slidedesignPathname),
+                                 e$message))
+                })
+        }
+    }
+
 
     ## Create new class
     new("RPPADesign",
