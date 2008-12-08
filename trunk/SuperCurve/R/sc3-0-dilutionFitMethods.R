@@ -117,9 +117,6 @@ setMethod("coef", "FitClass",
                         ...) {
     method <- match.arg(method)
 
-    dum <- list(Y=intensity,
-                Steps=diln)
-
     ## Ensure necessary packages available
     if (method == "nlrob" && !require(robustbase)) {
         stop(sprintf("%s package required for %s method",
@@ -144,19 +141,22 @@ setMethod("coef", "FitClass",
     ## :TBD: Isn't writing into global environment considered rude?
     assign(".RPPA.fit.model", object, env=.GlobalEnv)
 
-    tmp <- try(nlsmeth(Y ~ SuperCurve:::.slide.model(Steps+X),
-                       data=data.frame(Y=intensity,
-                                       Steps=diln),
-                       start=list(X=est.conc),
-                       trace=trace),
-               silent)
+    tmp <- try({
+                    nlsmeth(Y ~ SuperCurve:::.slide.model(Steps+X),
+                           data=data.frame(Y=intensity,
+                                           Steps=diln),
+                           start=list(X=est.conc),
+                           trace=trace)
+               },
+               silent=silent)
 
-    if (is(tmp, 'try-error')) {
-        if (!silent) {
-            warning('unavoidable nls/rlm error')
-        }
-        warn <- "unavoidable nls-error"
+    if (is(tmp, "try-error")) {
+        warn <- "unavoidable nls/rlm error"
+        ## :TBD: Should 'est.conc' be set to something different on error?
         resids <- 0
+        if (!silent) {
+            warning(warn)
+        }
     } else {
         ## Model fitting succeeded, so we can continue
         warn <- ""
@@ -484,28 +484,26 @@ setMethod("fitSlide", "LogisticFitClass",
         ## Initialize coefficients
         cf <- .coef.quantile.est(intensity)
     }
-    dum <- data.frame(xval=conc,
-                      yval=log(intensity + 5000))
+
     nls.model <- try(nls(yval ~ log(alpha + beta*.ea(gamma*xval) + 5000),
-                         data=dum,
+                         data=data.frame(xval=conc,
+                                         yval=log(intensity + 5000)),
                          start=list(alpha=cf$alpha,
                                     beta=cf$beta,
                                     gamma=cf$gamma),
                          control=nls.control(maxiter=100),
-                         na.action='na.omit'))
-    if (is(nls.model, 'try-error')) {
+                         na.action="na.omit"))
+    if (is(nls.model, "try-error")) {
         warning("unable to perform first pass overall slide fit. trying quantiles.")
         ## Crude (but robust) way to get alpha and beta
         cf <- .coef.quantile.est(intensity)
     } else {
         cf <- coef(nls.model)
-        p.alpha <- cf['alpha']
-        p.beta  <- cf['beta']
-        p.gamma <- cf['gamma']
-        cf <- list(alpha=p.alpha,
-                   beta=p.beta,
-                   gamma=p.gamma)
+        cf <- list(alpha=p.alpha <- cf["alpha"],
+                   beta=p.beta   <- cf["beta"],
+                   gamma=p.gamma <- cf["gamma"])
     }
+
 
     ## Create new class
     new("LogisticFitClass",
