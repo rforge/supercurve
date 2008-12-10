@@ -21,13 +21,12 @@ home <- system.file("rppaTripleData", package="SuperCurve")
 # first locate the list of assays
 # the name 'proteins' is required
 # must include a column named 'Antibody'
-proteins <- read.table(file.path(home, 'proteinAssay.tsv'),
-                       header=TRUE, sep='\t', as.is=TRUE)
+proteins <- read.delim(file.path(home, "proteinAssay.tsv"), as.is=TRUE)
 dimnames(proteins)[[1]] <- as.character(proteins$Antibody)
 
 for (i in seq_len(nrow(proteins))) {
-  temp <- RPPA(proteins$File[i], path=home)
-  assign(proteins$Antibody[i], temp, 1)
+    temp <- RPPA(proteins$File[i], path=home)
+    assign(proteins$Antibody[i], temp, 1)
 }
 rm(i, temp)
 
@@ -72,7 +71,7 @@ round(temp@concentrations, digits=4)
 ## replicates.
 d <- ACTB@data[seq(6, nrow(ACTB@data), by=6), ]
 attach(d)
-foo <- paste("Series", Main.Row, Main.Col, Sub.Row, sep='.')
+foo <- paste("Series", Main.Row, Main.Col, Sub.Row, sep=".")
 detach()
 sum(foo == seriesNames(design))
 
