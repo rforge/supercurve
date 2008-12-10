@@ -5,19 +5,25 @@
 
 options(warn=1)
 library(SuperCurve)
+source("checkFuncs")
 
 path <- system.file("rppaCellData", package="SuperCurve")
 
-try( RPPA("cellLineInfo.tsv") )            # file does not exist
-try( RPPA("cellLineInfo.tsv", path=path) ) # not MV datafile
+checkException(RPPA("nosuch.tsv"),
+               msg="nonexistent file should fail")
+checkException(RPPA("cellLineInfo.tsv", path=path),
+               msg="not MicroVigene datafile should fail")
 
 akt <- RPPA("Akt.txt", path=path)
 image(akt, colorbar=TRUE)
 
-try( image(akt, colorbar=1) ) # the error checking is wrong here
-try( image(akt, colorbar='red') ) # okay here?
+image(akt, colorbar=1) # numeric colorbar value silently converted to logical
 
-try( image(akt, measure="bogus") ) # invalid measure
+checkException(image(akt, colorbar="red"),
+               msg="character value should fail")
+
+checkException(image(akt, measure="bogus"),
+               msg="invalid measure should fail")
 
 if (getRversion() < "2.8.0") {
     cat("Using outdated version of R...", "\n")

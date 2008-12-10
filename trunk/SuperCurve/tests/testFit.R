@@ -5,32 +5,46 @@
 
 options(warn=1)
 library(SuperCurve)
+source("checkFuncs")
 
 ## Get a valid RPPA object to get started
 path <- system.file("rppaTumorData", package="SuperCurve")
 jnk <- RPPA("JNK.txt", path=path)
+
 ## build the correct design
 dsn <- RPPADesign(jnk,
                   grouping="blockSample",
                   center=TRUE,
                   controls=list("neg con", "pos con"))
 
-try( RPPAFitParams() ) # missing required argument
+###########################
+## tests of measure
 
-fp <- RPPAFitParams("Mean.Net")
+checkException(RPPAFitParams(),
+               msg="missing argument")
+
+fp <- RPPAFitParams("bogus") # cannot catch until data.frame available
+checkException(RPPAFitFromParams(jnk, dsn, fp),
+               msg="invalid measurement value")
+
+fp <- RPPAFitParams(measure="Mean.Net")
 summary(fp)
 
+###########################
+## tests of model and method
 
 fp <- RPPAFitParams("Mean.Net", model="bogus") # cannot catch this yet
 summary(fp)
-try(fit <- RPPAFitFromParams(jnk, dsn, fp))    # but find the bad argument here
+checkException(RPPAFitFromParams(jnk, dsn, fp),  # but find bad argument here
+               msg="unregistered fit class as model should fail")
 
-try( RPPAFitParams("Mean.Net", method="bogus") ) # bad argument
+checkException(RPPAFitParams("Mean.Net", method="bogus"),
+               msg="invalid method should fail")
 
-try( fp <- RPPAFitParams("Mean.Net", method="nlrob",
-                         model="bogus") ) # cannot catch this yet
+fp <- RPPAFitParams("Mean.Net", method="nlrob", model="bogus") # cannot catch this yet
 summary(fp)
-try(fit <- RPPAFitFromParams(jnk, dsn, fp))    # but find the bad argument here
+checkException(RPPAFitFromParams(jnk, dsn, fp),    # but find bad argument here
+               msg="unregistered fit class as model should fail")
 
 
 fp <- RPPAFitParams("Mean.Net", model="logistic", method="nlrob")
