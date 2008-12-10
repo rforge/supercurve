@@ -5,66 +5,92 @@
 
 options(warn=1)
 library(SuperCurve)
+source("checkFuncs")
 
 ## Get a valid RPPA object to get started
 path <- system.file("rppaTumorData", package="SuperCurve")
 jnk <- RPPA("JNK.txt", path=path)
 
-## check the 'grouping' variable
-## both of these fail
-try( dp <- RPPADesignParams(grouping='bogus') )
-try( dp <- RPPADesignParams(grouping=1) )
+###########################
+## tests of grouping
 
-## check the 'ordering variable'
-## both of these fail
-try( dp <- RPPADesignParams(ordering='bogus') )
-try( dp <- RPPADesignParams(ordering=1) )
+checkException(RPPADesignParams(grouping="bogus"),
+               msg="invalid character value should fail")
+checkException(RPPADesignParams(grouping=1),
+               msg="invalid value should fail")
 
 ###########################
-## tests of 'controls'
+## tests of ordering
 
-## obvious error in specifying controls. Should we allow
-## character vectors as well as lists?
-try( dp <- RPPADesignParams(controls=c('neg con', 'pos con')) )
+checkException(RPPADesignParams(ordering="bogus"),
+               msg="invalid character value should fail")
+checkException(RPPADesignParams(ordering=1),
+               msg="invalid value should fail")
+
+###########################
+## tests of controls
+
+## Specifying controls as character vector is valid (coerced internally)
+dp <- RPPADesignParams(controls=c("neg con", "pos con"))
+checkIdentical(dp@controls, list("neg con", "pos con"))
+
+## Specifying controls indirectly
+## :TODO: We need a slide design for this dataset before test can be added...
+#dp <- RPPADesignParams(slidedesign=file.path(path, "slidedesign.tsv"))
+#checkIdentical(dp@controls, list("neg con", "pos con"))
 
 ## This is for showing off the plot, where the controls dominate
-dp <- RPPADesignParams(grouping='bySample') 
+dp <- RPPADesignParams(grouping="bySample")
 dsn <- RPPADesignFromParams(jnk, dp)
 plot(jnk, dsn)
 
-## Putting a vector into a list (instead of making a list) seems to work
-## just fine. I really don't see why it should....
-## Apparently, we were clever enough to include an 'unlist' in the
-## .controlVector function. 
-#dp <- RPPADesignParams(grouping='bySample',
-#                       controls=list(c('neg con', 'pos con', 'blanks')))
-#dsn <- RPPADesignFromParams(jnk, dp)
-#plot(jnk, dsn)
+## Putting non-character elements into list should fail
+checkException(RPPADesignParams(controls=list(TRUE)),
+               msg="logical scalar list component should fail")
+checkException(RPPADesignParams(controls=list(pi)),
+               msg="numeric scalar list component should fail")
+checkException(RPPADesignParams(controls=list(1:3)),
+               msg="integer vector list component should fail")
+checkException(RPPADesignParams(controls=list(list("foo", "bar"))),
+               msg="list as list component should fail")
+
+## Using a vector as list component (instead of making a list) now illegal
+checkException(RPPADesignParams(controls=list(c("neg con", "pos con", "blanks"))),
+               msg="character vector list component should fail")
+
+dp <- RPPADesignParams(grouping="bySample",
+                       controls=list("neg con", "pos con", "blanks"))
+dsn <- RPPADesignFromParams(jnk, dp)
+plot(jnk, dsn)
 
 ###########################
-## tests of 'steps' and 'series'
+## tests of steps and series
 
-# why does this work? which value does it think is being set?
-dp <- RPPADesignParams(13) # this should probably give an error, but does not
+## :KRC: why does this work? which value does it think is being set?
+## :PLR: As its length is 1, the actual value passed is irrelevant; does the
+## same thing as if the default had been passed. Dumb but harmless.
+dp <- RPPADesignParams(steps=13) # should probably give an error, but does not
 dsn <- RPPADesignFromParams(jnk, dp)
 
-# why does this fail when the previous one works?
-try( dp <- RPPADesignParams(1:3) )
+## Specifying series without steps should fail (length > 1)
+checkException(RPPADesignParams(steps=1:3),
+               msg="both steps and series must be specified together")
 
 # This lets us pass in things of the wrong length, and we only
 # discover it later.
-dp <- RPPADesignParams(1:3, factor(1:3))
-try( dsn <- RPPADesignFromParams(jnk, dp) )
+dp <- RPPADesignParams(steps=1:3, series=factor(1:3))
+checkException(RPPADesignFromParams(jnk, dp),
+               msg="lengths of steps/series must equal prod(dim(RPPA))")
 
-# Why doesn't this crash? 
-dp <- RPPADesignParams(1:768, factor(1:768))
+# Why doesn't this crash?
+dp <- RPPADesignParams(steps=1:768, series=factor(1:768))
 dsn <- RPPADesignFromParams(jnk, dp)
 image(dsn)
 plot(jnk, dsn)
 
 # Here we have 768 series each of step size 1. I bet this will break
 # the fits later on...
-dp <- RPPADesignParams(rep(1, 768), factor(1:768))
+dp <- RPPADesignParams(steps=rep(1, 768), series=factor(1:768))
 dsn <- RPPADesignFromParams(jnk, dp)
 image(dsn)
 plot(jnk, dsn)
@@ -72,17 +98,33 @@ plot(jnk, dsn)
 ###########################
 ## tests of center
 
-# there is no reason to throw these errors
-try( dp <- RPPADesignParams(center='x') )
-try( dp <- RPPADesignParams(center=1) )
-try( dp <- RPPADesignParams(center=c(TRUE, FALSE)) )
+RPPADesignParams(center=1) # numeric center value silently converted to logical
+checkException(RPPADesignParams(center="x"),
+               msg="character value should fail")
+checkException(RPPADesignParams(center=c(TRUE, FALSE)),
+               msg="logical vector value should fail")
 
 ###########################
 ## tests of alias
 
+dp <- RPPADesignParams(alias=list(foo=1))
+checkException(RPPADesignFromParams(jnk, dp),
+               msg="too few list components should fail")
+
+dp <- RPPADesignParams(alias=list(foo=1, bar=2))
+checkException(RPPADesignFromParams(jnk, dp),
+               msg="missing reqd list components should fail")
+
+## :TODO: Lack an example of this in actual usage...
+## This passes existing checks here but would probably cause problems later...
+dp <- RPPADesignParams(alias=list(Alias=NA, Sample=NA))
+RPPADesignFromParams(jnk, dp)
+
+
+
 ###########################
 ## test of plot. main extra argument is "measure"
 
-try( plot(jnk, dsn, measure="bogus") ) # invalid measure
-
+checkException(plot(jnk, dsn, measure="bogus"),
+               msg="invalid value - nonexistent colname")
 
