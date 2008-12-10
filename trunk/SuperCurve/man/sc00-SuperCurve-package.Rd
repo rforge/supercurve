@@ -15,8 +15,8 @@
 %  \tabular{ll}{
 %    Package: \tab SuperCurve\cr
 %    Type: \tab Package\cr
-%    Version: \tab 1.0-0\cr
-%    Date: \tab 2008-06-06\cr
+%    Version: \tab 1.3-0\cr
+%    Date: \tab 2008-12-10\cr
 %    License: \tab See LICENSE for license information\cr
 %  }
 
@@ -26,6 +26,7 @@
 }
 \author{
   Kevin R. Coombes \email{kcoombes@mdanderson.org},
-  P. Roebuck \email{plroebuck@mdanderson.org}}
+  P. Roebuck \email{plroebuck@mdanderson.org}
+}
 \keyword{package}
 
