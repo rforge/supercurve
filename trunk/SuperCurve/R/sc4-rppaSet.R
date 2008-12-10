@@ -238,7 +238,17 @@ write.summary <- function(rppaset,
                      sQuote("prefix")))
     }
 
-    graphs <- as.logical(graphs)[1]
+    if (is.numeric(graphs)) {
+        graphs <- as.logical(graphs)
+    }
+
+    if (!is.logical(graphs)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("graphs")))
+    } else if (!(length(graphs) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("graphs")))
+    }
 
     ## Begin processing
     conc <- .fitSlot(rppaset, "concentrations")
@@ -291,7 +301,7 @@ write.summary <- function(rppaset,
         } else if (!(length(tiffdir) == 1)) {
             stop(sprintf("argument %s must be of length 1",
                          sQuote("tiffdir")))
-        } else if (!(file.exists(tiffdir) & file.info(path)$isdir)) {
+        } else if (!(file.exists(tiffdir) & file.info(tiffdir)$isdir)) {
             stop(sprintf("directory %s does not exist",
                          dQuote(tiffdir)))
         }
