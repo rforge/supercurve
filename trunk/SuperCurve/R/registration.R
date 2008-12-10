@@ -60,25 +60,11 @@
 ##
 
 ##-----------------------------------------------------------------------------
-## Returns vector containing "keys" for all registered objects.
-getRegisteredObjectKeys <- function(envir) {
-    ## Check arguments
-    .validate.envir(envir)
-
-    ## Begin processsing
-    return(keys <- ls(envir=envir))
-}
-
-getRegisteredMethodKeys <- getRegisteredObjectKeys
-
-
-##-----------------------------------------------------------------------------
 ## Returns list associated with key. List will contain named arguments provided
 ## upon registration.
 getRegisteredObject <- function(key,
                                 envir,
                                 objtype=c("method",
-                                          "class",
                                           "classname")) {
     ## Check arguments
     .validate.key(key)
@@ -95,6 +81,19 @@ getRegisteredObject <- function(key,
 
     return(get(key, envir=envir))
 }
+
+
+##-----------------------------------------------------------------------------
+## Returns vector containing "keys" for all registered objects.
+getRegisteredObjectKeys <- function(envir) {
+    ## Check arguments
+    .validate.envir(envir)
+
+    ## Begin processsing
+    return(keys <- ls(envir=envir))
+}
+
+getRegisteredMethodKeys <- getRegisteredObjectKeys
 
 
 ##-----------------------------------------------------------------------------
