@@ -1,5 +1,5 @@
 
-R version 2.7.0 (2008-04-22)
+R version 2.7.2 (2008-08-25)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -15,48 +15,55 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
+> ###
+> ### TESTRPPA.R
+> ###
+> 
+> 
 > options(warn=1)
 > library(SuperCurve)
 Loading required package: MASS
 Loading required package: cobs
 Loading required package: SparseM
-Package SparseM (0.77) loaded.  To cite, see citation("SparseM")
+Package SparseM (0.78) loaded.  To cite, see citation("SparseM")
 Loading required package: quantreg
 Loading required package: splines
+> source("checkFuncs")
 > 
 > path <- system.file("rppaCellData", package="SuperCurve")
 > 
-> try( RPPA("cellLineInfo.tsv") )            # file does not exist
-Error in RPPA("cellLineInfo.tsv") : 
-  file "./cellLineInfo.tsv" does not exist
-> try( RPPA("cellLineInfo.tsv", path=path) ) # not MV datafile
-Warning in getMicroVigeneVersion(pathname) : NAs introduced by coercion
+> checkException(RPPA("nosuch.tsv"),
++                msg="nonexistent file should fail")
+Error in RPPA("nosuch.tsv") : file "./nosuch.tsv" does not exist
+[1] TRUE
+> checkException(RPPA("cellLineInfo.tsv", path=path),
++                msg="not MicroVigene datafile should fail")
 Error in readMethod(file) : 
-  file "F:/SCDEVEL/SuperCurve.Rcheck/SuperCurve/rppaCellData/cellLineInfo.tsv" is not a MicroVigene datafile
+  file "/Users/paulr/Desktop/sandbox/trunk/SuperCurve.Rcheck/SuperCurve/rppaCellData/cellLineInfo.tsv" is not a MicroVigene datafile
+[1] TRUE
 > 
 > akt <- RPPA("Akt.txt", path=path)
 > image(akt, colorbar=TRUE)
 > 
-> try( image(akt, colorbar=1) ) # the error checking is wrong here
-Error in .local(x, ...) : argument 'colorbar' must be logical
-> try( image(akt, colorbar='red') ) # okay here?
-Error in .local(x, ...) : argument 'colorbar' must be logical
+> image(akt, colorbar=1) # numeric colorbar value silently converted to logical
 > 
-> try( image(akt, measure="bogus") ) # invalid measure
+> checkException(image(akt, colorbar="red"),
++                msg="character value should fail")
+Error in .local(x, ...) : argument 'colorbar' must be logical
+[1] TRUE
+> 
+> checkException(image(akt, measure="bogus"),
++                msg="invalid measure should fail")
 Error in .local(x, ...) : invalid measure 'bogus'
+[1] TRUE
 > 
-> # Why is there still no command that works easily across
-> # operating/display systems to open a new plotting window
-> # of fixed width?
-> devName <- getOption("device")
-> if (exists(devName, .GlobalEnv)) {
-+   devFun <- get(devName, .GlobalEnv)
-+ } else if (exists(devName, asNamespace("grDevices"))) {
-+   devFun <- get(devName, asNamespace("grDevices"))
+> if (getRversion() < "2.8.0") {
++     cat("Using outdated version of R...", "\n")
++     pdf(width=1.2, height=6)
 + } else {
-+   devFun <- pdf
++     dev.new(width=1.2, height=6)
 + }
-> devFun(width=1.2, height=6)
+Using outdated version of R... 
 > try( image(akt) )
 Error in plot.new() : figure margins too large
 > try( image(akt, colorbar=TRUE) )

@@ -1,5 +1,5 @@
 
-R version 2.7.0 (2008-04-22)
+R version 2.7.2 (2008-08-25)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -15,11 +15,25 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
+> ###
+> ### TESTCOBS.R
+> ###
+> 
+> 
+> if (!nzchar(Sys.getenv("SUPERCURVE_FULL_TEST"))) {
++     cat(">>>>                <<<<", "\n")
++     cat(">>>>  Test skipped  <<<<", "\n")
++     cat(">>>>                <<<<", "\n")
++     message(sprintf("To run all package tests, define %s environment variable",
++                     dQuote("SUPERCURVE_FULL_TEST")))
++     q("no")
++ }
+> options(warn=1)
 > library(SuperCurve)
 Loading required package: MASS
 Loading required package: cobs
 Loading required package: SparseM
-Package SparseM (0.77) loaded.  To cite, see citation("SparseM")
+Package SparseM (0.78) loaded.  To cite, see citation("SparseM")
 Loading required package: quantreg
 Loading required package: splines
 > 
@@ -30,20 +44,21 @@ Loading required package: splines
 > # first locate the list of assays
 > # the name 'proteins' is required
 > # must include a column named 'Antibody'
-> proteins <- read.table(file.path(home, 'proteinAssay.tsv'),
-+                        header=TRUE, sep='\t', as.is=TRUE)
+> proteins <- read.delim(file.path(home, "proteinAssay.tsv"), as.is=TRUE)
 > dimnames(proteins)[[1]] <- as.character(proteins$Antibody)
 > 
-> for (i in 1:nrow(proteins)) {
-+   temp <- RPPA(proteins$File[i], path=home)
-+   assign(proteins$Antibody[i], temp, 1)
+> for (i in seq_len(nrow(proteins))) {
++     temp <- RPPA(proteins$File[i], path=home)
++     assign(proteins$Antibody[i], temp, 1)
 + }
 > rm(i, temp)
 > 
 > ######################################
 > # work out the appropriate design layout
-> design <- RPPADesign(ERK2, grouping="blockSample",
-+                      center=TRUE, controls=list("neg con", "pos con"))
+> design <- RPPADesign(ERK2,
++                      grouping="blockSample",
++                      center=TRUE,
++                      controls=list("neg con", "pos con"))
 > 
 > ######################################
 > # must define the 'model' to use
@@ -58,17 +73,17 @@ Loading required package: splines
 > method <- 'nlrq'
 > source("testRblock", echo=TRUE, max.deparse.len=1024)
 
-> ## 
-> ## testRblock
-> ##
+> ###
+> ### TESTRBLOCK
+> ###
 > 
 > ## NOTE: We cannot give this file a name ending in '.R', since that
-> ## would force 'R CMD check' to  try to run it as a standalone
-> ## test. Instead, we want to be able to reuse the code in a number of
+> ## would force 'R CMD check' to try to run it as a standalone test.
+> ## Instead, we want to be able to reuse the code in a number of
 > ## different test runs, loading it with 'source'.
 > 
 > 
-> ############################################################################
+> ###############################################################################
 > ## assumes you have already defined the following variables before using
 > ## 'source' to run this code block:
 > ##    proteins (a data frame containing at least one column named 'Antibody'
@@ -77,45 +92,50 @@ Loading required package: splines
 > ##    model (the statistical model to fit)
 > ##    method (the method used for the first pass of the fit)
 > ##    measure (the quantification measure to fit)
-> ############################################################################
+> ###############################################################################
 > 
-> ver <- packageDescription('SuperCurve', fields='Version')
+> ver <- packageDescription("SuperCurve", fields="Version")
 
-> cat(paste("\nTest of SuperCurve version", ver, "\n"))
+> cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.0.1 
+Test of SuperCurve version 1.3.0 
 
 > cat(paste("model = ", model, "; method = ", method,
-+             "; measure = ", measure, "\n", sep=""))
-model = cobs; method = nlrq; measure = Mean.Net
++             "; measure = ", measure, sep=""), "\n")
+model = cobs; method = nlrq; measure = Mean.Net 
 
-> for (i in 1:nrow(proteins)) {
-+   itemName <- proteins$Antibody[i]
-+   item <- eval(as.name(itemName))
-+   temp <- try(RPPAFit(item, design, measure,
-+                       method=method,
-+                       model=model,
-+                       ignoreNegative=FALSE,
-+                       warnLevel=-1),
-+               TRUE)
-+   if(is(temp, 'try-error')) {
-+     print(paste(itemName, measure, ver, 'FAILED'))
-+     next
-+   }
-+   meansq <- mean(resid(temp)^2, na.rm=TRUE)
-+   tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim = 0.1)
-+   par(bg='white')
-+   plot(temp, xlim=c(-15,15), main=paste(itemName, measure, ver),
-+        sub=paste('Mean square residuals =', round(meansq)))
-+   if (FALSE) {
-+     dev.copy(png, file.path(paste(itemName, measure, ver, 'png', sep='.')),
-+              width=640, height=640)
-+     dev.off()
-+   }
-+   print(paste(itemName, measure, round(meansq), round(tmeansq)))
-+ }
-[1] "ERK2 Mean.Net 295256 121668"
-[1] "GSK3 Mean.Net 390348 159965"
+> for (i in seq_len(nrow(proteins))) {
++     itemName <- proteins$Antibody[i]
++     item <- eval(as.name(itemName))
++     temp <- try(RPPAFit(item,
++                         design,
++                         measure,
++                         method=method,
++                         model=model,
++                         ignoreNegative=FALSE,
++                         warnLevel=-1),
++                 TRUE)
++     if (is(temp, "try-error")) {
++         print(paste(itemName, measure, ver, "FAILED"))
++         next
++     }
++     meansq <- mean(resid(temp)^2, na.rm=TRUE)
++     tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim=0.1)
++     par(bg="white")
++     plot(temp,
++          xlim=c(-15, 15),
++          main=paste(itemName, measure, ver),
++          sub=paste('Mean square residuals =', round(meansq)))
++     if (FALSE) {
++         dev.copy(png,
++                  file.path(paste(itemName, measure, ver, "png", sep=".")),
++                  width=640,
++                  height=640)
++         dev.off()
++     }
++     .... [TRUNCATED] 
+[1] "ERK2 Mean.Net 295246 121653"
+[1] "GSK3 Mean.Net 390394 159987"
 [1] "JNK Mean.Net 327466 100243"
 
 > rm(i, itemName, item, meansq, tmeansq)
@@ -123,17 +143,17 @@ model = cobs; method = nlrq; measure = Mean.Net
 > method <- 'nlrob'
 > source("testRblock", echo=TRUE, max.deparse.len=1024)
 
-> ## 
-> ## testRblock
-> ##
+> ###
+> ### TESTRBLOCK
+> ###
 > 
 > ## NOTE: We cannot give this file a name ending in '.R', since that
-> ## would force 'R CMD check' to  try to run it as a standalone
-> ## test. Instead, we want to be able to reuse the code in a number of
+> ## would force 'R CMD check' to try to run it as a standalone test.
+> ## Instead, we want to be able to reuse the code in a number of
 > ## different test runs, loading it with 'source'.
 > 
 > 
-> ############################################################################
+> ###############################################################################
 > ## assumes you have already defined the following variables before using
 > ## 'source' to run this code block:
 > ##    proteins (a data frame containing at least one column named 'Antibody'
@@ -142,65 +162,125 @@ model = cobs; method = nlrq; measure = Mean.Net
 > ##    model (the statistical model to fit)
 > ##    method (the method used for the first pass of the fit)
 > ##    measure (the quantification measure to fit)
-> ############################################################################
+> ###############################################################################
 > 
-> ver <- packageDescription('SuperCurve', fields='Version')
+> ver <- packageDescription("SuperCurve", fields="Version")
 
-> cat(paste("\nTest of SuperCurve version", ver, "\n"))
+> cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.0.1 
+Test of SuperCurve version 1.3.0 
 
 > cat(paste("model = ", model, "; method = ", method,
-+             "; measure = ", measure, "\n", sep=""))
-model = cobs; method = nlrob; measure = Mean.Net
++             "; measure = ", measure, sep=""), "\n")
+model = cobs; method = nlrob; measure = Mean.Net 
 
-> for (i in 1:nrow(proteins)) {
-+   itemName <- proteins$Antibody[i]
-+   item <- eval(as.name(itemName))
-+   temp <- try(RPPAFit(item, design, measure,
-+                       method=method,
-+                       model=model,
-+                       ignoreNegative=FALSE,
-+                       warnLevel=-1),
-+               TRUE)
-+   if(is(temp, 'try-error')) {
-+     print(paste(itemName, measure, ver, 'FAILED'))
-+     next
-+   }
-+   meansq <- mean(resid(temp)^2, na.rm=TRUE)
-+   tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim = 0.1)
-+   par(bg='white')
-+   plot(temp, xlim=c(-15,15), main=paste(itemName, measure, ver),
-+        sub=paste('Mean square residuals =', round(meansq)))
-+   if (FALSE) {
-+     dev.copy(png, file.path(paste(itemName, measure, ver, 'png', sep='.')),
-+              width=640, height=640)
-+     dev.off()
-+   }
-+   print(paste(itemName, measure, round(meansq), round(tmeansq)))
-+ }
+> for (i in seq_len(nrow(proteins))) {
++     itemName <- proteins$Antibody[i]
++     item <- eval(as.name(itemName))
++     temp <- try(RPPAFit(item,
++                         design,
++                         measure,
++                         method=method,
++                         model=model,
++                         ignoreNegative=FALSE,
++                         warnLevel=-1),
++                 TRUE)
++     if (is(temp, "try-error")) {
++         print(paste(itemName, measure, ver, "FAILED"))
++         next
++     }
++     meansq <- mean(resid(temp)^2, na.rm=TRUE)
++     tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim=0.1)
++     par(bg="white")
++     plot(temp,
++          xlim=c(-15, 15),
++          main=paste(itemName, measure, ver),
++          sub=paste('Mean square residuals =', round(meansq)))
++     if (FALSE) {
++         dev.copy(png,
++                  file.path(paste(itemName, measure, ver, "png", sep=".")),
++                  width=640,
++                  height=640)
++         dev.off()
++     }
++     .... [TRUNCATED] 
 Loading required package: robustbase
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
 [1] "ERK2 Mean.Net 263983 124538"
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
 [1] "GSK3 Mean.Net 315415 156073"
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
 [1] "JNK Mean.Net 293567 104538"
 
 > rm(i, itemName, item, meansq, tmeansq)
-There were 28 warnings (use warnings() to see them)
 > 
 > method <- "nls"
 > source("testRblock", echo=TRUE, max.deparse.len=1024)
 
-> ## 
-> ## testRblock
-> ##
+> ###
+> ### TESTRBLOCK
+> ###
 > 
 > ## NOTE: We cannot give this file a name ending in '.R', since that
-> ## would force 'R CMD check' to  try to run it as a standalone
-> ## test. Instead, we want to be able to reuse the code in a number of
+> ## would force 'R CMD check' to try to run it as a standalone test.
+> ## Instead, we want to be able to reuse the code in a number of
 > ## different test runs, loading it with 'source'.
 > 
 > 
-> ############################################################################
+> ###############################################################################
 > ## assumes you have already defined the following variables before using
 > ## 'source' to run this code block:
 > ##    proteins (a data frame containing at least one column named 'Antibody'
@@ -209,43 +289,48 @@ There were 28 warnings (use warnings() to see them)
 > ##    model (the statistical model to fit)
 > ##    method (the method used for the first pass of the fit)
 > ##    measure (the quantification measure to fit)
-> ############################################################################
+> ###############################################################################
 > 
-> ver <- packageDescription('SuperCurve', fields='Version')
+> ver <- packageDescription("SuperCurve", fields="Version")
 
-> cat(paste("\nTest of SuperCurve version", ver, "\n"))
+> cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.0.1 
+Test of SuperCurve version 1.3.0 
 
 > cat(paste("model = ", model, "; method = ", method,
-+             "; measure = ", measure, "\n", sep=""))
-model = cobs; method = nls; measure = Mean.Net
++             "; measure = ", measure, sep=""), "\n")
+model = cobs; method = nls; measure = Mean.Net 
 
-> for (i in 1:nrow(proteins)) {
-+   itemName <- proteins$Antibody[i]
-+   item <- eval(as.name(itemName))
-+   temp <- try(RPPAFit(item, design, measure,
-+                       method=method,
-+                       model=model,
-+                       ignoreNegative=FALSE,
-+                       warnLevel=-1),
-+               TRUE)
-+   if(is(temp, 'try-error')) {
-+     print(paste(itemName, measure, ver, 'FAILED'))
-+     next
-+   }
-+   meansq <- mean(resid(temp)^2, na.rm=TRUE)
-+   tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim = 0.1)
-+   par(bg='white')
-+   plot(temp, xlim=c(-15,15), main=paste(itemName, measure, ver),
-+        sub=paste('Mean square residuals =', round(meansq)))
-+   if (FALSE) {
-+     dev.copy(png, file.path(paste(itemName, measure, ver, 'png', sep='.')),
-+              width=640, height=640)
-+     dev.off()
-+   }
-+   print(paste(itemName, measure, round(meansq), round(tmeansq)))
-+ }
+> for (i in seq_len(nrow(proteins))) {
++     itemName <- proteins$Antibody[i]
++     item <- eval(as.name(itemName))
++     temp <- try(RPPAFit(item,
++                         design,
++                         measure,
++                         method=method,
++                         model=model,
++                         ignoreNegative=FALSE,
++                         warnLevel=-1),
++                 TRUE)
++     if (is(temp, "try-error")) {
++         print(paste(itemName, measure, ver, "FAILED"))
++         next
++     }
++     meansq <- mean(resid(temp)^2, na.rm=TRUE)
++     tmeansq <- mean(resid(temp)^2, na.rm=TRUE, trim=0.1)
++     par(bg="white")
++     plot(temp,
++          xlim=c(-15, 15),
++          main=paste(itemName, measure, ver),
++          sub=paste('Mean square residuals =', round(meansq)))
++     if (FALSE) {
++         dev.copy(png,
++                  file.path(paste(itemName, measure, ver, "png", sep=".")),
++                  width=640,
++                  height=640)
++         dev.off()
++     }
++     .... [TRUNCATED] 
 [1] "ERK2 Mean.Net 257063 130929"
 [1] "GSK3 Mean.Net 302740 165287"
 [1] "JNK Mean.Net 283742 114890"
@@ -297,4 +382,5 @@ sample 91.4.10 sample 92.4.10 sample 93.4.11 sample 94.4.11 sample 95.4.12
        -3.1585        -6.5965        -3.9766        -5.4874        -7.3085 
 sample 96.4.12 
        -9.3296 
+> 
 > 
