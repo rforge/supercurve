@@ -4,13 +4,13 @@
 
 
 ##-----------------------------------------------------------------------------
-spatialNorm <- function(rppa,
-                        design,
-                        measure=c("Mean.Net", "Mean.Total"),
-                        cutoff=0.8,
-                        k=100,
-                        gamma=0.1,
-                        plotSurface=FALSE) {
+spatialCorrection <- function(rppa,
+                              design,
+                              measure=c("Mean.Net", "Mean.Total"),
+                              cutoff=0.8,
+                              k=100,
+                              gamma=0.1,
+                              plotSurface=FALSE) {
     ## Check arguments
     if (!is.RPPA(rppa)) {
         stop(sprintf("argument %s must be object of class %s",
@@ -141,6 +141,7 @@ spatialNorm <- function(rppa,
     ## Fits a generalized additive model to estimate a surface
     ## from positive controls
     for (dilution in dilutions) {
+        #pcsub <- positives[positives$Dilution == dilution, ]
         pcsub <- subset(positives, Dilution == dilution, drop=FALSE)
 
         ## Make choice of k robust in case that the number of
