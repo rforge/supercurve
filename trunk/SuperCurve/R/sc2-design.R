@@ -79,6 +79,8 @@ RPPADesignParams <- function(steps=rep(0, 1),
     if (!(is.list(alias) || is.data.frame(alias))) {
         stop(sprintf("argument %s must be list or data.frame",
                      sQuote("alias")))
+    } else if (is.data.frame(alias)) {
+        alias <- as.list(alias)
     }
 
     if (is.numeric(center)) {
