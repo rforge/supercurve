@@ -41,6 +41,18 @@
 
 
 ##-----------------------------------------------------------------------------
+.getFitMeasure <- function(rppa) {
+    ## Check arguments
+    stopifnot(is.RPPA(rppa))
+
+    ## Begin processing
+    fitMeasures <- c("Mean.Net", "Mean.Total", "Median.Net", "Median.Total")
+
+    return(fitMeasures[fitMeasures %in% colnames(rppa@data)])
+}
+
+
+##-----------------------------------------------------------------------------
 spatialCorrection <- function(rppa,
                               design,
                               measure=c("Mean.Net", "Mean.Total"),
@@ -52,6 +64,9 @@ spatialCorrection <- function(rppa,
     if (!is.RPPA(rppa)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppa"), "RPPA"))
+    } else if ("Spatial.Norm" %in% colnames(rppa@data)) {
+        stop(sprintf("argument %s has already been spatially corrected",
+                     sQuote("rppa")))
     }
 
     if (!is.RPPADesign(design)) {
@@ -82,6 +97,11 @@ spatialCorrection <- function(rppa,
                      sQuote("design"),
                      paste(dim.design, collapse="x")))
     }
+
+    ## :TBD: Technically, "Median.Net" and "Median.Total" are legal for this
+    ## routine if the RPPA contains these columns. Allow them?
+    ## If so, measure argument would become function passing rppa argument
+    ## returning potential fit column measures.
 
     measure <- match.arg(measure)
 
@@ -143,7 +163,6 @@ spatialCorrection <- function(rppa,
 
     ## Borrow SpotType and Dilution information from design
     layout <- design@layout
-## :WARN: Passing in an already processed RPPA will fail to merge correctly
     mydata <- merge(mydata, layout, by=c(.locationColnames(), "Sample"))
 
     ## :NOTE: This code seems to assume that only one positive control
