@@ -18,12 +18,16 @@ try( image(akt, measure="bogus") ) # invalid measure
 # operating/display systems to open a new plotting window
 # of fixed width?
 devName <- getOption("device")
-if (exists(devName, .GlobalEnv)) {
-  devFun <- get(devName, .GlobalEnv)
-} else if (exists(devName, asNamespace("grDevices"))) {
-  devFun <- get(devName, asNamespace("grDevices"))
-} else {
-  devFun <- pdf
+if (is.characdter(devName)) { # before R 2.8
+  if (exists(devName, .GlobalEnv)) {
+    devFun <- get(devName, .GlobalEnv)
+  } else if (exists(devName, asNamespace("grDevices"))) {
+    devFun <- get(devName, asNamespace("grDevices"))
+  } else {
+    devFun <- pdf
+  }
+} else { # new contortions in R 2.8
+  devFun <- devName
 }
 devFun(width=1.2, height=6)
 try( image(akt) )
