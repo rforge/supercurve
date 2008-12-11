@@ -1,6 +1,43 @@
 ###
-### SPATIAL.R - Used before RPPAFit, one slide at a time.
+### SPATIAL.R
 ###
+
+
+##-----------------------------------------------------------------------------
+.computeBackgroundCutoff <- function(mydata, measure, cutoff) {
+    ## Check arguments
+    stopifnot(is.data.frame(mydata))
+    stopifnot(is.character(measure) && length(measure) == 1)
+    stopifnot(is.numeric(cutoff) && length(cutoff) == 1)
+
+    ## Begin processing
+
+    ## Find all negative controls
+    negcon <- with(mydata, SpotType == "Blank" |
+                           SpotType == "Buffer" |
+                           SpotType == "NegCtrl")
+
+    ## Identify noise region
+    bg <- if (any(negcon)) {
+              mydata[[measure]][negcon]
+          } else {
+              ## Use background to compute noise region
+              mydata$Mean.Total - mydata$Mean.Net
+          }
+
+    ## Compute background cutoff using the quantile of 'cutoff' argument
+    bgCut <- quantile(bg, cutoff)
+
+    ## If computed background cutoff too low, use a larger quartile
+    if (bgCut <= 100) {
+        bgCut <- quantile(bg, 0.99)
+        if (bgCut <= 100) {
+            bgCut <- max(bg[-which.max(bg)])
+        }
+    }
+
+    return(bgCut)
+}
 
 
 ##-----------------------------------------------------------------------------
@@ -32,6 +69,18 @@ spatialCorrection <- function(rppa,
                                   "argument %s missing required columns: %s"),
                          sQuote("design"), paste(missingNames, collapse=", ")))
         }
+
+        if (!(any(design@layout$SpotType == "PosCtrl"))) {
+            stop("design contains no positive controls")
+        }
+    }
+
+    if (!identical(dim.rppa <- dim(rppa), dim.design <- dim(design))) {
+        stop(sprintf("dim of argument %s (%s) must match that of argument %s (%s)",
+                     sQuote("rppa"),
+                     paste(dim.rppa, collapse="x"),
+                     sQuote("design"),
+                     paste(dim.design, collapse="x")))
     }
 
     measure <- match.arg(measure)
@@ -77,6 +126,7 @@ spatialCorrection <- function(rppa,
                      sQuote("plotSurface")))
     }
 
+
     ## Begin processing
     if (!require(mgcv)) {
         stop(sprintf("%s package required for fitting the GAM in the %s method",
@@ -93,35 +143,15 @@ spatialCorrection <- function(rppa,
 
     ## Borrow SpotType and Dilution information from design
     layout <- design@layout
+## :WARN: Passing in an already processed RPPA will fail to merge correctly
     mydata <- merge(mydata, layout, by=c(.locationColnames(), "Sample"))
-
-    ## Find all negative controls
-    negcon <- with(mydata, SpotType == "Blank" |
-                           SpotType == "Buffer" |
-                           SpotType == "NegCtrl")
-
-    ## Identify noise region
-    bg <- if (sum(negcon) == 0) {
-              ## Use background to compute noise region
-              mydata$Mean.Total - mydata$Mean.Net
-          } else {
-              mydata[[measure]][negcon]
-          }
-
-    ## Compute background cutoff using the quantile of 'cutoff' argument
-    bgCut <- quantile(bg, cutoff)
-
-    ## If computed background cutoff too low, use a larger quartile
-    if (bgCut <= 100) {
-        bgCut <- quantile(bg, 0.99)
-        if (bgCut <= 100) {
-            bgCut <- max(bg[-which.max(bg)])
-        }
-    }
 
     ## :NOTE: This code seems to assume that only one positive control
     ## series exists on a slide. If multiple exist, they would seem to
     ## be blended together by this method, which may not be desirable.
+
+    ## Compute background cutoff
+    bgCut <- .computeBackgroundCutoff(mydata, measure, cutoff)
 
     ## Remove positive controls less than computed background cutoff
     poscon <- mydata$SpotType == "PosCtrl"
@@ -325,6 +355,7 @@ spatialCorrection <- function(rppa,
                       as.numeric(scaleBySurface(x, surfaces[1]))
                   }
 
+## :TODO: Rename new measurement column as?
     rppa@data$Spatial.Norm <- adjustment
 
     return(rppa)
