@@ -29,22 +29,24 @@ local({
     ##
 
     instdata.dir <- system.file("rppaTripleData", package="SuperCurve")
-    ## :BUG: Assay file does not reference 'cas3_3600.txt' so only 4 objects...
     proteinassayfile <- file.path(instdata.dir, "proteinAssay.tsv")
     proteinassay.df <- read.delim(proteinassayfile)
 
     rppas <- apply(proteinassay.df,
                    1,
                    function(proteinassay, datadir) {
-                       makeRPPAs(proteinassay[1],
-                                 proteinassay[2],
+                       makeRPPAs(proteinassay["Antibody"],
+                                 proteinassay["Filename"],
                                  datadir)
                    },
                    instdata.dir)
 
+    layoutinfofile <- file.path(instdata.dir, "layoutInfo.tsv")
+    layoutinfo.df <- read.delim(layoutinfofile)
     assign(design <- "tripledesign",
            RPPADesign(rppa <- get(rppas[1]),
                       grouping="byRow",
+                      alias=layoutinfo.df,
                       controls=list("Buffer",
                                     "Blank")))
 

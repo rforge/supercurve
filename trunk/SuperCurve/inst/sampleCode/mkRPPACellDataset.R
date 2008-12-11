@@ -35,8 +35,8 @@ local({
     rppas <- apply(proteinassay.df,
                    1,
                    function(proteinassay, datadir) {
-                       makeRPPAs(proteinassay[1],
-                                 proteinassay[2],
+                       makeRPPAs(proteinassay["Antibody"],
+                                 proteinassay["Filename"],
                                  datadir,
                                  xform=function(varname) {
                                      ## Distinguish from tumor data variable
@@ -53,10 +53,10 @@ local({
     ## in a single 4x4 subgrid
     rppa <- get(rppas[1])
     steps <- rep(c(rep(8:5, 2), rep(4:1, 2)), 40) - 4.5
-    rep.temp <- factor(paste('Rep', rep(rep(1:2, each=4), 80), sep=''))
+    rep.temp <- factor(paste("Rep", rep(rep(1:2, each=4), 80), sep=""))
     series <- factor(paste(as.character(rppa@data$Sample),
                            as.character(rep.temp),
-                           sep='.'))
+                           sep="."))
 
     assign(design <- "design40",
            RPPADesign(rppa,

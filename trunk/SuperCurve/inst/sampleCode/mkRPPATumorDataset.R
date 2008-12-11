@@ -35,15 +35,18 @@ local({
     rppas <- apply(proteinassay.df,
                    1,
                    function(proteinassay, datadir) {
-                       makeRPPAs(proteinassay[1],
-                                 proteinassay[2],
+                       makeRPPAs(proteinassay["Antibody"],
+                                 proteinassay["Filename"],
                                  datadir)
                    },
                    instdata.dir)
 
+    layoutinfofile <- file.path(instdata.dir, "layoutInfo.tsv")
+    layoutinfo.df <- read.delim(layoutinfofile)
     assign(design <- "tDesign",
            RPPADesign(rppa <- get(rppas[1]),
                       grouping="blockSample",
+                      alias=layoutinfo.df,
                       center=TRUE,
                       controls=list("neg con",
                                     "pos con")))
