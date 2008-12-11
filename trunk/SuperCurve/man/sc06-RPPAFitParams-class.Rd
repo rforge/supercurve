@@ -88,8 +88,8 @@ RPPAFitFromParams(rppa,
     on the concentration estimates.}
   \item{ignoreNegative}{logical scalar. If \code{TRUE}, convert negative values
     to NA before fitting the model.}
-  \item{trace}{logical scalar passed to \link{nls} in the \code{method} portion
-    of the routine}
+  \item{trace}{logical scalar passed to \link[stats]{nls} in the \code{method}
+    portion of the routine}
   \item{verbose}{logical scalar. If \code{TRUE}, print updates while fitting
     the data}
   \item{veryVerbose}{logical scalar. If \code{TRUE}, print voluminous updates
@@ -138,7 +138,7 @@ RPPAFitFromParams(rppa,
 }
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to
-  \link{new}, the preferred method is to use the \code{RPPAFitParams}
+  \link[methods]{new}, the preferred method is to use the \code{RPPAFitParams}
   function.
 }
 \section{Slots}{

@@ -2,6 +2,7 @@
 \alias{SuperCurveSettings-class}
 \alias{SuperCurveSettings}
 \alias{paramString,SuperCurveSettings-method}
+\alias{fitCurveAndSummarizeFromSettings}
 \docType{class}
 \title{Class "SuperCurveSettings"}
 \description{
@@ -16,6 +17,7 @@ SuperCurveSettings(txtdir,
                    fitparams)
 
 \S4method{paramString}{SuperCurveSettings}(object, ...)
+fitCurveAndSummarizeFromSettings(settings)
 }
 \arguments{
   \item{txtdir}{character string specifying the directory containing
@@ -28,12 +30,13 @@ SuperCurveSettings(txtdir,
   \item{designparams}{object of class \code{RPPADesignParams}}
   \item{fitparams}{object of class \code{RPPAFitParams}}
   \item{object}{object of class \code{SuperCurveSettings}}
+  \item{settings}{object of class \code{SuperCurveSettings}}
   \item{\dots}{extra arguments for generic routines.}
 }
 \section{Objects from the Class}{
-  Although objects of the class can be created by a direct call to \link{new},
-  the preferred method is to use the \code{SuperCurveSettings} generator
-  function.
+  Although objects of the class can be created by a direct call to
+  \link[methods]{new}, the preferred method is to use the
+  \code{SuperCurveSettings} generator function.
 }
 \section{Slots}{
   \describe{
@@ -94,6 +97,7 @@ settings <- SuperCurveSettings(txtdir=system.file("rppaTumorData",
                                outdir=tempdir(),
                                designparams=designparams,
                                fitparams=fitparams)
+fitCurveAndSummarizeFromSettings(settings)
   }
 }
 \keyword{file}

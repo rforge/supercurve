@@ -127,7 +127,7 @@ seriesNames(design)
 }
 \section{Objects from the Class}{
   Although objects of these classes can be created by a direct call to
-  \link{new}, the preferred method is to start with the
+  \link[methods]{new}, the preferred method is to start with the
   \code{RPPADesignParams} generator, followed by the
   \code{RPPADesignFromParams} function to construct the final object
   (the \code{RPPADesign} generator is directly implemented in this way).

@@ -6,7 +6,11 @@
   \code{RPPASet} and summarizes the quantification results into one file.  
 }
 \usage{
-write.summary(rppaset, path, prefix="supercurve", graphs=TRUE, tiffdir=NULL)
+write.summary(rppaset,
+              path,
+              prefix="supercurve",
+              graphs=TRUE,
+              tiffdir=NULL)
 }
 \arguments{
   \item{rppaset}{object of class \code{RPPASet}}

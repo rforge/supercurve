@@ -55,11 +55,11 @@ registerMethod(key, method, ..., envir)
 }
 \author{P. Roebuck \email{plroebuck@mdanderson.org}}
 \seealso{
-  The \code{envir} argument of \code{\link{eval}}, \code{\link{get}},
-  and \code{\link{exists}}.
+  The \code{envir} argument of \code{\link[base]{eval}},
+  \code{\link[base]{get}}, and \code{\link[base]{exists}}.
 
-  \code{\link{assign}},
-  \code{\link{get}}
+  \code{\link[base]{assign}},
+  \code{\link[base]{get}}
 }
 \keyword{data}
 \keyword{internal}

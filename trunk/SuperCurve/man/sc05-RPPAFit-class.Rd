@@ -168,7 +168,7 @@
   \code{\linkS4class{RPPA}},
   \code{\linkS4class{RPPADesign}},
   \code{\link{RPPAFit}},
-  \code{\link{hist}}
+  \code{\link[graphics]{hist}}
 }
 \examples{
 path <- system.file("rppaTumorData", package="SuperCurve")

@@ -18,7 +18,7 @@ RPPA(file, path=".", software="microvigene")
 \S4method{summary}{RPPA}(object, \dots)
 }
 \arguments{
-  \item{file}{character string or \link{connection} specifying text file
+  \item{file}{character string or \link[base]{connection} specifying text file
     containing quantifications of a reverse-phase protein array experiment}
   \item{path}{character string specifying the path from the current
     directory to the file. The default value assumes the file is
@@ -34,8 +34,9 @@ RPPA(file, path=".", software="microvigene")
   \item{colorbar}{logical scalar that determines whether to include a
     color bar in the plot. If \code{TRUE}, the image cannot be used as
     one panel in a window with multiple plots. Default is \code{FALSE}.}
-  \item{col}{graphics parameter used by \link{image}. It is included here
-    to change the default color scheme to use \link{terrain.colors}.}
+  \item{col}{graphics parameter used by \link[graphics]{image}. It is
+    included here to change the default color scheme to use
+    \link[grDevices]{terrain.colors}.}
   \item{\dots}{extra arguments for generic or plotting routines}
 }
 \details{
@@ -65,8 +66,9 @@ RPPA(file, path=".", software="microvigene")
   to read \emph{MicroVigene} quantification files in text format.
 }
 \section{Objects from the Class}{
-  Although objects of the class can be created by a direct call to \link{new},
-  the preferred method is to use the \code{RPPA} generator function.
+  Although objects of the class can be created by a direct call to
+  \link[methods]{new}, the preferred method is to use the
+  \code{RPPA} generator function.
 }
 \section{Slots}{
   \describe{

@@ -38,8 +38,8 @@ RPPASet(path, designparams, fitparams, software="microvigene")
 }
 \section{Objects from the Class}{
   Although objects of the class can (in theory) be created by a direct call
-  to \link{new}, the only realistic method is to use the \code{RPPASet}
-  generator function.
+  to \link[methods]{new}, the only realistic method is to use the
+  \code{RPPASet} generator function.
 }
 \section{Slots}{
   \describe{

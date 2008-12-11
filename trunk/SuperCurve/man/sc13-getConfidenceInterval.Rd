@@ -22,7 +22,8 @@ getConfidenceInterval(result, alpha=0.1, nSim=50)
   that the errors in the observed \eqn{Y} intensities are independent
   normal values, with mean centered on the estimated curve and
   standard deviation that varies smoothly as a function of the (log)
-  concentration. The smooth function is estimated using \code{\link{loess}}.
+  concentration. The smooth function is estimated using
+  \code{\link[stats]{loess}}.
   The residuals are resampled from this estimate and the model is refit;
   the confidence intervals are computed empirically as symmetrically
   defined quantiles of the refit parameter sets.

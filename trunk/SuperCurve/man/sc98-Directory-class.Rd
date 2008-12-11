@@ -15,8 +15,9 @@ Directory(path)
   \item{path}{character string specifying a directory}
 }
 \section{Objects from the Class}{
-  Although objects of the class can be created by a direct call to \link{new},
-  the preferred method is to use the \code{Directory} generator function.
+  Although objects of the class can be created by a direct call to
+  \link[methods]{new}, the preferred method is to use the \code{Directory}
+  generator function.
 }
 \section{Slots}{
   \describe{
