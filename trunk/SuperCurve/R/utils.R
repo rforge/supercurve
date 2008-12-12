@@ -6,6 +6,10 @@
 ##-----------------------------------------------------------------------------
 ## Used to enable providing consistent naming for measures.
 .capwords <- function(s, strict=FALSE) {
+    ## Check arguments
+    stopifnot(is.character(s))
+
+    ##-------------------------------------------------------------------------
     cap <- function(s) {
         paste(toupper(substring(s, 1, 1)),
               {
@@ -19,6 +23,8 @@
               collapse=".")
     }
 
+
+    ## Begin processing
     return(sapply(strsplit(s, split="\\."),
                   cap,
                   USE.NAMES=!is.null(names(s))))
@@ -52,10 +58,51 @@
     ## Check arguments
     stopifnot(is.data.frame(layout))
 
+    ## Begin processing
     return(sapply(.locationColnames(),
                   function(df, column) {
                       max(df[[column]])
                   },
                   df=layout))
+}
+
+
+##-----------------------------------------------------------------------------
+.pkgRversion <- function(pkgname) {
+    ## Check arguments
+    stopifnot(is.character(pkgname) && length(pkgname) == 1)
+
+    ## Begin processing
+    substring(packageDescription(pkgname)[["Built"]], 3, 5)
+}
+
+
+##-----------------------------------------------------------------------------
+## A version of all.equal() for the slots of an object
+slot.all.equal <- function(x,
+                           y,
+                           ...) {
+    ## Check arguments
+    stopifnot(isS4(x))
+    stopifnot(isS4(y))
+
+    ## Begin processing
+    msg <- NULL
+    slotnames <- slotNames(x)
+    for (slotname in slotnames) {
+        aeq <- all.equal(slot(x, slotname),
+                         slot(y, slotname),
+                         ...)
+        if (!isTRUE(aeq)) {
+            msg <- c(msg, paste("slot ", sQuote(slotname), ": ", aeq, sep=''))
+        }
+    }
+
+    ## Pass or fail?
+    if (is.null(msg)) {
+        TRUE
+    } else { 
+        msg
+    }
 }
 
