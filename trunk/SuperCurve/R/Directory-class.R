@@ -9,11 +9,11 @@ setClass("Directory",
 
 
 ##-----------------------------------------------------------------------------
-## Validity method
+## Invoked by validObject() method.
 validDirectory <- function(object) {
 
     cat("validating", class(object), "object", "\n")
-    problems <- NULL
+    msg <- NULL
 
     ## Validate path slot
     {
@@ -21,26 +21,32 @@ validDirectory <- function(object) {
 
         ## Ensure only single path
         if (length(path) != 1) {
-            problems <- c(problems, "path must be of length 1")
+            msg <- c(msg, "path must be of length 1")
         }
 
         ## Ensure path exists (and appropriate filesystem object)
         if (!file.exists(path)) {
-            problems <- c(problems, "path does not exist")
+            msg <- c(msg, "path does not exist")
         } else if (!file.info(path)$isdir) {
-            problems <- c(problems, "path is not directory")
+            msg <- c(msg, "path is not directory")
         }
     }
 
     ## Pass or fail?
-    if (!is.null(problems)) {
-        return(problems)
+    if (is.null(msg)) {
+        TRUE
     } else {
-        return(TRUE)
+        msg
     }
 }
 
 setValidity("Directory", validDirectory)
+
+
+##-----------------------------------------------------------------------------
+is.Directory <- function(x) {
+    inherits(x, "Directory")
+}
 
 
 ##-----------------------------------------------------------------------------
@@ -83,12 +89,6 @@ Directory <- function(path) {
     ## Create new class
     new("Directory",
         path=path)
-}
-
-
-##-----------------------------------------------------------------------------
-is.Directory <- function(x) {
-    inherits(x, "Directory")
 }
 
 

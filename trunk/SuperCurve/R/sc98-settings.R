@@ -15,11 +15,11 @@ setClass("SuperCurveSettings",
 
 
 ##-----------------------------------------------------------------------------
-## Validity method
+## Invoked by validObject() method.
 validSuperCurveSettings <- function(object) {
 
     cat("validating", class(object), "object", "\n")
-    problems <- NULL
+    msg <- NULL
 
     ## Validate txtdir slot
     {
@@ -28,7 +28,7 @@ validSuperCurveSettings <- function(object) {
         ## Ensure directory contains TXT files
         txt.re <- ".*[tT][xX][tT]$"
         if (length(list.files(path, pattern=txt.re)) == 0) {
-            problems <- c(problems, "txt directory contains no text files")
+            msg <- c(msg, "txt directory contains no text files")
         }
     }
 
@@ -39,7 +39,7 @@ validSuperCurveSettings <- function(object) {
         ## Ensure directory contains TIFF files
         tiff.re <- ".*[tT][iI][fF]{1,2}$"
         if (length(list.files(path, pattern=tiff.re)) == 0) {
-            problems <- c(problems, "img directory contains no TIFF files")
+            msg <- c(msg, "img directory contains no TIFF files")
         }
     }
 
@@ -49,19 +49,25 @@ validSuperCurveSettings <- function(object) {
 
         ## Ensure directory is writable
         if (!(file.access(path, mode=2) == 0)) {
-            problems <- c(problems, "output directory is not writable")
+            msg <- c(msg, "output directory is not writable")
         }
     }
 
     ## Pass or fail?
-    if (!is.null(problems)) {
-        return(problems)
+    if (is.null(msg)) {
+        TRUE
     } else {
-        return(TRUE)
+        msg
     }
 }
 
 setValidity("SuperCurveSettings", validSuperCurveSettings)
+
+
+##-----------------------------------------------------------------------------
+is.SuperCurveSettings <- function(x) {
+    inherits(x, "SuperCurveSettings")
+}
 
 
 ##-----------------------------------------------------------------------------
@@ -156,10 +162,4 @@ setMethod("paramString", "SuperCurveSettings",
           indent(paramString(object@fitparams, fitparams.slots)), "\n",
           sep="")
 })
-
-
-##-----------------------------------------------------------------------------
-is.SuperCurveSettings <- function(x) {
-    inherits(x, "SuperCurveSettings")
-}
 
