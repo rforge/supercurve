@@ -24,6 +24,46 @@ setClass("RPPADesignParams",
 
 
 ##-----------------------------------------------------------------------------
+## Invoked by validObject() method.
+validRPPADesign <- function(object) {
+
+    cat("validating", class(object), "object", "\n")
+    msg <- NULL
+
+    reqdMeasures = c("Main.Row",
+                     "Main.Col",
+                     "Sub.Row",
+                     "Sub.Col",
+                     "Sample")
+    nreqdMeasures <- length(reqdMeasures) + 1
+
+    ## Ensure minimum number of columns
+    if (!(ncol(object@layout) >= nreqdMeasures)) {
+        msg <- c(msg, "not enough columns in layout")
+    }
+
+    ## Ensure required columns
+    found <- reqdMeasures %in% colnames(object@layout)
+    if (!all(found)) {
+        missingColumns <- reqdMeasures[!found]
+        msg <- c(msg, sprintf(ngettext(length(missingColumns),
+                                       "missing required column %s",
+                                       "missing required columns %s"),
+                              paste(dQuote(missingColumns), collapse = ", ")))
+    }
+
+    ## Pass or fail?
+    if (is.null(msg)) {
+        TRUE
+    } else {
+        msg
+    }
+}
+
+setValidity("RPPADesign", validRPPADesign)
+
+
+##-----------------------------------------------------------------------------
 is.RPPADesign <- function(x) {
     inherits(x, "RPPADesign")
 }
