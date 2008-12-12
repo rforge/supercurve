@@ -23,6 +23,9 @@ RPPA <- function(file, path=".", software="microvigene") {
         if (!(length(file) == 1)) {
             stop(sprintf("argument %s must be of length 1",
                          sQuote("file")))
+        } else if (!(nzchar(file))) {
+            stop(sprintf("argument %s must not be empty string",
+                         sQuote("file")))
         }
 
         if (!is.character(path)) {
@@ -30,6 +33,9 @@ RPPA <- function(file, path=".", software="microvigene") {
                          sQuote("path")))
         } else if (!(length(path) == 1)) {
             stop(sprintf("argument %s must be of length 1",
+                         sQuote("path")))
+        } else if (!(nzchar(path))) {
+            stop(sprintf("argument %s must not be empty string",
                          sQuote("path")))
         }
 

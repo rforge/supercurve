@@ -60,10 +60,26 @@ readQuantification <- function(file, software) {
         stop(sprintf("cannot import data from file %s", dQuote(file)))
     }
 
+    reqdColnames <- c("Main.Row",
+                      "Main.Col",
+                      "Sub.Row",
+                      "Sub.Col",
+                      "Sample")
+
     ## Ensure minimum number of columns
-    nreqdColumns <- 6
+    nreqdColumns <- length(reqdColnames) + 1
     if (!(ncol(quant.df) >= nreqdColumns)) {
         stop("not enough columns in datafile")
+    }
+
+    ## Ensure required columns exist
+    found <- reqdColnames %in% colnames(quant.df)
+    if (!all(found)) {
+        missingColumns <- reqdColnames[!found]
+        stop(sprintf(ngettext(length(missingColumns),
+                              "missing required column %s",
+                              "missing required columns %s"),
+                     paste(dQuote(missingColumns), collapse = ", ")))
     }
 
     ## Ensure number of rows matches slide dimensions
