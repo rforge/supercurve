@@ -19,16 +19,13 @@ validDirectory <- function(object) {
     {
         path <- object@path
 
-        ## Ensure only single path
-        if (length(path) != 1) {
-            msg <- c(msg, "path must be of length 1")
-        }
-
         ## Ensure path exists (and appropriate filesystem object)
         if (!file.exists(path)) {
-            msg <- c(msg, "path does not exist")
+            msg <- c(msg, sprintf("path %s does not exist",
+                                  dQuote(path)))
         } else if (!file.info(path)$isdir) {
-            msg <- c(msg, "path is not directory")
+            msg <- c(msg, sprintf("path %s is not directory",
+                                  dQuote(path)))
         }
     }
 
@@ -61,8 +58,7 @@ setAs("Directory", "character",
 ## Coercion method
 setAs("character", "Directory",
       function(from) {
-          new("Directory",
-              path=from)
+          Directory(from)
       })
 
 
@@ -76,14 +72,6 @@ Directory <- function(path) {
     } else if (!(length(path) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("path")))
-    }
-
-    if (!file.exists(path)) {
-        stop(sprintf("path %s does not exist",
-                     dQuote(path)))
-    } else if (!file.info(path)$isdir) {
-        stop(sprintf("path %s is not directory",
-                     dQuote(path)))
     }
 
     ## Create new class
@@ -101,6 +89,6 @@ pathname <- function(object) {
 
     }
 
-    return(as(object@path, "character"))
+    return(as(object, "character"))
 }
 
