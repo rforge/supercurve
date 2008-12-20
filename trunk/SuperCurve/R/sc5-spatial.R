@@ -4,7 +4,10 @@
 
 
 ##-----------------------------------------------------------------------------
-.computeBackgroundCutoff <- function(mydata, measure, cutoff) {
+## Computes the background cutoff of a slide.
+.computeBackgroundCutoff <- function(mydata,
+                                     measure,
+                                     cutoff) {
     ## Check arguments
     stopifnot(is.data.frame(mydata))
     stopifnot(is.character(measure) && length(measure) == 1)
@@ -41,18 +44,6 @@
 
 
 ##-----------------------------------------------------------------------------
-.getFitMeasure <- function(rppa) {
-    ## Check arguments
-    stopifnot(is.RPPA(rppa))
-
-    ## Begin processing
-    fitMeasures <- c("Mean.Net", "Mean.Total", "Median.Net", "Median.Total")
-
-    return(fitMeasures[fitMeasures %in% colnames(rppa@data)])
-}
-
-
-##-----------------------------------------------------------------------------
 spatialCorrection <- function(rppa,
                               design,
                               measure=c("Mean.Net", "Mean.Total"),
@@ -64,9 +55,11 @@ spatialCorrection <- function(rppa,
     if (!is.RPPA(rppa)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppa"), "RPPA"))
-    } else if ("Spatial.Norm" %in% colnames(rppa@data)) {
-        stop(sprintf("argument %s has already been spatially corrected",
-                     sQuote("rppa")))
+    } else if ("Spatial.Adj" %in% colnames(rppa@data)) {
+        ## Don't allow doing this again as the merge will screw up...
+        warning(sprintf("argument %s has already been spatially corrected",
+                        sQuote("rppa")))
+        return(rppa)
     }
 
     if (!is.RPPADesign(design)) {
@@ -98,11 +91,6 @@ spatialCorrection <- function(rppa,
                      paste(dim.design, collapse="x")))
     }
 
-    ## :TBD: Technically, "Median.Net" and "Median.Total" are legal for this
-    ## routine if the RPPA contains these columns. Allow them?
-    ## If so, measure argument would become function passing rppa argument
-    ## returning potential fit column measures.
-
     measure <- match.arg(measure)
 
     if (!is.numeric(cutoff)) {
@@ -116,13 +104,15 @@ spatialCorrection <- function(rppa,
                      sQuote("cutoff"), 0, 1))
     }
 
-    ## :TBD: What is valid range of values? [passed directly to mgcv::s()]
-    ## Just pass through - should be >=2, -1 (calculated), or large
+    ## Valid value is >= 2. [passed directly to mgcv::s()]
     if (!is.numeric(k)) {
         stop(sprintf("argument %s must be numeric",
                      sQuote("k")))
     } else if (!(length(k) == 1)) {
         stop(sprintf("argument %s must be of length 1",
+                     sQuote("k")))
+    } else if (!is.finite(k)) {
+        stop(sprintf("argument %s must be finite",
                      sQuote("k")))
     }
 
@@ -133,7 +123,7 @@ spatialCorrection <- function(rppa,
     } else if (!(length(gamma) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("gamma")))
-    } else if (!(gamma > 0)) {
+    } else if (!(is.finite(gamma) && gamma > 0)) {
         stop(sprintf("argument %s must be a positive quantity",
                      sQuote("gamma")))
     }
@@ -146,11 +136,11 @@ spatialCorrection <- function(rppa,
                      sQuote("plotSurface")))
     }
 
-
     ## Begin processing
     if (!require(mgcv)) {
         stop(sprintf("%s package required for fitting the GAM in the %s method",
-                     sQuote("mgcv"), sQuote("spatialNorm")))
+                     sQuote("mgcv"),
+                     sQuote("spatialNorm")))
     }
 
     ## Set up the row and column variables
@@ -165,10 +155,6 @@ spatialCorrection <- function(rppa,
     layout <- design@layout
     mydata <- merge(mydata, layout, by=c(.locationColnames(), "Sample"))
 
-    ## :NOTE: This code seems to assume that only one positive control
-    ## series exists on a slide. If multiple exist, they would seem to
-    ## be blended together by this method, which may not be desirable.
-
     ## Compute background cutoff
     bgCut <- .computeBackgroundCutoff(mydata, measure, cutoff)
 
@@ -176,6 +162,10 @@ spatialCorrection <- function(rppa,
     poscon <- mydata$SpotType == "PosCtrl"
     is.na(mydata[poscon, measure]) <- mydata[poscon, measure] < bgCut
     positives <- mydata[poscon, ]
+
+    ## :NOTE: This code seems to assume that only one positive control
+    ## series exists on a slide. If multiple exist, they would seem to
+    ## be blended together by this method, which may not be desirable.
 
     ## Determine positive control dilutions
     dilutions <- sort(unique(positives$Dilution), decreasing=TRUE)
@@ -201,15 +191,17 @@ spatialCorrection <- function(rppa,
             adjK <- round(spotCount / 3)  ## arbitrary magic number
         }
 
-        b1 <- gam(Mean.Net ~ s(Row, Col, bs="ts", k=adjK),
+        b1 <- gam(switch(EXPR=measure,
+                         Mean.Net   = Mean.Net   ~ s(Row, Col, bs="ts", k=adjK),
+                         Mean.Total = Mean.Total ~ s(Row, Col, bs="ts", k=adjK)),
                   data=pcsub,
                   gamma=gamma)
         surface <- paste("surface", dilution, sep="")
         assign(surface, predict.gam(b1, newdata=pd))
+        rm(b1)
     }
 
     ## Plot the different surfaces
-    ## :TBD: What's the best way to organize various levels of surface plots?
     if (plotSurface) {
         temprppa <- rppa
         par(ask=TRUE)
@@ -238,59 +230,48 @@ spatialCorrection <- function(rppa,
 
 
     ##-------------------------------------------------------------------------
-    ## :TODO: But what does method "do"?
-    ## The "which.bin" function takes as input a vector
-    ## whose first value is the measure to be corrected
-    ## (either Mean.Net or Mean.Total) and the others
-    ## values at each level of predicted surface.
-    ## Returns the surface to which each spot is closest in intensity
-    which.bin <- function(value) {
-        stopifnot(is.numeric(value) && length(value) > 1)
+    ## For each spot on the array, finds the positive control surface with the
+    ## most similar expression level.
+    which.surface <- function(meas,
+                              surfs) {
+        stopifnot(is.numeric(meas) && length(meas) == 1)
+        stopifnot(is.numeric(surfs) && length(surfs) >= 1)
 
-        x <- value[1]
-        vec <- value[-1]
-        n <- length(vec)
-        place <- NA
+        n <- length(surfs)
+        x.surf <- NA     # index of most similar surface
         for (i in seq_len(n-1)) {
-            if (vec[i] > x && x > vec[i+1]) {
-                place <- i
+            if (surfs[i] > meas && meas > surfs[i+1]) {
+                x.surf <- i
                 break
             }
 
-            if (is.na(place)) {
-                if (x >= vec[1]) {
-                    place <- 0
-                } else if (x <= vec[n]) {
-                    place <- n
+            if (is.na(x.surf)) {
+                if (meas >= surfs[1]) {
+                    x.surf <- 0
+                } else if (meas <= surfs[n]) {
+                    x.surf <- n
                 }
             }
         }
 
-        return(place)
+        return(x.surf)
     }
 
 
     ##-------------------------------------------------------------------------
-    ## :TODO: But what does method "do"?
-    ## The "getp" function takes as input a vector
-    ## whose first value is the output from the "which.bin" function,
-    ## the second is the measure to be corrected
-    ## (either Mean.Net or Mean.Total) and the others
-    ## values at each level of predicted surface.
-    ## :TODO: Reword the following...
-    ## If the spot to be corrected falls between the two surfaces, the value
-    ## returned is the fraction it falls between the two surfaces;
-    ## otherwise, a 0 is returned.
-    getp <- function(value) {
-        stopifnot(is.numeric(value) && length(value) >= 3)
+    ## Returns the linear interpolation when the level of spot expression falls
+    ## between two surfaces; otherwise, 0.
+    getp <- function(x.surf,
+                     meas,
+                     surfs) {
+        stopifnot(is.numeric(x.surf) && length(x.surf) == 1)
+        stopifnot(is.numeric(meas) && length(meas) == 1)
+        stopifnot(is.numeric(surfs) && length(surfs) >= 1)
 
-        item <- value[1]
-        mn <- value[2]
-        vec <- value[-(1:2)]
-        n <- length(vec)
-
-        p <- if (item != 0 && item != n) {
-                (vec[item] - mn) / (vec[item] - vec[item+1])
+        n <- length(surfs)
+        stopifnot(x.surf >= 0 && x.surf <= n)
+        p <- if (x.surf != 0 && x.surf != n) {
+                 (surfs[x.surf] - meas) / (surfs[x.surf] - surfs[x.surf+1])
              } else {
                  0
              }
@@ -298,38 +279,32 @@ spatialCorrection <- function(rppa,
 
 
     ##-------------------------------------------------------------------------
-    ## :TODO: But what does method "do"?
-    ## The "getadj" function takes as input a vector
-    ## whose first value is the output from the "which.bin" function,
-    ## the second is output from the "getp" function and the third
-    ## is the measure to be corrected
-    ## (either Mean.Net or Mean.Total). The other values are the corrected
-    ## measure values. If we want to correct the Mean.Net values of each
-    ## spot, then the fourth column of the input matrix is the Mean.Net value
-    ## scaled to the first positive control surface, the fifth is the
-    ## Mean.Net values scaled to the half strength positive controls and so on.
-    ## Returns the overall adjustment.
-    getadj <- function(value) {
-        stopifnot(is.numeric(value) && length(value) >= 3)
+    ## Finds the surface or linear interpolation of two surfaces that will be
+    ## used to perform the scaling. Returns the overall adjustment.
+    getadj <- function(x.surf,
+                       p,
+                       adjs) {
+        stopifnot(is.numeric(x.surf) && length(x.surf) == 1)
+        stopifnot(is.numeric(p) && length(p) == 1)
+        stopifnot(is.numeric(adjs) && length(adjs) >= 1)
 
-        item <- value[1]
-        p <- value[2]
-        vec <- value[-(1:2)]
-        n <- length(vec)
-
-        adj <- if (item == 0) {
-                   vec[1]
-               } else if (item == n) {
-                   vec[n]
+        n <- length(adjs)
+        stopifnot(x.surf >= 0 && x.surf <= n)
+        adj <- if (x.surf == 0) {
+                   adjs[1]
+               } else if (x.surf == n) {
+                   adjs[n]
                } else {
-                   vec[item]*(1-p) + vec[item+1]*p
+                   adjs[x.surf]*(1-p) + adjs[x.surf+1]*p
                }
     }
 
 
     ##-------------------------------------------------------------------------
-    ## Scales measurement using values of surface
-    scaleBySurface <- function(x, surface, n=1) {
+    ## Scales measurement using values of surface.
+    scaleBySurface <- function(x,
+                               surface,
+                               n=1) {
         stopifnot(is.numeric(x))
         stopifnot(is.character(surface))
         stopifnot(is.numeric(n))
@@ -341,7 +316,7 @@ spatialCorrection <- function(rppa,
 
 
     adjustment <- if (ndilutions > 1) {
-                      ## Organize matrix for input into "which.bin" function
+                      ## Organize input data for "which.surface" function
                       input.mat <- as.matrix(rppa@data[, measure])
                       for (surface in surfaces) {
                           s1 <- eval(as.name(surface))
@@ -352,30 +327,49 @@ spatialCorrection <- function(rppa,
 
                       ## Find closest positive control surface and fraction
                       ## between two surfaces
-                      place <- apply(input.mat, 1, which.bin)
+                      place <- apply(input.mat,
+                                     1,
+                                     function(x) {
+                                         which.surface(meas=x[1],
+                                                       surfs=x[-1])
+                                     })
                       values.mat <- cbind(place, input.mat)
                       rownames(values.mat) <- NULL
-                      p <- apply(values.mat, 1, getp)
+                      p <- apply(values.mat,
+                                 1,
+                                 function(x) {
+                                     getp(x.surf=x[1],
+                                          meas=x[2],
+                                          surfs=x[-(1:2)])
+                                 })
 
                       ## Perform scaling on each positive control surface
                       x <- rppa@data[, measure]
-                      adj <- sapply(surfaces, scaleBySurface, x=x, n=3)
-                      dimnames(adj) <- list(NULL, 
-                                            paste("adj", dilutions, sep=""))
+                      adjs <- sapply(surfaces,
+                                     scaleBySurface,
+                                     x=x,
+                                     n=3)
+                      dimnames(adjs) <- list(NULL,
+                                             paste("adj", dilutions, sep=""))
 
                       ## Now retrieve appropriate adjustment based on the
                       ## closest positive control surface and the fraction
                       ## between two surfaces as computed by "getadj" function.
-                      adjust.mat <- cbind(place, p, adj)
+                      adjust.mat <- cbind(place, p, adjs)
                       rownames(adjust.mat) <- NULL
-                      apply(adjust.mat, 1, getadj)
+                      apply(adjust.mat,
+                            1,
+                            function(x) {
+                                getadj(x.surf=x[1],
+                                       p=x[2],
+                                       adjs=x[-(1:2)])
+                            })
                   } else {
                       x <- rppa@data[, measure]
                       as.numeric(scaleBySurface(x, surfaces[1]))
                   }
 
-## :TODO: Rename new measurement column as?
-    rppa@data$Spatial.Norm <- adjustment
+    rppa@data$Spatial.Adj <- adjustment
 
     return(rppa)
 }
