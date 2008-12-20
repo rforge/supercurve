@@ -31,10 +31,10 @@ readQuantification <- function(file, software) {
     methodName <- paste("read", software, sep=".")
     readMethod <- if (exists(methodName,
                              mode="function",
-                             .GlobalEnv)) {
+                             globalenv())) {
                       get(methodName,
                           mode="function",
-                          .GlobalEnv)
+                          globalenv())
                   } else if (exists(methodName,
                                     mode="function",
                                     asNamespace("SuperCurve"))) {
@@ -57,7 +57,9 @@ readQuantification <- function(file, software) {
                 }
 
     if (is.null(quant.df)) {
-        stop(sprintf("cannot import data from file %s", dQuote(file)))
+        pathname <- summary(file)$description
+        stop(sprintf("cannot import data from file %s",
+                     dQuote(pathname)))
     }
 
     reqdColnames <- c("Main.Row",
