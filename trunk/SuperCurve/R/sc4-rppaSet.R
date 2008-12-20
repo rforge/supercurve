@@ -292,7 +292,7 @@ write.summary <- function(rppaset,
     if (graphs) {
         if (is.null(tiffdir)) {
             ## Assume the tif images are in a sibling directory named "tif"
-            tiffdir <- file.path(path, "..", "tif")
+            tiffdir <- normalizePath(file.path(path, "..", "tif"))
         }
 
         if (!is.character(tiffdir)) {
