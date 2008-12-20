@@ -27,7 +27,7 @@ RPPASet(path, designparams, fitparams, software="microvigene")
     the summary method.}
   \item{graphs}{logical scalar specifying if standard graphs should be produced}
   \item{tiffdir}{character string specifying path to the directory containing
-    the original TIFF files}
+    the original \acronym{TIFF} files}
   \item{\dots}{extra arguments for generic or plotting routines}
 }
 \details{
@@ -60,7 +60,7 @@ RPPASet(path, designparams, fitparams, software="microvigene")
     \item{summary(object, path, prefix, graphs, tiffdir, \dots)}{Creates
       a record of the entire RPPASet, including fitted values, residuals,
       and images of the processed slides. See the documentation of
-      \code{write.summary} for details.}
+      \code{\link{write.summary}} for details.}
   }
 }
 \value{

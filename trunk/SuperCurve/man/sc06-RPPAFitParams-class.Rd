@@ -87,7 +87,7 @@ RPPAFitFromParams(rppa,
   \item{ci}{logical scalar. If \code{TRUE}, compute 90\% confidence intervals
     on the concentration estimates.}
   \item{ignoreNegative}{logical scalar. If \code{TRUE}, convert negative values
-    to NA before fitting the model.}
+    to \code{NA} before fitting the model.}
   \item{trace}{logical scalar passed to \link[stats]{nls} in the \code{method}
     portion of the routine}
   \item{verbose}{logical scalar. If \code{TRUE}, print updates while fitting
@@ -105,7 +105,7 @@ RPPAFitFromParams(rppa,
 \details{
   The basic mathematical model is given by \deqn{Y = f(X-\delta_i),}
   where \eqn{Y} is the observed intensity, \eqn{X} is the designed dilution
-  step and f is the model for the protein response curve.
+  step and \eqn{f} is the model for the protein response curve.
   By fitting a joint model, we assume that the response curve is the same for
   all dilution series on the array. The real point of the model, however, is
   to be able to draw inferences on the \eqn{\delta_i}, which represent the

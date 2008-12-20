@@ -33,7 +33,7 @@
     each series}
   \item{design}{object of class \code{RPPADesign} describing the layout
     of the array}
-  \item{trimLevel}{numeric scalar multiplied to MAD :TBD:}
+  \item{trimLevel}{numeric scalar multiplied to \acronym{MAD}}
   \item{\dots}{extra arguments for generic routines}
 }
 \section{Methods}{

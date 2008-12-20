@@ -3,7 +3,7 @@
 \title{TBD}
 \description{
   This function produces a graphical summary for each array in an
-  \code{RPPASet} and summarizes the quantification results into one file.  
+  \code{RPPASet} and summarizes the quantification results into various files.  
 }
 \usage{
 write.summary(rppaset,
@@ -19,17 +19,18 @@ write.summary(rppaset,
   \item{prefix}{character string providing a filename prefix to be applied
     when creating result files}
   \item{graphs}{logical scalar specifying whether to save fit graphs}
-  \item{tiffdir}{character string specifying directory containing TIFF images
-    corresponding to the TEXT quantification files}
+  \item{tiffdir}{character string specifying directory containing
+    \acronym{TIFF} images corresponding to the TEXT quantification files}
 }
 \details{
-  Generates three CSV files: one for the raw concentrations, one for the
-  \eqn{R^2} statistics, and one for the polished concentrations.
+  Generates three \acronym{CSV} files: one for the raw concentrations, one
+  for the \eqn{R^2} statistics, and one for the polished concentrations.
   If \code{tiffdir} is \code{NULL}, the directory is assumed to be a sibling
   directory to \code{path} named "tif". If \code{graphs} is \code{TRUE},
-  two PNG files containing output graphs are created per protein. The
-  ImageMagick "convert" binary is then used to merge these output graphs
-  with the source TIFF files, generating an additional JPG file per protein.
+  two \acronym{PNG} files containing output graphs are created per protein.
+  The ImageMagick \file{convert} binary is then used to merge these output
+  graphs with the source \acronym{TIFF} files, generating an additional
+  \acronym{JPEG} file per protein.
 }
 \references{KRC}
 \author{P. Roebuck \email{plroebuck@mdanderson.org}}

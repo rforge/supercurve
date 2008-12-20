@@ -43,7 +43,7 @@ fitCurveAndSummarizeFromSettings(settings)
     \item{\code{txtdir}:}{object of class \code{Directory} specifying the
       directory containing quantification files in text format}
     \item{\code{imgdir}:}{object of class \code{Directory} specifying the
-      directory containing TIFF image files}
+      directory containing \acronym{TIFF} image files}
     \item{\code{outdir}:}{object of class \code{Directory} specifying the
       directory where analysis results should be stored}
     \item{\code{designparams}:}{object of class \code{RPPADesignParams}
