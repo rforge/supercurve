@@ -21,7 +21,7 @@ quantfile <- list.files(path)[1]
 checkException(RPPA(file.path(path, quantfile)),
                msg="absolute pathname should fail")
 checkException(RPPA(""),
-               msg="empty string should fail - nonexistant file")
+               msg="empty string should fail")
 nosuchfile <- "nosuch.tsv"
 checkException(RPPA(nosuchfile),
                msg="nonexistent file should fail")
@@ -70,10 +70,26 @@ checkException(RPPA(quantfile,
                     software=""),
                msg="empty string should fail")
 
+software <- "bogus"
+userMethod <- paste("read", software, sep=".")
+
+checkTrue(!exists(userMethod, mode="function", .GlobalEnv),
+          msg="method must not exist")
 checkException(RPPA(quantfile,
                     path=path,
-                    software="bogus"),
+                    software=software),
                msg="data import should fail - missing method")
+
+local({
+    read.local <- function(file) {
+
+    }
+
+    checkException(RPPA(quantfile,
+                        path=path,
+                        software="local"),
+                   msg="data import should fail - method not in user workspace")
+})
 
 read.noCols <- function(file) {
     data.frame()
