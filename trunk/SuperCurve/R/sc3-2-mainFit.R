@@ -345,7 +345,19 @@ registerModel <- function(key,
         ui.label <- key
     }
     ui.label <- as.character(ui.label)[1]
-    
+ 
+    ## Verify class
+    model <- tryCatch(new(classname),
+                      error=function(e) {
+                          stop(sprintf("cannot create instance of classname %s",
+                                       sQuote(classname)))
+                      })
+    if (!is.FitClass(model)) {
+        stop(sprintf("argument %s must be name of subclass of class %s",
+                     sQuote("classname"),
+                     sQuote("FitClass")))
+    }
+
     registerClassname(key, classname, ui.label=ui.label, envir=modelenv())
 }
 
