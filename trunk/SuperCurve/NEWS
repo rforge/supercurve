@@ -1,15 +1,74 @@
 			Dear Emacs, please make this -*-Text-*- mode!
 	**************************************************
 	*						 *
+	*	       1.3 SERIES NEWS			 *
+	*						 *
+	**************************************************
+
+
+		CHANGES IN SUPERCURVE VERSION 1.3.0
+
+
+NEW FEATURES
+
+    o	Added spatialCorrection() method to perform topographical
+	adjustment for slides prior to performing fit.
+
+    o	Added SuperCurveSettings class, generator, and
+	fitCurveAndSummarizeFromSettings() method to make it simpler
+	to repeat a previous analysis. This will be the new interface
+	used by SuperCurveGUI package.
+
+    o	Added initial implementation of data-driven access for
+	normalize() method and FitClass model via registration. This
+	provides means for user code to be incorporated into SuperCurve
+	processing. This functionality is also used by SuperCurveGUI
+	package.
+
+    o	Added validity function for RPPADesign class.
+
+    o	Added temporary capability to pass filename to 'controls'
+	argument of RPPADesignParams() generator. Filename specifies
+	slide design information. As such, the actual controls
+	are automagically specified when RPPADesign instance is
+	created. This feature should be considered experimental.
+
+    o	Now checks the quantification data.frame from readQuantification()
+	method to verify expected columns.
+
+UTILITIES
+
+    o	Updated scripts to create R objects from raw data provided
+	with the package.
+
+
+BUG FIXES
+
+    o	Disallowed use of character vector inside list in 'controls'
+        argument of RPPADesignParams() generator. Change is not
+	backwards compatible.
+
+    o	RPPA() generator now checks that both 'file' and 'path'
+	arguments are not empty strings.
+
+    o	Now checks the 'path' argument of write.summary() method to
+	ensure results directory can be writable.
+
+    o	Corrected error message in readQuantification() method that
+	displayed connection number rather than the intended filename.
+
+    o	Corrected check in readQuantification() method that was supposed
+	to verify the 'tiffdir' argument was a directory.
+
+
+	**************************************************
+	*						 *
 	*	       1.2 SERIES NEWS			 *
 	*						 *
 	**************************************************
 
 
 		CHANGES IN SUPERCURVE VERSION 1.2.0
-
-
-SIGNIFICANT USER-VISIBLE CHANGES
 
 
 NEW FEATURES
@@ -24,6 +83,10 @@ NEW FEATURES
 	as its slot there changed from logical to numeric type.
 
 
+BUG FIXES
+
+
+
 	**************************************************
 	*						 *
 	*	       1.1 SERIES NEWS			 *
@@ -32,9 +95,6 @@ NEW FEATURES
 
 
 		CHANGES IN SUPERCURVE VERSION 1.1.0
-
-
-SIGNIFICANT USER-VISIBLE CHANGES
 
 
 NEW FEATURES
