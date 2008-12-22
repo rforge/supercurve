@@ -104,13 +104,14 @@ setMethod("coef", "FitClass",
 ## and improved fitting algorithms in the future?
 
 ##-----------------------------------------------------------------------------
-is.FitClass <- function(x) {
-    inherits(x, "FitClass")
-}
-
-
-##-----------------------------------------------------------------------------
 .slide.model <- function(conc) {
+    ## Check arguments
+    stopifnot(is.numeric(est.conc))
+
+    ## Begin processing
+
+    ## :TODO: Come up with another way to do this that doesn't involve
+    ## writing into user workspace.
     obj <- get(".RPPA.fit.model", env=.GlobalEnv)
     fitted(obj, conc)
 }
@@ -126,7 +127,16 @@ is.FitClass <- function(x) {
                         silent=TRUE,
                         trace=FALSE,
                         ...) {
+    ## Check arguments
+#    stopifnot(is.FitClass(object))   # :BUG: doesn't work
+    stopifnot(is.numeric(diln))
+    stopifnot(is.numeric(intensity))
+    stopifnot(is.numeric(est.conc))
+    stopifnot(is.logical(silent) && length(silent) == 1)
+    stopifnot(is.logical(trace) && length(trace) == 1)
     method <- match.arg(method)
+
+    ## Begin processing
 
     ## Ensure necessary packages available
     if (method == "nlrob" && !require(robustbase)) {
@@ -157,10 +167,10 @@ is.FitClass <- function(x) {
 
     tmp <- try({
                     nlsmeth(Y ~ SuperCurve:::.slide.model(Steps+X),
-                           data=data.frame(Y=intensity,
-                                           Steps=diln),
-                           start=list(X=est.conc),
-                           trace=trace)
+                            data=data.frame(Y=intensity,
+                                            Steps=diln),
+                            start=list(X=est.conc),
+                            trace=trace)
                },
                silent=silent)
 
@@ -190,6 +200,14 @@ is.FitClass <- function(x) {
                           conc,
                           intensity,
                           trimLevel) {
+    ## Check arguments
+#    stopifnot(is.FitClass(object))   # :BUG: doesn't work
+    stopifnot(is.numeric(conc))
+    stopifnot(is.numeric(intensity))
+    stopifnot(is.numeric(trimLevel) && length(trimLevel) == 1)
+
+    ## Begin processing
+
     ## Trim the concentration estimates to bound lower and upper
     ## concentration estimates at the limits of what can be detected
     ## given our background noise.
@@ -209,6 +227,14 @@ is.FitClass <- function(x) {
                           design,
                           trimLevel,
                           ...) {
+    ## Check arguments
+#    stopifnot(is.FitClass(object))   # :BUG: doesn't work
+    stopifnot(is.numeric(conc))
+    stopifnot(is.numeric(intensity))
+    stopifnot(is.RPPADesign(design))
+    stopifnot(is.numeric(trimLevel) && length(trimLevel) == 1)
+
+    ## Begin processing
     trim <- .est.bg.noise(object, conc, intensity, trimLevel)
 
     ## Determine high and low intensities
@@ -354,10 +380,12 @@ setMethod("fitSlide", "CobsFitClass",
 
 ##-----------------------------------------------------------------------------
 .predict.spline <- function(xvec, aknot, acoef) {
+    ## Check arguments
     stopifnot(is.numeric(xvec))
     stopifnot(is.numeric(aknot))
     stopifnot(is.numeric(acoef))
 
+    ## Begin processing
     nknot <- length(aknot)
     aknotnew <- c(aknot[1], aknot[1], aknot, aknot[nknot], aknot[nknot])
     ncoef <- length(acoef)
@@ -469,14 +497,16 @@ setMethod("trimConc", "CobsFitClass",
 
 ##-----------------------------------------------------------------------------
 .lp <- function(p) {
-    log(p/(1-p))
+    log(p / (1 - p))
 }
 
 
 ##-----------------------------------------------------------------------------
 .coef.quantile.est <- function(intensity) {
+    ## Check arguments
     stopifnot(is.numeric(intensity))
 
+    ## Begin processing
     lBot <- quantile(intensity, probs=c(.05), na.rm=TRUE)
     lTop <- quantile(intensity, probs=c(.95), na.rm=TRUE)
     p.alpha <- lBot

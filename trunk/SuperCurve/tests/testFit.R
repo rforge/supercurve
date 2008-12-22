@@ -46,6 +46,11 @@ summary(fp)
 checkException(RPPAFitFromParams(jnk, dsn, fp),    # but find bad argument here
                msg="unregistered fit class as model should fail")
 
+checkException(registerModel("bogus", 5),
+               msg="invalid classname should fail")
+## :BUG: Doesn't prevent classes unrelated to FitClass
+#checkException(registerModel("bogus", "numeric"),
+#               msg="invalid classname - superclass not FitClass")
 
 fp <- RPPAFitParams("Mean.Net", model="logistic", method="nlrob")
 summary(fp)
