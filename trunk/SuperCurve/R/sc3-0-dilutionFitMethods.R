@@ -4,23 +4,25 @@
 
 
 ##=============================================================================
-setOldClass("cobs")
-setOldClass("loess")
-
 setClass("FitClass",
          representation("VIRTUAL"))
 
+##=============================================================================
 setClass("LogisticFitClass",
          representation("FitClass",
                         coefficients="numeric"),
          prototype=prototype(coefficients=c(alpha=0, beta=0, gamma=0)))
 
+##=============================================================================
+setOldClass("cobs")
 setClass("CobsFitClass",
          representation("FitClass",
                         model="cobs",
                         lambda="numeric"),
          prototype=prototype(lambda=0))
 
+##=============================================================================
+setOldClass("loess")
 setClass("LoessFitClass",
          representation("FitClass",
                         model="loess"))
@@ -51,7 +53,8 @@ setMethod("fitSeries", "FitClass",
                    trace=FALSE,
                    ...) {
     stop(sprintf("%s must be implemented by any subclass of %s",
-                 sQuote("fitSeries"), sQuote("FitClass")))
+                 sQuote("fitSeries"),
+                 sQuote("FitClass")))
 })
 
 
@@ -64,7 +67,8 @@ setMethod("fitSlide", "FitClass",
                    intensity,
                    ...) {
     stop(sprintf("%s must be implemented by any subclass of %s",
-                 sQuote("fitSlide"), sQuote("FitClass")))
+                 sQuote("fitSlide"),
+                 sQuote("FitClass")))
 })
 
 
@@ -78,7 +82,8 @@ setMethod("trimConc", "FitClass",
                    trimLevel,
                    ...) {
     stop(sprintf("%s must be implemented by any subclass of %s",
-                 sQuote("trimConc"), sQuote("FitClass")))
+                 sQuote("trimConc"),
+                 sQuote("FitClass")))
 })
 
 
@@ -97,6 +102,12 @@ setMethod("coef", "FitClass",
 ## :KRC: Should these be used for the FitClass method so we can
 ## both document them and use them if we decide to develop new
 ## and improved fitting algorithms in the future?
+
+##-----------------------------------------------------------------------------
+is.FitClass <- function(x) {
+    inherits(x, "FitClass")
+}
+
 
 ##-----------------------------------------------------------------------------
 .slide.model <- function(conc) {
@@ -120,10 +131,12 @@ setMethod("coef", "FitClass",
     ## Ensure necessary packages available
     if (method == "nlrob" && !require(robustbase)) {
         stop(sprintf("%s package required for %s method",
-                     sQuote("robustbase"), sQuote(method)))
+                     sQuote("robustbase"),
+                     sQuote(method)))
     } else if (method == "nlrq" && !require(quantreg)) {
         stop(sprintf("%s package required for %s method",
-                     sQuote("quantreg"), sQuote(method)))
+                     sQuote("quantreg"),
+                     sQuote(method)))
     }
 
     ## Define regression method
@@ -132,7 +145,8 @@ setMethod("coef", "FitClass",
                       nlrob=nlrob,
                       nlrq=function(...) {
                                nlrq(...,
-                                    control=nlrq.control(maxiter=10, eps=1e-02))
+                                    control=nlrq.control(maxiter=10,
+                                                         eps=1e-02))
                            },
                       stop(sprintf("unrecognized regression method %s",
                                    sQuote(method))))
@@ -317,7 +331,8 @@ setMethod("fitSlide", "CobsFitClass",
                    ...) {
     if (!require(cobs)) {
         stop(sprintf("%s package required for %s method",
-                     sQuote("cobs"), sQuote("fitSlide")))
+                     sQuote("cobs"),
+                     sQuote("fitSlide")))
     }
 
     fit.lo <- cobs(conc,
@@ -394,7 +409,8 @@ setMethod("fitted", "CobsFitClass",
                  } else {
                      if (!require(splines)) {
                          stop(sprintf("%s package required for %s method",
-                                      sQuote("splines"), sQuote("fitted")))
+                                      sQuote("splines"),
+                                      sQuote("fitted")))
                      }
 
                      ## The above sort and unsort process is yucky and a bit
