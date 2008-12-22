@@ -17,7 +17,9 @@ is.RPPA <- function(x) {
 
 ##-----------------------------------------------------------------------------
 ## Generates an RPPA object from a quantification file.
-RPPA <- function(file, path=".", software="microvigene") {
+RPPA <- function(file,
+                 path=".",
+                 software="microvigene") {
     ## Check arguments
     if (is.character(file)) {
         if (!(length(file) == 1)) {
