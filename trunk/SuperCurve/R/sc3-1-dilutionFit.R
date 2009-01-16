@@ -10,7 +10,7 @@ setClass("RPPAFit",
                              design="RPPADesign",      # required parameter
                              measure="character",      # required parameter
                              method="character",       # optional parameter
-                             trimset="numeric",        # list(lo.intensity, hi.intensity, lo.conc, hi.conc)
+                             trimset="numeric",        # list(lo.intensity, hi.intensity, lo.conc, hi.conc, level)
                              model="FitClass",         # curve model
                              concentrations="numeric", # main output
                              lower="numeric",          # confidence interval
@@ -57,9 +57,13 @@ setMethod("summary", "RPPAFit",
                 class(object)), "\n")
     cat(" ", as.character(list(object@call)), "\n")
     cat("with fitting parameters:", "\n")
-    cat(" ", sprintf("measure: %s", object@measure), "\n")
-    cat(" ", sprintf("method:  %s", object@method), "\n")
-    cat(" ", sprintf("model:   %s", class(object@model)), "\n")
+    cat(" ", sprintf("measure:   %s", object@measure), "\n")
+    cat(" ", sprintf("method:    %s", object@method), "\n")
+    cat(" ", sprintf("model:     %s", class(object@model)), "\n")
+    trimlevel <- object@trimset["level"]
+    if (trimlevel) {
+        cat(" ", sprintf("trimlevel: %s", trimlevel), "\n")
+    }
     invisible(NULL)
 })
 
@@ -89,7 +93,7 @@ setMethod("image", signature(x="RPPAFit"),
                                    Y=fitted(x, "Y"),
                                    stop(sprintf("unrecognized measure %s",
                                                 sQuote(measure))))
-    ## :TBD: What should axis labels be?
+    ## Image the residuals
     imageRPPA <- getMethod("image", class(rppa))
     imageRPPA(rppa,
               measure=measure,
@@ -190,7 +194,10 @@ setMethod("hist", "RPPAFit",
     translate <- c("raw", "standardized", "r2")
     names(translate) <- c("Residuals", "StdRes", "ResidualsR2")
     res <- resid(x, type=translate[type])
-    hist(res, xlab=xlab, main=main, ...)
+    hist(res,
+         main=main,
+         xlab=xlab,
+         ...)
 })
 
 
@@ -199,11 +206,15 @@ setMethod("hist", "RPPAFit",
                         yval,
                         col="red",
                         span=(2 / 3),
-                        xform=function(x) x) {
+                        xform=NULL) {
     aux <- loess(yval ~ xval, degree=1, span=span, family="gaussian")$fitted
     o <- order(xval)
     A <- xval[o]
-    M <- xform(aux[o])
+    M <- if (!is.null(xform)) {
+             xform(aux[o])
+         } else {
+             aux[o]
+         }
     o <- which(!duplicated(A))
     lines(approx(A[o], M[o]), col=col)
 }
@@ -229,28 +240,25 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
 
     ## Begin processing
     trimset <- as.list(x@trimset)
-    max.step <- max(getSteps(x@design))
-    min.step <- min(getSteps(x@design))
+    series <- seriesNames(x@design)
+    steps <- getSteps(x@design)
+    max.step <- max(steps)
+    min.step <- min(steps)
 
     xval <- fitted(x, "x")
     yval <- fitted(x, "y")
     yraw <- xform(x@rppa@data[, x@measure])
-    series <- seriesNames(x@design)
-    steps <- getSteps(x@design)
     model.color <- "green" # :KRC: why is the color hard-coded?
     if (type == "cloud" || type == "series") {
-        min.conc <- trimset$lo.conc
-        max.conc <- trimset$hi.conc
-        ## :TBD: Can someone explain what this if statement is doing, and why?
         if (!hasArg(sub)) {
             autosub <- paste("(Conc > -5) Trimmed Mean R^2 =",
                              format(mean(x@ss.ratio[x@concentrations > -5],
                                          trim=0.1),
                                     digits=3),
                              ", Min / Max Valid Conc. =",
-                             round(min.conc, 2),
+                             round(trimset$lo.conc, 2),
                              "/",
-                             round(max.conc, 2))
+                             round(trimset$hi.conc, 2))
             ## :TODO: add 'autosub' to dots and remove one of these plot calls
             plot(xval, yraw,
                  xlab="",
@@ -282,7 +290,6 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
             lines(sort(xval), sort(yval), lwd=2)
         }
     } else if (type == "individual") {
-        xx <- seq(-10, 10, length=200)
         ymax <- max(yval, na.rm=TRUE)
         ymin <- min(yval, na.rm=TRUE)
         for (this in series) {
@@ -291,7 +298,6 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
                  col=model.color,
                  ylim=c(ymin, ymax))
             lines(sort(xval), sort(yval), col=model.color)
-            ## :PLR: Replaced text() with title(). Something else wanted?
             title(sub=paste("SS Ratio =", format(x@ss.ratio[this], digits=4)))
             points(x@concentrations[this],
                    x@intensities[this],
@@ -433,8 +439,8 @@ getConfidenceInterval <- function(result, alpha=0.10, nSim=50) {
                             trace=FALSE)
             sim[j] <- fs$est.conc
         }
-        result@lower[this] <- quantile(sim, alpha/2, na.rm=TRUE)
-        result@upper[this] <- quantile(sim, 1 - alpha/2, na.rm=TRUE)
+        result@lower[this] <- quantile(sim, probs=alpha/2, na.rm=TRUE)
+        result@upper[this] <- quantile(sim, probs=1 - alpha/2, na.rm=TRUE)
     }
     result@conf.width <- 1-alpha
 
