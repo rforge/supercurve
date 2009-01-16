@@ -32,30 +32,30 @@ normalize.median <- function(concs,
 
 
 ##-----------------------------------------------------------------------------
-## Normalization method. Median of set of housekeeping proteins is subtracted
+## Normalization method. Median of set of housekeeping antibodies is subtracted
 ## from each sample.
 normalize.house <- function(concs,
-                            protein) {
+                            antibody) {
     stopifnot(is.matrix(concs) || is.data.frame(concs))
-    stopifnot(is.character(protein) && length(protein) >= 1)
+    stopifnot(is.character(antibody) && length(antibody) >= 1)
 
-    if (!all(protein %in% colnames(concs))) {
-        missingNames <- protein[!protein %in% colnames(concs)]
+    if (!all(antibody %in% colnames(concs))) {
+        missingNames <- antibody[!antibody %in% colnames(concs)]
         stop(sprintf(ngettext(length(missingNames),
                               "argument %s specifies invalid %s column name: %s",
                               "argument %s specifies invalid %s column names: %s"),
-                     sQuote("protein"),
+                     sQuote("antibody"),
                      sQuote("concs"),
                      paste(missingNames, collapse=", ")))
     }
 
-    houseMedian <- apply(as.matrix(concs[, protein]),
+    houseMedian <- apply(as.matrix(concs[, antibody]),
                          1,
                          median,
                          na.rm=TRUE)
     normconcs <- sweep(concs, 1, houseMedian, FUN="-")
     ## Store method-specific info in "normalization" attribute
-    attr(normconcs, "normalization") <- list(protein=protein,
+    attr(normconcs, "normalization") <- list(antibody=antibody,
                                              houseMedian=houseMedian)
 
     return(normconcs)
@@ -73,7 +73,7 @@ normalize.vs <- function(concs,
     ##-------------------------------------------------------------------------
     ## Estimates the multiplicative gamma terms from variable slope
     ## normalization. It takes as input the data matrix (with samples in
-    ## the rows and proteins in the columns). It is assumed that this matrix
+    ## the rows and antibodies in the columns). It is assumed that this matrix
     ## has already had the column median swept out from its columns.
     ## It outputs estimates of the gammas (multiplicative protein effects).
     estimateGamma <- function(Xhat) {
@@ -175,15 +175,15 @@ registerNormalizationMethod <- function(key,
 ##-----------------------------------------------------------------------------
 ## Performs normalization for sample loading after quantification.
 ## It has two required input values:
-##   1) the data matrix with samples in the rows and proteins in the columns.
+##   1) the data matrix with samples in the rows and antibodies in the columns.
 ##   2) the name of the method of sample loading normalization. This argument
 ##      may be augmented with user-provided normalization methods.
 ##      Package-provided values are:
 ##
 ##      median - the sample median (row median) is subtracted from each sample
 ##      house  - housekeeping normalization. The median of a housekeeping
-##               protein or set of housekeeping proteins are used. The
-##               name of the protein(s) to be used must be supplied as
+##               antibody or set of housekeeping antibodies are used. The
+##               names of the antibodies to be used must be supplied as
 ##               a named argument to this method.
 ##      vs     - variable slope normalization. Here the sample median
 ##               is used along with a multiplicate gamma.
@@ -200,8 +200,6 @@ normalize <- function(concs,
     if (is.RPPASet(concs)) {
         ## Assemble matrix of concentrations from all fits in object
         concs <- .fitSlot(concs, "concentrations")
-        ## :FIXME: Unfortunately, this has columns of filenames, not antibodies
-        ## Information available in 'proteinAssay.tsv' but no path here...
     }
 
     if (!(is.matrix(concs) || is.data.frame(concs))) {
@@ -215,7 +213,7 @@ normalize <- function(concs,
     } else if (!(length(method) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("method")))
-    } else if (!(nchar(method) >= 1)) {
+    } else if (!nzchar(method)) {
         stop(sprintf("argument %s must not be empty string", 
                      sQuote("method")))
     }
