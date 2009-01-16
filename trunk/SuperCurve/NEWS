@@ -6,6 +6,41 @@
 	**************************************************
 
 
+		CHANGES IN SUPERCURVE VERSION 1.3.1
+
+
+NEW FEATURES
+
+    o	Both RPPA() and RPPADesignParams() generators now allow
+	use of absolute pathnames for file arguments. If absolute
+	pathname is specified, the 'path' argument is ignored.
+
+    o	Added 'aliasfile', 'designfile', and 'path' arguments
+	to RPPADesignParams() generator and RPPADesign() method.
+	The previous experimental capability to pass filename to
+	'controls' argument of either function was removed in favor
+	of more explicit 'designfile' argument.
+
+    o   Added 'aliasfile' and 'designfile' slots to RPPADesignParams
+        object.
+
+    o   Modified slot types for 'alias' and 'controls' slots of
+	RPPADesignParams object to allow NULL.
+
+    o   Modified slot type for 'xform' slot of RPPAFitParams object
+	to allow NULL.
+
+BUG FIXES
+
+    o	RPPA() generator now allows 'path' argument to be empty string.
+
+    o	Added error checking to registerModel() method to verify
+	that 'classname' argument is subclass of 'FitClass'.
+
+    o	On Windows, calls to message() method were not being flushed;
+	now progress is reported while computations are in progress.
+
+
 		CHANGES IN SUPERCURVE VERSION 1.3.0
 
 
