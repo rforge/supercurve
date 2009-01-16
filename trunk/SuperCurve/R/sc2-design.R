@@ -279,6 +279,11 @@ RPPADesignFromParams <- function(raw,
                      sQuote("designparams"), "RPPADesignParams"))
     }
 
+    ## :WORKAROUND: codetools (via R CMD check) complains unnecessarily about
+    ## "no visible binding" as code below uses assign() rather than "<-".
+    steps <- series <- grouping <- ordering <- alias <-
+    center <- controls <- aliasfile <- designfile <- NULL
+
     ## Create variables from 'designparams' slots
     for (slotname in slotNames(designparams)) {
         assign(slotname, slot(designparams, slotname))

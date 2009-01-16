@@ -382,6 +382,11 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
                      sQuote("fitparams"), "RPPAFitParams"))
     }
 
+    ## :WORKAROUND: codetools (via R CMD check) complains unnecessarily about
+    ## "no visible binding" as code below uses assign() rather than "<-".
+    measure <- model <- xform <- method <- trim <- warnLevel <-
+    ignoreNegative <- trace <- verbose <- veryVerbose <- ci <- NULL
+
     ## Create variables from 'fitparams' slots
     for (slotname in slotNames(fitparams)) {
         assign(slotname, slot(fitparams, slotname))
@@ -526,6 +531,7 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
             cat("Trimming concentrations...", "\n")
             flush.console()
         }
+
         tc <- trimConc(fc,
                        conc=fitted(result, "X"),
                        intensity=intensity,
