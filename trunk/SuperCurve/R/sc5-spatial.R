@@ -29,11 +29,11 @@
           }
 
     ## Compute background cutoff using the quantile of 'cutoff' argument
-    bgCut <- quantile(bg, cutoff)
+    bgCut <- quantile(bg, probs=cutoff)
 
     ## If computed background cutoff too low, use a larger quartile
     if (bgCut <= 100) {
-        bgCut <- quantile(bg, 0.99)
+        bgCut <- quantile(bg, probs=0.99)
         if (bgCut <= 100) {
             bgCut <- max(bg[-which.max(bg)])
         }
