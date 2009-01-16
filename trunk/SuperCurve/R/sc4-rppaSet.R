@@ -90,10 +90,7 @@ is.RPPASet <- function(x) {
         antibody <- antibodies[i]
         rppafit <- rppaset@fits[[i]]
 
-        ptitle <- paste(rppafit@measure,
-                        ":  ",
-                        antibody,
-                        sep="")
+        ptitle <- .mkPlotTitle(rppafit@measure, antibody)
 
         ## First pair of plots
         try(plot(rppafit,
@@ -105,9 +102,7 @@ is.RPPASet <- function(x) {
         imageRPPAFit <- getMethod("image", class(rppafit))
         imageRPPAFit(rppafit,
                      col=RYG,
-                     main="",
                      measure="ResidualsR2",
-                     xlab="Residuals R^2",
                      zlim=c(0.4, 1))
 
         filename <- paste(paste(prefix, antibody, sep="_"),
@@ -518,11 +513,10 @@ RPPASet <- function(path,
             ## Plot the first slide as a quick design check
             plot(firstslide,
                  design,
-                 "Mean.Total",
-                 main=slideFilename)
+                 fitparams@measure)
+
             rm(firstslide)
         }
-        rm(slideFilename)
     }
     rownames(rppas) <- antibodies
 

@@ -111,6 +111,18 @@
 
 
 ##-----------------------------------------------------------------------------
+.mkPlotTitle <- function(maintext,
+                         antibody) {
+    ## Check arguments
+    stopifnot(is.character(maintext) && length(maintext) == 1)
+    stopifnot(is.character(antibody) && length(antibody) == 1)
+
+    ## Begin processing
+    main <- sprintf("%s:  %s", maintext, antibody)
+}
+
+
+##-----------------------------------------------------------------------------
 .pkgRversion <- function(pkgname) {
     ## Check arguments
     stopifnot(is.character(pkgname) && length(pkgname) == 1)

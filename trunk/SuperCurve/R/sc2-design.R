@@ -555,6 +555,7 @@ setMethod("summary", "RPPADesign",
 ##-----------------------------------------------------------------------------
 setMethod("image", signature(x="RPPADesign"),
           function(x,
+                   main=.mkPlotTitle("Steps", ""),
                    ...) {
     data.df <- x@layout
     dim.design <- dim(x)
@@ -568,13 +569,30 @@ setMethod("image", signature(x="RPPADesign"),
     image(seq_len(mx),
           seq_len(my),
           geo.steps,
+          main=main,
+          sub=paste(paste(class(x), ":", sep=""), paste(dim(x), collapse="x")),
+          xaxt="n",
+          xlab="",
+          yaxt="n",
+          ylab="",
           ...)
 
-    abline(h=(0.5 + seq(0, my, length=1+max(data.df$Main.Row))))
-    abline(v=(0.5 + seq(0, mx, length=1+max(data.df$Main.Col))))
+    at.x <- seq(from=dim.design["Sub.Col"],
+                to=dim.design["Sub.Col"]*dim.design["Main.Col"],
+                by=dim.design["Sub.Col"])
+    at.y <- seq(from=dim.design["Sub.Row"],
+                to=dim.design["Sub.Row"]*dim.design["Main.Row"],
+                by=dim.design["Sub.Row"])
+    axis(1, at=at.x)
+    axis(2, at=at.y)
+
+    abline(h=(0.5 + seq(0, my, length=1+dim.design["Main.Row"])))
+    abline(v=(0.5 + seq(0, mx, length=1+dim.design["Main.Col"])))
     invisible(geo.steps)
 })
 
+## :NOTE: default "measure" in various routines is inconsistent.
+## plot(RPPA,Design) here uses "Mean.Total", while image(RPPA) uses "Mean.Net"
 
 ##-----------------------------------------------------------------------------
 ## Plot the series in an RPPA under a given design layout to see if the series
@@ -610,11 +628,17 @@ setMethod("plot", signature(x="RPPA", y="RPPADesign"),
     vert <- x@data[, measure]
     horz <- y@layout$Steps
 
+    if (!nzchar(main)) {
+        main <- .mkPlotTitle(paste(measure, "Intensity vs. Dilution Step"),
+                             x@antibody)
+    }
+
     is.ctrl <- .controlVector(y)  # Get the indexes of the control spots
     par(mfrow=c(1, 1))  # Avoid existing partitions of graphic device
     plot(c(min(horz[!is.ctrl]), max(horz[!is.ctrl])),
          c(min(vert), max(vert)),
-         main=paste(measure, "Intensity vs. Dilution Step", "-", main),
+         main=main,
+         sub=paste("File:", x@file),
          type="n",
          xlab="Dilution Step",
          ylab="Intensity")

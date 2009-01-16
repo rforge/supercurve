@@ -80,6 +80,7 @@ setMethod("image", signature(x="RPPAFit"),
                              "StdRes",
                              "X",
                              "Y"),
+                   main=.mkPlotTitle(measure, x@rppa@antibody),
                    ...) {
     ## Check arguments
     measure <- match.arg(measure)
@@ -94,10 +95,12 @@ setMethod("image", signature(x="RPPAFit"),
                                    Y=fitted(x, "Y"),
                                    stop(sprintf("unrecognized measure %s",
                                                 sQuote(measure))))
+
     ## Image the residuals
     imageRPPA <- getMethod("image", class(rppa))
     imageRPPA(rppa,
               measure=measure,
+              main=main,
               ...)
 
     invisible(x)
@@ -186,17 +189,24 @@ setMethod("hist", "RPPAFit",
                    main=NULL,
                    ...) {
     type <- match.arg(type)
+
     if (is.null(xlab)) {
-        xlab <- type
+        xlab <- switch(EXPR=type,
+                       Residuals="Residuals",  # unchanged
+                       ResidualsR2="Residuals R^2",
+                       StdRes="Standardized Residuals")
     }
     if (is.null(main)) {
-        main <- paste("Histogram of", type)
+        main <- .mkPlotTitle(paste("Histogram of", type),
+                             x@rppa@antibody)
     }
+
     translate <- c("raw", "standardized", "r2")
     names(translate) <- c("Residuals", "StdRes", "ResidualsR2")
     res <- resid(x, type=translate[type])
     hist(res,
          main=main,
+         sub=paste("File:", x@rppa@file),
          xlab=xlab,
          ...)
 })
@@ -227,6 +237,8 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
           function(x, y,
                    type=c("cloud", "series", "individual", "steps", "resid"),
                    col=NULL,
+                   main=.mkPlotTitle(paste(.capwords(type), "Fit Plot"),
+                                     x@rppa@antibody),
                    xform=NULL,
                    xlab="Log Concentration",
                    ylab="Intensity",
@@ -266,12 +278,15 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
                              round(trimset$hi.conc, 2))
             ## :TODO: add 'autosub' to dots and remove one of these plot calls
             plot(xval, yraw,
+                 main=main,
+                 sub=autosub,
                  xlab="",
                  ylab=ylab,
-                 sub=autosub,
                  ...)
         } else {
+            ## :TBD: Above the 'xlab' argument is "", yet here it is preserved?
             plot(xval, yraw,
+                 main=main,
                  xlab=xlab,
                  ylab=ylab,
                  ...)
@@ -301,6 +316,7 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
             ## :TBD: why aren't {x,y}labs passed to plot()?
             plot(sort(xval), sort(yval),
                  col=model.color,
+                 main=main,
                  ylim=c(ymin, ymax))
             lines(sort(xval), sort(yval), col=model.color)
             title(sub=paste("SS Ratio =", format(x@ss.ratio[this], digits=4)))
@@ -336,6 +352,7 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
         xfit <- xfit[-1]
         yfit <- yfit[-1]
         plot(xplot, yplot,
+             main=main,
              xlab="(Step[n+1]+Step[n])/2",
              ylab="Step[n+1] - Step[n]")
         .loess.line(xplot, yplot)
@@ -362,6 +379,7 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
                       ", p-value =",
                       round(vals[2], 3))
         plot(xval, r,
+             main=main,
              sub=subt,
              xlab=xlab,
              ylab="Residual Intensity",

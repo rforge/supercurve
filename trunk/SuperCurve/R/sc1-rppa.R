@@ -112,7 +112,7 @@ setMethod("summary", "RPPA",
 setMethod("image", signature(x="RPPA"),
           function(x,
                    measure="Mean.Net",
-                   main=measure,
+                   main=.mkPlotTitle(measure, x@antibody),
                    colorbar=FALSE,
                    col=terrain.colors(256),
                    ...) {
@@ -192,14 +192,30 @@ setMethod("image", signature(x="RPPA"),
         par(plt=imagePlt, new=TRUE)
         on.exit(par(plt=startPlt))
     }
+
     image(seq_len(mx),
           seq_len(my),
           geo,
           col=col,
           main=main,
+          sub=paste("File:", x@file),
+          xaxt="n",
+          xlab="",
+          yaxt="n",
+          ylab="",
           ...)
-    abline(h=(0.5 + seq(0, my, length=1+max(data.df$Main.Row))))
-    abline(v=(0.5 + seq(0, mx, length=1+max(data.df$Main.Col))))
+
+    at.x <- seq(from=dim.rppa["Sub.Col"],
+                to=dim.rppa["Sub.Col"]*dim.rppa["Main.Col"],
+                by=dim.rppa["Sub.Col"])
+    at.y <- seq(from=dim.rppa["Sub.Row"],
+                to=dim.rppa["Sub.Row"]*dim.rppa["Main.Row"],
+                by=dim.rppa["Sub.Row"])
+    axis(1, at=at.x)
+    axis(2, at=at.y)
+
+    abline(h=(0.5 + seq(0, my, length=1+dim.rppa["Main.Row"])))
+    abline(v=(0.5 + seq(0, mx, length=1+dim.rppa["Main.Col"])))
     invisible(x)
 })
 
