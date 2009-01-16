@@ -15,7 +15,7 @@
     } else if (!(length(classname) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("classname")))
-    } else if (!(nchar(classname) >= 1)) {
+    } else if (!nzchar(classname)) {
         stop(sprintf("argument %s must not be empty string",
                      sQuote("classname")))
     }
@@ -39,7 +39,7 @@
     } else if (!(length(key) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("key")))
-    } else if (!(nchar(key) >= 1)) {
+    } else if (!nzchar(key)) {
         stop(sprintf("argument %s must not be empty string",
                      sQuote("key")))
     }

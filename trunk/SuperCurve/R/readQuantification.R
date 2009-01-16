@@ -22,7 +22,7 @@ readQuantification <- function(file, software) {
     } else if (!(length(software) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("software")))
-    } else if (!(nzchar(software))) {
+    } else if (!nzchar(software)) {
         stop(sprintf("argument %s must not be empty string",
                      sQuote("software")))
     }
@@ -71,7 +71,7 @@ readQuantification <- function(file, software) {
     ## Ensure minimum number of columns
     nreqdColumns <- length(reqdColnames) + 1
     if (!(ncol(quant.df) >= nreqdColumns)) {
-        stop("not enough columns in datafile")
+        stop("not enough columns in quantification datafile")
     }
 
     ## Ensure required columns exist
