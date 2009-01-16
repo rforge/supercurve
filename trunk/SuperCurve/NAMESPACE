@@ -15,8 +15,11 @@ importFrom("stats", loess)
 importFrom("stats", resid, residuals)
 
 ## Public classes
-exportClasses(Directory)  # not intended for public consumption
+exportClasses(CobsFitClass)
+exportClasses(Directory)                      # not intended for public consumption
 exportClasses(FitClass)
+exportClasses(LoessFitClass)
+exportClasses(LogisticFitClass)
 exportClasses(RPPA)
 exportClasses(RPPADesign)
 exportClasses(RPPADesignParams)
@@ -53,6 +56,7 @@ export(fitCurveAndSummarizeFromSettings)
 export(getConfidenceInterval)
 export(getSteps)
 export(is.Directory)
+export(is.FitClass)
 export(is.RPPA)
 export(is.RPPADesign)
 export(is.RPPADesignParams)
