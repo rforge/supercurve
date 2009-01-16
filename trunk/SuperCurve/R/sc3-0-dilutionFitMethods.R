@@ -28,6 +28,13 @@ setClass("LoessFitClass",
                         model="loess"))
 
 
+##-----------------------------------------------------------------------------
+## Returns TRUE if class of argument is subclass of FitClass.
+is.FitClass <- function(x) {
+    extends(class(x), "FitClass")
+}
+
+
 ####################################################################
 ## GENERIC METHODS FOR FitClass: Typically throw an error since they
 ## must be implemented by derived classes.
@@ -103,10 +110,11 @@ setMethod("coef", "FitClass",
 ## both document them and use them if we decide to develop new
 ## and improved fitting algorithms in the future?
 
+
 ##-----------------------------------------------------------------------------
 .slide.model <- function(conc) {
     ## Check arguments
-    stopifnot(is.numeric(est.conc))
+    stopifnot(is.numeric(conc))
 
     ## Begin processing
 
@@ -128,7 +136,7 @@ setMethod("coef", "FitClass",
                         trace=FALSE,
                         ...) {
     ## Check arguments
-#    stopifnot(is.FitClass(object))   # :BUG: doesn't work
+    stopifnot(is.FitClass(object))
     stopifnot(is.numeric(diln))
     stopifnot(is.numeric(intensity))
     stopifnot(is.numeric(est.conc))
@@ -201,7 +209,7 @@ setMethod("coef", "FitClass",
                           intensity,
                           trimLevel) {
     ## Check arguments
-#    stopifnot(is.FitClass(object))   # :BUG: doesn't work
+    stopifnot(is.FitClass(object))
     stopifnot(is.numeric(conc))
     stopifnot(is.numeric(intensity))
     stopifnot(is.numeric(trimLevel) && length(trimLevel) == 1)
@@ -228,7 +236,7 @@ setMethod("coef", "FitClass",
                           trimLevel,
                           ...) {
     ## Check arguments
-#    stopifnot(is.FitClass(object))   # :BUG: doesn't work
+    stopifnot(is.FitClass(object))
     stopifnot(is.numeric(conc))
     stopifnot(is.numeric(intensity))
     stopifnot(is.RPPADesign(design))
@@ -238,8 +246,8 @@ setMethod("coef", "FitClass",
     trim <- .est.bg.noise(object, conc, intensity, trimLevel)
 
     ## Determine high and low intensities
-    lBot <- quantile(intensity, probs=c(.01), na.rm=TRUE)
-    lTop <- quantile(intensity, probs=c(.99), na.rm=TRUE)
+    lBot <- quantile(intensity, probs=0.01, na.rm=TRUE)
+    lTop <- quantile(intensity, probs=0.99, na.rm=TRUE)
     lo.intensity <- lBot + trim
 
     ## In practice, we rarely see the response "top out".
@@ -248,6 +256,7 @@ setMethod("coef", "FitClass",
     hi.intensity <- max(intensity)
 
     ## Determine high and low concentrations
+    steps <- getSteps(design)
 
     ## Search fitted model to find conc corresponding to lo.intensity
     lo.conc <- bisection.search(min(conc, na.rm=TRUE),
@@ -258,7 +267,7 @@ setMethod("coef", "FitClass",
                                 f.extra=object,
                                 tol=0.1)$x
     ## Adjust min allowable conc to point at undiluted spot
-    max.step <- max(getSteps(design))
+    max.step <- max(steps)
     lo.conc <- lo.conc - max.step
 
     hi.conc <- bisection.search(min(conc, na.rm=TRUE),
@@ -269,13 +278,14 @@ setMethod("coef", "FitClass",
                                 f.extra=object,
                                 tol=0.1)$x
     ## Adjust max allowable conc to point at most dilute spot
-    min.step <- min(getSteps(design))
+    min.step <- min(steps)
     hi.conc <- hi.conc - min.step
 
     list(lo.intensity=lo.intensity,
          hi.intensity=hi.intensity,
          lo.conc=lo.conc,
-         hi.conc=hi.conc)
+         hi.conc=hi.conc,
+         level=trimLevel)
 }
 
 
@@ -289,11 +299,11 @@ setMethod("fitSlide", "LoessFitClass",
                    conc,
                    intensity,
                    ...) {
-    fit.lo <- loess(intensity ~ conc)
+    model <- loess(intensity ~ conc)
 
     ## Create new class
     new("LoessFitClass",
-        model=fit.lo)
+        model=model)
 })
 
 
@@ -302,16 +312,16 @@ setMethod("fitted", "LoessFitClass",
           function(object,
                    conc,
                    ...) {
-    fit.lo <- object@model
+    model <- object@model
 
     ## loess will not interpolate beyond the initial fitted conc. range
-    lo <- min(fit.lo$x)
-    conc <- pmax(min(fit.lo$x), conc)
-    conc <- pmin(max(fit.lo$x), conc)
+    lo <- min(model$x)
+    conc <- pmax(min(model$x), conc)
+    conc <- pmin(max(model$x), conc)
     conc.pred <- conc
     conc.pred[is.na(conc)] <- lo
 
-    intensity <- predict(fit.lo, data.frame(conc=conc.pred))
+    intensity <- predict(model, data.frame(conc=conc.pred))
     intensity[is.na(conc)] <- NA
 
     intensity
@@ -361,37 +371,42 @@ setMethod("fitSlide", "CobsFitClass",
                      sQuote("fitSlide")))
     }
 
-    fit.lo <- cobs(conc,
-                   intensity,
-                   constraint="increase",
-                   nknots=20,
-                   lambda=object@lambda,
-                   degree=2,
-                   tau=0.5,
-                   print.warn=FALSE,
-                   print.mesg=FALSE)
+    model <- cobs(conc,
+                  intensity,
+                  constraint="increase",
+                  nknots=20,
+                  lambda=object@lambda,
+                  degree=2,
+                  tau=0.5,
+                  print.warn=FALSE,
+                  print.mesg=FALSE)
 
     ## Create new class
     new("CobsFitClass",
-        model=fit.lo,
-        lambda=fit.lo$lambda)
+        model=model,
+        lambda=model$lambda)
 })
 
 
 ##-----------------------------------------------------------------------------
-.predict.spline <- function(xvec, aknot, acoef) {
+.predict.spline <- function(xvec,
+                            aknot,
+                            acoef) {
     ## Check arguments
     stopifnot(is.numeric(xvec))
     stopifnot(is.numeric(aknot))
     stopifnot(is.numeric(acoef))
 
     ## Begin processing
-    nknot <- length(aknot)
-    aknotnew <- c(aknot[1], aknot[1], aknot, aknot[nknot], aknot[nknot])
-    ncoef <- length(acoef)
+    aknot1 <- aknot[1]
+    aknotn <- aknot[length(aknot)]
+    aknotnew <- c(rep(aknot1, 2),
+                  aknot,
+                  rep(aknotn, 2))
 
-    xvec[xvec < (aknot[1] + (1e-8))] <- aknot[1] + (1e-8)
-    xvec[xvec > (aknot[nknot] - (1e-8))] <- aknot[nknot] - (1e-8)
+    adj <- 1e-8
+    xvec[xvec < (aknot1 + adj)] <- aknot1 + adj
+    xvec[xvec > (aknotn - adj)] <- aknotn - adj
 
     a <- spline.des(aknotnew, xvec, ord=3)
     fvalvec <- (a$design) %*% acoef
@@ -405,10 +420,10 @@ setMethod("fitted", "CobsFitClass",
           function(object,
                    conc,
                    ...) {
-    fit <- object@model
+    model <- object@model
 
     ## Predict missing values at min intensity
-    lo <- min(fit$x)
+    lo <- min(model$x)
     conc.pred <- conc
     conc.pred[is.na(conc)] <- lo
 
@@ -428,11 +443,11 @@ setMethod("fitted", "CobsFitClass",
                                         na.last=NA)
                          u <- rep(NA, n)
                          u[o] <- seq_along(conc.pred)
-                         cobs.intensity <- predict(fit, conc.pred[o])[, "fit"]
+                         cobs.intensity <- predict(model, conc.pred[o])[, "fit"]
                          cobs.intensity[u]
                      } else {
                          ## Only one data point
-                         predict(fit, conc.pred)[, "fit"]
+                         predict(model, conc.pred)[, "fit"]
                      }
                  } else {
                      if (!require(splines)) {
@@ -447,8 +462,8 @@ setMethod("fitted", "CobsFitClass",
                      ## there seems to be a bug in .predict.spline where it does
                      ## not have the correct number of coefficients sometimes.
                      .predict.spline(conc.pred,
-                                     fit$knots,
-                                     fit$coef)
+                                     model$knots,
+                                     model$coef)
                  }
 
     intensity[is.na(conc)] <- NA
@@ -496,19 +511,13 @@ setMethod("trimConc", "CobsFitClass",
 
 
 ##-----------------------------------------------------------------------------
-.lp <- function(p) {
-    log(p / (1 - p))
-}
-
-
-##-----------------------------------------------------------------------------
 .coef.quantile.est <- function(intensity) {
     ## Check arguments
     stopifnot(is.numeric(intensity))
 
     ## Begin processing
-    lBot <- quantile(intensity, probs=c(.05), na.rm=TRUE)
-    lTop <- quantile(intensity, probs=c(.95), na.rm=TRUE)
+    lBot <- quantile(intensity, probs=0.05, na.rm=TRUE)
+    lTop <- quantile(intensity, probs=0.95, na.rm=TRUE)
     p.alpha <- lBot
     p.beta  <- lTop - lBot
     p.gamma <- log(2)  # Assume linear response on log2 scale as first guess
@@ -545,11 +554,11 @@ setMethod("fitSlide", "LogisticFitClass",
         cf <- .coef.quantile.est(intensity)
     } else {
         cf <- coef(nls.model)
-        cf <- list(alpha=p.alpha <- cf["alpha"],
-                   beta=p.beta   <- cf["beta"],
-                   gamma=p.gamma <- cf["gamma"])
+        ## :TBD: Why is this done? Seemingly creates unnecessary list...
+        cf <- list(alpha=cf["alpha"],
+                   beta= cf["beta"],
+                   gamma=cf["gamma"])
     }
-
 
     ## Create new class
     new("LogisticFitClass",
@@ -591,22 +600,57 @@ setMethod("trimConc", "LogisticFitClass",
                    trimLevel=2,  # arbitrary based on experimentation
                    ...) {
     cf <- as.list(object@coefficients)
-    trim <- .est.bg.noise(object, conc, intensity, trimLevel) / cf$beta
+    noise <- .est.bg.noise(object, conc, intensity, trimLevel)
+    trim <- noise / cf$beta
+
+    if (trim <= 0 || trim >= 1) {
+        warning(sprintf("trimConc: trim should be in interval (0, 1): trim=%s",
+                        trim),
+                immediate.=TRUE)
+    }
 
     ## Determine high and low intensities
     lo.intensity <- cf$alpha + cf$beta * trim
     hi.intensity <- cf$alpha + cf$beta - cf$beta * trim
 
     ## Determine high and low concentrations
-    max.step <- max(getSteps(design))
-    lo.conc <- .lp(trim) / cf$gamma - max.step
-    min.step <- min(getSteps(design))
-    hi.conc <- .lp(1-trim) / cf$gamma - min.step
+    steps <- getSteps(design)
+    max.step <- max(steps)
+    min.step <- min(steps)
+
+    if (!require(boot)) {
+        stop(sprintf("%s package required for %s method",
+                     sQuote("boot"),
+                     sQuote("trimConc")))
+    }
+
+    lo.logit <- tryCatch(boot::logit(trim),
+                         error=function(e) {
+                             warning(sprintf("logit: %s: p=%f, odds=%f",
+                                             e$message,
+                                             p <- trim,
+                                             p / (1 - p)),
+                                     immediate.=TRUE)
+                             NaN
+                         })
+    hi.logit <- tryCatch(boot::logit(1-trim),
+                         error=function(e) {
+                             warning(sprintf("logit: %s: p=%f, odds=%f",
+                                             e$message,
+                                             p <- 1-trim,
+                                             p / (1 - p)),
+                                     immediate.=TRUE)
+                             NaN
+                         })
+
+    lo.conc <- lo.logit / cf$gamma - max.step
+    hi.conc <- hi.logit / cf$gamma - min.step
 
     list(lo.intensity=lo.intensity,
          hi.intensity=hi.intensity,
          lo.conc=lo.conc,
-         hi.conc=hi.conc)
+         hi.conc=hi.conc,
+         level=trimLevel)
 })
 
 
