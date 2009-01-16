@@ -17,7 +17,7 @@ local({
 
         ## Begin processing
         assign(varname <- make.names(xform(antibody)),
-               RPPA(filename, path=datadir),
+               RPPA(filename, path=datadir, antibody=antibody),
                envir=environment(makeRPPAs))
 
         return(varname)
@@ -41,15 +41,17 @@ local({
                    },
                    instdata.dir)
 
-    layoutinfofile <- file.path(instdata.dir, "layoutInfo.tsv")
-    layoutinfo.df <- read.delim(layoutinfofile)
+    ## :BUG: last two lines of layout info file look hinky.
+    layoutinfofile <- "layoutInfo.tsv"
+    slidedesignfile <- "slidedesign.tsv"
+
     assign(design <- "tDesign",
            RPPADesign(rppa <- get(rppas[1]),
                       grouping="blockSample",
-                      alias=layoutinfo.df,
                       center=TRUE,
-                      controls=list("neg con",
-                                    "pos con")))
+                      aliasfile=layoutinfofile,
+                      designfile=slidedesignfile,
+                      path=instdata.dir))
 
     ## Update package data directory
     filename <- paste(sub("Data$", "", basename(instdata.dir)), "rda", sep=".")

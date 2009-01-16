@@ -17,7 +17,7 @@ local({
 
         ## Begin processing
         assign(varname <- make.names(xform(antibody)),
-               RPPA(filename, path=datadir),
+               RPPA(filename, path=datadir, antibody=antibody),
                envir=environment(makeRPPAs))
 
         return(varname)
@@ -58,11 +58,11 @@ local({
                            as.character(rep.temp),
                            sep="."))
 
+    ## :TODO: Missing 'slidedesign.tsv' and 'layoutInfo.tsv' files
     assign(design <- "design40",
            RPPADesign(rppa,
                       steps=steps,
                       series=series))
-    rm(steps, rep.temp, series)
 
     ## Update package data directory
     filename <- paste(sub("Data$", "", basename(instdata.dir)), "rda", sep=".")

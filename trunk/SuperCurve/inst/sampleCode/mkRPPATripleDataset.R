@@ -17,7 +17,7 @@ local({
 
         ## Begin processing
         assign(varname <- make.names(xform(antibody)),
-               RPPA(filename, path=datadir),
+               RPPA(filename, path=datadir, antibody=antibody),
                envir=environment(makeRPPAs))
 
         return(varname)
@@ -41,14 +41,17 @@ local({
                    },
                    instdata.dir)
 
-    layoutinfofile <- file.path(instdata.dir, "layoutInfo.tsv")
-    layoutinfo.df <- read.delim(layoutinfofile)
+    layoutinfofile <- "layoutInfo.tsv"
+    ## :TBD: Sample column in layout info file doesn't match those in quantification files 
+    ## :TODO: Missing 'slidedesign.tsv' file
+
     assign(design <- "tripledesign",
            RPPADesign(rppa <- get(rppas[1]),
                       grouping="byRow",
-                      alias=layoutinfo.df,
                       controls=list("Buffer",
-                                    "Blank")))
+                                    "Blank"),
+                      aliasfile=layoutinfofile,
+                      path=instdata.dir))
 
     ## Update package data directory
     filename <- paste(sub("Data$", "", basename(instdata.dir)), "rda", sep=".")
