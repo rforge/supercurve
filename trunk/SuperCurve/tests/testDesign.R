@@ -34,10 +34,12 @@ checkException(RPPADesignParams(ordering=1),
 dp <- RPPADesignParams(controls=c("neg con", "pos con"))
 checkIdentical(dp@controls, list("neg con", "pos con"))
 
-## Specifying controls indirectly
-## :TODO: We need a slide design for this dataset before test can be added...
-#dp <- RPPADesignParams(slidedesign=file.path(path, "slidedesign.tsv"))
-#checkIdentical(dp@controls, list("neg con", "pos con"))
+## Specifying controls indirectly via slide design file
+slidedesignfile="slidedesign.tsv"
+dp <- RPPADesignParams(designfile=slidedesignfile, path=path)
+checkIdentical(dp@designfile, file.path(path, slidedesignfile))
+dsn <- RPPADesignFromParams(jnk, dp)
+checkIdentical(dsn@controls, list("neg con", "pos con"))
 
 ## This is for showing off the plot, where the controls dominate
 dp <- RPPADesignParams(grouping="bySample")

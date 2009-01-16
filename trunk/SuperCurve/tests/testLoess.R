@@ -13,42 +13,45 @@ if (!nzchar(Sys.getenv("SUPERCURVE_FULL_TEST"))) {
 }
 options(warn=1)
 library(SuperCurve)
+library(robustbase)
 
 ######################################
-# load the tumor data
+## load the tumor data
 home <- system.file("rppaTripleData", package="SuperCurve")
 
-# first locate the list of assays
-# the name 'proteins' is required
-# must include a column named 'Antibody'
+## first locate the list of assays
+## the name 'proteins' is required
+## must include two columns named 'Antibody' and 'Filename'.
 proteins <- read.delim(file.path(home, "proteinAssay.tsv"), as.is=TRUE)
-dimnames(proteins)[[1]] <- as.character(proteins$Antibody)
+rownames(proteins) <- as.character(proteins$Antibody)
 
 for (i in seq_len(nrow(proteins))) {
-    temp <- RPPA(proteins$File[i], path=home)
+    temp <- RPPA(proteins$Filename[i],
+                 path=home,
+                 antibody=proteins$Antibody[i])
     assign(proteins$Antibody[i], temp, 1)
 }
 rm(i, temp)
 
 ######################################
-# work out the appropriate design layout
+## work out the appropriate design layout
 design <- RPPADesign(ACTB)
 
 ######################################
-# must define the 'model' to use
+## must define the 'model' to use
 model <- "loess"
 
 ######################################
-# must define the 'measure' to use
+## must define the 'measure' to use
 measure <- "Mean.Net"
 
 ######################################
-# loess is very slow; we are only going to test
-# a single protein.
+## loess is very slow; we are only going to test
+## a single protein.
 proteins <- proteins[nrow(proteins), ]
 
 ######################################
-# must define the 'method' to use
+## must define the 'method' to use
 method <- 'nlrq'
 source("testRblock", echo=TRUE, max.deparse.len=1024)
 

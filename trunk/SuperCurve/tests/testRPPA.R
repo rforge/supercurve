@@ -16,10 +16,9 @@ checkException(RPPA(pi),
                msg="invalid value should fail - must be connection")
 checkException(RPPA(list.files(path)),
                msg="character vector (file) should fail")
-    ## :TBD: This seems reasonable to me... (PLR)
 quantfile <- list.files(path)[1]
-checkException(RPPA(file.path(path, quantfile)),
-               msg="absolute pathname should fail")
+checkTrue(is.RPPA(RPPA(file.path(path, quantfile))),
+          msg="absolute pathname should succeed")
 checkException(RPPA(""),
                msg="empty string should fail")
 nosuchfile <- "nosuch.tsv"
@@ -36,9 +35,35 @@ checkException(RPPA(quantfile,
 checkException(RPPA(quantfile,
                     path=c(path, path.expand("~"))),
                msg="character vector should fail")
-checkException(RPPA(quantfile,
-                    path=""),
+
+
+###########################
+## tests of antibody
+
+quantfile <- list.files(path)[1]
+checkException(RPPA(file.path(path, quantfile),
+                    antibody=p1),
+               msg="invalid value should fail")
+checkException(RPPA(file.path(path, quantfile),
+                    antibody=LETTERS),
+               msg="character vector should fail")
+checkException(RPPA(file.path(path, quantfile),
+                    antibody=""),
                msg="empty string should fail")
+local({
+    rppa <- RPPA(file.path(path, quantfile))
+    checkTrue(identical(rppa@antibody,
+                        sub(".txt$", "", quantfile)),
+              msg="default value is filename w/o extension")
+})
+
+local({
+    antibody <- "FOO"
+    rppa <- RPPA(file.path(path, quantfile),
+                 antibody=antibody)
+    checkTrue(identical(rppa@antibody, antibody),
+              msg="specified value is slotted")
+})
 
 
 ###########################

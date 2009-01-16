@@ -13,45 +13,49 @@ if (!nzchar(Sys.getenv("SUPERCURVE_FULL_TEST"))) {
 }
 options(warn=1)
 library(SuperCurve)
+library(robustbase)
+library(boot)
 
 ######################################
-# load the data from the 40 cell lines
+## load the data from the 40 cell lines
 home <- system.file("rppaCellData", package="SuperCurve")
 
-# first locate the list of assays
-# the name 'proteins' is required
-# must include a column named 'Antibody'
+## first locate the list of assays
+## the name 'proteins' is required
+## must include two columns named 'Antibody' and 'Filename'.
 proteins <- read.delim(file.path(home, "proteinAssay.tsv"), as.is=TRUE)
-dimnames(proteins)[[1]] <- as.character(proteins$Antibody)
+rownames(proteins) <- as.character(proteins$Antibody)
 
 for (i in seq_len(nrow(proteins))) {
-    temp <- RPPA(proteins$File[i], path=home)
+    temp <- RPPA(proteins$Filename[i],
+                 path=home,
+                 antibody=proteins$Antibody[i])
     assign(proteins$Antibody[i], temp, 1)
 }
 rm(i, temp)
 
 ######################################
-# work out the appropriate design layout
+## work out the appropriate design layout
 
 steps <- rep(c(rep(8:5, 2), rep(4:1, 2)), 40) - 4.5
 rep.temp <- factor(paste("Rep", rep(rep(1:2, each=4), 80), sep=""))
 series <- factor(paste(as.character(AKT@data$Sample),
-                             as.character(rep.temp),
-                             sep="."))
-# the name 'design' is required'
+                       as.character(rep.temp),
+                       sep="."))
+## the name 'design' is required'
 design <- RPPADesign(AKT, steps=steps, series=series)
 rm(steps, rep.temp, series)
 
 ######################################
-# must define the 'model' to use
+## must define the 'model' to use
 model <- "logistic"
 
 ######################################
-# must define the 'measure' to use
+## must define the 'measure' to use
 measure <- "Mean.Net"
 
 ######################################
-# must define the 'method' to use
+## must define the 'method' to use
 method <- "nlrq"
 source("testRblock", echo=TRUE, max.deparse.len=1024)
 

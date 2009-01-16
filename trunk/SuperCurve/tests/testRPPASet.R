@@ -5,6 +5,8 @@
 
 options(warn=1)
 library(SuperCurve)
+library(robustbase)
+library(boot)
 source("checkFuncs")
 
 ## create project directory in per-session temporary directory
@@ -25,7 +27,10 @@ fitparams <- RPPAFitParams(measure="Mean.Net",
                            ignoreNegative=FALSE,
                            warnLevel=-1)
 
-fitset <- RPPASet(path, designparams, fitparams)
+fitset <- RPPASet(path,
+                  designparams,
+                  fitparams,
+                  antibodyfile="proteinAssay.tsv")
 
 ###########################
 ## tests of path
@@ -62,6 +67,87 @@ checkException(RPPASet(path,
                        designparams,
                        fitparams=RPPAFitParams(measure="bogus")),
                msg="fitparams with invalid measure should fail")
+
+
+###########################
+## tests of antibodyfile
+
+checkException(RPPASet(path=path,
+                       designparams,
+                       fitparams,
+                       antibodyfile=5),
+               msg="invalid value should fail")
+
+checkException(RPPASet(path=path,
+                       designparams,
+                       fitparams,
+                       antibodyfile=c("results1", "results2")),
+               msg="character vector should fail")
+
+checkException(RPPASet(path=path,
+                       designparams,
+                       fitparams,
+                       antibodyfile=""),
+               msg="empty string should fail")
+
+nosuchfile <- "nosuch.tsv"
+checkException(RPPASet(path=path,
+                       designparams,
+                       fitparams,
+                       antibodyfile=nosuchfile),
+               msg="nonexistent file should fail")
+
+## :NOTE: Could stand a better error message than provided...
+checkException(RPPASet(path=path,
+                       designparams,
+                       fitparams,
+                       antibodyfile=path),
+               msg="directory instead of file should fail")
+
+local({
+    emptyfile <- file.path(persessionprojdir, "emptyfile.tsv")
+    close(fconn <- file(emptyfile, "w"))
+
+    checkException(RPPASet(path=path,
+                           designparams,
+                           fitparams,
+                           antibodyfile=emptyfile),
+                   msg="empty file should fail")
+})
+
+local({
+    singlecolfile <- file.path(persessionprojdir, "singlecolfile.tsv")
+    fconn <- file(singlecolfile, "w")
+    cat("Filename", file=fconn, sep="\n")
+    for (filename in list.files(path)) {
+        cat(filename, file=fconn, sep="\n")
+    }
+    close(fconn)
+
+    checkException(RPPASet(path=path,
+                           designparams,
+                           fitparams,
+                           antibodyfile=singlecolfile),
+                   msg="file with single column should fail")
+})
+
+local({
+    missingreqdcolsfile <- file.path(persessionprojdir, "missingreqdcols.tsv")
+    fconn <- file(missingreqdcolsfile, "w")
+    cat(paste("Filename", "Size", sep="\t"), file=fconn, sep="\n")
+    for (filename in list.files(path)) {
+        filesize <- file.info(file.path(path, filename))$size
+        cat(paste(filename, filesize, sep="\t"),
+            file=fconn, sep="\n")
+    }
+    close(fconn)
+
+    checkException(RPPASet(path=path,
+                           designparams,
+                           fitparams,
+                           antibodyfile=missingreqdcolsfile),
+                   msg="file without required columns should fail")
+})
 
 
 ###########################

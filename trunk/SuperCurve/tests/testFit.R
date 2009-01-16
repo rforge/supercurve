@@ -5,6 +5,8 @@
 
 options(warn=1)
 library(SuperCurve)
+library(robustbase)
+library(boot)
 source("checkFuncs")
 
 ## Get a valid RPPA object to get started
@@ -48,9 +50,8 @@ checkException(RPPAFitFromParams(jnk, dsn, fp),    # but find bad argument here
 
 checkException(registerModel("bogus", 5),
                msg="invalid classname should fail")
-## :BUG: Doesn't prevent classes unrelated to FitClass
-#checkException(registerModel("bogus", "numeric"),
-#               msg="invalid classname - superclass not FitClass")
+checkException(registerModel("bogus", "numeric"),
+               msg="invalid classname - superclass not FitClass")
 
 fp <- RPPAFitParams("Mean.Net", model="logistic", method="nlrob")
 summary(fp)
