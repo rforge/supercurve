@@ -25,28 +25,25 @@ RPPA <- function(file,
         if (!(length(file) == 1)) {
             stop(sprintf("argument %s must be of length 1",
                          sQuote("file")))
-        } else if (!(nzchar(file))) {
+        } else if (!nzchar(file)) {
             stop(sprintf("argument %s must not be empty string",
                          sQuote("file")))
         }
 
-        if (!is.character(path)) {
-            stop(sprintf("argument %s must be character",
-                         sQuote("path")))
-        } else if (!(length(path) == 1)) {
-            stop(sprintf("argument %s must be of length 1",
-                         sQuote("path")))
-        } else if (!(nzchar(path))) {
-            stop(sprintf("argument %s must not be empty string",
-                         sQuote("path")))
-        }
+        pathname <- if (.isAbsolutePathname(file)) {
+                        file
+                    } else {
+                        if (!is.character(path)) {
+                            stop(sprintf("argument %s must be character",
+                             sQuote("path")))
+                        } else if (!(length(path) == 1)) {
+                            stop(sprintf("argument %s must be of length 1",
+                             sQuote("path")))
+                        }
 
-        if (substring(file, 1, 1) == .Platform$file.sep) {
-            warning(sprintf("argument %s should not be absolute pathname",
-                            sQuote("file")))
-        }
+                        file.path(path, file)
+                    }
 
-        pathname <- file.path(path, file)
         if (!file.exists(pathname)) {
             stop(sprintf("file %s does not exist",
                          dQuote(pathname)))
@@ -56,20 +53,15 @@ RPPA <- function(file,
         file <- file(pathname, "r")
         on.exit(close(file))
     }
+    filename <- basename(summary(file)$description)
 
     ## Read quantification file
     quant.df <- readQuantification(file, software)
 
-    ## :TBD: Add path to object? Convert to canonical format prior to doing so?
-    ## :KRC: No, I just want the filename, not the full path. That is why the
-    ## arguments were separated to start with.
-    ## :PLR: Question was whether an additional slot would contain directory
-    ## info, not a merge with existing field.
-
     ## Create new class
     new("RPPA",
         data=quant.df,
-        file=basename(summary(file)$description))
+        file=filename))
 }
 
 
@@ -137,8 +129,9 @@ setMethod("image", signature(x="RPPA"),
 
     ## Begin processing
     data.df <- x@data
-    my <- max(data.df$Main.Row) * max(data.df$Sub.Row)
-    mx <- max(data.df$Main.Col) * max(data.df$Sub.Col)
+    dim.rppa <- dim(x)
+    my <- dim.rppa["Main.Row"] * dim.rppa["Sub.Row"]
+    mx <- dim.rppa["Main.Col"] * dim.rppa["Sub.Col"]
     yspot <- 1+my-(max(data.df$Sub.Row)*(data.df$Main.Row-1) + data.df$Sub.Row)
     xspot <- max(data.df$Sub.Col)*(data.df$Main.Col-1) + data.df$Sub.Col
     geo <- tapply(data.df[, measure],
@@ -188,18 +181,4 @@ setMethod("image", signature(x="RPPA"),
     abline(v=(0.5 + seq(0, mx, length=1+max(data.df$Main.Col))))
     invisible(x)
 })
-
-
-##
-##
-if (FALSE) {
-  source("AllGenerics.R")
-  path <- "../inst/rppaTumorData"
-  erk2 <- RPPA("ERK2.txt", path=path)
-  summary(erk2)
-  image(erk2)
-  image(erk2, colorbar=TRUE)
-  image(erk2, "Vol.Bkg", colorbar=TRUE)
-  rm(path, erk2)
-}
 
