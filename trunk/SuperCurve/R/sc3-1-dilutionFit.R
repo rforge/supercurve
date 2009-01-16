@@ -23,9 +23,10 @@ setClass("RPPAFit",
 
 
 ##=============================================================================
+setClassUnion("OptionalFunction", c("function", "NULL"))
 setClass("RPPAFitParams",
          representation=list(measure="character",
-                             xform="function",
+                             xform="OptionalFunction",
                              method="character",
                              ci="logical",
                              ignoreNegative="logical",
@@ -225,18 +226,13 @@ setMethod("hist", "RPPAFit",
 setMethod("plot", signature(x="RPPAFit", y="missing"),
           function(x, y,
                    type=c("cloud", "series", "individual", "steps", "resid"),
+                   col=NULL,
+                   xform=NULL,
                    xlab="Log Concentration",
                    ylab="Intensity",
-                   col=NULL,
-                   xform=function(x) { x },
                    ...) {
     ## Check arguments
     type <- match.arg(type)
-
-    if (!is.function(xform)) {
-        stop(sprintf("argument %s must be function",
-                     sQuote("xform")))
-    }
 
     ## Begin processing
     trimset <- as.list(x@trimset)
@@ -247,7 +243,16 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
 
     xval <- fitted(x, "x")
     yval <- fitted(x, "y")
-    yraw <- xform(x@rppa@data[, x@measure])
+    yraw <- if (!is.null(xform)) {
+                if (!is.function(xform)) {
+                    stop(sprintf("argument %s must be function, if specified",
+                                 sQuote("xform")))
+                }
+
+                xform(x@rppa@data[, x@measure])
+            } else {
+                x@rppa@data[, x@measure]
+            }
     model.color <- "green" # :KRC: why is the color hard-coded?
     if (type == "cloud" || type == "series") {
         if (!hasArg(sub)) {
