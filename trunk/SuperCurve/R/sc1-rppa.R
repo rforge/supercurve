@@ -6,7 +6,8 @@
 ##=============================================================================
 setClass("RPPA",
          representation=list(data="data.frame",
-                             file="character"))
+                             file="character",
+                             antibody="character"))
 
 
 ##-----------------------------------------------------------------------------
@@ -19,6 +20,7 @@ is.RPPA <- function(x) {
 ## Generates an RPPA object from a quantification file.
 RPPA <- function(file,
                  path=".",
+                 antibody=NULL,
                  software="microvigene") {
     ## Check arguments
     if (is.character(file)) {
@@ -55,13 +57,31 @@ RPPA <- function(file,
     }
     filename <- basename(summary(file)$description)
 
+    if (!is.null(antibody)) {
+        if (!is.character(antibody)) {
+            stop(sprintf("argument %s must be character",
+                         sQuote("antibody")))
+        } else if (!(length(antibody) == 1)) {
+            stop(sprintf("argument %s must be of length 1",
+                         sQuote("antibody")))
+        } else if (!nzchar(antibody)) {
+            stop(sprintf("argument %s must not be empty string",
+                         sQuote("antibody")))
+        }
+    } else {
+        ## Use filename without extension as default value
+        txt.re <- "\\.[Tt][Xx][Tt]$"
+        antibody <- sub(txt.re, "", filename)
+    }
+
     ## Read quantification file
     quant.df <- readQuantification(file, software)
 
     ## Create new class
     new("RPPA",
         data=quant.df,
-        file=filename))
+        file=filename,
+        antibody=antibody)
 }
 
 
@@ -78,6 +98,7 @@ setMethod("summary", "RPPA",
                    ...) {
     cat(sprintf("An %s object loaded from file %s",
                 class(object), dQuote(object@file)), "\n")
+    cat("antibody:", object@antibody, "\n")
     cat("\n")
     print(dim(object))
     cat("\n")
