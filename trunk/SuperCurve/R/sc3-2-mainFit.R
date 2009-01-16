@@ -63,7 +63,7 @@ RPPAFit <- function(rppa,
                     design,
                     measure,
                     model="logistic",
-                    xform=function(x) x,
+                    xform=NULL,
                     method=c("nls", "nlrob", "nlrq"),
                     trim=2,
                     ci=FALSE,
@@ -93,7 +93,7 @@ RPPAFit <- function(rppa,
 ## Collect parameters in one place and make sure they are reasonably sensible
 RPPAFitParams <- function(measure,
                           model="logistic",
-                          xform=function(x) x,
+                          xform=NULL,
                           method=c("nls", "nlrob", "nlrq"),
                           trim=2,
                           ci=FALSE,
@@ -127,9 +127,11 @@ RPPAFitParams <- function(measure,
                      sQuote("measure")))
     }
 
-    if (!is.function(xform)) {
-        stop(sprintf("argument %s must be function",
-                     sQuote("xform")))
+    if (!is.null(xform)) {
+        if (!is.function(xform)) {
+            stop(sprintf("argument %s must be function, if specified",
+                         sQuote("xform")))
+        }
     }
 
     ## Remaining parameters are less important, so we mostly just transform
@@ -242,8 +244,8 @@ setMethod("paramString", "RPPAFitParams",
     ## Quantiles forces a double trim in conjunction with calcLogitz
     ## and epsilon above, artificially shrinking alpha and beta
     ## Try to match version 0.12
-    # lBot <- quantile(temp, probs=c(.05), na.rm=TRUE)
-    # lTop <- quantile(temp, probs=c(.95), na.rm=TRUE)
+    # lBot <- quantile(temp, probs=0.05, na.rm=TRUE)
+    # lTop <- quantile(temp, probs=0.95, na.rm=TRUE)
 
     lBot <- min(temp, na.rm=TRUE)
     lTop <- max(temp, na.rm=TRUE)
@@ -304,7 +306,6 @@ setMethod("paramString", "RPPAFitParams",
 }
 
 
-## :TBD: Shouldn't this method be exported in NAMESPACE?
 ##-----------------------------------------------------------------------------
 ## Returns model associated with key for invocation.
 getRegisteredModel <- function(key) {
@@ -353,12 +354,11 @@ registerModel <- function(key,
                               sQuote(classname)))
              })
 
-    ## :BUG: Should check that superclass is FitClass
-#    if (!("FitClass" %in% superClassNames(classname))) {
-#       stop(sprintf("argument %s must be name of subclass of class %s",
-#                    sQuote("classname"),
-#                    sQuote("FitClass")))
-#   }
+    if (!extends(classname, "FitClass")) {
+       stop(sprintf("argument %s must be name of subclass of class %s",
+                    sQuote("classname"),
+                    sQuote("FitClass")))
+   }
 
     registerClassname(key, classname, ui.label=ui.label, envir=modelenv())
 }
@@ -382,23 +382,15 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
                      sQuote("fitparams"), "RPPAFitParams"))
     }
 
-    ## Extract the already checked fit parameters
-    measure <- fitparams@measure
-    model <- fitparams@model
-    xform <- fitparams@xform
-    method <- fitparams@method
-    trim <- fitparams@trim
-    ci <- fitparams@ci
-    ignoreNegative <- fitparams@ignoreNegative
-    trace <- fitparams@trace
-    verbose <- fitparams@verbose
-    veryVerbose <- fitparams@veryVerbose
-    warnLevel <- fitparams@warnLevel
+    ## Create variables from 'fitparams' slots
+    for (slotname in slotNames(fitparams)) {
+        assign(slotname, slot(fitparams, slotname))
+    }
 
     ## Need to make certain that the 'model' is a registered FitClass
     modelClass <- tryCatch(getRegisteredModel(model),
                            error=function(e) {
-                               stop(sprintf("argument %s must be name of a registered fit class",
+                               stop(sprintf("argument %s must be name of registered fit class",
                                             sQuote("model")))
                            })
 
@@ -427,7 +419,11 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
     }
 
     call <- match.call()
-    intensity <- xform(rppa@data[, measure])
+    intensity <- if (!is.null(xform)) {
+                     xform(rppa@data[, measure])
+                 } else {
+                     rppa@data[, measure]
+                 }
 
     silent <- warnLevel < 0
 
@@ -535,9 +531,27 @@ RPPAFitFromParams <- function(rppa, design, fitparams) {
                        intensity=intensity,
                        design=design,
                        trimLevel=trim)
-        series.conc <- result@concentrations
-        series.conc[series.conc < tc$lo.conc] <- tc$lo.conc
-        series.conc[series.conc > tc$hi.conc] <- tc$hi.conc
+
+        if (any(is.nan(c(tc$lo.conc, tc$hi.conc)))) {
+            warning("concentration values zero'd out due to NaNs",
+                    immediate.=TRUE)
+            series.conc <- rep(0, length(result@concentrations))
+            names(series.conc) <- names(result@concentrations)
+        } else {
+            series.conc <- result@concentrations
+            series.conc[series.conc < tc$lo.conc] <- tc$lo.conc
+            series.conc[series.conc > tc$hi.conc] <- tc$hi.conc
+        }
+
+        minunique <- 5  ## :TBD: Magic# for undetermined limit
+        nunique <- length(unique(sort(series.conc)))
+        if (!(nunique > minunique)) {
+            warning(sprintf("trim level %s is too high: #unique conc. values=%d",
+                            as.character(trim),
+                            nunique),
+                    immediate.=TRUE)
+        }
+
         result@concentrations <- series.conc
         result@trimset <- unlist(tc)
     }
