@@ -4,6 +4,8 @@
 \alias{RPPAFitFromParams}
 \alias{RPPAFit}
 \alias{paramString,RPPAFitParams-method}
+\alias{is.RPPAFit}
+\alias{is.RPPAFitParams}
 \docType{class}
 \title{Fitting Dilution Curves to Protein Lysate Arrays with Class "RPPAFitParams"}
 \description{
@@ -19,7 +21,7 @@ RPPAFit(rppa,
         design,
         measure,
         model="logistic",
-        xform=function(x) x,
+        xform=NULL,
         method=c("nls", "nlrob", "nlrq"),
         trim=2,
         ci=FALSE,
@@ -31,7 +33,7 @@ RPPAFit(rppa,
 
 RPPAFitParams(measure,
               model="logistic",
-              xform=function(x) x,
+              xform=NULL,
               method=c("nls", "nlrob", "nlrq"),
               trim=2,
               ci=FALSE,
@@ -45,6 +47,8 @@ RPPAFitFromParams(rppa,
                   design,
                   fitparams)
 
+is.RPPAFit(x)
+is.RPPAFitParams(x)
 \S4method{paramString}{RPPAFitParams}(object, ...)
 }
 \arguments{
@@ -64,7 +68,7 @@ RPPAFitFromParams(rppa,
       \code{"cobs"}     \tab fits a b-spline curve to the slide with the
                              constraint that curve be strictly increasing \cr
     }}
-  \item{xform}{(Experimental) function that takes a single input vector and
+  \item{xform}{optional function that takes a single input vector and
     returns a single output vector of the same length. The \code{measure}
     column is transformed using this function before fitting the model.}
   \item{method}{character string specifying the method for matching
@@ -100,6 +104,7 @@ RPPAFitFromParams(rppa,
     series are failing. Setting \code{warnLevel} to two or greater may change
     the values returned.}
   \item{object}{object of class \code{RPPAFitParams}}
+  \item{x}{object of class \code{RPPAFit} (or \code{RPPAFitParams})}
   \item{\dots}{extra arguments for generic routines.}
 }
 \details{
@@ -144,7 +149,7 @@ RPPAFitFromParams(rppa,
 \section{Slots}{
   \describe{
     \item{\code{measure}:}{character; see arguments above}
-    \item{\code{xform}:}{function; see arguments above}
+    \item{\code{xform}:}{function or NULL; see arguments above}
     \item{\code{method}:}{character; see arguments above}
     \item{\code{ci}:}{logical; see arguments above}
     \item{\code{ignoreNegative}:}{logical; see arguments above}
@@ -167,6 +172,12 @@ RPPAFitFromParams(rppa,
 
   The \code{RPPAFitParams} generator returns an object of class
   \code{RPPAFitParams}.
+
+  The \code{is.RPPAFit} method returns \code{TRUE} if its
+  argument is an object of class \code{RPPAFit}.
+
+  The \code{is.RPPAFitParams} method returns \code{TRUE} if its
+  argument is an object of class \code{RPPAFitParams}.
 
   The \code{paramString} method returns a character vector, possibly
   empty but never \code{NULL}.

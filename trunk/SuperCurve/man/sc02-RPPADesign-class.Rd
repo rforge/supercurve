@@ -11,6 +11,8 @@
 \alias{plot,RPPA,RPPADesign-method}
 \alias{summary,RPPADesign-method}
 \alias{getSteps}
+\alias{is.RPPADesign}
+\alias{is.RPPADesignParams}
 \alias{seriesNames}
 \docType{class}
 \title{Class "RPPADesign" and Class "RPPADesignParams"}
@@ -26,21 +28,29 @@ RPPADesign(raw,
            series=factor(rep(0, 1)),
            grouping=c("byRow","byCol", "bySample", "blockSample"),
            ordering=c("decreasing","increasing"),
-           alias=list(),
+           alias=NULL,
            center=FALSE,
-           controls=list())
+           controls=NULL,
+           aliasfile=NULL,
+           designfile=NULL,
+           path=".")
 
 RPPADesignParams(steps=rep(0,1),
                  series=factor(rep(0,1)),
                  grouping=c("byRow", "byCol", "bySample", "blockSample"),
                  ordering=c("decreasing", "increasing"),
-                 alias=list(),
+                 alias=NULL,
                  center=FALSE,
-                 controls=list())
+                 controls=NULL,
+                 aliasfile=NULL,
+                 designfile=NULL,
+                 path=".")
 
 RPPADesignFromParams(raw, designparams)
 
 getSteps(design)
+is.RPPADesign(x)
+is.RPPADesignParams(x)
 seriesNames(design)
 \S4method{dim}{RPPADesign}(x)
 \S4method{image}{RPPADesign}(x, \dots)
@@ -83,9 +93,18 @@ seriesNames(design)
       \code{Alias}  \tab TBD description \cr
       \code{Sample} \tab TBD description \cr
     }}
+  \item{aliasfile}{optional character string specifying filename. Data
+    would be read by \code{read.delim} and expected format is as described
+    above for \code{alias} argument.}
+  \item{designfile}{optional character string specifying filename. Data
+    would be read by \code{read.delim} and expected format is that produced
+    as output by the \pkg{SlideDesignerGUI} package.}
+  \item{path}{optional character string specifying directory path to prepend
+    when either \code{aliasfile} or \code{designfile} argument refer to
+    relative filename; ignored when filename is absolute.}
   \item{center}{logical scalar. If \code{TRUE}, then dilution steps are
     centered around 0.}
-  \item{controls}{list containing the character strings that identify
+  \item{controls}{optional list containing the character strings that identify
     control spots on the array. \code{RPPADesignParams} will also coerce a
     character vector appropriately.}
   \item{x}{object of class \code{RPPADesign} (or \code{RPPA} in plot method)}
@@ -124,6 +143,12 @@ seriesNames(design)
   series names (in the \code{series} argument) and corresponding dilution
   steps (in the \code{steps} argument) that explicitly provide the mapping
   for each spot.
+
+  The arguments \code{alias} and \code{aliasfile} are mutually exclusive;
+  they specify the exact same thing. The arguments \code{controls} and
+  \code{designfile} are also mutually exclusive. The \var{SampleType} column
+  of the slide design datafile is used to automatically populate the
+  \code{controls} slot of \code{RPPADesign} class.
 }
 \section{Objects from the Class}{
   Although objects of these classes can be created by a direct call to
@@ -133,19 +158,33 @@ seriesNames(design)
   (the \code{RPPADesign} generator is directly implemented in this way).
 }
 \section{Slots}{
+  For \code{RPPADesign} class:
+
   \describe{
+    \item{\code{call}:}{object of class \code{call} specifying the function
+      call that was used during construction}
     \item{\code{layout}:}{data frame}
-    \item{\code{alias}:}{list or data frame}
+    \item{\code{alias}:}{list}
     \item{\code{sampleMap}:}{character vector}
-    \item{\code{controls}:}{list containing the character strings that
-      identify control spots on the array. Controls are not included as part
-      of any dilution series.}
-    \item{\code{alias}:}{see corresponding argument above}
-    \item{\code{center}:}{see corresponding argument above}
+    \item{\code{controls}:}{list containing character strings that identify
+      control spots on the array. Controls are not included as part of any
+      dilution series.}
+  }
+
+  For \code{RPPADesignParams} class:
+
+  \describe{
+    \item{\code{steps}:}{see corresponding argument above}
+    \item{\code{series}:}{see corresponding argument above}
     \item{\code{grouping}:}{see corresponding argument above}
     \item{\code{ordering}:}{see corresponding argument above}
-    \item{\code{series}:}{see corresponding argument above}
-    \item{\code{steps}:}{see corresponding argument above}
+    \item{\code{center}:}{see corresponding argument above}
+    \item{\code{controls}:}{list or \code{NULL}. see corresponding argument above}
+    \item{\code{alias}:}{list or \code{NULL}. see corresponding argument above}
+    \item{\code{aliasfile}:}{character specifying absolute pathname of file
+      containing alias information, or \code{NULL}}
+    \item{\code{designfile}:}{character specifying absolute pathname of file
+      containing slide design information, or \code{NULL}}
   }
 }
 \section{Methods}{
@@ -168,6 +207,15 @@ seriesNames(design)
 \value{
   The \code{RPPADesign} generator returns an object of class
   \code{RPPADesign}.
+
+  The \code{RPPADesignParams} generator returns an object of class
+  \code{RPPADesignParams}.
+
+  The \code{is.RPPADesign} method returns \code{TRUE} if its
+  argument is an object of class \code{RPPADesign}.
+
+  The \code{is.RPPADesignParams} method returns \code{TRUE} if its
+  argument is an object of class \code{RPPADesignParams}.
 
   The \code{dim} method returns a numeric vector of length 4.
 
@@ -210,9 +258,9 @@ dim(design)
 image(design)
 summary(design)
 
-design <- RPPADesign(erk2,
-                     grouping="blockSample",
-                     controls=list("neg con", "pos con"))
+designparams <- RPPADesignParams(grouping="blockSample",
+                                 controls=list("neg con", "pos con"))
+design <- RPPADesignFromParams(erk2, designparams)
 image(design)
 summary(design)
 
@@ -224,10 +272,10 @@ akt <- RPPA("Akt.txt", path=path)
 ## They are interleaved, with top two identical rows containing the first
 ## 4 steps and the bottom two identical rows containing the last 4 steps.
 steps <- rep(c(rep(8:5, 2), rep(4:1, 2)), 40) - 4.5
-rep.temp <- factor(paste('Rep', rep(rep(1:2, each=4), 80), sep=''))
+rep.temp <- factor(paste('Rep', rep(rep(1:2, each=4), 80), sep=""))
 series <- factor(paste(as.character(akt@data$Sample),
-                             as.character(rep.temp),
-                             sep='.'))
+                       as.character(rep.temp),
+                       sep="."))
 design40 <- RPPADesign(akt, steps=steps, series=series)
 dim(design40)
 image(design40)

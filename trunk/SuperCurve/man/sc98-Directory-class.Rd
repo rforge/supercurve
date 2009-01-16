@@ -3,6 +3,7 @@
 \alias{Directory}
 \alias{coerce,character,Directory-method}
 \alias{coerce,Directory,character-method}
+\alias{is.Directory}
 \docType{class}
 \title{Class "Directory"}
 \description{
@@ -10,9 +11,11 @@
 }
 \usage{
 Directory(path)
+is.Directory(x)
 }
 \arguments{
   \item{path}{character string specifying a directory}
+  \item{x}{object of class \code{Directory}}
 }
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to
@@ -26,6 +29,9 @@ Directory(path)
 }
 \value{
   The \code{Directory} generator returns an object of class \code{Directory}.
+
+  The \code{is.Directory} method returns \code{TRUE} if its
+  argument is an object of class \code{Directory}.
 }
 \author{
   P. Roebuck \email{plroebuck@mdanderson.org}

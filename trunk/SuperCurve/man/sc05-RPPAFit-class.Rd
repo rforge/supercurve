@@ -72,9 +72,9 @@
     \item{\code{method}:}{character string containing the name of the
       method that was used to estimate the upper and lower limit
       parameters in the model}
-    \item{\code{trimset}:}{numeric vector of length 4 containing the
-      low and high intensities and the low and high concentrations that
-      mark the trimming boundaries}
+    \item{\code{trimset}:}{numeric vector of length 5 containing the
+      low and high intensities, the low and high concentrations that
+      mark the trimming boundaries, and the trim level used}
     \item{\code{model}:}{object of class \code{FitClass} unique to the
       model that was fit}
     \item{\code{concentrations}:}{numeric vector of estimates of the relative
@@ -110,16 +110,16 @@
       returned when \code{type} is set to either uppercase or
       lowercase 'x'. In the notation used above to describe the model,
       these fitted values are given by \eqn{X_i = X - \delta_i}.}
-    \item{hist(x, type=c("Residuals", "StdRes"), xlab=NULL, main=NULL,
-      \dots)}{Produces a histogram of the residuals. The exact form of the
-      residuals being displayed depends on the value of the \code{type}
-      argument.}
+    \item{hist(x, type=c("Residuals", "StdRes", "ResidualsR2"),
+      xlab=NULL, main=NULL, \dots)}{Produces a histogram of the residuals.
+      The exact form of the residuals being displayed depends on the value
+      of the \code{type} argument.}
     \item{image(x, measure=c("Residuals", "StdRes", "X", "Y"), \dots)}{
       Produces a 'geographic' plot of either the residuals or the fitted
       values, depending on the value of the \code{measure} argument. The
       implementation reuses code from the \code{image} method for an
       \code{\link{RPPA}} object.}
-    \item{plot(x, y, type=c("cloud", "series", "individual"),
+    \item{plot(x, y, type=c("cloud", "series", "individual", "steps", "resid"),
       xlab="Log Concentration", ylab="Intensity", \dots)}{
       Produces a diagnostic plot of the model fit. The default \code{type},
       'cloud', simply plots the fitted \eqn{X} values against the observed
@@ -128,9 +128,9 @@
       points belonging to the same dilution series. The 'individual' plot
       produces separate graphs for each dilution series, laying each one
       alongside the jointly fitted sigmoid curve.}
-    \item{resid(object, type=c("raw", "standardized"), \dots)}{
+    \item{resid(object, type=c("raw", "standardized", "r2"), \dots)}{
       An alias for \code{residuals}.}
-    \item{residuals(object, type=c("raw", "standardized"), \dots)}{
+    \item{residuals(object, type=c("raw", "standardized", "r2"), \dots)}{
       Reports the residual errors. The 'raw' residuals are defined
       as the difference between the observed intensities and the
       fitted intensities, as computed by the \code{fitted} function.

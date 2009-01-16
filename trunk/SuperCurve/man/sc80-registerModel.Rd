@@ -40,23 +40,21 @@ registerModel(key, classname, ui.label=names(key))
   \code{\link{registerClassname}}
 }
 \examples{
-  \dontrun{
-## If we were creating a brand new fit model...
+## Create new (but nonfunctional) fit model
 setClass("FooFitClass",
          representation("FitClass",
-                        xxx="numeric"))
+                        foo="character"),
+         prototype(foo="fighter"))
 
 ## Register fit model to enable its use by package
-registerModel("foo", "FooFitClass", "Foo is as foo does")
+registerModel("foo", "FooFitClass", "Foo R You")
 
 ## Show all registered fit models
 sapply(getRegisteredModelKeys(),
        function(key) {
-           cat("model: ", getRegisteredModel(key),
-               "label:", getRegisteredModelLabel(key),
-               "\n")
+           c(model=getRegisteredModel(key),
+             label=getRegisteredModelLabel(key))
        })
-  }
 }
 \keyword{data}
 

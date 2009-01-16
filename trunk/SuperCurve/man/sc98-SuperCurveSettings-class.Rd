@@ -3,6 +3,7 @@
 \alias{SuperCurveSettings}
 \alias{paramString,SuperCurveSettings-method}
 \alias{fitCurveAndSummarizeFromSettings}
+\alias{is.SuperCurveSettings}
 \docType{class}
 \title{Class "SuperCurveSettings"}
 \description{
@@ -16,8 +17,9 @@ SuperCurveSettings(txtdir,
                    designparams,
                    fitparams)
 
-\S4method{paramString}{SuperCurveSettings}(object, ...)
 fitCurveAndSummarizeFromSettings(settings)
+is.SuperCurveSettings(x)
+\S4method{paramString}{SuperCurveSettings}(object, ...)
 }
 \arguments{
   \item{txtdir}{character string specifying the directory containing
@@ -31,6 +33,7 @@ fitCurveAndSummarizeFromSettings(settings)
   \item{fitparams}{object of class \code{RPPAFitParams}}
   \item{object}{object of class \code{SuperCurveSettings}}
   \item{settings}{object of class \code{SuperCurveSettings}}
+  \item{x}{object of class \code{SuperCurveSettings}}
   \item{\dots}{extra arguments for generic routines.}
 }
 \section{Objects from the Class}{
@@ -63,6 +66,9 @@ fitCurveAndSummarizeFromSettings(settings)
 \value{
   The \code{SuperCurveSettings} generator returns an object of class
   \code{SuperCurveSettings}.
+
+  The \code{is.SuperCurveSettings} method returns \code{TRUE} if its
+  argument is an object of class \code{SuperCurveSettings}.
 
   The \code{paramString} method returns a character vector, possibly
   empty but never \code{NULL}.

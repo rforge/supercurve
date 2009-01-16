@@ -5,6 +5,7 @@
 \alias{fitSeries,FitClass-method}
 \alias{fitSlide,FitClass-method}
 \alias{trimConc,FitClass-method}
+\alias{is.FitClass}
 \docType{class}
 \title{Class "FitClass"}
 \description{
@@ -12,6 +13,7 @@
   routine. Functions for use with the FitClass are only to be used internally.  
 }
 \usage{
+is.FitClass(x)
 \S4method{coef}{FitClass}(object, \dots)
 \S4method{coefficients}{FitClass}(object, \dots)
 \S4method{fitSeries}{FitClass}(object, diln, intensity, est.conc, method="nls",
@@ -20,6 +22,7 @@
 \S4method{trimConc}{FitClass}(object, conc, intensity, design, trimLevel, \dots)
 }
 \arguments{
+  \item{x}{object of (sub)class \code{FitClass}}
   \item{object}{object of (sub)class \code{FitClass}}
   \item{diln}{numeric vector of dilutions for series to be fit}
   \item{intensity}{numeric vector of observed intensities for series to be fit}
@@ -51,6 +54,10 @@
     \item{trimConc(object, conc, intensity, design, trimLevel, \dots)}{Returns
       concentration and intensity cutoffs for the model.}
   }
+}
+\value{
+  The \code{is.FitClass} method returns \code{TRUE} if its
+  argument is an object of subclass of class \code{FitClass}.
 }
 \references{KRC}
 \author{P. Roebuck \email{plroebuck@mdanderson.org}}

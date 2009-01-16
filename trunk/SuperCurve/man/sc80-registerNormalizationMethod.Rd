@@ -41,7 +41,7 @@ registerNormalizationMethod(key, method, ui.label=names(key))
 }
 \examples{
   \dontrun{
-## If we were creating a brand new normalization method...
+## Create new normalization method
 normalize.foo <- function(concs, bar) {
     return(normconcs <- concs - bar)
 }
@@ -50,8 +50,9 @@ normalize.foo <- function(concs, bar) {
 registerNormalizationMethod("foo", normalize.foo, "Foo is as foo does")
 
 ## Use it...
-concs <- as.numeric(runif(500))
-normalize(concs, method="foo", bar=0.005)
+concs <- matrix(runif(500), nrow=10)
+	# :TBD: Remove package prefix when released to public...
+SuperCurve:::normalize(concs, method="foo", bar=0.005)
   }
 }
 \keyword{data}

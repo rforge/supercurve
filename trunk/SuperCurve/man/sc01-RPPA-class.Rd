@@ -4,6 +4,7 @@
 \alias{dim,RPPA-method}
 \alias{image,RPPA-method}
 \alias{summary,RPPA-method}
+\alias{is.RPPA}
 \docType{class}
 \title{Class "RPPA"}
 \description{
@@ -11,7 +12,8 @@
   reverse-phase protein array experiment.
 }
 \usage{
-RPPA(file, path=".", software="microvigene")
+RPPA(file, path=".", antibody=NULL, software="microvigene")
+is.RPPA(x)
 \S4method{dim}{RPPA}(x)
 \S4method{image}{RPPA}(x, measure="Mean.Net", main=measure,
     colorbar=FALSE, col=terrain.colors(256), \dots)
@@ -24,6 +26,9 @@ RPPA(file, path=".", software="microvigene")
     directory to the file. The default value assumes the file is
     contained in the current directory. If \code{file} is a connection,
     this argument is ignored.}
+  \item{antibody}{character string specifying antibody name. If missing,
+    default value is filename (referenced by \code{file} argument) without
+    extension.}
   \item{software}{character string specifying the software used to generate
     the quantification file (see section \sQuote{Details} below)}
   \item{object}{object of class \code{RPPA}}
@@ -76,6 +81,7 @@ RPPA(file, path=".", software="microvigene")
       quantification file}
     \item{\code{file}:}{character string specifying the name of the file that
       the data was loaded from}
+    \item{\code{antibody}:}{character string specifying name of antibody}
   }
 }
 \section{Methods}{
@@ -95,6 +101,9 @@ RPPA(file, path=".", software="microvigene")
 }
 \value{
   The \code{RPPA} generator returns an object of class \code{RPPA}.
+
+  The \code{is.RPPA} method returns \code{TRUE} if its
+  argument is an object of class \code{RPPA}.
 
   The \code{dim} method returns a numeric vector of length 4.
 

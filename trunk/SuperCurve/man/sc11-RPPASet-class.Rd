@@ -2,6 +2,7 @@
 \alias{RPPASet-class}
 \alias{RPPASet}
 \alias{summary,RPPASet-method}
+\alias{is.RPPASet}
 \docType{class}
 \title{Class "RPPASet"}
 \description{
@@ -9,7 +10,12 @@
   reverse-phase protein array experiments.
 }
 \usage{
-RPPASet(path, designparams, fitparams, software="microvigene")
+RPPASet(path,
+        designparams,
+        fitparams,
+        antibodyfile=NULL,
+        software="microvigene")
+is.RPPASet(x)
 \S4method{summary}{RPPASet}(object, path, prefix="supercurve", graphs=TRUE, tiffdir=TRUE, \dots)
 }
 \arguments{
@@ -19,6 +25,8 @@ RPPASet(path, designparams, fitparams, software="microvigene")
     features common to all quantification files}
   \item{fitparams}{object of class \code{RPPAFitParams} containing
     parameters used to fit the supercurve model}
+  \item{antibodyfile}{character string specifying filename cantaining mapping
+    from quantification files to antibodies}
   \item{software}{character string specifying the software used to generate
     the quantification file (see section \sQuote{Details} of
     \code{\link{RPPA}})}
@@ -28,13 +36,14 @@ RPPASet(path, designparams, fitparams, software="microvigene")
   \item{graphs}{logical scalar specifying if standard graphs should be produced}
   \item{tiffdir}{character string specifying path to the directory containing
     the original \acronym{TIFF} files}
+  \item{x}{object of class \code{RPPASet}}
   \item{\dots}{extra arguments for generic or plotting routines}
 }
 \details{
-  Quantify all the slides in a directory using RPPASet. This returns an object
-  containing slide data and fits for each slide. Typically this is followed by
-  a call to \code{summary} or \code{write.summary} to write the resulting
-  quantifications and diagnostic plots to a directory.
+  Quantify all the slides in a directory using \code{RPPASet} generator.
+  This returns an object containing slide data and fits for each slide.
+  Typically this is followed by a call to \code{summary} or \code{write.summary}
+  to write the resulting quantifications and diagnostic plots to a directory.
 }
 \section{Objects from the Class}{
   Although objects of the class can (in theory) be created by a direct call
@@ -66,6 +75,9 @@ RPPASet(path, designparams, fitparams, software="microvigene")
 \value{
   The \code{RPPASet} generator returns an object of class \code{RPPASet}.
 
+  The \code{is.RPPASet} method returns \code{TRUE} if its
+  argument is an object of class \code{RPPASet}.
+
   The \code{summary} method returns a summary of the underlying data frame.
 }
 \references{KRC}
@@ -80,11 +92,15 @@ RPPASet(path, designparams, fitparams, software="microvigene")
 }
 \examples{
   \dontrun{
+parentdir <- file.path("C:", "MyData")
+txtdir <- file.path(parentdir, "txt")     # quantification files
+imgdir <- file.path(parentdir, "tif")     # and corresponding image files
+outdir <- file.path(parentdir, "results") # output files
+
 designparams <- RPPADesignParams(grouping="blockSample",
                                  center=FALSE,
-                                 controls=list("control",
-                                               "pos con",
-                                               "neg con"))
+                                 aliasfile="layoutInfo.tsv",
+                                 designfile="slidedesign.tsv")
 fitparams <- RPPAFitParams(measure="Mean.Net",
                            method="nlrob",
                            model="cobs",
@@ -92,12 +108,9 @@ fitparams <- RPPAFitParams(measure="Mean.Net",
                            warnLevel=-1,
                            verbose=FALSE)
 
-parentdir <- file.path("C:", "MyData")
-txtdir <- file.path(parentdir, "txt")     # quantification files
-imgdir <- file.path(parentdir, "tif")     # and corresponding image files
-outdir <- file.path(parentdir, "results") # output files
-
-fitset <- RPPASet(txtdir, designparams, fitparams)
+fitset <- RPPASet(txtdir,
+                  designparams,
+                  fitparams)
 write.summary(fitset,
               path=outdir,
               graphs=TRUE,
