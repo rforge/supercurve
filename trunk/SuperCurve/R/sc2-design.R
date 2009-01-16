@@ -13,14 +13,18 @@ setClass("RPPADesign",
 
 
 ##=============================================================================
+setClassUnion("OptionalFilename", c("character", "NULL"))
+setClassUnion("OptionalList", c("list", "NULL"))
 setClass("RPPADesignParams",
          representation=list(steps="numeric",
                              series="factor",
                              grouping="character",
                              ordering="character",
-                             alias="list",
                              center="logical",
-                             controls="list"))
+                             controls="OptionalList",
+                             alias="OptionalList",
+                             aliasfile="OptionalFilename",
+                             designfile="OptionalFilename"))
 
 
 ##-----------------------------------------------------------------------------
@@ -84,9 +88,12 @@ RPPADesignParams <- function(steps=rep(0, 1),
                                         "blockSample"),
                              ordering=c("decreasing",
                                         "increasing"),
-                             alias=list(),
+                             alias=NULL,
                              center=FALSE,
-                             controls=list()) {
+                             controls=NULL,
+                             aliasfile=NULL,
+                             designfile=NULL,
+                             path=".") {
     ## Check arguments
     if (!is.numeric(steps)) {
         stop(sprintf("argument %s must be numeric",
@@ -102,7 +109,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
         grouping <- match.arg(grouping)
         ordering <- match.arg(ordering)
 
-        ## Further checking deferred until paired with data.frame...
+        ## Further checking deferred until RPPADesignFromParams...
     } else if (any(c(length(steps), length(series)) == 1)) {
         stop(sprintf("arguments %s and %s must both be specified if either is",
                      sQuote("steps"),
@@ -113,14 +120,16 @@ RPPADesignParams <- function(steps=rep(0, 1),
         ordering <- as.character(NA)
         center <- as.logical(NA)
 
-       ## Further checking deferred until paired with data.frame...
+        ## Further checking deferred until RPPADesignFromParams...
     }
 
-    if (!(is.list(alias) || is.data.frame(alias))) {
-        stop(sprintf("argument %s must be list or data.frame",
-                     sQuote("alias")))
-    } else if (is.data.frame(alias)) {
-        alias <- as.list(alias)
+    if (!is.null(alias)) {
+        if (!(is.list(alias) || is.data.frame(alias))) {
+            stop(sprintf("argument %s must be list or data.frame, if specified",
+                         sQuote("alias")))
+        } else if (is.data.frame(alias)) {
+            alias <- as.list(alias)
+        }
     }
 
     if (is.numeric(center)) {
@@ -135,21 +144,82 @@ RPPADesignParams <- function(steps=rep(0, 1),
                      sQuote("center")))
     }
 
-    if (!(is.list(controls) || is.character(controls))) {
-        stop(sprintf("argument %s must be character or list",
-                     sQuote("controls")))
-    } else if (is.list(controls)) {
-        if (any(sapply(controls, is.character) == FALSE)) {
-            stop(sprintf("argument %s components must be character",
+    if (!is.null(controls)) {
+        if (!(is.list(controls) || is.character(controls))) {
+            stop(sprintf("argument %s must be character or list, if specified",
                          sQuote("controls")))
-        } else if (any(sapply(controls, length) > 1)) {
-            stop(sprintf("argument %s components must be of length 1",
-                         sQuote("controls")))
+        } else if (is.list(controls)) {
+            if (any(sapply(controls, is.character) == FALSE)) {
+                stop(sprintf("argument %s components must be character",
+                             sQuote("controls")))
+            } else if (any(sapply(controls, length) > 1)) {
+                stop(sprintf("argument %s components must be of length 1",
+                             sQuote("controls")))
+            }
+        } else if (is.character(controls)) {
+            controls <- as.list(controls)
         }
-    } else if (is.character(controls)) {
-        controls <- as.list(controls)
     }
 
+    if (!is.null(aliasfile)) {
+        if (!is.null(alias)) {
+            stop(sprintf("arguments %s and %s are mutually exclusive",
+                         sQuote("alias"),
+                         sQuote("aliasfile")))
+        }
+
+        if (!(length(aliasfile) == 1)) {
+            stop(sprintf("argument %s must be of length 1",
+                         sQuote("aliasfile")))
+        } else if (!nzchar(aliasfile)) {
+            stop(sprintf("argument %s must not be empty string",
+                         sQuote("aliasfile")))
+        }
+
+        if (!.isAbsolutePathname(aliasfile)) {
+            if (!is.character(path)) {
+                stop(sprintf("argument %s must be character",
+                             sQuote("path")))
+            } else if (!(length(path) == 1)) {
+                stop(sprintf("argument %s must be of length 1",
+                             sQuote("path")))
+            }
+
+            aliasfile <- file.path(path, aliasfile)
+        }
+
+        ## Further checking deferred until RPPADesignFromParams...
+    }
+
+    if (!is.null(designfile)) {
+        if (!is.null(controls)) {
+            stop(sprintf("arguments %s and %s are mutually exclusive",
+                         sQuote("controls"),
+                         sQuote("designfile")))
+        }
+
+        if (!(length(designfile) == 1)) {
+            stop(sprintf("argument %s must be of length 1",
+                         sQuote("designfile")))
+        } else if (!nzchar(designfile)) {
+            stop(sprintf("argument %s must not be empty string",
+                         sQuote("designfile")))
+        }
+
+        if (!.isAbsolutePathname(designfile)) {
+            if (!is.character(path)) {
+                stop(sprintf("argument %s must be character",
+                             sQuote("path")))
+            } else if (!(length(path) == 1)) {
+                stop(sprintf("argument %s must be of length 1",
+                             sQuote("path")))
+            }
+
+            designfile <- file.path(path, designfile)
+        }
+
+        ## Further checking deferred until RPPADesignFromParams...
+    }
 
     ## Create new class
     new("RPPADesignParams",
@@ -159,7 +229,9 @@ RPPADesignParams <- function(steps=rep(0, 1),
         ordering=ordering,
         alias=alias,
         center=center,
-        controls=controls)
+        controls=controls,
+        aliasfile=aliasfile,
+        designfile=designfile)
 }
 
 
@@ -207,29 +279,9 @@ RPPADesignFromParams <- function(raw,
                      sQuote("designparams"), "RPPADesignParams"))
     }
 
-    steps    <- designparams@steps
-    series   <- designparams@series
-    grouping <- designparams@grouping
-    ordering <- designparams@ordering
-    alias    <- designparams@alias
-    center   <- designparams@center
-    controls <- designparams@controls
-
-    if (length(alias) < 1) {
-        alias <- list(Alias=levels(raw$Sample),
-                      Sample=levels(factor(tolower(as.character(raw$Sample)))))
-    } else {
-        reqdNames <- c("Alias", "Sample")
-        if (!(length(alias) >= length(reqdNames))) {
-            stop(sprintf("argument %s must be of length %d or greater",
-                         sQuote("alias"), length(reqdNames)))
-        } else if (!(all(reqdNames %in% names(alias)))) {
-            missingNames <- reqdNames[!reqdNames %in% names(alias)]
-            stop(sprintf(ngettext(length(missingNames),
-                                  "argument %s missing component: %s",
-                                  "argument %s missing components: %s"),
-                         sQuote("alias"), paste(missingNames, collapse=", ")))
-        }
+    ## Create variables from 'designparams' slots
+    for (slotname in slotNames(designparams)) {
+        assign(slotname, slot(designparams, slotname))
     }
 
     ## Begin processing
@@ -345,35 +397,76 @@ RPPADesignFromParams <- function(raw,
     storage.mode(raw.df$Sub.Row) <- "integer"
     storage.mode(raw.df$Sub.Col) <- "integer"
 
-    ## If controls contains a pathname, attempt to merge the columns
-    ## from slide design file and determine control names automatically.
-    if (length(controls) == 1) {
-        slidedesignPathname <- controls[[1]]
-        if (file.exists(slidedesignPathname)) {
-            tryCatch({
-                    slidedesign.df <- read.delim(slidedesignPathname)
-                    dim.raw.df <- .dimOfLayout(raw.df)
-                    dim.slidedesign.df <- .dimOfLayout(slidedesign.df)
-                    if (!identical(dim.raw.df, dim.slidedesign.df)) {
-                        stop(sprintf("dim of argument %s (%s) must match that of slide design (%s)",
-                                     sQuote("raw"),
-                                     paste(dim.raw.df, collapse="x"),
-                                     paste(dim.slidedesign.df, collapse="x")))
-                    }
-                    raw.df <- merge(raw.df, slidedesign.df)
-                    ctrlnames <- as.character(with(raw.df,
-                                                   Sample[SpotType != "Sample"]))
-                    controls <- as.list(unique(ctrlnames))
-                    rm(ctrlnames)
-                },
-                error=function(e) {
-                    stop(sprintf("cannot load slide design data from file %s - %s",
-                                 dQuote(slidedesignPathname),
-                                 e$message))
-                })
-        }
+    ## Process slide design data, if specified
+    if (!is.null(designfile)) {
+        tryCatch({
+                stopifnot(file.exists(designfile))
+                design.df <- read.delim(designfile)
+                dim.raw.df <- .dimOfLayout(raw.df)
+                dim.design.df <- .dimOfLayout(design.df)
+                if (!identical(dim.raw.df, dim.design.df)) {
+                    stop(sprintf("dim of argument %s (%s) must match that of slide design (%s)",
+                                 sQuote("raw"),
+                                 paste(dim.raw.df, collapse="x"),
+                                 paste(dim.design.df, collapse="x")))
+                }
+
+                ## Attempt to merge columns from slide design file
+                raw.df <- merge(raw.df, design.df)
+
+                ## Provide control names from slide design information
+                ctrlnames <- as.character(with(raw.df,
+                                               Sample[SpotType != "Sample"]))
+                controls <- as.list(unique(ctrlnames))
+                rm(ctrlnames)
+            },
+            error=function(e) {
+                stop(sprintf("cannot load slide design data from file %s - %s",
+                             dQuote(designfile),
+                             e$message))
+            })
+    } else if (is.null(controls)) {
+        controls <- list()
     }
 
+    ## Provide alias if NULL from any source
+    if (is.null(alias)) {
+        alias <- if (is.null(aliasfile)) {
+                     ## Default case
+                     list(Alias=levels(raw$Sample),
+                          Sample=levels(factor(tolower(as.character(raw$Sample)))))
+                 } else {
+                     tryCatch({
+                              stopifnot(file.exists(aliasfile))
+                              alias.df <- read.delim(aliasfile,
+                                                     quote="",
+                                                     row.names=NULL)
+                              as.list(alias.df)
+                         },
+                         error=function(e) {
+                             stop(sprintf("cannot load alias data from file %s - %s",
+                                          dQuote(aliasfile),
+                                          e$message))
+                         })
+                 }
+    }
+
+    ## Validate alias
+    {
+        reqdNames <- c("Alias", "Sample")
+        if (!(length(alias) >= length(reqdNames))) {
+            stop(sprintf("slot %s must be of length %d or greater",
+                         sQuote("alias"),
+                         length(reqdNames)))
+        } else if (!(all(reqdNames %in% names(alias)))) {
+            missingNames <- reqdNames[!reqdNames %in% names(alias)]
+            stop(sprintf(ngettext(length(missingNames),
+                                  "slot %s missing component: %s",
+                                  "slot %s missing components: %s"),
+                         sQuote("alias"),
+                         paste(missingNames, collapse=", ")))
+        }
+    }
 
     ## Create new class
     new("RPPADesign",
@@ -397,16 +490,22 @@ RPPADesign <- function(raw,
                                   "blockSample"),
                        ordering=c("decreasing",
                                   "increasing"),
-                       alias=list(),
+                       alias=NULL,
                        center=FALSE,
-                       controls=list()) {
-    params <- RPPADesignParams(steps,
-                               series,
-                               grouping,
-                               ordering,
-                               alias,
-                               center,
-                               controls)
+                       controls=NULL,
+                       aliasfile=NULL,
+                       designfile=NULL,
+                       path=".") {
+    params <- RPPADesignParams(steps=steps,
+                               series=series,
+                               grouping=grouping,
+                               ordering=ordering,
+                               alias=alias,
+                               center=center,
+                               controls=controls,
+                               aliasfile=aliasfile,
+                               designfile=designfile,
+                               path=path)
     RPPADesignFromParams(raw, params)
 }
 
@@ -442,7 +541,7 @@ setMethod("summary", "RPPADesign",
     if (length(object@controls) != 0) {
         cat("with controls:", "\n")
         cat(sprintf("  %s\n",
-                    unlist(object@controls), sep=""))
+                    unlist(object@controls)), sep="")
     }
     cat("\n")
     print(dim(object))
@@ -458,8 +557,9 @@ setMethod("image", signature(x="RPPADesign"),
           function(x,
                    ...) {
     data.df <- x@layout
-    my <- max(data.df$Main.Row) * max(data.df$Sub.Row)
-    mx <- max(data.df$Main.Col) * max(data.df$Sub.Col)
+    dim.design <- dim(x)
+    my <- dim.design["Main.Row"] * dim.design["Sub.Row"]
+    mx <- dim.design["Main.Col"] * dim.design["Sub.Col"]
     yspot <- 1+my-(max(data.df$Sub.Row)*(data.df$Main.Row-1) + data.df$Sub.Row)
     xspot <- max(data.df$Sub.Col)*(data.df$Main.Col-1) + data.df$Sub.Col
     geo.steps <- tapply(data.df$Steps,
@@ -469,6 +569,7 @@ setMethod("image", signature(x="RPPADesign"),
           seq_len(my),
           geo.steps,
           ...)
+
     abline(h=(0.5 + seq(0, my, length=1+max(data.df$Main.Row))))
     abline(v=(0.5 + seq(0, mx, length=1+max(data.df$Main.Col))))
     invisible(geo.steps)
@@ -581,26 +682,4 @@ setMethod("names", "RPPADesign",
     isControl <- .controlVector(x)
     as.character(x@layout$Series[!isControl])
 })
-
-
-if (FALSE) {
-  source("AllGenerics.R")
-  source("sc1-rppa.R")
-  source("sc2-design.R")
-  path <- "../inst/rppaTumorData"
-  erk2 <- RPPA("ERK2.txt", path=path)
-  design <- RPPADesign(erk2,
-                       grouping="blockSample",
-                       center=TRUE)
-  image(design)
-  summary(design)
-  design <- RPPADesign(erk2,
-                       grouping="blockSample",
-                       controls=list("neg con", "pos con"))
-  image(design)
-  summary(design)
-  rm(path, erk2, design)
-
-  plot(erk2, design)
-}
 
