@@ -184,13 +184,15 @@ is.RPPASet <- function(x) {
 
     ## Use ImageMagick 'convert' binary to perform merge
     message(paste("merging tiff for", antibody))
+    flush.console()
+
     command <- paste('convert',
                      shQuote(pg1),
                      shQuote(pg2),
-                     '+append',
+                     "+append",
                      shQuote(tiff),
-                     '-append',
-                     '-quality 100',
+                     "-append",
+                     "-quality 100",
                      shQuote(output))
     return(rc <- switch(EXPR=.Platform$OS.type,
                         unix=system(command),
@@ -317,6 +319,7 @@ write.summary <- function(rppaset,
                 warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH",
                                 sQuote("convert")))
                 message("some output files may be missing")
+                flush.console()
                 break
             }
         }
@@ -411,6 +414,8 @@ RPPASet <- function(path,
         slideFilename <- slideFilenames[i]
 
         message(paste("reading", slideFilename))
+        flush.console()
+
         rppas[[i]] <- RPPA(slideFilename, path=path, software=software)
 
         ## If this is first slide read...
@@ -434,7 +439,9 @@ RPPASet <- function(path,
     ## Create fits
     fits <- array(list(), length(slideFilenames), slideFilenames)
     for (i in seq_along(slideFilenames)) {
-        message(paste("fitting", slideFilenames[i], "-", "Please wait."))
+        message(paste("fitting", slideFilenames[i], "-", "please wait."))
+        flush.console()
+
         fits[[i]] <- RPPAFitFromParams(rppas[[i]],
                                        design=design,
                                        fitparams=fitparams)

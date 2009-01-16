@@ -69,8 +69,10 @@ spatialCorrection <- function(rppa,
         reqdNames <- c("SpotType", "Dilution")
         if (!(all(reqdNames %in% colnames(design@layout)))) {
             message(sprintf("package %s can be used to generate the missing information in the %s object required to use this method",
-                            sQuote("slideDesignerGUI"),
+                            sQuote("SlideDesignerGUI"),
                             class(design)))
+            flush.console()
+
             missingNames <- reqdNames[!reqdNames %in% colnames(design@layout)]
             stop(sprintf(ngettext(length(missingNames),
                                   "argument %s missing required column: %s",
