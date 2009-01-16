@@ -23,7 +23,8 @@ is.RPPASet <- function(x) {
 
 ##-----------------------------------------------------------------------------
 ## Returns a slot in the array of fits as a simple matrix view.
-.fitSlot <- function(rppaset, sl) {
+.fitSlot <- function(rppaset,
+                     sl) {
     ## Check arguments
     stopifnot(is.RPPASet(rppaset))
     stopifnot(is.character(sl) && length(sl) == 1)
@@ -51,21 +52,10 @@ is.RPPASet <- function(x) {
 
 
 ##-----------------------------------------------------------------------------
-## Get antibody names
-.getAntibodyNames <- function(rppaset) {
-    ## Check arguments
-    stopifnot(is.RPPASet(rppaset))
-
-    ## Begin processing
-    slideFilenames <- rownames(rppaset@fits)
-    ## Remove filename extensions
-    sub(".[Tt][Xx][Tt]$", "", slideFilenames)
-}
-
-
-##-----------------------------------------------------------------------------
 ## Create the fit graphs and save them as PNG files
-.createFitGraphs <- function(rppaset, path, prefix) {
+.createFitGraphs <- function(rppaset,
+                             path,
+                             prefix) {
     ## Check arguments
     stopifnot(is.RPPASet(rppaset))
     stopifnot(is.character(path)   && length(path) == 1)
@@ -93,7 +83,9 @@ is.RPPASet <- function(x) {
              "#006837")
 
     fitxform <- rppaset@fitparams@xform
-    antibodies <- .getAntibodyNames(rppaset)
+
+
+    antibodies <- rownames(rppaset@fits)
     for (i in seq_along(antibodies)) {
         antibody <- antibodies[i]
         rppafit <- rppaset@fits[[i]]
@@ -103,11 +95,6 @@ is.RPPASet <- function(x) {
                         antibody,
                         sep="")
 
-        ## :TBD: Any good reason why these are produced to screen
-        ## first anyway? Why not just create plots as disk files
-        ## and avoid the device copy since only the last image
-        ## is still visible at the end of the run?
-
         ## First pair of plots
         try(plot(rppafit,
                  main=ptitle,
@@ -115,7 +102,7 @@ is.RPPASet <- function(x) {
                  xlim=c(-15, 15)))
 
         ## Mark R^2 = 0.4 and below as red.
-        imageRPPAFit <- getMethod("image", class(rppafit))            
+        imageRPPAFit <- getMethod("image", class(rppafit))
         imageRPPAFit(rppafit,
                      col=RYG,
                      main="",
@@ -158,17 +145,17 @@ is.RPPASet <- function(x) {
 
 ##-----------------------------------------------------------------------------
 ## Merge output graphs with source tiff file, save it as JPG file
-.mergeGraphsAndImage <- function(antibody, prefix, outputdir, tiffdir) {
+.mergeGraphsAndImage <- function(antibody,
+                                 prefix,
+                                 outputdir,
+                                 tiff) {
     ## Check arguments
     stopifnot(is.character(antibody)  && length(antibody) == 1)
     stopifnot(is.character(prefix)    && length(prefix) == 1)
     stopifnot(is.character(outputdir) && length(outputdir) == 1)
-    stopifnot(is.character(tiffdir)   && length(tiffdir) == 1)
+    stopifnot(is.character(tiff)      && length(tiff) == 1)
 
     ## Begin processing
-    filename <- paste(antibody, "tif", sep=".")
-    tiff <- file.path(tiffdir, filename)
-
     filename <- paste(paste(prefix, antibody, sep="_"),
                       "png",
                       sep=".")
@@ -182,11 +169,11 @@ is.RPPASet <- function(x) {
     filename <- paste(antibody, "jpg", sep=".")
     output <- file.path(outputdir, filename)
 
-    ## Use ImageMagick 'convert' binary to perform merge
     message(paste("merging tiff for", antibody))
     flush.console()
 
-    command <- paste('convert',
+    ## Use ImageMagick 'convert' binary to perform merge
+    command <- paste("convert",
                      shQuote(pg1),
                      shQuote(pg2),
                      "+append",
@@ -194,11 +181,14 @@ is.RPPASet <- function(x) {
                      "-append",
                      "-quality 100",
                      shQuote(output))
-    return(rc <- switch(EXPR=.Platform$OS.type,
-                        unix=system(command),
-                        windows=shell(command),
-                        stop(sprintf("unrecognized operating system %s",
-                                     sQuote(.Platform$OS.type)))))
+    rc <- switch(EXPR=.Platform$OS.type,
+                 unix=system(command),
+                 windows=shell(command),
+                 stop(sprintf("unrecognized operating system family %s",
+                              sQuote(.Platform$OS.type))))
+    #cat("rc =", rc, ", command:", command, "\n")
+
+    return(rc)
 }
 
 
@@ -211,8 +201,6 @@ write.summary <- function(rppaset,
                           graphs=TRUE,
                           tiffdir=NULL) {
     ## Check arguments
-  
-    ## would not need this is it were a method....
     if (!is.RPPASet(rppaset)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppaset"), "RPPASet"))
@@ -312,9 +300,28 @@ write.summary <- function(rppaset,
         .createFitGraphs(rppaset, path, prefix)
 
         ## Merge output graphs with source tiff file for each antibody
-        antibodies <- .getAntibodyNames(rppaset)
+        txtfiles <- sapply(rppaset@fits,
+                           function(fit) {
+                               fit@rppa@file
+                           })
+
+        txt.re <- "\\.[tT][xX][tT]$"
+        imgfiles <- sub(txt.re, ".tif", txtfiles)
+
+   ## ------------------------------------------------------------
+   ## :TODO: Using user-provided text when generating filenames is
+   ## a bad idea (security, etc.). Need to implement some type of
+   ## scrubbing routine that can assist in ensuring filenames are
+   ## both safe and portable.
+   ## ------------------------------------------------------------
+
+        antibodies <- names(txtfiles)
         for (i in seq_along(antibodies)) {
-            rc <- .mergeGraphsAndImage(antibodies[i], prefix, path, tiffdir)
+
+            rc <- .mergeGraphsAndImage(antibodies[i],
+                                       prefix,
+                                       path,
+                                       file.path(tiffdir, imgfiles[i]))
             if (rc == 32512) {
                 warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH",
                                 sQuote("convert")))
@@ -341,10 +348,69 @@ setMethod("summary", "RPPASet",
 
 
 ##-----------------------------------------------------------------------------
+.loadAntibodyInfo <- function(antibodyfile,
+                              slidefiles) {
+    ## Check arguments
+    stopifnot(is.character(antibodyfile) && length(antibodyfile) == 1)
+    stopifnot(is.character(slidefiles) && length(slidefiles) >= 1)
+
+    ## Begin processing
+    tryCatch({
+            stopifnot(file.exists(antibodyfile))
+
+            ## Read datafile
+            proteinassay.df <- read.delim(antibodyfile,
+                                          as.is=TRUE,
+                                          quote="",
+                                          row.names=NULL)
+
+            reqdColnames <- c("Antibody",
+                              "Filename")
+
+            ## Ensure minimum number of columns
+            if (!(ncol(proteinassay.df) >= length(reqdColnames))) {
+                stop("not enough columns")
+            }
+
+            ## Ensure required columns exist
+            found <- reqdColnames %in% colnames(proteinassay.df)
+            if (!(all(found))) {
+                missingColumns <- reqdColnames[!found]
+                stop(sprintf(ngettext(length(missingColumns),
+                                      "missing required column: %s",
+                                      "missing required columns: %s"),
+                             paste(dQuote(missingColumns), collapse=", ")))
+            }
+        },
+        error=function(e) {
+            stop(sprintf("cannot load antibody data from file %s - %s",
+                         dQuote(antibodyfile),
+                         e$message))
+        })
+
+    ## Extract information from data.frame
+    antibodies <- vector("list", length(slidefiles))
+    names(antibodies) <- slidefiles
+
+    for (filename in slidefiles) {
+        x.antibody <- match(filename, proteinassay.df$Filename)[1]
+        antibody <- proteinassay.df$Antibody[x.antibody]
+        if (!is.na(antibody)) {
+            x.slidefiles <- match(filename, slidefiles)
+            antibodies[[x.slidefiles]] <- antibody
+        }
+    }
+
+    return(antibodies)
+}
+
+
+##-----------------------------------------------------------------------------
 ## Create an RPPA set from a directory of slides.
 RPPASet <- function(path,
                     designparams,
                     fitparams,
+                    antibodyfile=NULL,
                     software="microvigene") {
     ## Check arguments
     if (!is.character(path)) {
@@ -368,11 +434,30 @@ RPPASet <- function(path,
                      sQuote("fitparams"), "RPPAFitParams"))
     }
 
+    if (!is.null(antibodyfile)) {
+        if (!is.character(antibodyfile)) {
+            stop(sprintf("argument %s must be character",
+                         sQuote("antibodyfile")))
+        } else if (!(length(antibodyfile) == 1)) {
+            stop(sprintf("argument %s must be of length 1",
+                         sQuote("antibodyfile")))
+        } else if (!nzchar(antibodyfile)) {
+            stop(sprintf("argument %s must not be empty string",
+                         sQuote("antibodyfile")))
+        }
+
+        if (!.isAbsolutePathname(antibodyfile)) {
+            antibodyfile <- file.path(path, antibodyfile)
+        }
+    }
+
+
+    ##-------------------------------------------------------------------------
     ## :TBD: Should this get the list of slides from a file ('proteinAssay.tsv'
     ## or 'targets.txt') instead of assuming all .txt files are slides?
     getQuantificationFilenames <- function(path) {
         ## Assumes all .txt files in the directory are slides
-        txt.re <- ".*[tT][xX][tT]$"
+        txt.re <- "\\.[tT][xX][tT]$"
         list.files(path=path, pattern=txt.re)
     }
 
@@ -386,25 +471,26 @@ RPPASet <- function(path,
                      dQuote(path)))
     }
 
-    ## Load alias information in directory
-    if (length(designparams@alias) < 1) {
-        pathname <- file.path(path, "layoutInfo.tsv")
-        if (file.exists(pathname)) {
-            tryCatch({
-                         sampleLayout <- read.delim(pathname,
-                                                    quote="",
-                                                    row.names=NULL)
-                         designparams@alias <- list(Alias=sampleLayout$Alias,
-                                                    Sample=sampleLayout$Sample)
-                         rm(sampleLayout)
-                     },
-                     error=function(e) {
-                         warning(sprintf("cannot import alias information from file %s",
-                                         dQuote(pathname)))
-                     })
-        }
-        rm(pathname)
+    ## Load antibody information, if provided
+    ab.list <- if (!is.null(antibodyfile)) {
+                   .loadAntibodyInfo(antibodyfile, slideFilenames)
+               } else {
+                   vector("list", length(slideFilenames))
+               }
+
+    ## Fill in missing values with generated defaults
+    x.which <- which(sapply(ab.list, is.null))
+    txt.re <- "\\.[tT][xX][tT]$"
+    for (x in x.which) {
+        ab.list[[x]] <- sub(txt.re, "", slideFilenames[x])
     }
+
+    ## Ensure antibody names are unique
+    antibodies <- make.unique(abnames <- unlist(ab.list, use.names=FALSE))
+    if (!identical(antibodies, abnames)) {
+        warning("adjusting antibody names to be unique")
+    }
+    rm(abnames)
 
     ## Load slides to process
     ## :TBD: Why was this construct used and not 'vector("list", numslides)'
@@ -412,11 +498,15 @@ RPPASet <- function(path,
     rppas <- array(list(), length(slideFilenames), slideFilenames)
     for (i in seq_along(slideFilenames)) {
         slideFilename <- slideFilenames[i]
+        antibody <- antibodies[i]
 
         message(paste("reading", slideFilename))
         flush.console()
 
-        rppas[[i]] <- RPPA(slideFilename, path=path, software=software)
+        rppas[[i]] <- RPPA(slideFilename,
+                           path=path,
+                           antibody=antibody,
+                           software=software)
 
         ## If this is first slide read...
         if (i == 1) {
@@ -426,7 +516,6 @@ RPPASet <- function(path,
             design <- RPPADesignFromParams(firstslide, designparams)
 
             ## Plot the first slide as a quick design check
-            ## :TBD: Should this be plotting the requested measure instead?
             plot(firstslide,
                  design,
                  "Mean.Total",
@@ -435,20 +524,19 @@ RPPASet <- function(path,
         }
         rm(slideFilename)
     }
+    rownames(rppas) <- antibodies
 
     ## Create fits
     fits <- array(list(), length(slideFilenames), slideFilenames)
     for (i in seq_along(slideFilenames)) {
-        message(paste("fitting", slideFilenames[i], "-", "please wait."))
+        message(paste("fitting", antibodies[i], "-", "please wait."))
         flush.console()
 
         fits[[i]] <- RPPAFitFromParams(rppas[[i]],
                                        design=design,
                                        fitparams=fitparams)
     }
-
-    rownames(fits) <- slideFilenames
-    rownames(rppas) <- slideFilenames
+    rownames(fits) <- antibodies
 
     ## Create new class
     new("RPPASet",
