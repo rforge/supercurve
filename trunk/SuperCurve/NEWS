@@ -6,6 +6,38 @@
 	**************************************************
 
 
+		CHANGES IN SUPERCURVE VERSION 1.3.2
+
+
+NEW FEATURES
+
+    o	Added the 'antibody' argument to RPPA() generator to allow
+	specifying its name within the object. This change also
+	impacts the RPPA class definition to add corresponding slot.
+
+    o	Added the 'antibodyfile' argument to RPPASet() generator
+	to allow antibodies to be specified when RPPA instances
+	created. Antibodies are now used as rownames (rather than
+	the quantification filenames) in the resulting class.
+
+    o	Removed alias information loading code from RPPASet()
+	generator. This is now handled completely by RPPADesignParams()
+	generator.
+
+    o	Multitude of small updates to the package's graphics methods.
+	Plot titles standardized for all methods. Axes from image()
+	methods now display tickmarks in multiples of Sub.Row and
+	Sub.Col. Pointless labels removed in several places. All
+	graphic output is now titled, nominally with reference to
+	measure and antibody in main title, and filename in subtitle.
+
+BUG FIXES
+
+    o	RPPASet() generator used regular expression to determine
+	quantification files to be read that included files ending
+	with "txt" without being the file extension.
+
+
 		CHANGES IN SUPERCURVE VERSION 1.3.1
 
 
