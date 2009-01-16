@@ -68,6 +68,49 @@
 
 
 ##-----------------------------------------------------------------------------
+## Tests whether pathname is absolute, with system-dependent results.
+## On UNIX systems, a pathname is absolute if its prefix is "/".
+## On Windows systems, a pathname is absolute if its prefix is a drive letter
+## followed by "\\", or if its prefix is "\\\\".
+## Based on original work by Henrik Bengtsson.
+.isAbsolutePathname <- function(pathname) {
+    ## Check arguments
+    stopifnot(is.character(pathname) && length(pathname) == 1)
+
+    ## Begin processing
+    if (!nzchar(pathname)) {
+        return(FALSE)
+    }
+
+    absolute <- switch(EXPR=.Platform$OS.type,
+                       unix={
+                           ## Tilde expansion
+                           regexpr("^~", pathname) != -1
+                       },
+                       windows={
+                           ## Drive paths
+                           regexpr("^[A-Za-z]:(/|\\\\)", pathname) != -1 ||
+                           ## Network paths
+                           regexpr("^\\\\", pathname) != -1
+                       },
+                       stop(sprintf("unrecognized operating system family %s",
+                                    sQuote(.Platform$OS.type))))
+
+    if (absolute) {
+        return(TRUE)
+    }
+
+    ## Split pathname into components
+    components <- strsplit(pathname, split="[/\\]")[[1]]
+    if (length(components) == 0) {
+        return(FALSE)
+    }
+
+    absolute <- components[1] == ""
+}
+
+
+##-----------------------------------------------------------------------------
 .pkgRversion <- function(pkgname) {
     ## Check arguments
     stopifnot(is.character(pkgname) && length(pkgname) == 1)
@@ -101,7 +144,7 @@ slot.all.equal <- function(x,
     ## Pass or fail?
     if (is.null(msg)) {
         TRUE
-    } else { 
+    } else {
         msg
     }
 }
