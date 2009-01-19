@@ -74,7 +74,6 @@ is.RPPASet <- function(x) {
 
     fitxform <- rppaset@fitparams@xform
 
-
     antibodies <- rownames(rppaset@fits)
     for (i in seq_along(antibodies)) {
         antibody <- antibodies[i]
@@ -95,11 +94,11 @@ is.RPPASet <- function(x) {
                      measure="ResidualsR2",
                      zlim=c(0.4, 1))
 
-        filename <- paste(paste(prefix, antibody, sep="_"),
+        filename <- paste(paste(prefix, antibody, "1",  sep="_"),
                           "png",
                           sep=".")
         dev.copy(png,
-                 file.path(path, filename),
+                 file.path(path, .portableFilename(filename)),
                  width=640,
                  height=640)
         dev.off()
@@ -120,7 +119,7 @@ is.RPPASet <- function(x) {
                           "png",
                           sep=".")
         dev.copy(png,
-                 file.path(path, filename),
+                 file.path(path, .portableFilename(filename)),
                  width=640,
                  height=640)
         dev.off()
@@ -141,18 +140,18 @@ is.RPPASet <- function(x) {
     stopifnot(is.character(tiff)      && length(tiff) == 1)
 
     ## Begin processing
-    filename <- paste(paste(prefix, antibody, sep="_"),
+    filename <- paste(paste(prefix, antibody, "1", sep="_"),
                       "png",
                       sep=".")
-    pg1 <- file.path(outputdir, filename)
+    pg1 <- file.path(outputdir, .portableFilename(filename))
 
     filename <- paste(paste(prefix, antibody, "2", sep="_"),
                       "png",
                       sep=".")
-    pg2 <- file.path(outputdir, filename)
+    pg2 <- file.path(outputdir, .portableFilename(filename))
 
     filename <- paste(antibody, "jpg", sep=".")
-    output <- file.path(outputdir, filename)
+    output <- file.path(outputdir, .portableFilename(filename))
 
     message(paste("merging tiff for", antibody))
     flush.console()
@@ -244,13 +243,13 @@ write.summary <- function(rppaset,
     filename <- paste(paste(prefix, "conc_raw", sep="_"),
                       "csv",
                       sep=".")
-    write.csv(conc, file=file.path(path, filename))
+    write.csv(conc, file=file.path(path, .portableFilename(filename)))
 
     ## Write file for R^2 statistics
     filename <- paste(paste(prefix, "ss_ratio", sep="_"),
                       "csv",
                       sep=".")
-    write.csv(conc.ss, file=file.path(path, filename))
+    write.csv(conc.ss, file=file.path(path, .portableFilename(filename)))
 
     ## Median polish to normalize sample, slide effects
     pol <- medpolish(conc, trace.iter=FALSE)
@@ -262,7 +261,7 @@ write.summary <- function(rppaset,
     filename <- paste(paste(prefix, "conc_med_polish", sep="_"),
                       "csv",
                       sep=".")
-    write.csv(conc, file=file.path(path, filename))
+    write.csv(conc, file=file.path(path, .portableFilename(filename)))
 
     if (graphs) {
         if (is.null(tiffdir)) {
@@ -285,28 +284,23 @@ write.summary <- function(rppaset,
         .createFitGraphs(rppaset, path, prefix)
 
         ## Merge output graphs with source tiff file for each antibody
-        txtfiles <- sapply(rppaset@fits,
-                           function(fit) {
-                               fit@rppa@file
-                           })
+        imgfiles <- {
+                        txtfiles <- sapply(rppaset@fits,
+                                           function(fit) {
+                                               fit@rppa@file
+                                           })
+                        txt.re <- "\\.[tT][xX][tT]$"
+                        sub(txt.re, ".tif", txtfiles)
+                    }
 
-        txt.re <- "\\.[tT][xX][tT]$"
-        imgfiles <- sub(txt.re, ".tif", txtfiles)
+        ## For each antibody...
+        antibodies <- names(rppaset@fits)
+        for (antibody in antibodies) {
 
-   ## ------------------------------------------------------------
-   ## :TODO: Using user-provided text when generating filenames is
-   ## a bad idea (security, etc.). Need to implement some type of
-   ## scrubbing routine that can assist in ensuring filenames are
-   ## both safe and portable.
-   ## ------------------------------------------------------------
-
-        antibodies <- names(txtfiles)
-        for (i in seq_along(antibodies)) {
-
-            rc <- .mergeGraphsAndImage(antibodies[i],
+            rc <- .mergeGraphsAndImage(antibody,
                                        prefix,
                                        path,
-                                       file.path(tiffdir, imgfiles[i]))
+                                       file.path(tiffdir, imgfiles[antibody]))
             if (rc == 32512) {
                 warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH",
                                 sQuote("convert")))
@@ -438,9 +432,12 @@ RPPASet <- function(path,
 
 
     ##-------------------------------------------------------------------------
+    ## Returns the names of all TXT files in directory argument.
     ## :TBD: Should this get the list of slides from a file ('proteinAssay.tsv'
     ## or 'targets.txt') instead of assuming all .txt files are slides?
     getQuantificationFilenames <- function(path) {
+        stopifnot(is.character(path) && length(path) == 1)
+
         ## Assumes all .txt files in the directory are slides
         txt.re <- "\\.[tT][xX][tT]$"
         list.files(path=path, pattern=txt.re)
@@ -480,7 +477,7 @@ RPPASet <- function(path,
     ## Load slides to process
     ## :TBD: Why was this construct used and not 'vector("list", numslides)'
     ## Is the dimension attribute used?
-    rppas <- array(list(), length(slideFilenames), slideFilenames)
+    rppas <- array(list(), length(slideFilenames))
     for (i in seq_along(slideFilenames)) {
         slideFilename <- slideFilenames[i]
         antibody <- antibodies[i]

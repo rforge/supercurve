@@ -123,6 +123,31 @@
 
 
 ##-----------------------------------------------------------------------------
+## Returns a POSIX portable filename from its input. Filenames should be
+## constructed from the portable filename character set because the use of
+## other characters can be confusing or ambiguous in certain contexts. The
+## hyphen character shall not be used as the first character of a portable
+## filename. Uppercase and lowercase letters shall retain their unique
+## identities between conforming implementations. See reference URLs:
+## http://opengroup.org/onlinepubs/000095399/basedefs/xbd_chap04.html#tag_04_06
+## http://opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_276
+.portableFilename <- function(filename) {
+    ## Check arguments
+    stopifnot(is.character(filename) && length(filename) == 1)
+
+    ## Begin processing
+
+    ## Substitute hyphen for delimiters and underscore for anything else
+    openclose.re <- "[][(){}]"             ## brackets, parentheses, brackets
+    nonportable.re <- "[^0-9A-Za-z._-]"    ## nonportable characters
+    hyphenfirstchar.re <- "^-"
+    sub(hyphenfirstchar.re, "_",
+        gsub(nonportable.re, "_",
+             gsub(openclose.re, "-", filename)))
+}
+
+
+##-----------------------------------------------------------------------------
 .pkgRversion <- function(pkgname) {
     ## Check arguments
     stopifnot(is.character(pkgname) && length(pkgname) == 1)
