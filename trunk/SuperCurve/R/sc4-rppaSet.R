@@ -24,30 +24,20 @@ is.RPPASet <- function(x) {
 ##-----------------------------------------------------------------------------
 ## Returns a slot in the array of fits as a simple matrix view.
 .fitSlot <- function(rppaset,
-                     sl) {
+                     slotname) {
     ## Check arguments
     stopifnot(is.RPPASet(rppaset))
-    stopifnot(is.character(sl) && length(sl) == 1)
+    stopifnot(is.character(slotname) && length(slotname) == 1)
 
-    if (!(sl %in% slotNames(rppaset@fits[[1]]))) {
+    if (!(slotname %in% slotNames(rppaset@fits[[1]]))) {
         stop(sprintf("invalid slotname %s",
-                     sQuote(sl)))
+                     sQuote(slotname)))
     }
 
     ## Begin processing
-    ## :TODO: simplify processing using slot method instead of eval/parse
-    expr <- paste("rppaset@fits[[1]]@", sl, sep="")
-    mat <- matrix(NA,
-                  nrow=length(eval(parse(text=expr))),
-                  ncol=length(rownames(rppaset@fits)))
-    rownames(mat) <- colnames(t(eval(parse(text=expr))))
-
-    for (j in seq_len(ncol(mat))) {
-        expr <- paste("rppaset@fits[[j]]@", sl, sep="")
-        mat[, j] <- eval(parse(text=expr))
-    }
-    colnames(mat) <- rownames(rppaset@fits)
-    mat
+    sapply(rppaset@fits,
+           slot,
+           name=slotname)
 }
 
 
