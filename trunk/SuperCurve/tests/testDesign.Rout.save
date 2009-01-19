@@ -70,7 +70,7 @@ Error in match.arg(ordering) : 'arg' must be NULL or a character vector
 > 
 > ## Specifying controls indirectly
 > ## :TODO: We need a slide design for this dataset before test can be added...
-> #dp <- RPPADesignParams(slidedesign=file.path(path, "slidedesign.tsv"))
+> #dp <- RPPADesignParams(designfile=file.path(path, "slidedesign.tsv"))
 > #checkIdentical(dp@controls, list("neg con", "pos con"))
 > 
 > ## This is for showing off the plot, where the controls dominate
