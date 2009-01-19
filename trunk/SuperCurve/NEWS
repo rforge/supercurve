@@ -6,6 +6,16 @@
 	**************************************************
 
 
+		CHANGES IN SUPERCURVE VERSION 1.3.3
+
+
+NEW FEATURES
+
+    o	Output filenames now converted to POSIX portable filename
+	when writing files to disk. Prevents names of antibodies
+	from possibly being used for malicious purposes.
+
+
 		CHANGES IN SUPERCURVE VERSION 1.3.2
 
 
