@@ -37,12 +37,6 @@ if (!isGeneric("image")) {
                function(x, ...) standardGeneric("image"))
 }
 
-## defined for: RPPADesignParams, RPPAFitParams, SuperCurveSettings
-if (!isGeneric("paramString")) {
-    setGeneric("paramString",
-               function(object, ...) standardGeneric("paramString"))
-}
-
 ## defined for: RPPAFit, RPPADesign
 if (!isGeneric("plot")) {
     setGeneric("plot",
@@ -70,6 +64,12 @@ if (!isGeneric("summary")) {
 ##
 ## Brand new generics
 ##
+
+## defined for: RPPADesignParams, RPPAFitParams, SuperCurveSettings
+if (!isGeneric("paramString")) {
+    setGeneric("paramString",
+               function(object, ...) standardGeneric("paramString"))
+}
 
 ## defined for: FitClass, LoessFitClass, CobsFitClass, LogisticFitClass
 if (!isGeneric("fitSeries")) {
