@@ -2,6 +2,8 @@
 ### REGISTRATION.R - Generic registration routines
 ###
 
+#:KRC: This whole thing still smells as though it is rebuilding
+# an inferior version of S4 derived classes
 
 ##
 ## Private Methods
@@ -9,6 +11,7 @@
 
 ##-----------------------------------------------------------------------------
 .validate.classname <- function(classname) {
+  #:KRC: user-hostile.
     if (!is.character(classname)) {
         stop(sprintf("argument %s must be character",
                      sQuote("classname")))
@@ -24,6 +27,9 @@
 
 ##-----------------------------------------------------------------------------
 .validate.envir <- function(envir) {
+  # lists and environments are inter-convertible, and yuo can look things
+  # up ineither one. Why require an environment, insted of a successful
+  # call to (as(, "environment") ?
     if (!is.environment(envir)) {
         stop(sprintf("argument %s must be environment",
                      sQuote("envir")))
@@ -33,6 +39,7 @@
 
 ##-----------------------------------------------------------------------------
 .validate.key <- function(key) {
+  #:KRC: user-hostile.
     if (!is.character(key)) {
         stop(sprintf("argument %s must be character",
                      sQuote("key")))

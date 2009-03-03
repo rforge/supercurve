@@ -6,6 +6,9 @@
 ## :KRC: Should this be placed as an internal function inside the
 ## .generic.trim function that is the only thing that ever uses it.
 
+## What does this function do?
+## What do the inputs mean?
+
 ##-----------------------------------------------------------------------------
 "bisection.search" <-
 function (x1, x2, f, tol = 1e-07, niter = 25, f.extra = NA, upcross.level = 0) 

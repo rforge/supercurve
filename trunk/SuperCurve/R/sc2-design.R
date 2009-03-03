@@ -41,6 +41,8 @@ validRPPADesign <- function(object) {
                      "Sample")
     nreqdMeasures <- length(reqdMeasures) + 1
 
+    #:KRC: waste of time. Next check alrady includes this, and gives
+    # the user better information.
     ## Ensure minimum number of columns
     if (!(ncol(object@layout) >= nreqdMeasures)) {
         msg <- c(msg, "not enough columns in layout")
@@ -68,6 +70,8 @@ setValidity("RPPADesign", validRPPADesign)
 
 
 ##-----------------------------------------------------------------------------
+#:KRC: Why not just acll inherits in the code whwere it is needed? If you want
+# to obfuscate the code, wrap an eval around a base64 decode.
 is.RPPADesign <- function(x) {
     inherits(x, "RPPADesign")
 }
@@ -94,6 +98,8 @@ RPPADesignParams <- function(steps=rep(0, 1),
                              aliasfile=NULL,
                              designfile=NULL,
                              path=".") {
+  #:KRC:  Since you have defined a validity fuinction, why are you
+  # replicating the error checking?
     ## Check arguments
     if (!is.numeric(steps)) {
         stop(sprintf("argument %s must be numeric",
@@ -125,6 +131,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
 
     if (!is.null(alias)) {
         if (!(is.list(alias) || is.data.frame(alias))) {
+          # why can't it be coerce'd into one of those?
             stop(sprintf("argument %s must be list or data.frame, if specified",
                          sQuote("alias")))
         } else if (is.data.frame(alias)) {
@@ -132,10 +139,10 @@ RPPADesignParams <- function(steps=rep(0, 1),
         }
     }
 
+    # try(as.logical())
     if (is.numeric(center)) {
         center <- as.logical(center)
     }
-
     if (!is.logical(center)) {
         stop(sprintf("argument %s must be logical",
                      sQuote("center")))

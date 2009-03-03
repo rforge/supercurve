@@ -9,17 +9,23 @@
 readQuantification <- function(file, software) {
     ## Check arguments
     if (!inherits(file, "connection")) {
+      #:KRC: why require a connection and not justa filename?
+      #:KRC: If it is a filename, why not make it a connection here?
         stop(sprintf("argument %s must be connection",
                      sQuote("file")))
     } else if (!isOpen(file, "r")) {
+      #:KRC: This is user-hostile. Why not open it here, since
+      # that's thepoint, and then close on exit?
         stop(sprintf("connection %s not open for read",
                      dQuote(summary(file)$description)))
     }
 
     if (!is.character(software)) {
+      #:KRC: should try(as.character...) instead
         stop(sprintf("argument %s must be character",
                      sQuote("software")))
     } else if (!(length(software) == 1)) {
+      #:KRC: warning, not error unless length=0
         stop(sprintf("argument %s must be of length 1",
                      sQuote("software")))
     } else if (!nzchar(software)) {
@@ -53,10 +59,14 @@ readQuantification <- function(file, software) {
     ## unspecified numeric measurement. Additional columns may be present.
 
     quant.df <- if (is.function(readMethod)) {
+      #:KRC: Since you just checked the [expletive] thing, how could it
+      # possibly NOT be a function????
                     readMethod(file)
                 }
 
     if (is.null(quant.df)) {
+      #:KRC: is dying the correct respone in the context of an RPPASet?
+      # What if only one of 100 files is bad?
         pathname <- summary(file)$description
         stop(sprintf("cannot import data from file %s",
                      dQuote(pathname)))
@@ -69,6 +79,8 @@ readQuantification <- function(file, software) {
                       "Sample")
 
     ## Ensure minimum number of columns
+    #:KRC: Why is this useful? You are going to enumerate either the
+    # or missing columns in the next step?
     nreqdColumns <- length(reqdColnames) + 1
     if (!(ncol(quant.df) >= nreqdColumns)) {
         stop("not enough columns in quantification datafile")
@@ -106,6 +118,7 @@ readQuantification <- function(file, software) {
 ## Reads MicroVigene text datafile
 read.microvigene <- function(file) {
     ## Check arguments
+  #:KRC: Why not allow filenames?
     stopifnot(inherits(file, "connection"))
 
     isMicroVigene <- function(pathname) {

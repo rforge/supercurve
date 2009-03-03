@@ -11,6 +11,8 @@ setClass("RPPA",
 
 
 ##-----------------------------------------------------------------------------
+#:KRC: Why do we need all these "is" functions when using 'inherits"
+# directly gives better local documentation of behavior.
 is.RPPA <- function(x) {
     inherits(x, "RPPA")
 }
@@ -24,6 +26,7 @@ RPPA <- function(file,
                  software="microvigene") {
     ## Check arguments
     if (is.character(file)) {
+      #:KRC: user-hostile.
         if (!(length(file) == 1)) {
             stop(sprintf("argument %s must be of length 1",
                          sQuote("file")))
@@ -32,6 +35,7 @@ RPPA <- function(file,
                          sQuote("file")))
         }
 
+        #:KRC: which operating systems does .isAbsolutePathname work under?
         pathname <- if (.isAbsolutePathname(file)) {
                         file
                     } else {
@@ -46,11 +50,13 @@ RPPA <- function(file,
                         file.path(path, file)
                     }
 
+        #:KRC: Useless error checking that does not save you
         if (!file.exists(pathname)) {
             stop(sprintf("file %s does not exist",
                          dQuote(pathname)))
         }
 
+        #:KRC: WHY????
         ## Convert to connection object
         file <- file(pathname, "r")
         on.exit(close(file))
@@ -58,6 +64,7 @@ RPPA <- function(file,
     filename <- basename(summary(file)$description)
 
     if (!is.null(antibody)) {
+      #:KRC: usual user-hostile error checking...
         if (!is.character(antibody)) {
             stop(sprintf("argument %s must be character",
                          sQuote("antibody")))
@@ -75,6 +82,8 @@ RPPA <- function(file,
     }
 
     ## Read quantification file
+    # This can fail. Should you try-catch errors? What if you are working
+    # in the context of an RPPASet?
     quant.df <- readQuantification(file, software)
 
     ## Create new class
@@ -118,6 +127,7 @@ setMethod("image", signature(x="RPPA"),
                    ...) {
     ## Check arguments
     if (!is.character(measure)) {
+      #:KRC: sigh. user-hostile.
         stop(sprintf("argument %s must be character",
                      sQuote("measure")))
     } else if (!(length(measure) == 1)) {
@@ -129,6 +139,7 @@ setMethod("image", signature(x="RPPA"),
     }
 
     if (!is.character(main)) {
+      #:KRC: guess...
         stop(sprintf("argument %s must be character",
                      sQuote("main")))
     } else if (!(length(main) == 1)) {
@@ -136,10 +147,11 @@ setMethod("image", signature(x="RPPA"),
                      sQuote("main")))
     }
 
+    # the whole thing shuold just use "try(as.logical())" and, if it
+    # works, live with the result....
     if (is.numeric(colorbar)) {
         colorbar <- as.logical(colorbar)
     }
-
     if (!is.logical(colorbar)) {
         stop(sprintf("argument %s must be logical",
                      sQuote("colorbar")))

@@ -2,6 +2,7 @@
 ### DIRECTORY-CLASS.R
 ###
 
+#:KRC: This entire class is completely unnecessary.
 
 ##=============================================================================
 setClass("Directory",
