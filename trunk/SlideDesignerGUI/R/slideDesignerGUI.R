@@ -21,17 +21,17 @@ dbg <- TRUE                                    # Toggle debugging on/off
 
 ##-----------------------------------------------------------------------------
 ## Returns logical value indicating whether debugging support is enabled.
-.sdDebug <- function() {
+.appDebugEnabled <- function() {
     return(dbg)
 }
 
 
 ##-----------------------------------------------------------------------------
 ## Prints message if debugging support is enabled.
-.sdDebugStr <- function(str) {
+.appDebugStr <- function(str) {
     stopifnot(is.character(str) && length(str) == 1)
 
-    if (.sdDebug()) {
+    if (.appDebugEnabled()) {
         cat(str, "\n")
         flush.console()
     }
@@ -42,7 +42,7 @@ dbg <- TRUE                                    # Toggle debugging on/off
 ## Prints name of function being evaluated if debugging support is enabled.
 .sdEntryStr <- function(fname) {
 
-    if (.sdDebug()) {
+    if (.appDebugEnabled()) {
         if (missing(fname)) {
             ## :NOTE: No silver bullet - don't trust this without testing!
             value <- deparse(sys.call(-1)[[1]])
@@ -53,7 +53,7 @@ dbg <- TRUE                                    # Toggle debugging on/off
                      }
         }
 
-        .sdDebugStr(fname)
+        .appDebugStr(fname)
     }
 }
 
@@ -415,29 +415,29 @@ pressButtonCB <- function(widget) {
 
         ## Start dilution series
         highest <- pcseries[[currpc]]$High
-        .sdDebugStr(paste("Highest:", as.character(highest)))
+        .appDebugStr(paste("Highest:", as.character(highest)))
         if (!nzchar(highest)) {
             ## Nothing marked yet
-            .sdDebugStr("nothing marked yet")
+            .appDebugStr("nothing marked yet")
             swapGrids(i, j)
             pcseries[[currpc]]$High <- who
         } else if (highest == who) {
             ## Remove an existing mark
-            .sdDebugStr("remove existing")
+            .appDebugStr("remove existing")
             swapGrids(i, j)
             pcseries[[currpc]]$High <- ""
 cat("after removal", "\n")
 showpcseries()
         } else {
             ## Mark new, so unmark old
-            .sdDebugStr("old for new")
+            .appDebugStr("old for new")
             swapGrids(i, j)
             ans <- decodeButtonLabel(highest)
             swapGrids(i=ans[1], j=ans[2])
             pcseries[[currpc]]$High <- who
         }
         setGlobal("pcseries", pcseries)
-        .sdDebugStr("done setting high positive control")
+        .appDebugStr("done setting high positive control")
         showpcseries()
     }
     #debug(markFirstPC)
@@ -457,7 +457,7 @@ showpcseriesgrid("pc series grid (early):")
 
         ## Finish dilution series
         lowest <- pcseries[[currpc]]$Low
-        .sdDebugStr(paste("Lowest:", as.character(lowest)))
+        .appDebugStr(paste("Lowest:", as.character(lowest)))
         pcseries[[currpc]]$Low <- who
         showpcseries()
         highest <- pcseries[[currpc]]$High
@@ -488,7 +488,7 @@ showpcseriesgrid("pc series grid (early):")
 
         if (i == hi) {
             ## All in one row
-            .sdDebugStr("  one row")
+            .appDebugStr("  one row")
 
             ## Mark new sequence
             n <- 1 + abs(j - hj)
@@ -499,7 +499,7 @@ showpcseriesgrid("pc series grid (early):")
                               subgrid.frame$ID,
                               i,
                               y <- hj - sign * (p - 1))
-                .sdDebugStr(paste("sign =", sign, ";  id =", id))
+                .appDebugStr(paste("sign =", sign, ";  id =", id))
                 tkconfigure(id,
                             background=colors[p])
                 colorgrid[i, y] <- colors[p]
@@ -517,7 +517,7 @@ show(ls(envir=sdenv()))
 showpcseriesgrid("pc series grid (after):")
         } else if (j == hj) {
             ## All in one column
-            .sdDebugStr("  one col")
+            .appDebugStr("  one col")
 
             ## Mark new sequence
             n <- 1 + abs(i - hi)
@@ -528,7 +528,7 @@ showpcseriesgrid("pc series grid (after):")
                               subgrid.frame$ID,
                               x <- hi - sign * (p - 1),
                               j)
-                .sdDebugStr(paste("sign =", sign, ";  id =", id))
+                .appDebugStr(paste("sign =", sign, ";  id =", id))
                 tkconfigure(id,
                             background=colors[p])
                 colorgrid[x, j] <- colors[p]
@@ -565,7 +565,7 @@ showpcseriesgrid("pc series grid (after):")
     j <- userdata$col
 
     who <- encodeButtonLabel(i, j)
-    .sdDebugStr(paste("who:", as.character(who)))
+    .appDebugStr(paste("who:", as.character(who)))
 
     switch(state <- getGlobal("state"),
            blank   =,
@@ -1354,7 +1354,7 @@ posCtrlSeriesStepCB <- function() {
     ##-------------------------------------------------------------------------
     ## Verify series is completely specified before adding any more.
     proceed <- function() {
-        .sdDebugStr("**checking**")
+        .appDebugStr("**checking**")
         currpc <- getGlobal("currpc")
         pcseries <- getGlobal("pcseries")
 
@@ -1455,7 +1455,7 @@ posCtrlSeriesHighStepCB <- function() {
     ##-------------------------------------------------------------------------
     ## Verify series is completely specified before adding any more.
     proceed <- function() {
-        .sdDebugStr("**checking**")
+        .appDebugStr("**checking**")
 
         currpc <- getGlobal("currpc")
         pcseries <- getGlobal("pcseries")
@@ -1549,7 +1549,7 @@ posCtrlSeriesLowStepCB <- function() {
     ##-------------------------------------------------------------------------
     ## Verify series is completely specified before adding any more.
     proceed <- function() {
-        .sdDebugStr("**checking**")
+        .appDebugStr("**checking**")
         currpc <- getGlobal("currpc")
         pcseries <- getGlobal("pcseries")
 
@@ -2127,7 +2127,7 @@ writeGridToFile <- function(grid.df, pathname) {
     stopifnot(is.character(pathname) && length(pathname) == 1)
 
     ## Attempt to save the results
-    .sdDebugStr(paste("Attempting to save grid as", dQuote(pathname)))
+    .appDebugStr(paste("Attempting to save grid as", dQuote(pathname)))
 
     result <- Try(write.table(grid.df,
                               file=pathname,
@@ -2136,12 +2136,12 @@ writeGridToFile <- function(grid.df, pathname) {
                               col.names=TRUE,
                               row.names=FALSE))
     if (inherits(result, "try-error")) {
-         .sdDebugStr("ERROR: *** save failed ***")
+         .appDebugStr("ERROR: *** save failed ***")
          ## Save to disk failed
          warnings()
          return(-1)
     } else {
-        .sdDebugStr("save successful.")
+        .appDebugStr("save successful.")
 
         ## Mark as clean
         evalq(dirty <- FALSE, envir=sdenv())
@@ -2181,7 +2181,7 @@ initGlobals <- function(glist) {
            },
            glist)
 
-    if (.sdDebug()) {
+    if (.appDebugEnabled()) {
         show(ls(envir=sdenv()))
     }
 }
@@ -2513,13 +2513,13 @@ slideDesignerGUI <- function() {
 
     ## Create named font for later use
     if (!(bannerFont %in% unlist(strsplit(tclvalue(tkfont.names()), " ")))) {
-        .sdDebugStr(sprintf("creating %s font", sQuote(bannerFont)))
+        .appDebugStr(sprintf("creating %s font", sQuote(bannerFont)))
         tkfont.create(bannerFont,
                       family="helvetica",
                       size=18,
                       weight="bold")
     } else {
-        .sdDebugStr(sprintf("%s font already exists", sQuote(bannerFont)))
+        .appDebugStr(sprintf("%s font already exists", sQuote(bannerFont)))
     }
 
     ## Create toplevel shell and pair of frames as its children
