@@ -10,8 +10,8 @@ tclpackage.require("Tcl", "8.4")               # Requires Tcl 8.4 or later
 ##
 ## Module Variables
 ##
-dbg <- TRUE                                    # Toggle debugging on/off
-.SDEnv <- new.env(hash=TRUE)                   # Private environment
+.GuiEnv <- new.env(hash=TRUE)                  # Private environment
+attr(.GuiEnv, "name") <- "GlobalVars"
 
 
 ##
@@ -40,7 +40,7 @@ dbg <- TRUE                                    # Toggle debugging on/off
 
 ##-----------------------------------------------------------------------------
 ## Prints name of function being evaluated if debugging support is enabled.
-.sdEntryStr <- function(fname) {
+.appEntryStr <- function(fname) {
 
     if (.appDebugEnabled()) {
         if (missing(fname)) {
@@ -64,7 +64,7 @@ Try <- function(expr) {
     if (data.class(result <- try(expr, TRUE)) == "try-error") {
         tkmessageBox(icon="error",
                      message=as.character(result),
-                     parent=getGlobal("toplevel"),
+                     parent=getenv("toplevel"),
                      title="Error Occurred!",
                      type="ok")
     }
@@ -75,27 +75,27 @@ Try <- function(expr) {
 
 ##-----------------------------------------------------------------------------
 ## Returns private environment for storing globals of SlideDesigner
-sdenv <- function() {
-    return(.SDEnv)
+guienv <- function() {
+    return(.GuiEnv)
 }
 
 
 ##-----------------------------------------------------------------------------
 ## Get global variable from private environment.
-getGlobal <- function(name) {
+getenv <- function(name) {
     stopifnot(is.character(name) && length(name) == 1)
 
-    Try(get(name, envir=sdenv()))
+    Try(get(name, envir=guienv()))
 }
 
 
 ##-----------------------------------------------------------------------------
 ## Update value of global variable in private environment.
-setGlobal <- function(name,
+setenv <- function(name,
                       value) {
     stopifnot(is.character(name) && length(name) == 1)
 
-    Try(assign(name, value, envir=sdenv()))
+    Try(assign(name, value, envir=guienv()))
 }
 
 
@@ -105,7 +105,7 @@ showpcseries <- function(text="pc series:") {
     stopifnot(is.character(text) && length(text) == 1)
 
     cat(text, "\n")
-    pcseries <- getGlobal("pcseries")
+    pcseries <- getenv("pcseries")
     show(str(pcseries))
     flush.console()
 }
@@ -117,7 +117,7 @@ showpcseriesgrid <- function(text="pc series grid:") {
     stopifnot(is.character(text) && length(text) == 1)
 
     cat(text, "\n")
-    pcseriesgrid <- getGlobal("pcseriesgrid")
+    pcseriesgrid <- getenv("pcseriesgrid")
     show(pcseriesgrid)
     flush.console()
 }
@@ -126,7 +126,7 @@ showpcseriesgrid <- function(text="pc series grid:") {
 ##-----------------------------------------------------------------------------
 ## Returns the widget ids of the argument's siblings.
 getsiblings <- function(widget) {
-    .sdEntryStr("getsiblings")
+    .appEntryStr("getsiblings")
     stopifnot(is.tkwin(widget))
 
     siblings <- as.character(NA)
@@ -144,7 +144,7 @@ getsiblings <- function(widget) {
 ##-----------------------------------------------------------------------------
 ## Displays button widgets as "pressed in".
 displayButtonAsPressed <- function(button) {
-    .sdEntryStr("displayButtonAsPressed")
+    .appEntryStr("displayButtonAsPressed")
     stopifnot(is.tkwin(button))
     stopifnot(tclvalue(tkwinfo.class(button)) == "Button")
 
@@ -156,7 +156,7 @@ displayButtonAsPressed <- function(button) {
 ##-----------------------------------------------------------------------------
 ## Displays button widgets as "normal".
 displayButtonAsNormal <- function(button) {
-    .sdEntryStr("displayButtonAsNormal")
+    .appEntryStr("displayButtonAsNormal")
     stopifnot(is.tkwin(button))
     stopifnot(tclvalue(tkwinfo.class(button)) == "Button")
 
@@ -168,7 +168,7 @@ displayButtonAsNormal <- function(button) {
 ##-----------------------------------------------------------------------------
 ## Displays argument as pressed and all sibling buttons as normal.
 updateButtonVisuals <- function(widget) {
-    .sdEntryStr("updateButtonVisuals")
+    .appEntryStr("updateButtonVisuals")
     stopifnot(is.tkwin(widget))
     stopifnot(tclvalue(tkwinfo.class(widget)) == "Button")
 
@@ -186,7 +186,7 @@ updateButtonVisuals <- function(widget) {
 ##-----------------------------------------------------------------------------
 ## Destroys all children of the specified parent, but not the parent itself.
 destroychildren <- function(parent) {
-    .sdEntryStr("destroychildren")
+    .appEntryStr("destroychildren")
     stopifnot(is.tkwin(parent))
 
     ##-------------------------------------------------------------------------
@@ -279,19 +279,19 @@ generateColors <- function(n,
 ## Generates a series of colors denoting positive controls.
 ## Darker colors implies stronger intensity level.
 generatePosCtrlDilutionColors <- function(n) {
-    .sdEntryStr("generatePosCtrlDilutionColors")
+    .appEntryStr("generatePosCtrlDilutionColors")
 
     varname <- "hue.posctrl.dilution"
 
     ## Is value "cached" in global variable?
-    if (exists(varname, envir=sdenv())) {
-        posCtrlDilutionHue <- getGlobal(varname)
+    if (exists(varname, envir=guienv())) {
+        posCtrlDilutionHue <- getenv(varname)
     } else {
         ## Grab value from option database instead
         rsrcClass <- "PosCtrlDilutionHue"
         value <- tclvalue(optiondb_get(rsrcClass))
         posCtrlDilutionHue <- as.numeric(value)
-        setGlobal(varname, posCtrlDilutionHue)
+        setenv(varname, posCtrlDilutionHue)
     }
 
     return(generateColors(n, hue=posCtrlDilutionHue))
@@ -302,19 +302,19 @@ generatePosCtrlDilutionColors <- function(n) {
 ## Generates a series of colors denoting samples.
 ## Darker colors implies stronger intensity level.
 generateSampleDilutionColors <- function(n) {
-    .sdEntryStr("generateSampleDilutionColors")
+    .appEntryStr("generateSampleDilutionColors")
 
     varname <- "hue.sample.dilution"
 
     ## Is value "cached" in global variable?
-    if (exists(varname, envir=sdenv())) {
-        sampleDilutionHue <- getGlobal(varname)
+    if (exists(varname, envir=guienv())) {
+        sampleDilutionHue <- getenv(varname)
     } else {
         ## Grab value from option database instead
         rsrcClass <- "SampleDilutionHue"
         value <- tclvalue(optiondb_get(rsrcClass))
         sampleDilutionHue <- as.numeric(value)
-        setGlobal(varname, sampleDilutionHue)
+        setenv(varname, sampleDilutionHue)
     }
 
     return(generateColors(n, hue=sampleDilutionHue))
@@ -332,7 +332,7 @@ idleTask <- function() {
 ##-----------------------------------------------------------------------------
 ## Has series of positive controls in dilution series been specified?
 inDilutionSeries <- function() {
-    return(getGlobal("currpc") != 0)
+    return(getenv("currpc") != 0)
 }
 
 
@@ -369,7 +369,7 @@ roundup <- function(x) {
 ## :BUG: Previously marked controls are overwritten without warning
 ##
 pressButtonCB <- function(widget) {
-    .sdEntryStr("pressButtonCB")
+    .appEntryStr("pressButtonCB")
     stopifnot(is.tkwin(widget))
     stopifnot(tclvalue(tkwinfo.class(widget)) == "Button")
 
@@ -380,17 +380,17 @@ pressButtonCB <- function(widget) {
         stopifnot(is.numeric(i) && length(i) == 1)
         stopifnot(is.numeric(j) && length(j) == 1)
 
-        colorgrid <- getGlobal("colorgrid")
-        altgrid <- getGlobal("altgrid")
+        colorgrid <- getenv("colorgrid")
+        altgrid <- getenv("altgrid")
         ## Swap colors
         current <- colorgrid[i, j]
         colorgrid[i, j] <- altgrid[i, j]
         altgrid[i, j] <- current
         ## Save changes
-        setGlobal("colorgrid", colorgrid)
-        setGlobal("altgrid", altgrid)
+        setenv("colorgrid", colorgrid)
+        setenv("altgrid", altgrid)
         ## Mark as modified
-        evalq(dirty <- TRUE, envir=sdenv())
+        evalq(dirty <- TRUE, envir=guienv())
 
         ## Update affected widget
         subgrid.frame <- scrollframe_interior()
@@ -409,9 +409,9 @@ pressButtonCB <- function(widget) {
         stopifnot(is.numeric(i) && length(i) == 1)
         stopifnot(is.numeric(j) && length(j) == 1)
 
-        currpc <- getGlobal("currpc")
-        pcseries <- getGlobal("pcseries")
-        pcseriesgrid <- getGlobal("pcseriesgrid")
+        currpc <- getenv("currpc")
+        pcseries <- getenv("pcseries")
+        pcseriesgrid <- getenv("pcseriesgrid")
 
         ## Start dilution series
         highest <- pcseries[[currpc]]$High
@@ -436,7 +436,7 @@ showpcseries()
             swapGrids(i=ans[1], j=ans[2])
             pcseries[[currpc]]$High <- who
         }
-        setGlobal("pcseries", pcseries)
+        setenv("pcseries", pcseries)
         .appDebugStr("done setting high positive control")
         showpcseries()
     }
@@ -450,9 +450,9 @@ showpcseries()
         stopifnot(is.numeric(i) && length(i) == 1)
         stopifnot(is.numeric(j) && length(j) == 1)
 
-        currpc <- getGlobal("currpc")
-        pcseries <- getGlobal("pcseries")
-        pcseriesgrid <- getGlobal("pcseriesgrid")
+        currpc <- getenv("currpc")
+        pcseries <- getenv("pcseries")
+        pcseriesgrid <- getenv("pcseriesgrid")
 showpcseriesgrid("pc series grid (early):")
 
         ## Finish dilution series
@@ -465,7 +465,7 @@ showpcseriesgrid("pc series grid (early):")
         hi <- ans[1]
         hj <- ans[2]
 
-        colorgrid <- getGlobal("colorgrid")
+        colorgrid <- getenv("colorgrid")
         subgrid.frame <- scrollframe_interior()
 
         if ((i == hi) || (j == hj) && nzchar(lowest)) {
@@ -504,16 +504,16 @@ showpcseriesgrid("pc series grid (early):")
                             background=colors[p])
                 colorgrid[i, y] <- colors[p]
             }
-            setGlobal("colorgrid", colorgrid)
-            setGlobal("pcseries", pcseries)
+            setenv("colorgrid", colorgrid)
+            setenv("pcseries", pcseries)
 showpcseriesgrid("pc series grid (before):")
             pcseriesgrid <- updateseriesgrid(pcseriesgrid,
                                              pcseries[[currpc]]$High,
                                              pcseries[[currpc]]$Low,
                                              currpc)
 cat("updating pcseriesgrid", "\n")
-            setGlobal("pcseriesgrid", pcseriesgrid)
-show(ls(envir=sdenv()))
+            setenv("pcseriesgrid", pcseriesgrid)
+show(ls(envir=guienv()))
 showpcseriesgrid("pc series grid (after):")
         } else if (j == hj) {
             ## All in one column
@@ -533,8 +533,8 @@ showpcseriesgrid("pc series grid (after):")
                             background=colors[p])
                 colorgrid[x, j] <- colors[p]
             }
-            setGlobal("colorgrid", colorgrid)
-            setGlobal("pcseries", pcseries)
+            setenv("colorgrid", colorgrid)
+            setenv("pcseries", pcseries)
 #showpcseriesgrid("pc series grid (before):")
 cat("pc series grid (before):", "\n")
 show(pcseriesgrid)
@@ -544,15 +544,15 @@ flush.console()
                                              pcseries[[currpc]]$Low,
                                              currpc)
 cat("updating pcseriesgrid", "\n")
-            setGlobal("pcseriesgrid", pcseriesgrid)
-show(ls(envir=sdenv()))
+            setenv("pcseriesgrid", pcseriesgrid)
+show(ls(envir=guienv()))
 showpcseriesgrid("pc series grid (after):")
         } else {
             ## Not allowed
             tkmessageBox(icon="error",
                          message=paste("Must have all positive controls",
                                        "in one row or in one column."),
-                         parent=getGlobal("toplevel"),
+                         parent=getenv("toplevel"),
                          title="Invalid Selection")
         }
     }
@@ -567,7 +567,7 @@ showpcseriesgrid("pc series grid (after):")
     who <- encodeButtonLabel(i, j)
     .appDebugStr(paste("who:", as.character(who)))
 
-    switch(state <- getGlobal("state"),
+    switch(state <- getenv("state"),
            blank   =,
            buffer  =,
            nc      =,
@@ -582,20 +582,20 @@ showpcseriesgrid("pc series grid (after):")
 makeAltGrid <- function(color) {
     stopifnot(is.character(color) && length(color) == 1)
 
-    sr <- as.numeric(tclvalue(getGlobal("nsubrow")))
-    sc <- as.numeric(tclvalue(getGlobal("nsubcol")))
+    sr <- as.numeric(tclvalue(getenv("nsubrow")))
+    sc <- as.numeric(tclvalue(getenv("nsubcol")))
     altgrid <- matrix(color, ncol=sc, nrow=sr)
-    setGlobal("altgrid", altgrid)
+    setenv("altgrid", altgrid)
 }
 
 
 ##-----------------------------------------------------------------------------
 ## Fills the current grid to make it ready for color swapping by marking.
 fillGrid <- function() {
-    .sdEntryStr("fillGrid")
+    .appEntryStr("fillGrid")
 
-    sr <- as.numeric(tclvalue(getGlobal("nsubrow")))
-    sc <- as.numeric(tclvalue(getGlobal("nsubcol")))
+    sr <- as.numeric(tclvalue(getenv("nsubrow")))
+    sc <- as.numeric(tclvalue(getenv("nsubcol")))
     grid <- matrix(NA, ncol=sc, nrow=sr)
     subgrid.frame <- scrollframe_interior()
     for (i in seq_len(sr)) {
@@ -607,7 +607,7 @@ fillGrid <- function() {
                                           "-background"))
         }
     }
-    setGlobal("colorgrid", grid)
+    setenv("colorgrid", grid)
 }
 
 
@@ -626,7 +626,7 @@ displayInvalidValueDialog <- function(fieldname,
                                       value,
                                       minvalue,
                                       maxvalue) {
-    .sdEntryStr("displayInvalidValueDialog")
+    .appEntryStr("displayInvalidValueDialog")
     stopifnot(is.character(fieldname) && length(fieldname) == 1)
     stopifnot(is.character(value) && length(value) == 1)
     stopifnot(is.numeric(minvalue) && length(minvalue) == 1)
@@ -639,7 +639,7 @@ displayInvalidValueDialog <- function(fieldname,
                       maxvalue)
     tkmessageBox(icon="error",
                  message=errmsg,
-                 parent=getGlobal("toplevel"),
+                 parent=getenv("toplevel"),
                  title="Invalid Value")
 }
 
@@ -647,7 +647,7 @@ displayInvalidValueDialog <- function(fieldname,
 ##-----------------------------------------------------------------------------
 ## Verify grid dimensions are numeric and within acceptable range.
 verifyGridDimensions <- function() {
-    .sdEntryStr("verifyGridDimensions")
+    .appEntryStr("verifyGridDimensions")
 
     ## Maximum grid dimensions
     mrmax <- 1000
@@ -656,28 +656,28 @@ verifyGridDimensions <- function() {
     scmax <- 30     # This better be overkill ...
 
     ## Verify user input
-    mr.value <- tclvalue(getGlobal("nmainrow"))
+    mr.value <- tclvalue(getenv("nmainrow"))
     mr <- try(as.numeric(mr.value))
     if (badinteger(mr) || mr < 1 || mr > mrmax) {
         displayInvalidValueDialog("Main Row", mr.value, 1, mrmax)
         return(-1)
     }
 
-    mc.value <- tclvalue(getGlobal("nmaincol"))
+    mc.value <- tclvalue(getenv("nmaincol"))
     mc <- try(as.numeric(mc.value))
     if (badinteger(mc) || mc < 1 || mc > mcmax) {
         displayInvalidValueDialog("Main Col", mc.value, 1, mcmax)
         return(-1)
     }
 
-    sr.value <- tclvalue(getGlobal("nsubrow"))
+    sr.value <- tclvalue(getenv("nsubrow"))
     sr <- try(as.numeric(sr.value))
     if (badinteger(sr) || sr < 1 || sr > srmax) {
         displayInvalidValueDialog("Sub Row", sr.value, 1, srmax)
         return(-1)
     }
 
-    sc.value <- tclvalue(getGlobal("nsubcol"))
+    sc.value <- tclvalue(getenv("nsubcol"))
     sc <- try(as.numeric(sc.value))
     if (badinteger(sc) || sc < 1 || sc > scmax) {
         displayInvalidValueDialog("Sub Col", sc.value, 1, scmax)
@@ -696,11 +696,11 @@ verifyGridDimensions <- function() {
 ## in the left frame. The right frame starts out invisible until the user
 ## specifies valid dimensions.
 createSubgrid <- function() {
-    .sdEntryStr("createSubgrid")
+    .appEntryStr("createSubgrid")
 
     ## Grab subgrid dimensions
-    sr <- as.numeric(tclvalue(getGlobal("nsubrow")))
-    sc <- as.numeric(tclvalue(getGlobal("nsubcol")))
+    sr <- as.numeric(tclvalue(getenv("nsubrow")))
+    sc <- as.numeric(tclvalue(getenv("nsubcol")))
 
     ## Remove existing components of subgrid frame (maybe dimensions changed)
     subgrid.frame <- scrollframe_interior()
@@ -734,17 +734,17 @@ createSubgrid <- function() {
     }
 
     ## Display the subgrid area onscreen, if necessary
-    right.frame <- getGlobal("right.frame")
+    right.frame <- getenv("right.frame")
     ismapped <- as.logical(tkwinfo.ismapped(right.frame))
     if (!ismapped) {
 
         ##---------------------------------------------------------------------
         ## Update window manager's geometry to ensure display of right frame.
         wmGeometry <- function() {
-            .sdEntryStr("wmGeometry")
+            .appEntryStr("wmGeometry")
 
             tclupdate("idletasks")
-            toplevel <- getGlobal("toplevel")
+            toplevel <- getenv("toplevel")
             #reqwidth <- tclvalue(tkwinfo.reqwidth(right.frame))
             #cat("right.frame reqwidth:", reqwidth, "\n")
             newwidth <- as.integer(tclvalue(tkwinfo.reqwidth(toplevel)))
@@ -762,11 +762,11 @@ createSubgrid <- function() {
         ## Update window manager's minimum width of toplevel such that some
         ## portion of right frame is always visible.
         wmMinSizeResetWidth <- function() {
-            .sdEntryStr("wmMinSizeResetWidth")
+            .appEntryStr("wmMinSizeResetWidth")
 
             tclupdate("idletasks")
-            toplevel <- getGlobal("toplevel")
-            left.frame <- getGlobal("left.frame")
+            toplevel <- getenv("toplevel")
+            left.frame <- getenv("left.frame")
             lf.width <- as.integer(tclvalue(tkwinfo.reqwidth(left.frame)))
             rf.width <- as.integer(tclvalue(tkwinfo.reqwidth(right.frame)))
             minwidth <- lf.width + as.integer(rf.width / 10)
@@ -786,8 +786,8 @@ createSubgrid <- function() {
         tclafter.idle(wmMinSizeResetWidth)
     }
 
-    setGlobal("pcseriesgrid", matrix(0.0, ncol=sc, nrow=sr))
-    setGlobal("state", "gridmade")
+    setenv("pcseriesgrid", matrix(0.0, ncol=sc, nrow=sr))
+    setenv("state", "gridmade")
 
     return(0)
 }
@@ -801,7 +801,7 @@ createRow <- function(parent,
                       i,
                       m,
                       hue=0) {
-    .sdEntryStr("createRow")
+    .appEntryStr("createRow")
     stopifnot(is.tkwin(parent))
     stopifnot(is.numeric(i) && length(i) == 1)
     stopifnot(is.numeric(m) && length(m) == 1)
@@ -829,14 +829,14 @@ createRow <- function(parent,
 ##-----------------------------------------------------------------------------
 ## After setting the grid size, mark the different kinds of negative controls.
 negCtrlStepCB <- function() {
-    .sdEntryStr("negCtrlStepCB")
+    .appEntryStr("negCtrlStepCB")
 
-    state <- getGlobal("state")
+    state <- getenv("state")
     if (state == "initial") {
         ## Grid not yet made
         tkmessageBox(icon="error",
                      message="You have to create the grid first!",
-                     parent=getGlobal("toplevel"),
+                     parent=getenv("toplevel"),
                      title="No Grid Found")
         return(-1)
     } else if (state != "gridmade") {
@@ -846,13 +846,13 @@ negCtrlStepCB <- function() {
                           "negCtrlStepCB")
         tkmessageBox(icon="error",
                      message=errmsg,
-                     parent=getGlobal("toplevel"),
+                     parent=getenv("toplevel"),
                      title="Internal Error")
         return(-1)
     }
 
     ## Remove existing components of left frame
-    left.frame <- getGlobal("left.frame")
+    left.frame <- getenv("left.frame")
     destroychildren(left.frame)
 
     ## Create area frames and separator
@@ -887,10 +887,10 @@ negCtrlStepCB <- function() {
     ##-------------------------------------------------------------------------
     ## Swaps between previous color and blank color (white).
     markBlankCB <- function(widget) {
-        .sdEntryStr("markBlankCB")
+        .appEntryStr("markBlankCB")
         stopifnot(is.tkwin(widget))
 
-        setGlobal("state", "blank")
+        setenv("state", "blank")
         labelstring <- "Marking blank spots..."
         tkconfigure(instruct.label,
                     text=labelstring)
@@ -903,10 +903,10 @@ negCtrlStepCB <- function() {
     ##-------------------------------------------------------------------------
     ## Swaps between previous color and buffer color (light gray).
     markBufferCB <- function(widget) {
-        .sdEntryStr("markBufferCB")
+        .appEntryStr("markBufferCB")
         stopifnot(is.tkwin(widget))
 
-        setGlobal("state", "buffer")
+        setenv("state", "buffer")
         labelstring <- "Marking buffer spots..."
         tkconfigure(instruct.label,
                     text=labelstring)
@@ -919,10 +919,10 @@ negCtrlStepCB <- function() {
     ##-------------------------------------------------------------------------
     ## Swaps between previous color and negative control color (medium gray).
     markNegCtrlCB <- function(widget) {
-        .sdEntryStr("markNegCtrlCB")
+        .appEntryStr("markNegCtrlCB")
         stopifnot(is.tkwin(widget))
 
-        setGlobal("state", "nc")
+        setenv("state", "nc")
         labelstring <- "Marking negative controls..."
         tkconfigure(instruct.label,
                     text=labelstring)
@@ -939,14 +939,14 @@ negCtrlStepCB <- function() {
         response <- tclVar(tkmessageBox(default="no",
                                         icon="question",
                                         message=question,
-                                        parent=getGlobal("toplevel"),
+                                        parent=getenv("toplevel"),
                                         title="Decide",
                                         type="yesno"))
         cat("response =", tclvalue(response), "\n")
         if (tclvalue(response) == "no") {
             posCtrlStepCB()
         } else {
-            setGlobal("state", "addpc")
+            setenv("state", "addpc")
             posCtrlSeriesSetupStepCB()
         }
     }
@@ -982,7 +982,7 @@ negCtrlStepCB <- function() {
            pady="3m")
 
     ## Swaps between previous color and negative control color (medium gray)
-    setGlobal("state", "ready2mark")
+    setenv("state", "ready2mark")
 }
 
 
@@ -990,23 +990,23 @@ negCtrlStepCB <- function() {
 ## This is pure control-flow, since the next steps depend on whether we have
 ## one level of positive control, or many.
 numPosCtrlLevelsStepCB.unused <- function() {
-    .sdEntryStr("numPosCtrlLevelsStepCB")
+    .appEntryStr("numPosCtrlLevelsStepCB")
 
-    if (!(getGlobal("state") %in% c("ready2mark", "blank", "buffer", "nc"))) {
+    if (!(getenv("state") %in% c("ready2mark", "blank", "buffer", "nc"))) {
         errmsg <- sprintf("Unexpected state (%s) in %s.",
-                          getGlobal("state"),
+                          getenv("state"),
                           "numPosCtrlLevelsStepCB")
         tkmessageBox(icon="error",
                      message=errmsg,
-                     parent=getGlobal("toplevel"),
+                     parent=getenv("toplevel"),
                      title="Internal Error")
     }
 
     ## Need this to prevent button presses from changing things right now...
-    setGlobal("state", "waiting")
+    setenv("state", "waiting")
 
     ## Remove existing components of left frame
-    left.frame <- getGlobal("left.frame")
+    left.frame <- getenv("left.frame")
     destroychildren(left.frame)
 
     ## Create area frames and separator
@@ -1045,7 +1045,7 @@ numPosCtrlLevelsStepCB.unused <- function() {
     ## Modifies flow control based on user response.
     posCtrlTypeStepCB <- function() {
         if (tclvalue("pcmulti") == 1) {
-            setGlobal("state", "addpc")
+            setenv("state", "addpc")
             posCtrlSeriesSetupStepCB()
         } else {
             posCtrlStepCB()
@@ -1066,23 +1066,23 @@ numPosCtrlLevelsStepCB.unused <- function() {
 ##-----------------------------------------------------------------------------
 ## Setup to add positive control series.
 posCtrlSeriesSetupStepCB <- function() {
-    .sdEntryStr("posCtrlSeriesSetupStepCB")
+    .appEntryStr("posCtrlSeriesSetupStepCB")
 
-    if (!(getGlobal("state") %in% c("addpc", "lastpc"))) {
+    if (!(getenv("state") %in% c("addpc", "lastpc"))) {
         errmsg <- sprintf("Unexpected state (%s) in %s.",
-                          getGlobal("state"),
+                          getenv("state"),
                           "posCtrlSeriesSetupStepCB")
         tkmessageBox(icon="error",
                      message=errmsg,
-                     parent=getGlobal("toplevel"),
+                     parent=getenv("toplevel"),
                      title="Internal Error")
     }
 
     ## Need this to prevent button presses from changing things right now...
-    setGlobal("state", "waiting")
+    setenv("state", "waiting")
 
     ## Remove existing components of left frame
-    left.frame <- getGlobal("left.frame")
+    left.frame <- getenv("left.frame")
     destroychildren(left.frame)
 
     ## Create area frames and separator
@@ -1122,7 +1122,7 @@ posCtrlSeriesSetupStepCB <- function() {
     csr.label <- tklabel(csr.frame,
                          text="Control StepRate:")
     csr.entry <- tkentry(csr.frame,
-                         textvariable=getGlobal("control.steprate"),
+                         textvariable=getenv("control.steprate"),
                          width="6")
     tkbind(csr.entry, "<FocusIn>",  function() entry_focusgained(csr.entry))
     tkbind(csr.entry, "<FocusOut>", function() entry_focuslost(csr.entry))
@@ -1141,18 +1141,18 @@ posCtrlSeriesSetupStepCB <- function() {
     ## Updates global variables for series information and begin next step.
     doAddPosCtrlSeriesStepCB <- function() {
         incrNumPC <- function(csr) {
-            .sdEntryStr("incrNumPC")
+            .appEntryStr("incrNumPC")
 
-            evalq(currpc <- currpc + 1, envir=sdenv())
+            evalq(currpc <- currpc + 1, envir=guienv())
 
-            currpc <- getGlobal("currpc")
-            pcseries <- getGlobal("pcseries")
+            currpc <- getenv("currpc")
+            pcseries <- getenv("pcseries")
             pcseries[[currpc]] <- list(High="", Low="", StepRate=csr)
 
-            setGlobal("pcseries", pcseries)
+            setenv("pcseries", pcseries)
         }
 
-        csr.value <- tclvalue(getGlobal("control.steprate"))
+        csr.value <- tclvalue(getenv("control.steprate"))
         csr <- try(as.numeric(csr.value))
         csrmax <- 5 # Maximum control steprate
         if (badinteger(csr) || csr < 1 || csr > csrmax) {
@@ -1161,11 +1161,11 @@ posCtrlSeriesSetupStepCB <- function() {
         }
 
         incrNumPC(csr)
-        if (getGlobal("currpc") > 1) {
+        if (getenv("currpc") > 1) {
             tkmessageBox(icon="warning",
                          message=paste("Ensure positive control series",
                                        "do not overlap."),
-                         parent=getGlobal("toplevel"),
+                         parent=getenv("toplevel"),
                          title="Danger, Will Robinson!")
         }
         showpcseries()
@@ -1199,10 +1199,10 @@ posCtrlSeriesSetupStepCB <- function() {
 ##-----------------------------------------------------------------------------
 ## Mark positive controls (non-series).
 posCtrlStepCB <- function() {
-    .sdEntryStr("posCtrlStepCB")
+    .appEntryStr("posCtrlStepCB")
 
     ## Remove existing components of left frame
-    left.frame <- getGlobal("left.frame")
+    left.frame <- getenv("left.frame")
     destroychildren(left.frame)
 
     ## Create area frames and separator
@@ -1237,10 +1237,10 @@ posCtrlStepCB <- function() {
     ##-------------------------------------------------------------------------
     ## Swaps between previous color and positive control color (dark magenta).
     markPosCtrlCB <- function(widget) {
-        .sdEntryStr("markPosCtrlCB")
+        .appEntryStr("markPosCtrlCB")
         stopifnot(is.tkwin(widget))
 
-        setGlobal("state", "pc")
+        setenv("state", "pc")
         labelstring <- "Marking positive controls..."
         tkconfigure(instruct.label,
                     text=labelstring)
@@ -1270,10 +1270,10 @@ posCtrlStepCB <- function() {
 ##-----------------------------------------------------------------------------
 ## Mark positive controls (series).
 posCtrlSeriesStepCB <- function() {
-    .sdEntryStr("posCtrlSeriesStepCB")
+    .appEntryStr("posCtrlSeriesStepCB")
 
     ## Remove existing components of left frame
-    left.frame <- getGlobal("left.frame")
+    left.frame <- getenv("left.frame")
     destroychildren(left.frame)
 
     ## Create area frames and separator
@@ -1309,10 +1309,10 @@ posCtrlSeriesStepCB <- function() {
     ## Swaps between previous color and positive control color (dark magenta).
     ## Also has other indirect effects implemented through pressButtonCB method.
     markPosCtrlHighCB <- function(widget) {
-        .sdEntryStr("markPosCtrlHighCB")
+        .appEntryStr("markPosCtrlHighCB")
         stopifnot(is.tkwin(widget))
 
-        setGlobal("state", "firstpc")
+        setenv("state", "firstpc")
         labelstring <- "Marking most intense PC..."
         tkconfigure(instruct.label,
                     text=labelstring)
@@ -1326,15 +1326,15 @@ posCtrlSeriesStepCB <- function() {
     ## Swaps between previous color and positive control color (magenta).
     ## Also has other indirect effects implemented through pressButtonCB method.
     markPosCtrlLowCB <- function(widget) {
-        .sdEntryStr("markPosCtrlLowCB")
+        .appEntryStr("markPosCtrlLowCB")
         stopifnot(is.tkwin(widget))
 
-        currpc <- getGlobal("currpc")
-        pcseries <- getGlobal("pcseries")
+        currpc <- getenv("currpc")
+        pcseries <- getenv("pcseries")
 
         if (nzchar(pcseries[[currpc]]$High)) {
             cat("**posctrllo**", "\n")
-            setGlobal("state", "lastpc")
+            setenv("state", "lastpc")
             labelstring <- "Marking least intense PC..."
             tkconfigure(instruct.label,
                         text=labelstring)
@@ -1345,7 +1345,7 @@ posCtrlSeriesStepCB <- function() {
             tkmessageBox(icon="error",
                          message=paste("You have to mark the most",
                                        "intense positive control first!"),
-                         parent=getGlobal("toplevel"),
+                         parent=getenv("toplevel"),
                          title="Incomplete Series")
         }
     }
@@ -1355,8 +1355,8 @@ posCtrlSeriesStepCB <- function() {
     ## Verify series is completely specified before adding any more.
     proceed <- function() {
         .appDebugStr("**checking**")
-        currpc <- getGlobal("currpc")
-        pcseries <- getGlobal("pcseries")
+        currpc <- getenv("currpc")
+        pcseries <- getenv("pcseries")
 
         if (nzchar(pcseries[[currpc]]$High) &&
             nzchar(pcseries[[currpc]]$Low)) {
@@ -1365,7 +1365,7 @@ posCtrlSeriesStepCB <- function() {
             tkmessageBox(icon="error",
                          message=paste("You have to finish marking",
                                        "the series first!"),
-                         parent=getGlobal("toplevel"),
+                         parent=getenv("toplevel"),
                          title="Incomplete Series")
         }
     }
@@ -1400,10 +1400,10 @@ posCtrlSeriesStepCB <- function() {
 ##-----------------------------------------------------------------------------
 ## Mark positive control with highest intensity (series).
 posCtrlSeriesHighStepCB <- function() {
-    .sdEntryStr("posCtrlSeriesHighStepCB")
+    .appEntryStr("posCtrlSeriesHighStepCB")
 
     ## Remove existing components of left frame
-    left.frame <- getGlobal("left.frame")
+    left.frame <- getenv("left.frame")
     destroychildren(left.frame)
 
     ## Create area frames and separator
@@ -1439,10 +1439,10 @@ posCtrlSeriesHighStepCB <- function() {
     ## Swaps between previous color and positive control color (dark magenta).
     ## Also has other indirect effects implemented through pressButtonCB method.
     markPosCtrlHighCB <- function(widget) {
-        .sdEntryStr("markPosCtrlHighCB")
+        .appEntryStr("markPosCtrlHighCB")
         stopifnot(is.tkwin(widget))
 
-        setGlobal("state", "firstpc")
+        setenv("state", "firstpc")
         labelstring <- "Marking most intense PC..."
         tkconfigure(instruct.label,
                     text=labelstring)
@@ -1457,17 +1457,17 @@ posCtrlSeriesHighStepCB <- function() {
     proceed <- function() {
         .appDebugStr("**checking**")
 
-        currpc <- getGlobal("currpc")
-        pcseries <- getGlobal("pcseries")
+        currpc <- getenv("currpc")
+        pcseries <- getenv("pcseries")
 
         if (nzchar(pcseries[[currpc]]$High)) {
-            setGlobal("state", "waiting")
+            setenv("state", "waiting")
             posCtrlSeriesLowStepCB()
         } else {
             tkmessageBox(icon="error",
                          message=paste("You have to mark the most",
                                        "intense positive control first!"),
-                         parent=getGlobal("toplevel"),
+                         parent=getenv("toplevel"),
                          title="Incomplete Series")
         }
     }
@@ -1494,10 +1494,10 @@ posCtrlSeriesHighStepCB <- function() {
 ##-----------------------------------------------------------------------------
 ## Mark lowest intensity positive control (series).
 posCtrlSeriesLowStepCB <- function() {
-    .sdEntryStr("posCtrlSeriesLowStepCB")
+    .appEntryStr("posCtrlSeriesLowStepCB")
 
     ## Remove existing components of left frame
-    left.frame <- getGlobal("left.frame")
+    left.frame <- getenv("left.frame")
     destroychildren(left.frame)
 
     ## Create area frames and separator
@@ -1533,10 +1533,10 @@ posCtrlSeriesLowStepCB <- function() {
     ## Swaps between previous color and positive control color (magenta).
     ## Also has other indirect effects implemented through pressButtonCB method.
     markPosCtrlLowCB <- function(widget) {
-        .sdEntryStr("markPosCtrlLowCB")
+        .appEntryStr("markPosCtrlLowCB")
         stopifnot(is.tkwin(widget))
 
-        setGlobal("state", "lastpc")
+        setenv("state", "lastpc")
         labelstring <- "Marking least intense PC..."
         tkconfigure(instruct.label,
                     text=labelstring)
@@ -1550,8 +1550,8 @@ posCtrlSeriesLowStepCB <- function() {
     ## Verify series is completely specified before adding any more.
     proceed <- function() {
         .appDebugStr("**checking**")
-        currpc <- getGlobal("currpc")
-        pcseries <- getGlobal("pcseries")
+        currpc <- getenv("currpc")
+        pcseries <- getenv("pcseries")
 
         if (nzchar(pcseries[[currpc]]$High) &&
             nzchar(pcseries[[currpc]]$Low)) {
@@ -1560,7 +1560,7 @@ posCtrlSeriesLowStepCB <- function() {
             tkmessageBox(icon="error",
                          message=paste("You have to finish marking",
                                        "the series first!"),
-                         parent=getGlobal("toplevel"),
+                         parent=getenv("toplevel"),
                          title="Incomplete Series")
         }
     }
@@ -1586,10 +1586,10 @@ posCtrlSeriesLowStepCB <- function() {
 ##-----------------------------------------------------------------------------
 ## Assemble the subgrid for further use.
 assembleStepCB <- function() {
-    .sdEntryStr("assembleStepCB")
+    .appEntryStr("assembleStepCB")
 
     ## Remove existing components of left frame
-    left.frame <- getGlobal("left.frame")
+    left.frame <- getenv("left.frame")
     destroychildren(left.frame)
 
     ## Create area frames and separator
@@ -1627,7 +1627,7 @@ assembleStepCB <- function() {
     dsr.label <- tklabel(dsr.frame,
                          text="Dilution StepRate:")
     dsr.entry <- tkentry(dsr.frame,
-                         textvariable=getGlobal("dilution.steprate"),
+                         textvariable=getenv("dilution.steprate"),
                          width="6")
     cat("dsr.entry id = ", dsr.entry$ID, "\n")
     tkbind(dsr.entry, "<FocusIn>",  function() entry_focusgained(dsr.entry))
@@ -1649,7 +1649,7 @@ assembleStepCB <- function() {
     doAssembleStepCB <- function() {
 
         ## Make sure steprate is set and in the correct range
-        dsr.value <- tclvalue(getGlobal("dilution.steprate"))
+        dsr.value <- tclvalue(getenv("dilution.steprate"))
         dsr <- try(as.numeric(dsr.value))
         dsrmax <- 5 # Maximum dilution steprate
         if (badinteger(dsr) || dsr < 1 || dsr > dsrmax) {
@@ -1668,11 +1668,11 @@ assembleStepCB <- function() {
             return(-1)
         }
 
-        assign("subgrid.df", subgrid.df, envir=sdenv())
+        assign("subgrid.df", subgrid.df, envir=guienv())
         colorSamplesByDilution(subgrid.df)
         tkconfigure(next.button,
                     state="normal")
-        setGlobal("state", "assembled")
+        setenv("state", "assembled")
 
         return(0)
     }
@@ -1696,10 +1696,10 @@ assembleStepCB <- function() {
 ##-----------------------------------------------------------------------------
 ## Here is the final step, where we can choose to save the results.
 finalStepCB <- function() {
-    .sdEntryStr("finalStepCB")
+    .appEntryStr("finalStepCB")
 
     ## Remove existing components of left frame
-    left.frame <- getGlobal("left.frame")
+    left.frame <- getenv("left.frame")
     destroychildren(left.frame)
 
     ## Create area frames and separator
@@ -1734,19 +1734,19 @@ finalStepCB <- function() {
     ## Create action area
     view.button <- tkbutton(action.area,
                             command=function() {
-                                viewSubgrid(getGlobal("subgrid.df"))
+                                viewSubgrid(getenv("subgrid.df"))
                             },
                             text="View Subgrid")
     save.button <- tkbutton(action.area,
                             command=function() {
-                                saveGrid(getGlobal("subgrid.df"))
+                                saveGrid(getenv("subgrid.df"))
                             },
                             text="Save Grid As...")
     tkpack(view.button,
            save.button,
            pady="1m")
 
-    setGlobal("state", "done")
+    setenv("state", "done")
 }
 
 
@@ -1819,8 +1819,8 @@ spottype2background <- function(spottype=c("Blank",
                       paste("background", tolower(spottype), sep="."))
 
     ## Is value "cached" in global variable?
-    if (exists(varname, envir=sdenv())) {
-        background <- getGlobal(varname)
+    if (exists(varname, envir=guienv())) {
+        background <- getenv(varname)
     } else {
         ## Grab value from option database instead
         rsrcClass <- switch(spottype,
@@ -1828,7 +1828,7 @@ spottype2background <- function(spottype=c("Blank",
                             paste(spottype, "Background", sep=""))
 
         background <- tclvalue(optiondb_get(rsrcClass))
-        setGlobal(varname, background)
+        setenv(varname, background)
     }
 
     return(background)
@@ -1840,7 +1840,7 @@ spottype2background <- function(spottype=c("Blank",
 ## into something meaningful. Positive controls in series will be handled by
 ## indexing since color alone is inadequate to determine this.
 spottype <- function(x) {
-    .sdEntryStr("spottype")
+    .appEntryStr("spottype")
     stopifnot(is.matrix(x))
 
     base <- c("Blank",
@@ -1858,7 +1858,7 @@ spottype <- function(x) {
     spottypes <- base[as.vector(x)]
 
     if (inDilutionSeries()) {
-        pcseriesgrid <- getGlobal("pcseriesgrid")
+        pcseriesgrid <- getenv("pcseriesgrid")
         x.grid <- which(pcseriesgrid != 0)
         spottypes[x.grid] <- "PosCtrl"
     }
@@ -1954,11 +1954,11 @@ addControlLevels <- function(df) {
                        with(df, SpotType == "NegCtrl"))
     df$ControlLevel[x.negctrl] <- 0
 
-    currpc <- getGlobal("currpc")
+    currpc <- getenv("currpc")
     if (currpc != 0) {
 
-        pcseries <- getGlobal("pcseries")
-        pcseriesgrid <- getGlobal("pcseriesgrid")
+        pcseries <- getenv("pcseries")
+        pcseriesgrid <- getenv("pcseriesgrid")
 
         for (pc.series in rev(seq_len(currpc))) {
             x.grid <- which(pcseriesgrid > pc.series)
@@ -2043,10 +2043,10 @@ addDilutionLevels <- function(df, step) {
 ##-----------------------------------------------------------------------------
 ## Create subgrid dataframe from user input.
 assembleSubgrid <- function(dsr) {
-    .sdEntryStr("assembleSubgrid")
+    .appEntryStr("assembleSubgrid")
     stopifnot(is.numeric(dsr) && length(dsr) == 1)
 
-    colorgrid <- getGlobal("colorgrid")
+    colorgrid <- getenv("colorgrid")
     nr <- nrow(colorgrid)
     nc <- ncol(colorgrid)
 
@@ -2078,7 +2078,7 @@ assembleSubgrid <- function(dsr) {
 ##-----------------------------------------------------------------------------
 ## Save the design to disk.
 viewSubgrid <- function(df) {
-    .sdEntryStr("viewSubgrid")
+    .appEntryStr("viewSubgrid")
     stopifnot(is.data.frame(df))
 
     ## :BUG: On Mac OS X, upon exit, the application will get a number of
@@ -2096,8 +2096,8 @@ createGrid <- function(subgrid.df) {
     stopifnot(is.data.frame(subgrid.df) && ncol(subgrid.df) == 5)
 
     ## Grab grid dimensions
-    nmainrow <- as.numeric(tclvalue(getGlobal("nmainrow")))
-    nmaincol <- as.numeric(tclvalue(getGlobal("nmaincol")))
+    nmainrow <- as.numeric(tclvalue(getenv("nmainrow")))
+    nmaincol <- as.numeric(tclvalue(getenv("nmaincol")))
 
     ## Duplicate merged grid for each mainrow, maincol...
     grid.df <- NULL
@@ -2122,7 +2122,7 @@ createGrid <- function(subgrid.df) {
 ##-----------------------------------------------------------------------------
 ## Write the grid design to disk.
 writeGridToFile <- function(grid.df, pathname) {
-    .sdEntryStr("writeGridToFile")
+    .appEntryStr("writeGridToFile")
     stopifnot(is.data.frame(grid.df))
     stopifnot(is.character(pathname) && length(pathname) == 1)
 
@@ -2144,7 +2144,7 @@ writeGridToFile <- function(grid.df, pathname) {
         .appDebugStr("save successful.")
 
         ## Mark as clean
-        evalq(dirty <- FALSE, envir=sdenv())
+        evalq(dirty <- FALSE, envir=guienv())
         return(0)
     }
 }
@@ -2153,12 +2153,12 @@ writeGridToFile <- function(grid.df, pathname) {
 ##-----------------------------------------------------------------------------
 ## Save the grid design.
 saveGrid <- function(subgrid.df) {
-    .sdEntryStr("saveGrid")
+    .appEntryStr("saveGrid")
     stopifnot(is.data.frame(subgrid.df))
 
     pathname <- tclvalue(tkgetSaveFile(defaultextension=".tsv",
                                        initialfile="slidedesign.tsv",
-                                       parent=getGlobal("toplevel"),
+                                       parent=getenv("toplevel"),
                                        title="Save Grid"))
     if (!nzchar(pathname)) {
         ## User canceled the save dialog
@@ -2172,17 +2172,17 @@ saveGrid <- function(subgrid.df) {
 ##-----------------------------------------------------------------------------
 ## Save global variables in private environment.
 initGlobals <- function(glist) {
-    .sdEntryStr("initGlobals")
+    .appEntryStr("initGlobals")
     stopifnot(is.list(glist))
 
     sapply(seq_along(glist),
            function(i, ll) {
-               setGlobal(names(ll)[i], ll[[i]])
+               setenv(names(ll)[i], ll[[i]])
            },
            glist)
 
     if (.appDebugEnabled()) {
-        show(ls(envir=sdenv()))
+        show(ls(envir=guienv()))
     }
 }
 
@@ -2191,7 +2191,7 @@ initGlobals <- function(glist) {
 ## Adds entry into Tcl options database.
 optiondb_add <- function(pattern,
                          value) {
-    #.sdEntryStr("optiondb_add")
+    #.appEntryStr("optiondb_add")
     stopifnot(is.character(pattern) && length(pattern) == 1)
     stopifnot(!missing(value))
 
@@ -2203,7 +2203,7 @@ optiondb_add <- function(pattern,
 ##-----------------------------------------------------------------------------
 ## Fetches value from Tcl options database.
 optiondb_get <- function(rsrcClass) {
-    #.sdEntryStr("optiondb_get")
+    #.appEntryStr("optiondb_get")
     stopifnot(is.character(rsrcClass) && length(rsrcClass) == 1)
 
     rsrcName <- initLowercase(rsrcClass)
@@ -2215,7 +2215,7 @@ optiondb_get <- function(rsrcClass) {
 ##-----------------------------------------------------------------------------
 ## Initialize the Tk option database with application defaults.
 initOptions <- function(olist) {
-    .sdEntryStr("initOptions")
+    .appEntryStr("initOptions")
     stopifnot(is.list(olist))
 
     sapply(seq_along(olist),
@@ -2265,7 +2265,7 @@ scrollframe_create <- function(parent) {
     tkbind(int.frame, "<Configure>", function() scrollframe_resize(int.frame))
 
     ## Save this so items can be put in it
-    setGlobal("subgrid.frame", int.frame)
+    setenv("subgrid.frame", int.frame)
 
     return(frame)
 }
@@ -2295,14 +2295,14 @@ scrollframe_resize <- function(iframe) {
 ##-----------------------------------------------------------------------------
 ## Returns portion of scrolled frame used to store user widgets.
 scrollframe_interior <- function() {
-    return(getGlobal("subgrid.frame"))
+    return(getenv("subgrid.frame"))
 }
 
 
 ##-----------------------------------------------------------------------------
 ## Invoked upon gaining focus on bound text entry widgets.
 entry_focusgained <- function(widget) {
-    #.sdEntryStr("entry_focusgained")
+    #.appEntryStr("entry_focusgained")
     stopifnot(is.tkwin(widget))
     stopifnot(tclvalue(tkwinfo.class(widget)) == "Entry")
 
@@ -2315,7 +2315,7 @@ entry_focusgained <- function(widget) {
 ##-----------------------------------------------------------------------------
 ## Invoked upon losing focus on bound text entry widgets.
 entry_focuslost <- function(widget) {
-    #.sdEntryStr("entry_focuslost")
+    #.appEntryStr("entry_focuslost")
     stopifnot(is.tkwin(widget))
     stopifnot(tclvalue(tkwinfo.class(widget)) == "Entry")
 
@@ -2331,7 +2331,7 @@ entry_focuslost <- function(widget) {
 ##-----------------------------------------------------------------------------
 ## Builds menu system tied to menubar usage.
 buildMenus <- function(parent) {
-    .sdEntryStr("buildMenus")
+    .appEntryStr("buildMenus")
     stopifnot(is.tkwin(parent))
     stopifnot(tclvalue(tkwinfo.class(parent)) == "Menu")
 
@@ -2379,7 +2379,7 @@ buildMenus <- function(parent) {
                               "controls of a slide design.")
             tkmessageBox(icon="info",
                          message=overview,
-                         parent=getGlobal("toplevel"),
+                         parent=getenv("toplevel"),
                          title="Overview")
         }
 
@@ -2416,7 +2416,7 @@ buildMenus <- function(parent) {
                            sep="\n")
             tkmessageBox(icon="info",
                          message=about,
-                         parent=getGlobal("toplevel"),
+                         parent=getenv("toplevel"),
                          title="About")
         }
 
@@ -2442,14 +2442,14 @@ buildMenus <- function(parent) {
 ## Terminates the application. May be canceled by user if unsaved
 ## modifications would be lost.
 appExit <- function() {
-    .sdEntryStr("appExit")
+    .appEntryStr("appExit")
 
-    if (dirty <- getGlobal("dirty")) {
+    if (dirty <- getenv("dirty")) {
         ## Prompt user concerning possible data loss
         question <- "Discard subgrid modifications?"
         response <- tclVar(tkmessageBox(icon="question",
                                         message=question,
-                                        parent=getGlobal("toplevel"),
+                                        parent=getenv("toplevel"),
                                         title="Really Quit?",
                                         type="yesno"))
         cat("response =", tclvalue(response), "\n")
@@ -2463,10 +2463,10 @@ appExit <- function() {
     ##-------------------------------------------------------------------------
     ## Terminate the application.
     terminate <- function() {
-        .sdEntryStr("terminate")
+        .appEntryStr("terminate")
 
         ## Unmap toplevel
-        tkwm.withdraw(toplevel <- getGlobal("toplevel"))
+        tkwm.withdraw(toplevel <- getenv("toplevel"))
 
         tkfont.delete(bannerFont <- "banner")
         tclupdate("idletasks")
@@ -2598,7 +2598,7 @@ slideDesignerGUI <- function() {
     mr.label <- tklabel(dim.frame,
                         text="Main Row:")
     mr.entry <- tkentry(dim.frame,
-                        textvariable=getGlobal("nmainrow"),
+                        textvariable=getenv("nmainrow"),
                         width="6")
     tkbind(mr.entry, "<FocusIn>",  function() entry_focusgained(mr.entry))
     tkbind(mr.entry, "<FocusOut>", function() entry_focuslost(mr.entry))
@@ -2607,7 +2607,7 @@ slideDesignerGUI <- function() {
     mc.label <- tklabel(dim.frame,
                         text="Main Col:")
     mc.entry <- tkentry(dim.frame,
-                        textvariable=getGlobal("nmaincol"),
+                        textvariable=getenv("nmaincol"),
                         width="6")
     tkbind(mc.entry, "<FocusIn>",  function() entry_focusgained(mc.entry))
     tkbind(mc.entry, "<FocusOut>", function() entry_focuslost(mc.entry))
@@ -2615,7 +2615,7 @@ slideDesignerGUI <- function() {
     sr.label <- tklabel(dim.frame,
                         text="Sub Row:")
     sr.entry <- tkentry(dim.frame,
-                        textvariable=getGlobal("nsubrow"),
+                        textvariable=getenv("nsubrow"),
                         width="6")
     tkbind(sr.entry, "<FocusIn>",  function() entry_focusgained(sr.entry))
     tkbind(sr.entry, "<FocusOut>", function() entry_focuslost(sr.entry))
@@ -2623,7 +2623,7 @@ slideDesignerGUI <- function() {
     sc.label <- tklabel(dim.frame,
                         text="Sub Col:")
     sc.entry <- tkentry(dim.frame,
-                        textvariable=getGlobal("nsubcol"),
+                        textvariable=getenv("nsubcol"),
                         width="6")
     tkbind(sc.entry, "<FocusIn>",  function() entry_focusgained(sc.entry))
     tkbind(sc.entry, "<FocusOut>", function() entry_focuslost(sc.entry))
@@ -2653,7 +2653,7 @@ slideDesignerGUI <- function() {
     ##-------------------------------------------------------------------------
     ## Creates the subgrid if dimensions are valid.
     createSubgridCB <- function() {
-        .sdEntryStr("createSubgridCB")
+        .appEntryStr("createSubgridCB")
 
         tkconfigure(toplevel,
                     cursor="watch")
@@ -2701,7 +2701,7 @@ slideDesignerGUI <- function() {
     ## Set window manager's minimum width and height of toplevel such that
     ## requested size of left frame and menubar are always visible.
     wmMinSize <- function() {
-        .sdEntryStr("wmMinSize")
+        .appEntryStr("wmMinSize")
 
         tclupdate("idletasks")
         minwidth <- as.integer(tclvalue(tkwinfo.reqwidth(toplevel)))
