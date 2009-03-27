@@ -22,7 +22,7 @@ attr(.GuiEnv, "name") <- "GlobalVars"
 ##-----------------------------------------------------------------------------
 ## Returns logical value indicating whether debugging support is enabled.
 .appDebugEnabled <- function() {
-    return(dbg)
+    return(TRUE)
 }
 
 
@@ -74,14 +74,14 @@ Try <- function(expr) {
 
 
 ##-----------------------------------------------------------------------------
-## Returns private environment for storing globals of SlideDesigner
+## Returns private environment for storing application's global variables.
 guienv <- function() {
     return(.GuiEnv)
 }
 
 
 ##-----------------------------------------------------------------------------
-## Get global variable from private environment.
+## Get variable from private environment.
 getenv <- function(name) {
     stopifnot(is.character(name) && length(name) == 1)
 
@@ -90,12 +90,32 @@ getenv <- function(name) {
 
 
 ##-----------------------------------------------------------------------------
-## Update value of global variable in private environment.
+## Update value of variable in private environment.
 setenv <- function(name,
-                      value) {
+                   value) {
     stopifnot(is.character(name) && length(name) == 1)
 
     Try(assign(name, value, envir=guienv()))
+}
+
+
+##-----------------------------------------------------------------------------
+## Specify whether the document is "dirty".
+setDocumentEdited <- function(value) {
+    stopifnot(is.logical(value) && length(value) == 1)
+
+    if (value) {
+        evalq(dirty <- TRUE, envir=guienv())
+    } else {
+        evalq(dirty <- FALSE, envir=guienv())
+    }
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns TRUE if document is "dirty" (has unsaved changes).
+isDocumentEdited <- function() {
+    as.logical(getenv("dirty"))
 }
 
 
@@ -390,7 +410,7 @@ pressButtonCB <- function(widget) {
         setenv("colorgrid", colorgrid)
         setenv("altgrid", altgrid)
         ## Mark as modified
-        evalq(dirty <- TRUE, envir=guienv())
+        setDocumentEdited(TRUE)
 
         ## Update affected widget
         subgrid.frame <- scrollframe_interior()
@@ -2144,7 +2164,7 @@ writeGridToFile <- function(grid.df, pathname) {
         .appDebugStr("save successful.")
 
         ## Mark as clean
-        evalq(dirty <- FALSE, envir=guienv())
+        setDocumentEdited(FALSE)
         return(0)
     }
 }
@@ -2444,7 +2464,20 @@ buildMenus <- function(parent) {
 appExit <- function() {
     .appEntryStr("appExit")
 
-    if (dirty <- getenv("dirty")) {
+    ##-------------------------------------------------------------------------
+    ## Terminate the application.
+    terminate <- function() {
+        .appEntryStr("terminate")
+
+        ## Unmap toplevel
+        tkwm.withdraw(toplevel <- getenv("toplevel"))
+
+        tclupdate("idletasks")
+        tkdestroy(toplevel)
+    }
+
+
+    if (isDocumentEdited()) {
         ## Prompt user concerning possible data loss
         question <- "Discard subgrid modifications?"
         response <- tclVar(tkmessageBox(icon="question",
@@ -2459,20 +2492,6 @@ appExit <- function() {
             return()
         }
     }
-
-    ##-------------------------------------------------------------------------
-    ## Terminate the application.
-    terminate <- function() {
-        .appEntryStr("terminate")
-
-        ## Unmap toplevel
-        tkwm.withdraw(toplevel <- getenv("toplevel"))
-
-        tkfont.delete(bannerFont <- "banner")
-        tclupdate("idletasks")
-        tkdestroy(toplevel)
-    }
-
 
     ## Destroy toplevel indirectly to workaround problem with X11
     tclafter.idle(terminate)
@@ -2518,6 +2537,10 @@ slideDesignerGUI <- function() {
                       family="helvetica",
                       size=18,
                       weight="bold")
+        on.exit({
+            .appDebugStr(sprintf("destroying %s font", sQuote(bannerFont)))
+            tkfont.delete(bannerFont)
+        })
     } else {
         .appDebugStr(sprintf("%s font already exists", sQuote(bannerFont)))
     }
