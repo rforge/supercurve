@@ -62,11 +62,9 @@ attr(.GuiEnv, "name") <- "GlobalVars"
 ## Causes error message to be displayed if expr does not evaluate successfully.
 Try <- function(expr) {
     if (data.class(result <- try(expr, TRUE)) == "try-error") {
-        tkmessageBox(icon="error",
-                     message=as.character(result),
-                     parent=getenv("toplevel"),
-                     title="Error Occurred!",
-                     type="ok")
+        showerror(title="Error Occurred!",
+                  message=as.character(result),
+                  parent=getenv("toplevel"))
     }
 
     return(result)
@@ -154,7 +152,7 @@ getsiblings <- function(widget) {
     children <- tclvalue(tkwinfo.children(parent))
     if (nzchar(children)) {
         children <- unlist(strsplit(children, " "))
-        siblings <- children[!children %in% widget$ID]        
+        siblings <- children[!children %in% widget$ID]
     }
 
     return(siblings)
@@ -309,7 +307,9 @@ generatePosCtrlDilutionColors <- function(n) {
     } else {
         ## Grab value from option database instead
         rsrcClass <- "PosCtrlDilutionHue"
-        value <- tclvalue(optiondb_get(rsrcClass))
+        rsrcName <- initLowercase(rsrcClass)
+        value <- tclvalue(optiondb_get(rsrcName=rsrcName,
+                                       rsrcClass=rsrcClass))
         posCtrlDilutionHue <- as.numeric(value)
         setenv(varname, posCtrlDilutionHue)
     }
@@ -332,7 +332,9 @@ generateSampleDilutionColors <- function(n) {
     } else {
         ## Grab value from option database instead
         rsrcClass <- "SampleDilutionHue"
-        value <- tclvalue(optiondb_get(rsrcClass))
+        rsrcName <- initLowercase(rsrcClass)
+        value <- tclvalue(optiondb_get(rsrcName=rsrcName,
+                                       rsrcClass=rsrcClass))
         sampleDilutionHue <- as.numeric(value)
         setenv(varname, sampleDilutionHue)
     }
@@ -569,11 +571,10 @@ show(ls(envir=guienv()))
 showpcseriesgrid("pc series grid (after):")
         } else {
             ## Not allowed
-            tkmessageBox(icon="error",
-                         message=paste("Must have all positive controls",
-                                       "in one row or in one column."),
-                         parent=getenv("toplevel"),
-                         title="Invalid Selection")
+            showerror(title="Invalid Selection",
+                      message=paste("Must have all positive controls",
+                                    "in one row or in one column."),
+                      parent=getenv("toplevel"))
         }
     }
     #debug(markLastPC)
@@ -636,7 +637,7 @@ fillGrid <- function() {
 badinteger <- function(value) {
     return(inherits(value, "try-error") ||
            is.na(value) ||
-           !identical(ceiling(value), floor(value))) 
+           !identical(ceiling(value), floor(value)))
 }
 
 
@@ -657,10 +658,9 @@ displayInvalidValueDialog <- function(fieldname,
                       value,
                       minvalue,
                       maxvalue)
-    tkmessageBox(icon="error",
-                 message=errmsg,
-                 parent=getenv("toplevel"),
-                 title="Invalid Value")
+    showerror(title="Invalid Value",
+              message=errmsg,
+              parent=getenv("toplevel"))
 }
 
 
@@ -854,20 +854,18 @@ negCtrlStepCB <- function() {
     state <- getenv("state")
     if (state == "initial") {
         ## Grid not yet made
-        tkmessageBox(icon="error",
-                     message="You have to create the grid first!",
-                     parent=getenv("toplevel"),
-                     title="No Grid Found")
+        showerror(title="No Grid Found",
+                  message="You have to create the grid first!",
+                  parent=getenv("toplevel"))
         return(-1)
     } else if (state != "gridmade") {
         ## This is not supposed to happen
         errmsg <- sprintf("Unexpected state (%s) in %s.",
                           state,
                           "negCtrlStepCB")
-        tkmessageBox(icon="error",
-                     message=errmsg,
-                     parent=getenv("toplevel"),
-                     title="Internal Error")
+        showerror(title="Internal Error",
+                  message=errmsg,
+                  parent=getenv("toplevel"))
         return(-1)
     }
 
@@ -955,19 +953,16 @@ negCtrlStepCB <- function() {
     ##-------------------------------------------------------------------------
     ## Determine what to display in left frame next.
     proceed <- function() {
-        question <- "Are positive controls in a dilution series?"
-        response <- tclVar(tkmessageBox(default="no",
-                                        icon="question",
-                                        message=question,
-                                        parent=getenv("toplevel"),
-                                        title="Decide",
-                                        type="yesno"))
-        cat("response =", tclvalue(response), "\n")
-        if (tclvalue(response) == "no") {
-            posCtrlStepCB()
-        } else {
+        if (askyesno(title="Decide",
+                     message="Are positive controls in a dilution series?",
+                     default="no",
+                     parent=getenv("toplevel")) {
+            ## Handle PC series
             setenv("state", "addpc")
             posCtrlSeriesSetupStepCB()
+        } else {
+            ## Handle standalone PC
+            posCtrlStepCB()
         }
     }
 
@@ -1016,10 +1011,9 @@ numPosCtrlLevelsStepCB.unused <- function() {
         errmsg <- sprintf("Unexpected state (%s) in %s.",
                           getenv("state"),
                           "numPosCtrlLevelsStepCB")
-        tkmessageBox(icon="error",
-                     message=errmsg,
-                     parent=getenv("toplevel"),
-                     title="Internal Error")
+        showerror(title="Internal Error",
+                  message=errmsg,
+                  parent=getenv("toplevel"))
     }
 
     ## Need this to prevent button presses from changing things right now...
@@ -1092,10 +1086,9 @@ posCtrlSeriesSetupStepCB <- function() {
         errmsg <- sprintf("Unexpected state (%s) in %s.",
                           getenv("state"),
                           "posCtrlSeriesSetupStepCB")
-        tkmessageBox(icon="error",
-                     message=errmsg,
-                     parent=getenv("toplevel"),
-                     title="Internal Error")
+        showerror(title="Internal Error",
+                  message=errmsg,
+                  parent=getenv("toplevel"))
     }
 
     ## Need this to prevent button presses from changing things right now...
@@ -1144,8 +1137,12 @@ posCtrlSeriesSetupStepCB <- function() {
     csr.entry <- tkentry(csr.frame,
                          textvariable=getenv("control.steprate"),
                          width="6")
-    tkbind(csr.entry, "<FocusIn>",  function() entry_focusgained(csr.entry))
-    tkbind(csr.entry, "<FocusOut>", function() entry_focuslost(csr.entry))
+    tkbind(csr.entry,
+           "<FocusIn>",
+           function() entry_focusgained(csr.entry))
+    tkbind(csr.entry,
+           "<FocusOut>",
+           function() entry_focuslost(csr.entry))
     tkfocus(csr.entry)
 
     tkgrid(csr.label,
@@ -1182,11 +1179,10 @@ posCtrlSeriesSetupStepCB <- function() {
 
         incrNumPC(csr)
         if (getenv("currpc") > 1) {
-            tkmessageBox(icon="warning",
-                         message=paste("Ensure positive control series",
-                                       "do not overlap."),
-                         parent=getenv("toplevel"),
-                         title="Danger, Will Robinson!")
+            showwarning(title="Danger, Will Robinson!",
+                        message=paste("Ensure positive control series",
+                                      "do not overlap."),
+                        parent=getenv("toplevel"))
         }
         showpcseries()
 
@@ -1362,11 +1358,10 @@ posCtrlSeriesStepCB <- function() {
             fillGrid()
             makeAltGrid(spottype2background("PosCtrl", "Low"))
         } else {
-            tkmessageBox(icon="error",
-                         message=paste("You have to mark the most",
-                                       "intense positive control first!"),
-                         parent=getenv("toplevel"),
-                         title="Incomplete Series")
+            showerror(title="Incomplete Series",
+                      message=paste("You have to mark the most",
+                                    "intense positive control first!"),
+                      parent=getenv("toplevel"))
         }
     }
 
@@ -1382,11 +1377,10 @@ posCtrlSeriesStepCB <- function() {
             nzchar(pcseries[[currpc]]$Low)) {
             posCtrlSeriesSetupStepCB()
         } else {
-            tkmessageBox(icon="error",
-                         message=paste("You have to finish marking",
-                                       "the series first!"),
-                         parent=getenv("toplevel"),
-                         title="Incomplete Series")
+            showerror(title="Incomplete Series",
+                      message=paste("You have to finish marking",
+                                    "the series first!"),
+                      parent=getenv("toplevel"))
         }
     }
 
@@ -1484,11 +1478,10 @@ posCtrlSeriesHighStepCB <- function() {
             setenv("state", "waiting")
             posCtrlSeriesLowStepCB()
         } else {
-            tkmessageBox(icon="error",
-                         message=paste("You have to mark the most",
-                                       "intense positive control first!"),
-                         parent=getenv("toplevel"),
-                         title="Incomplete Series")
+            showerror(title="Incomplete Series",
+                      message=paste("You have to mark the most",
+                                    "intense positive control first!"),
+                      parent=getenv("toplevel"))
         }
     }
 
@@ -1577,11 +1570,10 @@ posCtrlSeriesLowStepCB <- function() {
             nzchar(pcseries[[currpc]]$Low)) {
             posCtrlSeriesSetupStepCB()
         } else {
-            tkmessageBox(icon="error",
-                         message=paste("You have to finish marking",
-                                       "the series first!"),
-                         parent=getenv("toplevel"),
-                         title="Incomplete Series")
+            showerror(title="Incomplete Series",
+                      message=paste("You have to finish marking",
+                                    "the series first!"),
+                      parent=getenv("toplevel"))
         }
     }
 
@@ -1650,16 +1642,20 @@ assembleStepCB <- function() {
                          textvariable=getenv("dilution.steprate"),
                          width="6")
     cat("dsr.entry id = ", dsr.entry$ID, "\n")
-    tkbind(dsr.entry, "<FocusIn>",  function() entry_focusgained(dsr.entry))
-    tkbind(dsr.entry, "<FocusOut>", function() entry_focuslost(dsr.entry))
+    tkbind(dsr.entry,
+           "<FocusIn>",
+           function() entry_focusgained(dsr.entry))
+    tkbind(dsr.entry,
+           "<FocusOut>",
+           function() entry_focuslost(dsr.entry))
     tkfocus(dsr.entry)
 
     tkgrid(dsr.label,
            dsr.entry)
     tkgrid.configure(dsr.label,
-                     sticky="e") 
+                     sticky="e")
     tkgrid.configure(dsr.entry,
-                     sticky="w") 
+                     sticky="w")
     tkpack(dsr.frame,
            pady="3m")
 
@@ -1787,7 +1783,7 @@ colorSamplesByDilution <- function(df) {
     ## Update subgrid button widget backgrounds to appropriate dilution colors
     subgrid.frame <- scrollframe_interior()
     for (subrow in seq_len(max(df$Sub.Row))) {
-        x.sample <- which(with(df, Sub.Row==subrow & SpotType=="Sample"))
+        x.sample <- which(with(df, Sub.Row == subrow & SpotType == "Sample"))
         if (length(x.sample) > 0) {
             lastAliasInRow <- df$SampleAlias[x.sample[length(x.sample)]]
             ngroups <- groupFromAlias(lastAliasInRow)
@@ -1830,7 +1826,7 @@ spottype2background <- function(spottype=c("Blank",
                       PosCtrl={
                           pos <- if (inDilutionSeries()) {
                                      match.arg(pos, c("High", "Low"))
-                                 } else { 
+                                 } else {
                                      "High"
                                  }
                           paste("background", tolower(spottype), tolower(pos),
@@ -1846,8 +1842,9 @@ spottype2background <- function(spottype=c("Blank",
         rsrcClass <- switch(spottype,
                             PosCtrl=paste(spottype, pos, "Background", sep=""),
                             paste(spottype, "Background", sep=""))
-
-        background <- tclvalue(optiondb_get(rsrcClass))
+        rsrcName <- initLowercase(rsrcClass)
+        background <- tclvalue(optiondb_get(rsrcName=rsrcName,
+                                            rsrcClass=rsrcClass))
         setenv(varname, background)
     }
 
@@ -2006,7 +2003,7 @@ addControlLevels <- function(df) {
 
             pcseriesgrid[x.grid] <- 0
         }
-    } else { 
+    } else {
         x.posctrl <- which(with(df, SpotType == "PosCtrl"))
         df$ControlLevel[x.posctrl] <- 100
     }
@@ -2038,8 +2035,8 @@ addDilutionLevels <- function(df, step) {
 
             if (df$SpotType[idx] == "Sample") {
                 df$SampleAlias[idx] <- sprintf("Sample-%d-%d-%d",
-                                               subrow,      
-                                               samp.series,       
+                                               subrow,
+                                               samp.series,
                                                samp.pos)
                 df$Dilution[idx] <- intensity
                 samp.pos <- as.integer(samp.pos + 1)
@@ -2128,7 +2125,7 @@ createGrid <- function(subgrid.df) {
                             subgrid.df)
 
             grid.df <- if (is.null(grid.df)) {
-                           tmp.df 
+                           tmp.df
                        } else {
                            rbind(grid.df, tmp.df)
                        }
@@ -2208,32 +2205,7 @@ initGlobals <- function(glist) {
 
 
 ##-----------------------------------------------------------------------------
-## Adds entry into Tcl options database.
-optiondb_add <- function(pattern,
-                         value) {
-    #.appEntryStr("optiondb_add")
-    stopifnot(is.character(pattern) && length(pattern) == 1)
-    stopifnot(!missing(value))
-
-    #cat("option", "add", pattern, value, "startupFile", "\n")
-    tcl("option", "add", pattern, value, "startupFile")
-}
-
-
-##-----------------------------------------------------------------------------
-## Fetches value from Tcl options database.
-optiondb_get <- function(rsrcClass) {
-    #.appEntryStr("optiondb_get")
-    stopifnot(is.character(rsrcClass) && length(rsrcClass) == 1)
-
-    rsrcName <- initLowercase(rsrcClass)
-    #cat("option", "get", ".", rsrcName, rsrcClass, "\n")
-    tcl("option", "get", ".", rsrcName, rsrcClass)
-}
-
-
-##-----------------------------------------------------------------------------
-## Initialize the Tk option database with application defaults.
+## Initialize the Tcl option database with application defaults.
 initOptions <- function(olist) {
     .appEntryStr("initOptions")
     stopifnot(is.list(olist))
@@ -2242,7 +2214,7 @@ initOptions <- function(olist) {
            function(i, ll) {
                rsrc <- names(ll)[i]
                value <- ll[[i]]
-               optiondb_add(rsrc, value)
+               optiondb_add(rsrc, value, "startupFile")
            },
            olist)
 }
@@ -2277,12 +2249,14 @@ scrollframe_create <- function(parent) {
     tkpack(yscroll, side="right", fill="y", pady=pady)
     tkpack(xscroll, side="bottom", fill="x")
     tkpack(vport, side="left", fill="both", expand=TRUE)
-    
+
     int.frame <- tkframe(vport,
                          borderwidth=4,
                          relief="groove")
     tkcreate(vport, "window", "0 0", anchor="nw", window=int.frame$ID)
-    tkbind(int.frame, "<Configure>", function() scrollframe_resize(int.frame))
+    tkbind(int.frame,
+           "<Configure>",
+           function() scrollframe_resize(int.frame))
 
     ## Save this so items can be put in it
     setenv("subgrid.frame", int.frame)
@@ -2373,7 +2347,7 @@ buildMenus <- function(parent) {
           menu=help.menu,
           underline=0)
 
-    ##---------------------------------------------------------------------
+    ##-------------------------------------------------------------------------
     ## Add FILE menu items.
     buildFileMenu <- function(file.menu) {
         stopifnot(tclvalue(tkwinfo.class(file.menu)) == "Menu")
@@ -2386,29 +2360,28 @@ buildMenus <- function(parent) {
     }
 
 
-    ##---------------------------------------------------------------------
+    ##-------------------------------------------------------------------------
     ## Add HELP menu items.
     buildHelpMenu <- function(help.menu) {
         stopifnot(tclvalue(tkwinfo.class(help.menu)) == "Menu")
 
-        ##-----------------------------------------------------------------
+        ##---------------------------------------------------------------------
         ## Display overview dialog.
         overviewCB <- function() {
             overview <- paste("Tcl/Tk application for recording",
                               "the layout of positive and negative",
                               "controls of a slide design.")
-            tkmessageBox(icon="info",
-                         message=overview,
-                         parent=getenv("toplevel"),
-                         title="Overview")
+            showinfo(title="Overview",
+                     message=overview,
+                     parent=getenv("toplevel"))
         }
 
 
-        ##-----------------------------------------------------------------
+        ##---------------------------------------------------------------------
         ## Display about dialog.
         aboutCB <- function() {
 
-            ##-------------------------------------------------------------
+            ##-----------------------------------------------------------------
             ## Returns application version string.
             getAppVersionLabelstring <- function(default="NA") {
                 stopifnot(is.character(default) && length(default) == 1)
@@ -2422,7 +2395,7 @@ buildMenus <- function(parent) {
             }
 
 
-            ##-------------------------------------------------------------
+            ##-----------------------------------------------------------------
             ## Returns Tcl/Tk version string.
             getTclTkVersionLabelstring <- function() {
                 tcltk.version <- tclvalue(tclinfo("patchlevel"))
@@ -2430,14 +2403,22 @@ buildMenus <- function(parent) {
             }
 
 
+            ##-----------------------------------------------------------------
+            ## Returns Tk windowing system string.
+            getTkWindowingSystemLabelstring <- function() {
+                windowing.system <- tclvalue(tktk.windowingsystem())
+                paste("Windowing System:", windowing.system)
+            }
+
+
             about <- paste(app.name <- "SlideDesignerGUI",
                            getAppVersionLabelstring(),
                            getTclTkVersionLabelstring(),
+                           getTkWindowingSystemLabelstring(),
                            sep="\n")
-            tkmessageBox(icon="info",
-                         message=about,
-                         parent=getenv("toplevel"),
-                         title="About")
+            showinfo(title="About",
+                     message=about,
+                     parent=getenv("toplevel"))
         }
 
 
@@ -2479,15 +2460,11 @@ appExit <- function() {
 
     if (isDocumentEdited()) {
         ## Prompt user concerning possible data loss
-        question <- "Discard subgrid modifications?"
-        response <- tclVar(tkmessageBox(icon="question",
-                                        message=question,
-                                        parent=getenv("toplevel"),
-                                        title="Really Quit?",
-                                        type="yesno"))
-        cat("response =", tclvalue(response), "\n")
-        if (tclvalue(response) == "no") {
-            cat("quit canceled by user", "\n")
+        if (!askyesno(title="Really Quit?",
+                      message="Discard subgrid modifications?",
+                      default="no",
+                      parent=getenv("toplevel")) {
+            cat("**quit canceled by user**", "\n")
             flush.console()
             return()
         }
@@ -2623,8 +2600,12 @@ slideDesignerGUI <- function() {
     mr.entry <- tkentry(dim.frame,
                         textvariable=getenv("nmainrow"),
                         width="6")
-    tkbind(mr.entry, "<FocusIn>",  function() entry_focusgained(mr.entry))
-    tkbind(mr.entry, "<FocusOut>", function() entry_focuslost(mr.entry))
+    tkbind(mr.entry,
+           "<FocusIn>",
+           function() entry_focusgained(mr.entry))
+    tkbind(mr.entry,
+           "<FocusOut>",
+           function() entry_focuslost(mr.entry))
     tkfocus(mr.entry)
 
     mc.label <- tklabel(dim.frame,
@@ -2632,24 +2613,36 @@ slideDesignerGUI <- function() {
     mc.entry <- tkentry(dim.frame,
                         textvariable=getenv("nmaincol"),
                         width="6")
-    tkbind(mc.entry, "<FocusIn>",  function() entry_focusgained(mc.entry))
-    tkbind(mc.entry, "<FocusOut>", function() entry_focuslost(mc.entry))
+    tkbind(mc.entry,
+           "<FocusIn>",
+           function() entry_focusgained(mc.entry))
+    tkbind(mc.entry,
+           "<FocusOut>",
+           function() entry_focuslost(mc.entry))
 
     sr.label <- tklabel(dim.frame,
                         text="Sub Row:")
     sr.entry <- tkentry(dim.frame,
                         textvariable=getenv("nsubrow"),
                         width="6")
-    tkbind(sr.entry, "<FocusIn>",  function() entry_focusgained(sr.entry))
-    tkbind(sr.entry, "<FocusOut>", function() entry_focuslost(sr.entry))
+    tkbind(sr.entry,
+           "<FocusIn>",
+           function() entry_focusgained(sr.entry))
+    tkbind(sr.entry,
+           "<FocusOut>",
+           function() entry_focuslost(sr.entry))
 
     sc.label <- tklabel(dim.frame,
                         text="Sub Col:")
     sc.entry <- tkentry(dim.frame,
                         textvariable=getenv("nsubcol"),
                         width="6")
-    tkbind(sc.entry, "<FocusIn>",  function() entry_focusgained(sc.entry))
-    tkbind(sc.entry, "<FocusOut>", function() entry_focuslost(sc.entry))
+    tkbind(sc.entry,
+           "<FocusIn>",
+           function() entry_focusgained(sc.entry))
+    tkbind(sc.entry,
+           "<FocusOut>",
+           function() entry_focuslost(sc.entry))
 
     tkgrid(mr.label,
            mr.entry)
@@ -2663,7 +2656,7 @@ slideDesignerGUI <- function() {
                      mc.label,
                      sr.label,
                      sc.label,
-                     sticky="e") 
+                     sticky="e")
     tkgrid.configure(mr.entry,
                      mc.entry,
                      sr.entry,
