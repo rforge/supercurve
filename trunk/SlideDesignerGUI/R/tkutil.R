@@ -2,7 +2,23 @@
 ### TKUTIL.R - Collection of methods implementing routines not in tcltk package
 ###
 
-require(tcltk)
+require(tcltk) || stop("tcltk support is missing")
+
+
+##
+## Private Methods
+##
+
+##-----------------------------------------------------------------------------
+is.tclObj <- function(x) {
+    inherits(x, "tclObj")
+}
+
+
+##-----------------------------------------------------------------------------
+is.tclVar <- function(x) {
+    inherits(x, "tclVar")
+}
 
 
 ##
@@ -38,9 +54,28 @@ tclafter.info <- function(...) {
 
 
 ##-----------------------------------------------------------------------------
+## Evaluates command and trap exceptional returns.
+tclcatch <- function(command,
+                     result) {
+    if (missing(result)) {
+        tcl("catch", command)
+    } else {
+        tcl("catch", command, result)
+    }
+}
+
+
+##-----------------------------------------------------------------------------
 ## Return information about state of Tcl interpreter.
 tclinfo <- function(...) {
     tcl("info", ...)
+}
+
+
+##-----------------------------------------------------------------------------
+## Return TRUE if Tcl variable exists.
+tclinfo.exists <- function(...) {
+    tcl("info", "exists", ...)
 }
 
 
@@ -100,6 +135,21 @@ tklabelframe <- function(parent,
 
 
 ##-----------------------------------------------------------------------------
+## Create option menu widget since none is explicitly provided by Tk.
+tkOptionMenu <- function(parent,
+                         variable,
+                         ...) {
+    stopifnot(is.tkwin(parent))
+    stopifnot(is.tclVar(variable))
+
+    tkwidget(parent,
+             "tk_optionMenu",
+             variable,
+             ...)
+}
+
+
+##-----------------------------------------------------------------------------
 ## Create simulated separator widget since none is explicitly provided by Tk.
 tkSeparator <- function(parent,
                          ...) {
@@ -110,6 +160,16 @@ tkSeparator <- function(parent,
             class="Separator",
             height="2",
             relief="sunken")
+}
+
+
+##-----------------------------------------------------------------------------
+## Create spinner widget.
+tkspinbox <- function(parent,
+                          ...) {
+    stopifnot(is.tkwin(parent))
+
+    tkwidget(parent, "spinbox", ...)
 }
 
 
@@ -382,6 +442,9 @@ tkwinfo.y <- function(...) {
                                      "help",
                                      "system"),
                            ...) {
+    stopifnot(is.tkwin(parent))
+
+    ##-------------------------------------------------------------------------
     tkcascade <- function(parent,
                           type,
                           special,
