@@ -1038,7 +1038,7 @@ negCtrlStepCB <- function() {
         if (askyesno(title="Decide",
                      message="Are positive controls in a dilution series?",
                      default="no",
-                     parent=getenv("toplevel")) {
+                     parent=getenv("toplevel"))) {
             ## Handle PC series
             setenv("state", "addpc")
             posCtrlSeriesSetupStepCB()
@@ -2409,10 +2409,10 @@ saveGrid <- function(subgrid.df) {
     .appEntryStr("saveGrid")
     stopifnot(is.data.frame(subgrid.df))
 
-    pathname <- tclvalue(tkgetSaveFile(defaultextension=".tsv",
+    pathname <- tclvalue(tkgetSaveFile(title="Save Grid",
+                                       defaultextension=".tsv",
                                        initialfile="slidedesign.tsv",
-                                       parent=getenv("toplevel"),
-                                       title="Save Grid"))
+                                       parent=getenv("toplevel")))
     if (!nzchar(pathname)) {
         ## User canceled the save dialog
         return(-1)
@@ -2700,7 +2700,7 @@ appExit <- function() {
         if (!askyesno(title="Really Quit?",
                       message="Discard subgrid modifications?",
                       default="no",
-                      parent=getenv("toplevel")) {
+                      parent=getenv("toplevel"))) {
             cat("**quit canceled by user**", "\n")
             flush.console()
             return()
