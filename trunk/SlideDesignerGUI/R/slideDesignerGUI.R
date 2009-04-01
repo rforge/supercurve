@@ -256,6 +256,68 @@ bannerFrame <- function(parent) {
 
 
 ##-----------------------------------------------------------------------------
+## Returns encoded components from the SubgridAlias for positive controls.
+decodePosCtrlSubgridAlias <- function(alias) {
+    stopifnot(is.character(alias) && length(alias) == 1)
+    parts <- unlist(strsplit(alias, "-", fixed=TRUE))
+    stopifnot(length(parts) == 3)
+    names(parts) <- c("spottype", "series", "position")
+    stopifnot(parts["spottype"] == "PosCtrl")
+
+    components <- as.list(parts)
+    mode(components$series) <- "integer"
+    mode(components$position) <- "integer"
+
+    return(components)
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns SubgridAlias label for positive controls.
+encodePosCtrlSubgridAlias <- function(series,
+                                      pos) {
+    stopifnot(is.numeric(series) && length(series) == 1)
+    stopifnot(is.numeric(pos) && length(pos) == 1)
+    return(sprintf("PosCtrl-%d-%d",
+                   series,
+                   pos))
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns encoded components from the SubgridAlias for samples.
+decodeSampleSubgridAlias <- function(alias) {
+    stopifnot(is.character(alias) && length(alias) == 1)
+    parts <- unlist(strsplit(alias, "-", fixed=TRUE))
+    stopifnot(length(parts) == 4)
+    names(parts) <- c("spottype", "row", "series", "position")
+    stopifnot(parts["spottype"] == "Sample")
+
+    components <- as.list(parts)
+    mode(components$row) <- "integer"
+    mode(components$series) <- "integer"
+    mode(components$position) <- "integer"
+
+    return(components)
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns SubgridAlias label for samples.
+encodeSampleSubgridAlias <- function(row,
+                                     series,
+                                     pos) {
+    stopifnot(is.numeric(row) && length(row) == 1)
+    stopifnot(is.numeric(series) && length(series) == 1)
+    stopifnot(is.numeric(pos) && length(pos) == 1)
+    return(sprintf("Sample-%d-%d-%d",
+                   row,
+                   series,
+                   pos))
+}
+
+
+##-----------------------------------------------------------------------------
 ## Returns coordinates of button (as integer vector) based on its button label.
 decodeButtonLabel <- function(labelstring) {
     stopifnot(is.character(labelstring) && length(labelstring) == 1)
@@ -1773,10 +1835,9 @@ colorSamplesByDilution <- function(df) {
     stopifnot(is.data.frame(df))
 
     ##-------------------------------------------------------------------------
-    ## Returns the encoded group value from the SampleAlias for samples.
-    groupFromAlias <- function(alias) {
-        stopifnot(is.character(alias) && length(alias) == 1)
-        return(as.integer(unlist(strsplit(alias, "-", fixed=TRUE))[3]))
+    ## Returns the encoded series value from the SubgridAlias for samples.
+    seriesFromAlias <- function(alias) {
+        decodeSampleSubgridAlias(alias)$series
     }
 
 
@@ -1785,17 +1846,17 @@ colorSamplesByDilution <- function(df) {
     for (subrow in seq_len(max(df$Sub.Row))) {
         x.sample <- which(with(df, Sub.Row == subrow & SpotType == "Sample"))
         if (length(x.sample) > 0) {
-            lastAliasInRow <- df$SampleAlias[x.sample[length(x.sample)]]
-            ngroups <- groupFromAlias(lastAliasInRow)
-            for (group in seq_len(ngroups)) {
+            lastAliasInRow <- df$SubgridAlias[x.sample[length(x.sample)]]
+            nseries <- seriesFromAlias(lastAliasInRow)
+            for (series in seq_len(nseries)) {
                 sample.re <- sprintf("^Sample-%d-%d-[[:digit:]]*$",
                                      subrow,
-                                     group)
+                                     series)
                 aliases <- grep(sample.re,
-                                df$SampleAlias[x.sample],
+                                df$SubgridAlias[x.sample],
                                 value=TRUE)
                 colors <- generateSampleDilutionColors(length(aliases))
-                x.which <- which(df$SampleAlias[x.sample] %in% aliases)
+                x.which <- which(df$SubgridAlias[x.sample] %in% aliases)
                 for (subcol in df$Sub.Col[x.sample[x.which]]) {
                     x.colors <- df$Sub.Col[x.sample[x.which]] %in% subcol
                     tkconfigure(id <- sprintf("%s.%d.%d",
@@ -1993,9 +2054,9 @@ addControlLevels <- function(df) {
             for (idx in x.grid) {
                 if (df$SpotType[idx] == "PosCtrl") {
                     pc.pos <- roundup((pcseriesgrid[idx] - pc.series) * 100)
-                    df$SampleAlias[idx] <- sprintf("PosCtrl-%d-%d",
-                                                   pc.series,
-                                                   pc.pos)
+                    alias <- encodePosCtrlSubgridAlias(pc.series,
+                                                       pc.pos)
+                    df$SubgridAlias[idx] <- alias
                     df$ControlLevel[idx] <- intensity
                     intensity <- intensity / step
                 }
@@ -2034,10 +2095,10 @@ addDilutionLevels <- function(df, step) {
             idx <- which(with(df, Sub.Row == subrow & Sub.Col == subcol))
 
             if (df$SpotType[idx] == "Sample") {
-                df$SampleAlias[idx] <- sprintf("Sample-%d-%d-%d",
-                                               subrow,
-                                               samp.series,
-                                               samp.pos)
+                alias <- encodeSampleSubgridAlias(subrow,
+                                                  samp.series,
+                                                  samp.pos)
+                df$SubgridAlias[idx] <- alias
                 df$Dilution[idx] <- intensity
                 samp.pos <- as.integer(samp.pos + 1)
                 intensity <- intensity / step
@@ -2069,16 +2130,16 @@ assembleSubgrid <- function(dsr) {
 
     subgrid.df <- data.frame(Sub.Row=as.integer(rep(1:nr, nc)),
                              Sub.Col=as.integer(rep(1:nc, each=nr)),
-                             SampleAlias=I(""),
+                             SubgridAlias=I(""),
                              SpotType=as.factor(spottype(colorgrid)),
                              ControlLevel=as.numeric(NA),
                              Dilution=as.numeric(NA))
     stopifnot(nlevels(subgrid.df$SpotType) <= 5)
 
-    ## Provide initial values for SampleAlias column
-    subgrid.df$SampleAlias <- levels(subgrid.df$SpotType)[subgrid.df$SpotType]
+    ## Provide initial values for SubgridAlias column
+    subgrid.df$SubgridAlias <- levels(subgrid.df$SpotType)[subgrid.df$SpotType]
 
-    ## :NOTE: following methods possibly update SampleAlias column
+    ## :NOTE: following methods possibly update SubgridAlias column
     subgrid.df <- addControlLevels(subgrid.df)
     subgrid.df <- addDilutionLevels(subgrid.df, dsr)
 
