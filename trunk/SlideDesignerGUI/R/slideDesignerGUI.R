@@ -727,6 +727,26 @@ displayInvalidValueDialog <- function(fieldname,
 
 
 ##-----------------------------------------------------------------------------
+## Displays error dialog for invalid user-provided values.
+displayNotMultipleDialog <- function(fieldname,
+                                     value,
+                                     nsamp.row) {
+    .appEntryStr("displayNotMultipleDialog")
+    stopifnot(is.character(fieldname) && length(fieldname) == 1)
+    stopifnot(is.integer(value) && length(value) == 1)
+    stopifnot(is.integer(nsamp.row) && length(nsamp.row) == 1)
+
+    errmsg <- sprintf("%s (%s) must be integer multiple of %d.",
+                      fieldname,
+                      value,
+                      nsamp.row)
+    showerror(title="Invalid Value",
+              message=errmsg,
+              parent=getenv("toplevel"))
+}
+
+
+##-----------------------------------------------------------------------------
 ## Verify grid dimensions are numeric and within acceptable range.
 verifyGridDimensions <- function() {
     .appEntryStr("verifyGridDimensions")
@@ -1194,6 +1214,7 @@ posCtrlSeriesSetupStepCB <- function() {
 
     csr.frame <- tkframe(command.area)
 
+    ## Control StepRate
     csr.label <- tklabel(csr.frame,
                          text="Control StepRate:")
     csr.entry <- tkentry(csr.frame,
@@ -1696,11 +1717,26 @@ assembleStepCB <- function() {
                                      text=labelstring),
            pady="8m")
 
-    dsr.frame <- tkframe(command.area)
+    ds.frame <- tkframe(command.area)
 
-    dsr.label <- tklabel(dsr.frame,
+    ## Series Per Row
+    nsr.label <- tklabel(ds.frame,
+                         text="Series Per Row:")
+    nsr.entry <- tkentry(ds.frame,
+                         textvariable=getenv("dilution.nseries.row"),
+                         width="6")
+
+    tkbind(nsr.entry,
+           "<FocusIn>",
+           function() entry_focusgained(nsr.entry))
+    tkbind(nsr.entry,
+           "<FocusOut>",
+           function() entry_focuslost(nsr.entry))
+
+    ## Dilution StepRate
+    dsr.label <- tklabel(ds.frame,
                          text="Dilution StepRate:")
-    dsr.entry <- tkentry(dsr.frame,
+    dsr.entry <- tkentry(ds.frame,
                          textvariable=getenv("dilution.steprate"),
                          width="6")
     cat("dsr.entry id = ", dsr.entry$ID, "\n")
@@ -1712,19 +1748,72 @@ assembleStepCB <- function() {
            function() entry_focuslost(dsr.entry))
     tkfocus(dsr.entry)
 
+    tkgrid(nsr.label,
+           nsr.entry)
     tkgrid(dsr.label,
            dsr.entry)
-    tkgrid.configure(dsr.label,
+    tkgrid.configure(nsr.label,
+                     dsr.label,
                      sticky="e")
-    tkgrid.configure(dsr.entry,
+    tkgrid.configure(nsr.entry,
+                     dsr.entry,
                      sticky="w")
-    tkpack(dsr.frame,
+    tkpack(ds.frame,
            pady="3m")
+
+    ##-------------------------------------------------------------------------
+    ## Returns number of dilution samples per row if all rows contain same
+    ## number of samples; otherwise, NA.
+    getDilutionSamplesPerRow <- function() {
+        colorgrid <- getenv("colorgrid")
+        nr <- nrow(colorgrid)
+        nc <- ncol(colorgrid)
+        sg <- matrix(spottype(colorgrid), nr, nc)
+        xxx <- matrix(match(sg, "Sample", 0), nr, nc)
+        sum1 <- sum(xxx[1,])
+        eligible <- if (sum1 > 0) {
+                        ans <- sapply(rowSums(xxx), all.equal, sum1)
+                        mode(ans) != "character"
+                    } else {
+                        FALSE
+                    }
+        nsamp.row <- if (eligible) {
+                         as.integer(sum1)
+                     } else {
+                         as.integer(NA)
+                     }
+
+        return(nsamp.row)
+    }
 
 
     ##-------------------------------------------------------------------------
     ## Assembles subgrid if user input valid.
     doAssembleStepCB <- function() {
+
+        ## Make sure nseries/row is set and valid for this subgrid layout
+        nsr.value <- tclvalue(getenv("dilution.nseries.row"))
+        nsr <- try(as.numeric(nsr.value))
+        if (!is.na(nsamp.row)) {
+            nsrmax <- nsamp.row
+
+            if (badinteger(nsr) || nsr < 1 || nsr > nsrmax) {
+                displayInvalidValueDialog("Series per row",
+                                          nsr.value,
+                                          1,
+                                          nsrmax)
+                return(-1)
+            }
+
+            ## Ensure value is multiple of number of dilution samples per row
+            mode(nsr) <- "integer"
+            if (nsamp.row %% nsr) {
+                displayNotMultipleDialog("Series per row",
+                                         nsr,
+                                         nsamp.row)
+                return(-1)
+            }
+        }
 
         ## Make sure steprate is set and in the correct range
         dsr.value <- tclvalue(getenv("dilution.steprate"))
@@ -1739,11 +1828,14 @@ assembleStepCB <- function() {
         }
 
         ## Assemble subgrid user input
-        subgrid.df <- Try(assembleSubgrid(dsr))
+        subgrid.df <- Try(assembleSubgrid(nsr, dsr))
         if (inherits(subgrid.df, "try-error")) {
             ## Assembly failed
             warnings()
             return(-1)
+        } else {
+            ## Eliminate extra column from 'View Subgrid' table
+            rownames(subgrid.df) <- NULL
         }
 
         assign("subgrid.df", subgrid.df, envir=guienv())
@@ -1755,6 +1847,13 @@ assembleStepCB <- function() {
         return(0)
     }
 
+
+    ## If number of dilution samples per row is not consistent, disable entry
+    nsamp.row <- getDilutionSamplesPerRow()
+    if (is.na(nsamp.row)) {
+        tkconfigure(nsr.entry,
+                    state="readonly")
+    }
 
     ## Create action area
     assemble.button <- tkbutton(action.area,
@@ -2074,6 +2173,67 @@ addControlLevels <- function(df) {
 
 
 ##-----------------------------------------------------------------------------
+## Labels dilution values for samples in data frame.
+## Assumes all constraints have already been met.
+labelDilutionAliases <- function(df, nsr=1) {
+    stopifnot(is.data.frame(df))
+    stopifnot(is.numeric(nsr) && length(nsr) == 1)
+
+    saved.warn <- options(warn=1)
+    on.exit(options(warn=as.integer(saved.warn)))
+
+    ##-------------------------------------------------------------------------
+    ## Determine how many spots each series can have.
+    spotsPerSeries <- function(df, nseries.row) {
+        if (nseries.row == 1) {
+            # Add one extra so reset never triggered by reaching series maximum
+            max(df$Sub.Col) + 1
+        } else {
+            x.sample <- which(with(df, Sub.Row == 1 & SpotType == "Sample"))
+            nsamp.row <- length(x.sample)
+            nsamp.row / nseries.row
+        }
+    }
+
+    ## Determine number of positions in each series
+    nspots.series <- spotsPerSeries(df, nsr)
+
+    ## Label all samples in data frame
+    reset <- FALSE
+    for (subrow in seq_len(max(df$Sub.Row))) {
+        samp.series <- as.integer(1)
+        samp.pos <- as.integer(1)
+        for (subcol in seq_len(max(df$Sub.Col))) {
+            x.spot <- which(with(df, Sub.Row == subrow & Sub.Col == subcol))
+
+            ## Is this spot a sample?
+            if (df$SpotType[x.spot] == "Sample") {
+                alias <- encodeSampleSubgridAlias(subrow,
+                                                  samp.series,
+                                                  samp.pos)
+                df$SubgridAlias[x.spot] <- alias
+                samp.pos <- as.integer(samp.pos + 1)
+
+                ## Check if time for next series to begin
+                if (samp.pos > nspots.series) {
+                    reset <- TRUE
+                }
+            }
+
+            ## Begin next sample dilution series
+            if (reset) {
+                samp.series <- as.integer(samp.series + 1)
+                samp.pos <- as.integer(1)
+                reset <- FALSE
+            }
+        }
+    }
+
+    return(df)
+}
+
+
+##-----------------------------------------------------------------------------
 ## Adds dilution values for samples to data frame.
 addDilutionLevels <- function(df, step) {
     stopifnot(is.data.frame(df))
@@ -2082,34 +2242,45 @@ addDilutionLevels <- function(df, step) {
     saved.warn <- options(warn=1)
     on.exit(options(warn=as.integer(saved.warn)))
 
-    ## For each row, col pair do:
-    ## - If SpotType==Sample, Dilution=intensity and divide intensity by step.
-    ## - If SpotType!=Sample, reset intensity (to maximum).
+    ##-------------------------------------------------------------------------
+    ## Returns the encoded series value from the SubgridAlias for samples.
+    seriesFromAlias <- function(alias) {
+        decodeSampleSubgridAlias(alias)$series
+    }
 
-    for (subrow in seq_len(max(df$Sub.Row))) {
+
+    ##-------------------------------------------------------------------------
+    ## Returns the intensities for a particular series of samples.
+    generateIntensities <- function(n, step) {
+        stopifnot(is.numeric(n) && length(n) == 1)
+        stopifnot(is.numeric(step) && length(step) == 1)
+
         intensity <- 100
-        samp.series <- as.integer(1)
-        samp.pos <- as.integer(1)
-        used <- FALSE
-        for (subcol in seq_len(max(df$Sub.Col))) {
-            idx <- which(with(df, Sub.Row == subrow & Sub.Col == subcol))
+        intensities <- numeric(n)
+        for (i in seq_len(n)) {
+            intensities[i] <- intensity
+            intensity <- intensity / step
+        }
 
-            if (df$SpotType[idx] == "Sample") {
-                alias <- encodeSampleSubgridAlias(subrow,
-                                                  samp.series,
-                                                  samp.pos)
-                df$SubgridAlias[idx] <- alias
-                df$Dilution[idx] <- intensity
-                samp.pos <- as.integer(samp.pos + 1)
-                intensity <- intensity / step
-                used <- TRUE
-            } else {
-                if (used) {
-                    samp.series <- as.integer(samp.series + 1)
-                    samp.pos <- as.integer(1)
-                    intensity <- 100    # reset
-                    used <- FALSE
-                }
+        return(intensities)
+    }
+
+
+    ## Update subgrid cells to appropriate dilution intensities
+    for (subrow in seq_len(max(df$Sub.Row))) {
+        x.sample <- which(with(df, Sub.Row == subrow & SpotType == "Sample"))
+        if (length(x.sample) > 0) {
+            lastAliasInRow <- df$SubgridAlias[x.sample[length(x.sample)]]
+            nseries <- seriesFromAlias(lastAliasInRow)
+            for (series in seq_len(nseries)) {
+                sample.re <- sprintf("^Sample-%d-%d-[[:digit:]]*$",
+                                     subrow,
+                                     series)
+                aliases <- grep(sample.re,
+                                df$SubgridAlias[x.sample],
+                                value=TRUE)
+                intensities <- generateIntensities(length(aliases), step)
+                df$Dilution[match(aliases, df$SubgridAlias)] <- intensities
             }
         }
     }
@@ -2120,8 +2291,9 @@ addDilutionLevels <- function(df, step) {
 
 ##-----------------------------------------------------------------------------
 ## Create subgrid dataframe from user input.
-assembleSubgrid <- function(dsr) {
+assembleSubgrid <- function(nsr, dsr) {
     .appEntryStr("assembleSubgrid")
+    stopifnot(is.numeric(nsr) && length(nsr) == 1)
     stopifnot(is.numeric(dsr) && length(dsr) == 1)
 
     colorgrid <- getenv("colorgrid")
@@ -2141,6 +2313,9 @@ assembleSubgrid <- function(dsr) {
 
     ## :NOTE: following methods possibly update SubgridAlias column
     subgrid.df <- addControlLevels(subgrid.df)
+    subgrid.df <- labelDilutionAliases(subgrid.df, nsr)
+
+    ## :NOTE: following methods possibly update Dilution column
     subgrid.df <- addDilutionLevels(subgrid.df, dsr)
 
     ## Merge ControlLevel values for controls into Dilution column
@@ -2313,7 +2488,8 @@ scrollframe_create <- function(parent) {
 
     int.frame <- tkframe(vport,
                          borderwidth=4,
-                         relief="groove")
+                         relief="groove",
+                         class="ScrollFrameInterior")
     tkcreate(vport, "window", "0 0", anchor="nw", window=int.frame$ID)
     tkbind(int.frame,
            "<Configure>",
@@ -2329,7 +2505,7 @@ scrollframe_create <- function(parent) {
 ##-----------------------------------------------------------------------------
 ## Resizes scrolled frame area when screen dimensions change.
 scrollframe_resize <- function(iframe) {
-    stopifnot(tclvalue(tkwinfo.class(iframe)) == "Frame")
+    stopifnot(tclvalue(tkwinfo.class(iframe)) == "ScrollFrameInterior")
 
     w <- tkwinfo.width(iframe)
     h <- tkwinfo.height(iframe)
@@ -2599,6 +2775,7 @@ slideDesignerGUI <- function() {
                      currpc=as.integer(0),
                      colorgrid=matrix(NA, nrow=1, ncol=1), # Current colors
                      control.steprate=tclVar("2"),
+                     dilution.nseries.row=tclVar("1"),
                      dilution.steprate=tclVar("2"),
                      dirty=FALSE,
                      labelstring="Press one of the buttons below.",
@@ -2656,6 +2833,8 @@ slideDesignerGUI <- function() {
 
     dim.frame <- tklabelframe(command.area,
                               text="Grid Dimensions")
+
+    ## Main Row
     mr.label <- tklabel(dim.frame,
                         text="Main Row:")
     mr.entry <- tkentry(dim.frame,
@@ -2669,6 +2848,7 @@ slideDesignerGUI <- function() {
            function() entry_focuslost(mr.entry))
     tkfocus(mr.entry)
 
+    ## Main Column
     mc.label <- tklabel(dim.frame,
                         text="Main Col:")
     mc.entry <- tkentry(dim.frame,
@@ -2681,6 +2861,7 @@ slideDesignerGUI <- function() {
            "<FocusOut>",
            function() entry_focuslost(mc.entry))
 
+    ## Sub Row
     sr.label <- tklabel(dim.frame,
                         text="Sub Row:")
     sr.entry <- tkentry(dim.frame,
@@ -2693,6 +2874,7 @@ slideDesignerGUI <- function() {
            "<FocusOut>",
            function() entry_focuslost(sr.entry))
 
+    ## Sub Column
     sc.label <- tklabel(dim.frame,
                         text="Sub Col:")
     sc.entry <- tkentry(dim.frame,
