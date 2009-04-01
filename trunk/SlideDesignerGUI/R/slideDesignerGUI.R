@@ -847,15 +847,35 @@ createSubgrid <- function() {
 
             tclupdate("idletasks")
             toplevel <- getenv("toplevel")
-            #reqwidth <- tclvalue(tkwinfo.reqwidth(right.frame))
-            #cat("right.frame reqwidth:", reqwidth, "\n")
-            newwidth <- as.integer(tclvalue(tkwinfo.reqwidth(toplevel)))
+            #rf.reqwidth <- tclvalue(tkwinfo.reqwidth(right.frame))
+            #cat("right.frame reqwidth:", rf.reqwidth, "\n")
+
+            screenwidth <- as.integer(tclvalue(tkwinfo.screenwidth(toplevel)))
+            screenheight <- as.integer(tclvalue(tkwinfo.screenheight(toplevel)))
+            #cat("screen width:", screenwidth, "\n")
+            #cat("screen height:", screenheight, "\n")
+
+            reqwidth <- as.integer(tclvalue(tkwinfo.reqwidth(toplevel)))
+            #cat("toplevel reqwidth:", reqwidth, "\n")
             height <- as.integer(tclvalue(tkwinfo.height(toplevel)))
+
+            ## Don't exceed screen dimensions
+            if (reqwidth > screenwidth) {
+                cat("adjusted width to fit screen dimensions", "\n")
+                reqwidth <- screenwidth
+            }
+
+            if (height > screenheight) {
+                cat("adjusted height to fit screen dimensions", "\n")
+                height <- screenheight
+            }
+
+            ## Update geometry
             geometry <- sprintf("%dx%d",
-                                newwidth,
+                                reqwidth,
                                 height)
             #cat("new proposed geometry:", geometry, "\n")
-            #flush.console()
+            flush.console()
             tkwm.geometry(toplevel, geometry)
         }
 
@@ -2947,8 +2967,6 @@ slideDesignerGUI <- function() {
            side="left")
 
     tclafter.idle(tkbell())
-
-    cat("windowing system:", tclvalue(tktk.windowingsystem()), "\n")
 
     ## Create menus
     menubar <- tkmenu(toplevel)

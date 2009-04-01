@@ -25,6 +25,10 @@ NEW FEATURES
 
 BUG FIXES
 
+    o	Initial display of subgrid could exceed screen dimensions
+	if large value given. The window geometry is now constrained
+	to the screen dimensions.
+
     o	Removed extra column when viewing subgrid in table after
 	assembly. The column was not actually part of the subgrid
 	itself, but added by the R method that displayed the table.

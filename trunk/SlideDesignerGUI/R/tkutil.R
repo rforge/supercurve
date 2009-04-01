@@ -384,6 +384,20 @@ tkwinfo.reqwidth <- function(...) {
 
 
 ##-----------------------------------------------------------------------------
+## Returns decimal string giving screen's height in pixels.
+tkwinfo.screenheight <- function(...) {
+    tcl("winfo", "screenheight", ...)
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns decimal string giving screen's width in pixels.
+tkwinfo.screenwidth <- function(...) {
+    tcl("winfo", "screenwidth", ...)
+}
+
+
+##-----------------------------------------------------------------------------
 ## Returns path name of toplevel window containing window.
 tkwinfo.toplevel <- function(...) {
     tcl("winfo", "toplevel", ...)
