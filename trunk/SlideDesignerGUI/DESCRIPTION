@@ -9,5 +9,5 @@ Depends: R (>= 2.7), tcltk
 SystemRequirements: Tcl/Tk
 License: file LICENSE
 LazyLoad: yes
-Collate: tkutil.R slideDesignerGUI.R zzz.R
+Collate: tkutil.R tkmessagebox.R tkoptiondb.R slideDesignerGUI.R zzz.R
 
