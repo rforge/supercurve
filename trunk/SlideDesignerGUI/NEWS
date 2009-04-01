@@ -1,6 +1,37 @@
 			Dear Emacs, please make this -*-Text-*- mode!
 	**************************************************
 	*						 *
+	*	       1.1 SERIES NEWS			 *
+	*						 *
+	**************************************************
+
+
+		CHANGES IN SLIDEDESIGNERGUI VERSION 1.1.0
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+
+NEW FEATURES
+
+    o   Dilution series now generated according to user input
+	value rather than changing series when control encountered.
+	If there is one series per row, there can be any number of
+	samples spots in the row - all of which are included in the
+	series. If there is more than one series per row, all rows
+	must contain the same number of sample spots. Additionally,
+	the number of sample spots per row must be an integer
+	multiple of the number of series per row.
+
+BUG FIXES
+
+    o	Removed extra column when viewing subgrid in table after
+	assembly. The column was not actually part of the subgrid
+	itself, but added by the R method that displayed the table.
+
+
+	**************************************************
+	*						 *
 	*	       1.0 SERIES NEWS			 *
 	*						 *
 	**************************************************
