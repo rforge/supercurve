@@ -9,8 +9,8 @@
   \tabular{ll}{
     Package: \tab SlideDesignerGUI\cr
     Type: \tab Package\cr
-    Version: \tab 1.0-1\cr
-    Date: \tab 2008-11-17\cr
+    Version: \tab 1.2.0\cr
+    Date: \tab 2009-04-24\cr
     License: \tab See LICENSE for license information\cr
   }
 
