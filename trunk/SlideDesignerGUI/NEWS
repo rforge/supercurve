@@ -1,6 +1,26 @@
 			Dear Emacs, please make this -*-Text-*- mode!
 	**************************************************
 	*                                                *
+	*          1.3 SERIES NEWS (Internal)            *
+	*                                                *
+	**************************************************
+
+
+		CHANGES IN SLIDEDESIGNERGUI VERSION 1.3.0
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+
+NEW FEATURES
+
+    o	Now generates a GridAlias column for the TSV file that
+	uniquely identifies all related samples; samples within
+	a particular series will have the same grid alias.
+
+
+	**************************************************
+	*                                                *
 	*          1.2 SERIES NEWS                       *
 	*                                                *
 	**************************************************
