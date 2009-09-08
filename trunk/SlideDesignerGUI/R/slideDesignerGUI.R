@@ -2310,6 +2310,131 @@ addDilutionLevels <- function(df, step) {
 
 
 ##-----------------------------------------------------------------------------
+## Uniquely identify each spot type within subgrid.
+numberSubgridSpots <- function(df) {
+    stopifnot(is.data.frame(df))
+
+    ##-------------------------------------------------------------------------
+    ## Uniquely identify each sample series within subgrid.
+    numberSubgridSampleSeries <- function(df) {
+        ##---------------------------------------------------------------------
+        ## Returns the encoded series value from the SubgridAlias for samples.
+        seriesFromAlias <- function(alias) {
+            decodeSampleSubgridAlias(alias)$series
+        }
+
+        subgridnum <- as.integer(1)
+        for (subrow in seq_len(max(df$Sub.Row))) {
+            x.sample <- which(with(df, Sub.Row == subrow & SpotType == "Sample"))
+            for (x in x.sample) {
+                if (is.na(df$SubgridNum[x])) {
+                    alias <- df$SubgridAlias[x]
+                    spot.re <- sprintf("^Sample-%d-%d-[[:digit:]]*$",
+                                       subrow,
+                                       seriesFromAlias(alias))
+                    x.spot <- grep(spot.re, df$SubgridAlias)
+
+                    df$SubgridNum[x.spot] <- subgridnum
+                    subgridnum <- as.integer(subgridnum + 1)
+                }
+            }
+        }
+
+        return(df)
+    }
+
+
+    ##-------------------------------------------------------------------------
+    ## Uniquely identify each positive control series within subgrid.
+    numberSubgridPosCtrlSeries <- function(df) {
+        ##---------------------------------------------------------------------
+        ## Returns the encoded series value from the SubgridAlias for positive
+        ## controls.
+        seriesFromAlias <- function(alias) {
+            decodePosCtrlSubgridAlias(alias)$series
+        }
+
+        subgridnum <- as.integer(1)
+        for (subrow in seq_len(max(df$Sub.Row))) {
+            x.posctrl <- which(with(df, Sub.Row == subrow & SpotType == "PosCtrl"))
+            for (x in x.posctrl) {
+                if (is.na(df$SubgridNum[x])) {
+                    alias <- df$SubgridAlias[x]
+                    spot.re <- sprintf("^PosCtrl-%d-[[:digit:]]*$",
+                                       seriesFromAlias(alias))
+                    x.spot <- grep(spot.re, df$SubgridAlias)
+
+                    df$SubgridNum[x.spot] <- subgridnum
+                    subgridnum <- as.integer(subgridnum + 1)
+                }
+            }
+        }
+
+        return(df)
+    }
+
+
+    ##-------------------------------------------------------------------------
+    ## Uniquely identify each standalone control within subgrid.
+    numberSubgridStandaloneSpots <- function(df, x.spots) {
+        subgridnum <- as.integer(1)
+        for (x in x.spots) {
+            df$SubgridNum[x] <- subgridnum
+            subgridnum <- as.integer(subgridnum + 1)
+        }
+
+        return(df)
+    }
+
+
+    ##-------------------------------------------------------------------------
+    ## Uniquely identify each standalone positive control within subgrid.
+    numberSubgridPosCtrls <- function(df) {
+        x.posctrl <- which(with(df, SpotType == "PosCtrl"))
+        if (length(x.posctrl) > 0) {
+            df <- numberSubgridStandaloneSpots(df, x.posctrl)
+        }
+
+        return(df)
+    }
+
+
+    ##-------------------------------------------------------------------------
+    ## Uniquely identify each standalone negative control within subgrid.
+    numberSubgridNegCtrls <- function(df) {
+        x.negctrl <- which(with(df, SpotType == "NegCtrl"))
+        if (length(x.negctrl) > 0) {
+            df <- numberSubgridStandaloneSpots(df, x.negctrl)
+        }
+
+        x.buffer <- which(with(df, SpotType == "Buffer"))
+        if (length(x.buffer) > 0) {
+            df <- numberSubgridStandaloneSpots(df, x.buffer)
+        }
+
+        x.blank <- which(with(df, SpotType == "Blank"))
+        if (length(x.blank) > 0) {
+            df <- numberSubgridStandaloneSpots(df, x.blank)
+        }
+
+        return(df)
+    }
+
+
+    ## Number spots according to their type
+    df <- numberSubgridSampleSeries(df)
+    df <- if (inDilutionSeries()) {
+              numberSubgridPosCtrlSeries(df)
+          } else {
+              numberSubgridPosCtrls(df)
+          }
+    df <- numberSubgridNegCtrls(df)
+
+    return(df)
+}
+
+
+##-----------------------------------------------------------------------------
 ## Create subgrid dataframe from user input.
 assembleSubgrid <- function(nsr, dsr) {
     .appEntryStr("assembleSubgrid")
@@ -2324,6 +2449,7 @@ assembleSubgrid <- function(nsr, dsr) {
                              Sub.Col=as.integer(rep(1:nc, each=nr)),
                              SubgridAlias=I(""),
                              SpotType=as.factor(spottype(colorgrid)),
+                             SubgridNum=as.integer(NA),
                              ControlLevel=as.numeric(NA),
                              Dilution=as.numeric(NA))
     stopifnot(nlevels(subgrid.df$SpotType) <= 5)
@@ -2335,7 +2461,10 @@ assembleSubgrid <- function(nsr, dsr) {
     subgrid.df <- addControlLevels(subgrid.df)
     subgrid.df <- labelDilutionAliases(subgrid.df, nsr)
 
-    ## :NOTE: following methods possibly update Dilution column
+    ## :NOTE: following method updates SubgridNum column
+    subgrid.df <- numberSubgridSpots(subgrid.df)
+
+    ## :NOTE: following method possibly updates Dilution column
     subgrid.df <- addDilutionLevels(subgrid.df, dsr)
 
     ## Merge ControlLevel values for controls into Dilution column
@@ -2366,11 +2495,31 @@ viewSubgrid <- function(df) {
 ##-----------------------------------------------------------------------------
 ## Creates grid design by replicating subgrid layout for each mainrow, maincol.
 createGrid <- function(subgrid.df) {
-    stopifnot(is.data.frame(subgrid.df) && ncol(subgrid.df) == 5)
+    stopifnot(is.data.frame(subgrid.df) && ncol(subgrid.df) == 6)
 
     ## Grab grid dimensions
     nmainrow <- as.numeric(tclvalue(getenv("nmainrow")))
     nmaincol <- as.numeric(tclvalue(getenv("nmaincol")))
+
+    ##-------------------------------------------------------------------------
+    ## Determine subgrid number for requested type.
+    getSubgridNum <- function(df, spottype) {
+        with(df, SubgridNum[SpotType == spottype])
+    }
+    
+    ## Determine subgrid maximums
+    max.subgridnum.sample  <- max(getSubgridNum(subgrid.df, "Sample"))
+    max.subgridnum.posctrl <- max(getSubgridNum(subgrid.df, "PosCtrl"))
+    max.subgridnum.negctrl <- max(getSubgridNum(subgrid.df, "NegCtrl"))
+    max.subgridnum.buffer  <- max(getSubgridNum(subgrid.df, "Buffer"))
+    max.subgridnum.blank   <- max(getSubgridNum(subgrid.df, "Blank"))
+
+    ## Initialize grid offsets
+    off.sample  <- as.integer(0)
+    off.posctrl <- as.integer(0)
+    off.negctrl <- as.integer(0)
+    off.buffer  <- as.integer(0)
+    off.blank   <- as.integer(0)
 
     ## Duplicate merged grid for each mainrow, maincol...
     grid.df <- NULL
@@ -2378,7 +2527,39 @@ createGrid <- function(subgrid.df) {
         for (mc in seq_len(nmaincol)) {
             tmp.df <- cbind(Main.Row=as.integer(mr),
                             Main.Col=as.integer(mc),
-                            subgrid.df)
+                            subgrid.df,
+                            GridAlias=I(""),
+                            GridNum=as.integer(NA))
+
+            ## Update GridNum column for each spottype
+            x.sample <- tmp.df$SpotType == "Sample"
+            tmp.df$GridNum[x.sample]  <- tmp.df$SubgridNum[x.sample] + off.sample
+
+            x.posctrl <- tmp.df$SpotType == "PosCtrl"
+            tmp.df$GridNum[x.posctrl] <- tmp.df$SubgridNum[x.posctrl] + off.posctrl
+
+            x.negctrl <- tmp.df$SpotType == "NegCtrl"
+            tmp.df$GridNum[x.negctrl] <- tmp.df$SubgridNum[x.negctrl] + off.negctrl
+
+            x.buffer <- tmp.df$SpotType == "Buffer"
+            tmp.df$GridNum[x.buffer]  <- tmp.df$SubgridNum[x.buffer] + off.buffer
+
+            x.blank <- tmp.df$SpotType == "Blank"
+            tmp.df$GridNum[x.blank]   <- tmp.df$SubgridNum[x.blank] + off.blank
+
+            ## Create grid aliases
+            tmp.df$GridAlias <- sprintf("%s-%d",
+                                        as.character(tmp.df$SpotType),
+                                        tmp.df$GridNum)
+            tmp.df$SubgridNum <- NULL  # Remove afterwards
+            tmp.df$GridNum    <- NULL  # Remove afterwards
+            
+            ## Update grid offsets
+            off.sample  <- as.integer(off.sample  + max.subgridnum.sample)
+            off.posctrl <- as.integer(off.posctrl + max.subgridnum.posctrl)
+            off.negctrl <- as.integer(off.negctrl + max.subgridnum.negctrl)
+            off.buffer  <- as.integer(off.buffer  + max.subgridnum.buffer)
+            off.blank   <- as.integer(off.blank   + max.subgridnum.blank)
 
             grid.df <- if (is.null(grid.df)) {
                            tmp.df
