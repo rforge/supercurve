@@ -1,6 +1,6 @@
-##
-## MAINFIT.R
-##
+###
+### MAINFIT.R
+###
 
 
 ##
@@ -8,6 +8,7 @@
 ##
 ## :TODO: Migrate this to .onLoad since it's singleton-like
 .ModelEnv <- new.env(hash=TRUE)
+attr(.ModelEnv, "name") <- "SuperCurveModels"
 
 
 ##
@@ -88,6 +89,7 @@ RPPAFit <- function(rppa,
                             warnLevel)
     RPPAFitFromParams(rppa, design, params)
 }
+
 
 ##-----------------------------------------------------------------------------
 ## Collect parameters in one place and make sure they are reasonably sensible
@@ -253,7 +255,10 @@ setMethod("paramString", "RPPAFitParams",
     lindata <- .calcLogitz(yval, lBot, lTop-lBot, 1)
     series <- seriesNames(design) # omits the control spots automagically
 
-    .estimateLogisticSlope <- function(ser, dsn, ld) {
+    ##-------------------------------------------------------------------------
+    .estimateLogisticSlope <- function(ser,
+                                       dsn,
+                                       ld) {
         ## Get the items in this dilution series
         items <- dsn@layout$Series == ser
         ## Get the log2 steps for this series
@@ -270,6 +275,7 @@ setMethod("paramString", "RPPAFitParams",
             (max(y) - min(y)) / (max(steps) - min(steps))
         }
     }
+
 
     ## Initial estimate of the logistic slope across the dilution steps.
     ## There should be a more comprehensible way to write this:
