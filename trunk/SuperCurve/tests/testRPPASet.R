@@ -202,12 +202,6 @@ checkException(write.summary(fitset,
 ###########################
 ## tests of summary tiffdir
 
-# :NOTE: if unspecified, "tiffdir" is assumed to be sibling of "path"
-checkException(write.summary(fitset,
-                             path=outdir,
-                             graphs=1),
-               msg="not a directory should fail")
-
 checkException(write.summary(fitset,
                              path=outdir,
                              graphs=1,
@@ -233,12 +227,16 @@ checkException(write.summary(fitset,
                              tiffdir=filenotdir),
                msg="not a directory should fail")
 
+## :NOTE: If unspecified, "tiffdir" is assumed to be sibling of "path".
+## As of version 1.3.4, the code substitutes the package's image directory
+## if no sibling dir exists.
+
 ## :NOTE: If "tiffdir" contains no image files, error messages from the
 ## ImageMagick binary appear onscreen, but they are not considered errors
 ## as far as the R code goes - the return code isn't currently examined
 ## for external failures. As many TIFF images contain "unrecognized tags",
-## this is handy for letting the code continue processing. But when files
-## are missing, should this be considered an error?
+## this is handy for letting the code continue processing. When a file is
+## missing, a "missing slide" image is automatically substituted.
 
 
 ###########################
