@@ -19,13 +19,18 @@ fitCurveAndSummarizeFromSettings <- function(settings) {
 
     ## Begin processing
     txtdir <- as(settings@txtdir, "character")
-    imgdir <- as(settings@imgdir, "character") 
+    imgdir <- as(settings@imgdir, "character")
     outdir <- as(settings@outdir, "character")
-    designparams <- settings@designparams
-    fitparams <- settings@fitparams
-                              
+
+    rppasetArgs <- list(path=txtdir,
+                        designparams=settings@designparams,
+                        fitparams=settings@fitparams)
+    ## :NOTE: Handle following after list construction so NULL values dropped
+    rppasetArgs$antibodyfile <- settings@antibodyfile
+    rppasetArgs$software <- settings@software
+
     ## Perform analysis
-    fitset <- RPPASet(txtdir, designparams, fitparams)
+    fitset <- do.call(RPPASet, rppasetArgs)
 
     write.summary(fitset,
                   path=outdir,
