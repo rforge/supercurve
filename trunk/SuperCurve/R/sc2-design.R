@@ -250,12 +250,14 @@ setMethod("paramString", "RPPADesignParams",
           function(object,
                    slots=slotNames(object),
                    ...) {
+    ## Check arguments
     stopifnot(is.character(slots) && length(slots) >= 1)
 
     ## :TODO: Implementation currently ignores the 'slots' argument
     ## and returns string containing parameters from various slots.
     ## as though:
-    ##     slotsToDisplay <- c("grouping", "ordering", "center", "controls")
+    ##     slotsToDisplay <- c("grouping", "ordering", "center",
+    ##                         "controls", "aliasfile", "designfile")
     ##     paramString(dp, slotsToDisplay)
     ##
     controls <- paste(object@controls, collapse=", ")
@@ -263,6 +265,8 @@ setMethod("paramString", "RPPADesignParams",
           paste("ordering:", shQuote(object@ordering)), "\n",
           paste("center:", object@center), "\n",
           paste("controls:", shQuote(controls)), "\n",
+          paste("aliasfile:", shQuote(object@aliasfile)), "\n",
+          paste("designfile:", shQuote(object@designfile)), "\n",
           sep="")
 })
 
@@ -432,10 +436,10 @@ RPPADesignFromParams <- function(raw,
                 controls <- as.list(unique(ctrlnames))
                 rm(ctrlnames)
             },
-            error=function(e) {
+            error=function(cond) {
                 stop(sprintf("cannot load slide design data from file %s - %s",
                              dQuote(designfile),
-                             e$message))
+                             conditionMessage(cond)))
             })
     } else if (is.null(controls)) {
         controls <- list()
@@ -455,10 +459,10 @@ RPPADesignFromParams <- function(raw,
                                                      row.names=NULL)
                               as.list(alias.df)
                          },
-                         error=function(e) {
+                         error=function(cond) {
                              stop(sprintf("cannot load alias data from file %s - %s",
                                           dQuote(aliasfile),
-                                          e$message))
+                                          conditionMessage(cond)))
                          })
                  }
     }
