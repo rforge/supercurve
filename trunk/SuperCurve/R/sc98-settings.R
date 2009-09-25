@@ -4,12 +4,15 @@
 
 
 ##=============================================================================
+setClassUnion("OptionalString", c("character", "NULL"))
 setClass("SuperCurveSettings",
          representation(txtdir="Directory",
-                        imgdir="Directory",
+                        imgdir="OptionalDirectory",
                         outdir="Directory",
                         designparams="RPPADesignParams",
                         fitparams="RPPAFitParams",
+                        antibodyfile="OptionalFilename",
+                        software="OptionalString",
                         version="character"),
          prototype(version="0.0-0"))
 
@@ -34,12 +37,14 @@ validSuperCurveSettings <- function(object) {
 
     ## Validate imgdir slot
     {
-        path <- object@imgdir@path
+        if (!is.null(object@imgdir)) {
+            path <- object@imgdir@path
 
-        ## Ensure directory contains TIFF files
-        tiff.re <- ".*[tT][iI][fF]{1,2}$"
-        if (length(list.files(path, pattern=tiff.re)) == 0) {
-            msg <- c(msg, "img directory contains no TIFF files")
+            ## Ensure directory contains TIFF files
+            tiff.re <- ".*[tT][iI][fF]{1,2}$"
+            if (length(list.files(path, pattern=tiff.re)) == 0) {
+                msg <- c(msg, "img directory contains no TIFF files")
+            }
         }
     }
 
@@ -48,8 +53,36 @@ validSuperCurveSettings <- function(object) {
         path <- object@outdir@path
 
         ## Ensure directory is writable
-        if (!(file.access(path, mode=2) == 0)) {
+        if (!dir.writable(path)) {
             msg <- c(msg, "output directory is not writable")
+        }
+    }
+
+    ## Validate antibodyfile slot
+    {
+        file <- object@antibodyfile
+        if (!is.null(file)) {
+            if (!.isAbsolutePathname(file)) {
+                file <- file.path(object@txtdir@path, file)
+            }
+
+            ## Ensure file exists
+            if (!file.exists(file)) {
+                msg <- c(msg, "antibody file does not exist")
+            }
+        }
+    }
+
+    ## Validate software slot
+    {
+        software <- object@software
+        if (!is.null(software)) {
+
+            ## Ensure read method exists
+            readMethod <- suppressWarnings(.getReadMethod(software))
+            if (is.null(readMethod)) {
+                msg <- c(msg, "no user-provided method for software found")
+            }
         }
     }
 
@@ -76,16 +109,20 @@ SuperCurveSettings <- function(txtdir,
                                imgdir,
                                outdir,
                                designparams,
-                               fitparams) {
+                               fitparams,
+                               antibodyfile=NULL,
+                               software=NULL) {
     ## Check arguments
     if (!is.character(txtdir)) {
         stop(sprintf("argument %s must be character",
                      sQuote("txtdir")))
     }
 
-    if (!is.character(imgdir)) {
-        stop(sprintf("argument %s must be character",
-                     sQuote("imgdir")))
+    if (!is.null(imgdir)) {
+        if (!is.character(imgdir)) {
+            stop(sprintf("argument %s must be character",
+                         sQuote("imgdir")))
+        }
     }
 
     if (!is.character(outdir)) {
@@ -103,13 +140,41 @@ SuperCurveSettings <- function(txtdir,
                      sQuote("fitparams"), "RPPAFitParams"))
     }
 
+    if (!is.null(antibodyfile)) {
+        if (!is.character(antibodyfile)) {
+            stop(sprintf("argument %s must be character",
+                         sQuote("antibodyfile")))
+        } else if (!(length(antibodyfile) == 1)) {
+            stop(sprintf("argument %s must be of length 1",
+                         sQuote("antibodyfile")))
+        } else if (!nzchar(antibodyfile)) {
+            stop(sprintf("argument %s must not be empty string",
+                         sQuote("antibodyfile")))
+        }
+    }
+
+    if (!is.null(software)) {
+        if (!is.character(software)) {
+            stop(sprintf("argument %s must be character",
+                         sQuote("software")))
+        } else if (!(length(software) == 1)) {
+            stop(sprintf("argument %s must be of length 1",
+                         sQuote("software")))
+        } else if (!nzchar(software)) {
+            stop(sprintf("argument %s must not be empty string",
+                         sQuote("software")))
+        }
+    }
+
     ## Create new class
     new("SuperCurveSettings",
         txtdir=as(txtdir, "Directory"),
-        imgdir=as(imgdir, "Directory"),
+        imgdir=if (!is.null(imgdir)) as(imgdir, "Directory") else NULL,
         outdir=as(outdir, "Directory"),
         designparams=designparams,
         fitparams=fitparams,
+        antibodyfile=antibodyfile,
+        software=software,
         version=packageDescription("SuperCurve", fields="Version"))
 }
 
@@ -127,7 +192,9 @@ setMethod("paramString", "SuperCurveSettings",
         designparams.slots <- c("grouping",
                                 "ordering",
                                 "center",
-                                "controls")
+                                "controls",
+                                "aliasfile",
+                                "designfile")
     }
 
     if (missing(fitparams.slots)) {
@@ -153,13 +220,27 @@ setMethod("paramString", "SuperCurveSettings",
     }
 
 
+    ## Handle unspecified image directory
+    imgdir <- if (is.null(object@imgdir)) {
+                  NULL
+              } else {
+                  object@imgdir@path
+              }
+
+    ## Create param string
     paste(paste("txtdir:", shQuote(object@txtdir@path)), "\n",
-          paste("imgdir:", shQuote(object@imgdir@path)), "\n",
+          paste("imgdir:", shQuote(imgdir)), "\n",
           paste("outdir:", shQuote(object@outdir@path)), "\n",
           "designparams:", "\n",
           indent(paramString(object@designparams, designparams.slots)), "\n",
           "fitparams:", "\n",
           indent(paramString(object@fitparams, fitparams.slots)), "\n",
+          if (!is.null(object@antibodyfile)) {
+              paste("antibodyfile:", shQuote(object@antibodyfile), "\n")
+          },
+          if (!is.null(object@software)) {
+              paste("software:", object@software, "\n")
+          },
           sep="")
 })
 
