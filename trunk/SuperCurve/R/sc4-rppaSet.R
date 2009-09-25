@@ -15,9 +15,22 @@ setClass("RPPASet",
 ## :PLR: Because Corwin? wrote it this way...
 
 
+##=============================================================================
+setClass("RPPASetSummary",
+         representation=list(raw="matrix",
+                             ss="matrix",
+                             medpol="matrix"))
+
+
 ##-----------------------------------------------------------------------------
 is.RPPASet <- function(x) {
     inherits(x, "RPPASet")
+}
+
+
+##-----------------------------------------------------------------------------
+is.RPPASetSummary <- function(x) {
+    inherits(x, "RPPASetSummary")
 }
 
 
@@ -153,9 +166,6 @@ is.RPPASet <- function(x) {
     filename <- paste(antibody, "jpg", sep=".")
     output <- file.path(outputdir, .portableFilename(filename))
 
-    message(paste("merging tiff for", antibody))
-    flush.console()
-
     ## Use ImageMagick 'convert' binary to perform merge
     command <- paste("convert",
                      shQuote(pg1),
@@ -177,29 +187,125 @@ is.RPPASet <- function(x) {
 
 
 ##-----------------------------------------------------------------------------
-## Provide a convenience function to save fit results to file
-## :TODO: Rename this method to something more appropriate
-write.summary <- function(rppaset,
-                          path,
-                          prefix="supercurve",
-                          graphs=TRUE,
-                          tiffdir=NULL) {
+## Create an RPPASetSummary object
+RPPASetSummary <- function(rppaset) {
     ## Check arguments
     if (!is.RPPASet(rppaset)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppaset"), "RPPASet"))
     }
 
+    ## Begin processing
+    conc.raw <- .fitSlot(rppaset, "concentrations")
+    conc.ss <- .fitSlot(rppaset, "ss.ratio")
+    if (sum(as.character(rppaset@design@alias$Alias) ==
+            as.character(rppaset@design@alias$Sample)) < nrow(conc.raw)) {
+        ## We have non-trivial alias names.
+        ## Use sample aliases to write out data
+        rno <- rownames(conc.raw)
+        sn <- rppaset@design@sampleMap[rno]
+        lookup.sn <- match(sn, rppaset@design@alias$Sample)
+        alias.name <- as.character(rppaset@design@alias$Alias)[lookup.sn]
+        rownames(conc.raw) <- alias.name
+        rownames(conc.ss) <- alias.name
+    }
+
+    ## Median polish to normalize sample, slide effects
+    ##   where:
+    ##     row       - sample correction
+    ##     residuals - polished concentrations
+    ##
+    pol <- medpolish(conc.raw, trace.iter=FALSE)
+    conc.medpol <- cbind(pol$row, pol$residuals)
+    colnames(conc.medpol)[1] <- "Correction"
+
+    ## Create new class
+    new("RPPASetSummary",
+        raw=conc.raw,
+        ss=conc.ss,
+        medpol=conc.medpol)
+}
+
+
+##-----------------------------------------------------------------------------
+## See R FAQ (8.1 How should I write summary methods?)
+setMethod("summary", "RPPASet",
+          function(object,
+                   ...) {
+    RPPASetSummary(object)
+})
+
+
+##-----------------------------------------------------------------------------
+setMethod("write.summary", "RPPASetSummary",
+          function(object,
+                   path,
+                   prefix="supercurve",
+                   ...) {
+    ## Check arguments
     if (!is.character(path)) {
         stop(sprintf("argument %s must be character",
                      sQuote("path")))
     } else if (!(length(path) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("path")))
-    } else if (!(file.exists(path) & file.info(path)$isdir)) {
+    } else if (!dir.exists(path)) {
         stop(sprintf("directory %s does not exist",
                      dQuote(path)))
-    } else if (!(file.access(path, mode=2) == 0)) {
+    } else if (!dir.writable(path)) {
+        stop(sprintf("directory %s is not writable",
+                     dQuote(path)))
+    }
+
+    if (!is.character(prefix)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("prefix")))
+    } else if (!(length(prefix) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("prefix")))
+    }
+
+    ## Begin processing
+
+    ## Write file for raw concentrations
+    filename <- paste(paste(prefix, "conc_raw", sep="_"),
+                      "csv",
+                      sep=".")
+    write.csv(object@raw, file=file.path(path, .portableFilename(filename)))
+
+    ## Write file for R^2 statistics
+    filename <- paste(paste(prefix, "ss_ratio", sep="_"),
+                      "csv",
+                      sep=".")
+    write.csv(object@ss, file=file.path(path, .portableFilename(filename)))
+
+    ## Write file for polished concentration
+    filename <- paste(paste(prefix, "conc_med_polish", sep="_"),
+                      "csv",
+                      sep=".")
+    write.csv(object@medpol, file=file.path(path, .portableFilename(filename)))
+})
+
+
+##-----------------------------------------------------------------------------
+## Provide a convenience function to save fit results to file
+setMethod("write.summary", "RPPASet",
+          function(object,
+                   path,
+                   prefix="supercurve",
+                   graphs=TRUE,
+                   tiffdir=NULL) {
+    ## Check arguments
+    if (!is.character(path)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("path")))
+    } else if (!(length(path) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("path")))
+    } else if (!dir.exists(path)) {
+        stop(sprintf("directory %s does not exist",
+                     dQuote(path)))
+    } else if (!dir.writable(path)) {
         stop(sprintf("directory %s is not writable",
                      dQuote(path)))
     }
@@ -225,48 +331,20 @@ write.summary <- function(rppaset,
     }
 
     ## Begin processing
-    conc <- .fitSlot(rppaset, "concentrations")
-    conc.ss <- .fitSlot(rppaset, "ss.ratio")
-    if (sum(as.character(rppaset@design@alias$Alias) ==
-            as.character(rppaset@design@alias$Sample)) < nrow(conc)) {
-        ## We have non-trivial alias names.
-        ## Use sample aliases to write out data
-        rno <- rownames(conc)
-        sn <- rppaset@design@sampleMap[rno]
-        lookup.sn <- match(sn, rppaset@design@alias$Sample)
-        alias.name <- as.character(rppaset@design@alias$Alias)[lookup.sn]
-        rownames(conc) <- alias.name
-        rownames(conc.ss) <- alias.name
-    }
 
-    ## Write file for raw concentrations
-    filename <- paste(paste(prefix, "conc_raw", sep="_"),
-                      "csv",
-                      sep=".")
-    write.csv(conc, file=file.path(path, .portableFilename(filename)))
-
-    ## Write file for R^2 statistics
-    filename <- paste(paste(prefix, "ss_ratio", sep="_"),
-                      "csv",
-                      sep=".")
-    write.csv(conc.ss, file=file.path(path, .portableFilename(filename)))
-
-    ## Median polish to normalize sample, slide effects
-    pol <- medpolish(conc, trace.iter=FALSE)
-    conc <- pol$residuals
-    sample.correction <- pol$row
-    conc <- cbind(sample.correction, conc)
-
-    ## Write file for polished concentration
-    filename <- paste(paste(prefix, "conc_med_polish", sep="_"),
-                      "csv",
-                      sep=".")
-    write.csv(conc, file=file.path(path, .portableFilename(filename)))
-
+    ## Merge output, if requested
     if (graphs) {
+        pkgimgdir <- system.file("images", package="SuperCurve")
+
         if (is.null(tiffdir)) {
             ## Assume the tif images are in a sibling directory named "tif"
             tiffdir <- normalizePath(file.path(path, "..", "tif"))
+            if (!dir.exists(tiffdir)) {
+                ## As last resort, use package directory for missing image
+                message(sprintf("image directory unspecified and sibling directory %s does not exist",
+                                dQuote(tiffdir)))
+                tiffdir <- pkgimgdir
+            }
         }
 
         if (!is.character(tiffdir)) {
@@ -275,17 +353,17 @@ write.summary <- function(rppaset,
         } else if (!(length(tiffdir) == 1)) {
             stop(sprintf("argument %s must be of length 1",
                          sQuote("tiffdir")))
-        } else if (!(file.exists(tiffdir) & file.info(tiffdir)$isdir)) {
+        } else if (!dir.exists(tiffdir)) {
             stop(sprintf("directory %s does not exist",
                          dQuote(tiffdir)))
         }
 
         ## Save fit graphs
-        .createFitGraphs(rppaset, path, prefix)
+        .createFitGraphs(object, path, prefix)
 
         ## Merge output graphs with source tiff file for each antibody
         imgfiles <- {
-                        txtfiles <- sapply(rppaset@fits,
+                        txtfiles <- sapply(object@fits,
                                            function(fit) {
                                                fit@rppa@file
                                            })
@@ -294,13 +372,23 @@ write.summary <- function(rppaset,
                     }
 
         ## For each antibody...
-        antibodies <- names(rppaset@fits)
+        antibodies <- names(object@fits)
         for (antibody in antibodies) {
 
+            message(paste("merging graphs and image for", antibody))
+            flush.console()
+
+            ## If no corresponding image exists, substitute "missing" image
+            imgfile <- file.path(tiffdir, imgfiles[antibody])
+            if (!file.exists(imgfile)) {
+                imgfile <- file.path(pkgimgdir, "missing_slide.tif")
+            }
+
+            ## Create merged image
             rc <- .mergeGraphsAndImage(antibody,
                                        prefix,
                                        path,
-                                       file.path(tiffdir, imgfiles[antibody]))
+                                       imgfile)
             if (rc == 32512) {
                 warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH",
                                 sQuote("convert")))
@@ -310,19 +398,11 @@ write.summary <- function(rppaset,
             }
         }
     }
-}
 
-
-setMethod("summary", "RPPASet",
-          function(object,
-                   path,
-                   prefix="supercurve",
-                   graphs=TRUE,
-                   tiffdir=NULL,
-                   ...) {
-    ## :PLR: A call to summary on any other kind of object won't write to disk
-    ## This seems at odds with below...
-    write.summary(object, path, prefix, graphs, tiffdir)
+    ## Write CSV files
+    callGeneric(summary(object),
+                path,
+                prefix)
 })
 
 
@@ -361,10 +441,10 @@ setMethod("summary", "RPPASet",
                              paste(dQuote(missingColumns), collapse=", ")))
             }
         },
-        error=function(e) {
+        error=function(cond) {
             stop(sprintf("cannot load antibody data from file %s - %s",
                          dQuote(antibodyfile),
-                         e$message))
+                         conditionMessage(cond)))
         })
 
     ## Extract information from data.frame
@@ -398,7 +478,7 @@ RPPASet <- function(path,
     } else if (!(length(path) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("path")))
-    } else if (!(file.exists(path) & file.info(path)$isdir)) {
+    } else if (!dir.exists(path)) {
         stop(sprintf("directory %s does not exist",
                      dQuote(path)))
     }
