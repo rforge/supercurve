@@ -2,6 +2,37 @@
 ### READQUANTIFICATION.R
 ###
 
+##
+## Routines defined within are not really intended for direct consumption
+## by user. RPPA generator should be considered the public interface.
+##
+
+##-----------------------------------------------------------------------------
+.getReadMethod <- function(software) {
+    ## Check arguments
+    stopifnot(is.character(software) && length(software) == 1)
+
+    ## Begin processing
+    methodName <- paste("read", software, sep=".")
+    if (exists(methodName,
+               mode="function",
+               globalenv())) {
+        get(methodName,
+            mode="function",
+            globalenv())
+    } else if (exists(methodName,
+                      mode="function",
+                      asNamespace("SuperCurve"))) {
+        get(methodName,
+            mode="function",
+            asNamespace("SuperCurve"))
+    } else {
+        warning(sprintf("no user-provided method named %s found",
+                        sQuote(methodName)))
+        NULL
+    }
+}
+
 
 ##-----------------------------------------------------------------------------
 ## Reads quantification datafiles and returns data frame containing
@@ -9,13 +40,9 @@
 readQuantification <- function(file, software) {
     ## Check arguments
     if (!inherits(file, "connection")) {
-      #:KRC: why require a connection and not justa filename?
-      #:KRC: If it is a filename, why not make it a connection here?
         stop(sprintf("argument %s must be connection",
                      sQuote("file")))
     } else if (!isOpen(file, "r")) {
-      #:KRC: This is user-hostile. Why not open it here, since
-      # that's thepoint, and then close on exit?
         stop(sprintf("connection %s not open for read",
                      dQuote(summary(file)$description)))
     }
@@ -34,39 +61,18 @@ readQuantification <- function(file, software) {
     }
 
     ## Begin processing
-    methodName <- paste("read", software, sep=".")
-    readMethod <- if (exists(methodName,
-                             mode="function",
-                             globalenv())) {
-                      get(methodName,
-                          mode="function",
-                          globalenv())
-                  } else if (exists(methodName,
-                                    mode="function",
-                                    asNamespace("SuperCurve"))) {
-                      get(methodName,
-                          mode="function",
-                          asNamespace("SuperCurve"))
-                  } else {
-                      warning(sprintf("no user-provided method named %s found",
-                                      sQuote(methodName)))
-                      NULL
-                  }
 
     ## The datafile format for each row must contain the four values
     ## needed to specify the logical location of a spot on an array,
     ## the unique identifier of the sample at that location, and an
     ## unspecified numeric measurement. Additional columns may be present.
 
+    readMethod <- .getReadMethod(software)
     quant.df <- if (is.function(readMethod)) {
-      #:KRC: Since you just checked the [expletive] thing, how could it
-      # possibly NOT be a function????
                     readMethod(file)
                 }
 
     if (is.null(quant.df)) {
-      #:KRC: is dying the correct respone in the context of an RPPASet?
-      # What if only one of 100 files is bad?
         pathname <- summary(file)$description
         stop(sprintf("cannot import data from file %s",
                      dQuote(pathname)))
@@ -107,8 +113,8 @@ readQuantification <- function(file, software) {
     ## Specify datatype of location columns
     storage.mode(quant.df$Main.Row) <- "integer"
     storage.mode(quant.df$Main.Col) <- "integer"
-    storage.mode(quant.df$Sub.Row) <- "integer"
-    storage.mode(quant.df$Sub.Col) <- "integer"
+    storage.mode(quant.df$Sub.Row)  <- "integer"
+    storage.mode(quant.df$Sub.Col)  <- "integer"
 
     return(quant.df)
 }
@@ -118,7 +124,6 @@ readQuantification <- function(file, software) {
 ## Reads MicroVigene text datafile
 read.microvigene <- function(file) {
     ## Check arguments
-  #:KRC: Why not allow filenames?
     stopifnot(inherits(file, "connection"))
 
     isMicroVigene <- function(pathname) {
