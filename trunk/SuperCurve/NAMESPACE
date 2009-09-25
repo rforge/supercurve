@@ -16,7 +16,7 @@ importFrom("stats", resid, residuals)
 
 ## Public classes
 exportClasses(CobsFitClass)
-exportClasses(Directory)                      # not intended for public consumption
+exportClasses(Directory)                  # not intended for public consumption
 exportClasses(FitClass)
 exportClasses(LoessFitClass)
 exportClasses(LogisticFitClass)
@@ -26,6 +26,7 @@ exportClasses(RPPADesignParams)
 exportClasses(RPPAFit)
 exportClasses(RPPAFitParams)
 exportClasses(RPPASet)
+exportClasses(RPPASetSummary)
 exportClasses(SuperCurveSettings)
 
 ## S4 methods
@@ -40,6 +41,7 @@ exportMethods(paramString)
 exportMethods(plot)
 exportMethods(resid, residuals)
 exportMethods(summary)
+exportMethods(write.summary)
 
 ## Public functions
 export(Directory)
@@ -51,6 +53,7 @@ export(RPPAFit)
 export(RPPAFitParams)
 export(RPPAFitFromParams)
 export(RPPASet)
+export(RPPASetSummary)
 export(SuperCurveSettings)
 export(fitCurveAndSummarizeFromSettings)
 export(getConfidenceInterval)
@@ -65,7 +68,6 @@ export(is.RPPAFitParams)
 export(is.RPPASet)
 export(is.SuperCurveSettings)
 export(seriesNames)
-export(write.summary)
 
 ## Registration functions (generic)
 export(getRegisteredMethod)
