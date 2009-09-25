@@ -55,7 +55,7 @@ if (!isGeneric("residuals")) {
                function(object, ...) standardGeneric("residuals"))
 }
 
-## defined for: RPPA, RPPADesign, RPPAFit
+## defined for: RPPA, RPPADesign, RPPAFit, RPPASet, RPPASetSummary
 if (!isGeneric("summary")) {
     setGeneric("summary",
                function(object, ...) standardGeneric("summary"))
@@ -64,12 +64,6 @@ if (!isGeneric("summary")) {
 ##
 ## Brand new generics
 ##
-
-## defined for: RPPADesignParams, RPPAFitParams, SuperCurveSettings
-if (!isGeneric("paramString")) {
-    setGeneric("paramString",
-               function(object, ...) standardGeneric("paramString"))
-}
 
 ## defined for: FitClass, LoessFitClass, CobsFitClass, LogisticFitClass
 if (!isGeneric("fitSeries")) {
@@ -83,9 +77,21 @@ if (!isGeneric("fitSlide")) {
                function(object, ...) standardGeneric("fitSlide"))
 }
 
+## defined for: RPPADesignParams, RPPAFitParams, SuperCurveSettings
+if (!isGeneric("paramString")) {
+    setGeneric("paramString",
+               function(object, ...) standardGeneric("paramString"))
+}
+
 ## defined for: FitClass, LoessFitClass, CobsFitClass, LogisticFitClass
 if (!isGeneric("trimConc")) {
     setGeneric("trimConc",
                function(object, ...) standardGeneric("trimConc"))
+}
+
+## defined for: RPPASet, RPPASetSummary
+if (!isGeneric("write.summary")) {
+    setGeneric("write.summary",
+               function(object, ...) standardGeneric("write.summary"))
 }
 
