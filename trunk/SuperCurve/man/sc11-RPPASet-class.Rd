@@ -2,6 +2,7 @@
 \alias{RPPASet-class}
 \alias{RPPASet}
 \alias{summary,RPPASet-method}
+\alias{write.summary,RPPASet-method}
 \alias{is.RPPASet}
 \docType{class}
 \title{Class "RPPASet"}
@@ -16,7 +17,12 @@ RPPASet(path,
         antibodyfile=NULL,
         software="microvigene")
 is.RPPASet(x)
-\S4method{summary}{RPPASet}(object, path, prefix="supercurve", graphs=TRUE, tiffdir=TRUE, \dots)
+\S4method{summary}{RPPASet}(object, \dots)
+\S4method{write.summary}{RPPASet}(object,
+                                  path,
+                                  prefix="supercurve",
+                                  graphs=TRUE,
+                                  tiffdir=NULL)
 }
 \arguments{
   \item{path}{character string specifying the path from the current
@@ -66,10 +72,12 @@ is.RPPASet(x)
 }
 \section{Methods}{
   \describe{
-    \item{summary(object, path, prefix, graphs, tiffdir, \dots)}{Creates
-      a record of the entire RPPASet, including fitted values, residuals,
-      and images of the processed slides. See the documentation of
-      \code{\link{write.summary}} for details.}
+    \item{summary(object, \dots)}{Creates an object of class
+      \code{RPPASetSummary}.}
+    \item{write.summary(object, path, prefix, graphs, tiffdir, \dots)}{
+      Writes a record of the entire RPPASet, including fitted values,
+      residuals, and images of the processed slides. TODO
+      See the documentation of \code{write.summary} for details.}
   }
 }
 \value{
@@ -78,7 +86,7 @@ is.RPPASet(x)
   The \code{is.RPPASet} method returns \code{TRUE} if its
   argument is an object of class \code{RPPASet}.
 
-  The \code{summary} method returns a summary of the underlying data frame.
+  The \code{summary} method returns an object of class \code{RPPASetSummary}.
 }
 \references{KRC}
 \author{

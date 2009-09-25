@@ -15,7 +15,9 @@ SuperCurveSettings(txtdir,
                    imgdir,
                    outdir,
                    designparams,
-                   fitparams)
+                   fitparams,
+                   antibodyfile=NULL,
+                   software=NULL)
 
 fitCurveAndSummarizeFromSettings(settings)
 is.SuperCurveSettings(x)
@@ -31,6 +33,11 @@ is.SuperCurveSettings(x)
     from analysis should be stored. Must be writable.}
   \item{designparams}{object of class \code{RPPADesignParams}}
   \item{fitparams}{object of class \code{RPPAFitParams}}
+  \item{antibodyfile}{character string specifying filename cantaining mapping
+    from quantification files to antibodies, or NULL}
+  \item{software}{character string specifying the software used to generate
+    the quantification files (see section \sQuote{Details} of
+    \code{\link{RPPA}}), or NULL to use the default value.}
   \item{object}{object of class \code{SuperCurveSettings}}
   \item{settings}{object of class \code{SuperCurveSettings}}
   \item{x}{object of class \code{SuperCurveSettings}}
@@ -54,6 +61,10 @@ is.SuperCurveSettings(x)
       \acronym{RPPA} slides was designed}
     \item{\code{fitparams}:}{object of class \code{RPPAFitParams}
       specifying the parameters that control model fit}
+    \item{antibodyfile}{character string specifying filename cantaining mapping
+      from quantification files to antibodies, or NULL}
+    \item{software}{character string specifying the software used to generate
+      the quantification files, or NULL}
     \item{\code{version}:}{character string containing the version of this
       package used to construct the object}
   }
