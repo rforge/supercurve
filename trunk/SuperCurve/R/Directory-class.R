@@ -7,6 +7,7 @@
 ##=============================================================================
 setClass("Directory",
          representation(path="character"))
+setClassUnion("OptionalDirectory", c("Directory", "NULL"))
 
 
 ##-----------------------------------------------------------------------------
