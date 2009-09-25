@@ -6,6 +6,27 @@
 	**************************************************
 
 
+		CHANGES IN SUPERCURVE VERSION 1.3.4
+
+
+NEW FEATURES
+
+    o	If TIFF image does not exist, a "missing slide" image is
+	substituted automatically when creating merged output from
+	an RPPASet.
+    o	Converted the write.summary method into a generic method.
+
+
+BUG FIXES
+
+    o	Image directory was mistakenly made required when creating
+	settings files. Now it can also be NULL.
+    o	Modified slot type for 'imgdir' slot of SuperCurveSettings
+	object to allow NULL. Also added 'antibodyfile' and 'software'
+	slots as these settings would be required for reproducibility
+	of output using more esoteric settings.
+
+
 		CHANGES IN SUPERCURVE VERSION 1.3.3
 
 
