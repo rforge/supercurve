@@ -59,7 +59,7 @@ setMethod("fitSeries", "FitClass",
                    silent=TRUE,
                    trace=FALSE,
                    ...) {
-    stop(sprintf("%s must be implemented by any subclass of %s",
+    stop(sprintf("%s method must be implemented by any subclass of %s",
                  sQuote("fitSeries"),
                  sQuote("FitClass")))
 })
@@ -73,7 +73,7 @@ setMethod("fitSlide", "FitClass",
                    conc,
                    intensity,
                    ...) {
-    stop(sprintf("%s must be implemented by any subclass of %s",
+    stop(sprintf("%s method must be implemented by any subclass of %s",
                  sQuote("fitSlide"),
                  sQuote("FitClass")))
 })
@@ -88,7 +88,7 @@ setMethod("trimConc", "FitClass",
                    design,
                    trimLevel,
                    ...) {
-    stop(sprintf("%s must be implemented by any subclass of %s",
+    stop(sprintf("%s method must be implemented by any subclass of %s",
                  sQuote("trimConc"),
                  sQuote("FitClass")))
 })
@@ -289,7 +289,7 @@ setMethod("coef", "FitClass",
 }
 
 
-###################################################################
+##
 ## Loess model class
 ##
 
@@ -355,7 +355,7 @@ setMethod("trimConc", "LoessFitClass",
 })
 
 
-###################################################################
+##
 ## Cobs model class
 ##
 
@@ -499,7 +499,7 @@ setMethod("trimConc", "CobsFitClass",
 })
 
 
-###################################################################
+##
 ## Logistic model class
 ##
 
@@ -625,18 +625,18 @@ setMethod("trimConc", "LogisticFitClass",
     }
 
     lo.logit <- tryCatch(boot::logit(trim),
-                         error=function(e) {
+                         error=function(cond) {
                              warning(sprintf("logit: %s: p=%f, odds=%f",
-                                             e$message,
+                                             conditionMessage(cond),
                                              p <- trim,
                                              p / (1 - p)),
                                      immediate.=TRUE)
                              NaN
                          })
     hi.logit <- tryCatch(boot::logit(1-trim),
-                         error=function(e) {
+                         error=function(cond) {
                              warning(sprintf("logit: %s: p=%f, odds=%f",
-                                             e$message,
+                                             conditionMessage(cond),
                                              p <- 1-trim,
                                              p / (1 - p)),
                                      immediate.=TRUE)
