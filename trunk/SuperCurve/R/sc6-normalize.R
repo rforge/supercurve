@@ -6,7 +6,9 @@
 ##
 ## Module Variables
 ##
+## :TODO: Migrate this to .onLoad since it's singleton-like
 .NormEnv <- new.env(hash=TRUE)                   # Private environment
+attr(.NormEnv, "name") <- "SuperCurveNormalizationMethods"
 
 
 ##
@@ -23,7 +25,7 @@ normenv <- function() {
 ##-----------------------------------------------------------------------------
 ## Normalization method. Sample median is subtracted from each sample.
 normalize.median <- function(concs,
-                             rowMedian) {
+                             ...) {
     stopifnot(is.matrix(concs) || is.data.frame(concs))
     stopifnot(is.numeric(rowMedian))
 
@@ -35,27 +37,37 @@ normalize.median <- function(concs,
 ## Normalization method. Median of set of housekeeping antibodies is subtracted
 ## from each sample.
 normalize.house <- function(concs,
-                            antibody) {
+                            antibodies,
+                            ...) {
     stopifnot(is.matrix(concs) || is.data.frame(concs))
-    stopifnot(is.character(antibody) && length(antibody) >= 1)
 
-    if (!all(antibody %in% colnames(concs))) {
-        missingNames <- antibody[!antibody %in% colnames(concs)]
+## Alternate setup for nonformal argument
+#    dots <- list(...)
+#    antibodies <- if ("antibodies" %in% names(dots)) {
+#                      dots["antibodies"]
+#                  } else {
+#                      stop(sprintf("argument %s not provided",
+#                                   sQuote("antibodies")))
+#                  }
+    stopifnot(is.character(antibodies) && length(antibodies) >= 1)
+
+    if (!all(antibodies %in% colnames(concs))) {
+        missingNames <- antibodies[!antibodies %in% colnames(concs)]
         stop(sprintf(ngettext(length(missingNames),
                               "argument %s specifies invalid %s column name: %s",
                               "argument %s specifies invalid %s column names: %s"),
-                     sQuote("antibody"),
+                     sQuote("antibodies"),
                      sQuote("concs"),
                      paste(missingNames, collapse=", ")))
     }
 
-    houseMedian <- apply(as.matrix(concs[, antibody]),
+    houseMedian <- apply(as.matrix(concs[, antibodies]),
                          1,
                          median,
                          na.rm=TRUE)
     normconcs <- sweep(concs, 1, houseMedian, FUN="-")
     ## Store method-specific info in "normalization" attribute
-    attr(normconcs, "normalization") <- list(antibody=antibody,
+    attr(normconcs, "normalization") <- list(antibodies=antibodies,
                                              houseMedian=houseMedian)
 
     return(normconcs)
@@ -66,7 +78,7 @@ normalize.house <- function(concs,
 ## Normalization method (variable slope). Sample median is subtracted from
 ## each sample after applying multiplicative gamma.
 normalize.vs <- function(concs,
-                         rowMedian) {
+                         ...) {
     stopifnot(is.matrix(concs) || is.data.frame(concs))
     stopifnot(is.numeric(rowMedian))
 
@@ -207,33 +219,24 @@ normalize <- function(concs,
                      sQuote("concs")))
     }
 
-    if (!is.character(method)) {
-        stop(sprintf("argument %s must be character",
-                     sQuote("method")))
-    } else if (!(length(method) == 1)) {
-        stop(sprintf("argument %s must be of length 1",
-                     sQuote("method")))
-    } else if (!nzchar(method)) {
-        stop(sprintf("argument %s must not be empty string", 
-                     sQuote("method")))
-    }
-
     methodLabel <- method <- match.arg(method)
 
     ## Begin processsing
     rowMedian <- apply(concs, 1, median, na.rm=TRUE)
     colMedian <- apply(concs, 2, median, na.rm=TRUE)
 
-    method <- getRegisteredNormalizationMethod(method)
-    methodArgs <- alist(concs=sweep(concs, 2, colMedian, FUN="-"),
-                        rowMedian=rowMedian,
-                        ...)
-    if (!("rowMedian" %in% names(formals(method)))) {
-        ## Remove from argument list since not used
-        methodArgs$rowMedian <- NULL
-    }
+    ## Create environment for method to use
+    env <- new.env(hash=TRUE)
+    env$rowMedian <- rowMedian
+    env$colMedian <- colMedian
 
-    normconcs <- do.call(method, methodArgs)
+    ## Apply environment to method
+    method <- getRegisteredNormalizationMethod(method)
+    environment(method) <- env
+
+    ## Invoke method
+    normconcs <- method(concs=sweep(concs, 2, colMedian, FUN="-"),
+                        ...)
 
     ## Store processing info in "normalization" attribute
     attr(normconcs, "normalization") <- c(list(method=methodLabel,
@@ -248,6 +251,7 @@ normalize <- function(concs,
 ##
 ## Initialization
 ##
+## :TODO: Migrate following to .onLoad since registration should occur once
 registerNormalizationMethod("median", normalize.median)
 registerNormalizationMethod("house", normalize.house, "Housekeeping")
 registerNormalizationMethod("vs", normalize.vs, "Variable Slope")
