@@ -14,7 +14,7 @@
   beta-Actin (ACTB), Caspase 3 (CAS3), Focal adhesion kinase (FAK),
   and Ornithine decarboxylase (ODC1) from a study that was done
   to compare protein levels in 14 cell lines from both a \dQuote{fed}
-  and a dQuote{starved} state. There are two files included for
+  and a \dQuote{starved} state. There are two files included for
   beta-Actin, one that was scanned in color (actb) and the other
   in 16-bit grayscale (actb.gray); all other proteins were scanned
   in color.
