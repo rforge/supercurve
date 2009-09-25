@@ -32,27 +32,6 @@
 
 
 ##-----------------------------------------------------------------------------
-## Specifies measures used for determining location on lysate array.
-.locationColnames <- function() {
-    return(c("Main.Row",
-             "Main.Col",
-             "Sub.Row",
-             "Sub.Col"))
-}
-
-
-##-----------------------------------------------------------------------------
-## Specifies measures capable of being used for fits.
-## N.B.: use intersection of this with what is actually available in data.frame
-.fitColnames <- function() {
-    return(c("Mean.Net",
-             "Mean.Total",
-             "Median.Net",
-             "Median.Total"))
-}
-
-
-##-----------------------------------------------------------------------------
 ## Returns dimensions of slide layout as numeric vector.
 .dimOfLayout <- function(layout) {
     ## Check arguments
@@ -64,6 +43,17 @@
                       max(df[[column]])
                   },
                   df=layout))
+}
+
+
+##-----------------------------------------------------------------------------
+## Specifies measures capable of being used for fits.
+## N.B.: use intersection of this with what is actually available in data.frame
+.fitColnames <- function() {
+    return(c("Mean.Net",
+             "Mean.Total",
+             "Median.Net",
+             "Median.Total"))
 }
 
 
@@ -111,6 +101,16 @@
 
 
 ##-----------------------------------------------------------------------------
+## Specifies measures used for determining location on lysate array.
+.locationColnames <- function() {
+    return(c("Main.Row",
+             "Main.Col",
+             "Sub.Row",
+             "Sub.Col"))
+}
+
+
+##-----------------------------------------------------------------------------
 .mkPlotTitle <- function(maintext,
                          antibody) {
     ## Check arguments
@@ -119,6 +119,16 @@
 
     ## Begin processing
     main <- sprintf("%s:  %s", maintext, antibody)
+}
+
+
+##-----------------------------------------------------------------------------
+.pkgRversion <- function(pkgname) {
+    ## Check arguments
+    stopifnot(is.character(pkgname) && length(pkgname) == 1)
+
+    ## Begin processing
+    substring(packageDescription(pkgname)[["Built"]], 3, 5)
 }
 
 
@@ -148,12 +158,62 @@
 
 
 ##-----------------------------------------------------------------------------
-.pkgRversion <- function(pkgname) {
+## Capitalizes string by replacing first character with upper case, and the
+## rest with lowercase. Arguments first and last indicate range of string on
+## which to operate.
+.totitle <- function(s, first=1, last=nchar(s)) {
     ## Check arguments
-    stopifnot(is.character(pkgname) && length(pkgname) == 1)
+    if (!is.character(s)) {
+        s <- as.character(s)
+    }
+    stopifnot(is.numeric(first) && length(first) == 1)
+    stopifnot(is.numeric(last) && length(last) == 1)
 
     ## Begin processing
-    substring(packageDescription(pkgname)[["Built"]], 3, 5)
+    begin <- if (first > 1) {
+                 substring(s, 1, first-1)
+             } else {
+                 ""
+             }
+    subst <- substring(s, first, last)
+    end <- if (last < nchar(s)) {
+               substring(s, last+1, nchar(s))
+           } else {
+               ""
+           }
+
+    paste(begin,
+          toupper(substring(subst, 1, 1)),
+          tolower(substring(subst, 2)),
+          end,
+          sep="")
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns TRUE if path represents a directory; otherwise, FALSE.
+dir.exists <- function(path) {
+    ## Check arguments
+    stopifnot(is.character(path) && length(path) == 1)
+
+    ##-------------------------------------------------------------------------
+    dirTest <- function(x) {
+        !is.na(isdir <- file.info(x)$isdir) & isdir
+    }
+
+    ## Begin processing
+    file.exists(path) && dirTest(path)
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns TRUE if directory is writable; otherwise, FALSE.
+dir.writable <- function(path) {
+    ## Check arguments
+    stopifnot(is.character(path) && length(path) == 1)
+
+    ## Begin processing
+    file.access(path, mode=2) == 0
 }
 
 
