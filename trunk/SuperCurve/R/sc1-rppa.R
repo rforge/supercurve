@@ -35,7 +35,6 @@ RPPA <- function(file,
                          sQuote("file")))
         }
 
-        #:KRC: which operating systems does .isAbsolutePathname work under?
         pathname <- if (.isAbsolutePathname(file)) {
                         file
                     } else {
@@ -56,7 +55,6 @@ RPPA <- function(file,
                          dQuote(pathname)))
         }
 
-        #:KRC: WHY????
         ## Convert to connection object
         file <- file(pathname, "r")
         on.exit(close(file))
@@ -82,8 +80,6 @@ RPPA <- function(file,
     }
 
     ## Read quantification file
-    # This can fail. Should you try-catch errors? What if you are working
-    # in the context of an RPPASet?
     quant.df <- readQuantification(file, software)
 
     ## Create new class
