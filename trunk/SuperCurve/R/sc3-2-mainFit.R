@@ -206,7 +206,11 @@ setMethod("paramString", "RPPAFitParams",
 ##-----------------------------------------------------------------------------
 ## Compute a multiple of the logit transform.
 ## in practice, epsilon never changes.
-.calcLogitz <- function(data, alpha, beta, gamma, epsilon=0.001) {
+.calcLogitz <- function(data,
+                        alpha,
+                        beta,
+                        gamma,
+                        epsilon=0.001) {
     z <- (data - alpha) / beta
     ## Truncate points at min and max for dilution curve
     z[z < epsilon] <- epsilon
@@ -218,7 +222,10 @@ setMethod("paramString", "RPPAFitParams",
 ##-----------------------------------------------------------------------------
 ## Computes crude estimates of the parameters (i.e., alpha, beta, gamma, and
 ## the EC50s) so routine can be initialized.
-.firstPass <- function(yval, design, ignoreNegative, epsilon=1e-4) {
+.firstPass <- function(yval,
+                       design,
+                       ignoreNegative,
+                       epsilon=1e-4) {
 
     ## 'yval' is a vector of intensity values selected from the MicroVigene
     ## file; its length of 'yval' should match the number of rows in
@@ -371,7 +378,9 @@ registerModel <- function(key,
 
 
 ##-----------------------------------------------------------------------------
-RPPAFitFromParams <- function(rppa, design, fitparams) {
+RPPAFitFromParams <- function(rppa,
+                              design,
+                              fitparams) {
     ## Check arguments
     if (!is.RPPA(rppa)) {
         stop(sprintf("argument %s must be object of class %s",

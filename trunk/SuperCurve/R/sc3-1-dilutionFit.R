@@ -174,7 +174,8 @@ setMethod("residuals", "RPPAFit",
 
 
 setMethod("resid", "RPPAFit",
-          function(object, ...) {
+          function(object,
+                   ...) {
     residuals(object, ...)
 })
 
@@ -398,7 +399,9 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
 
 
 ##-----------------------------------------------------------------------------
-getConfidenceInterval <- function(result, alpha=0.10, nSim=50) {
+getConfidenceInterval <- function(result,
+                                  alpha=0.10,
+                                  nSim=50) {
     ## Check arguments
     if (!is.RPPAFit(result)) {
         stop(sprintf("argument %s must be object of class %s",

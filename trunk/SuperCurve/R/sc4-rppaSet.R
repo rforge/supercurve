@@ -555,8 +555,6 @@ RPPASet <- function(path,
     remove(abnames)
 
     ## Load slides to process
-    ## :TBD: Why was this construct used and not 'vector("list", numslides)'
-    ## Is the dimension attribute used?
     rppas <- array(list(), length(slideFilenames))
     for (i in seq_along(slideFilenames)) {
         slideFilename <- slideFilenames[i]

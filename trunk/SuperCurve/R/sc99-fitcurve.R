@@ -16,7 +16,6 @@ fitCurveAndSummarizeFromSettings <- function(settings) {
 ###
     stopifnot(validObject(settings))
 
-
     ## Begin processing
     txtdir <- as(settings@txtdir, "character")
     imgdir <- as(settings@imgdir, "character")
@@ -31,7 +30,6 @@ fitCurveAndSummarizeFromSettings <- function(settings) {
 
     ## Perform analysis
     fitset <- do.call(RPPASet, rppasetArgs)
-
     write.summary(fitset,
                   path=outdir,
                   graphs=TRUE,
