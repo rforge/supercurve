@@ -75,14 +75,11 @@ validSuperCurveSettings <- function(object) {
 
     ## Validate software slot
     {
+        ## Ensure read method exists
         software <- object@software
-        if (!is.null(software)) {
-
-            ## Ensure read method exists
-            readMethod <- suppressWarnings(.getReadMethod(software))
-            if (is.null(readMethod)) {
-                msg <- c(msg, "no user-provided method for software found")
-            }
+        readMethod <- suppressWarnings(.getReadMethod(software))
+        if (is.null(readMethod)) {
+            msg <- c(msg, "no user-provided method for software found")
         }
     }
 
@@ -164,6 +161,8 @@ SuperCurveSettings <- function(txtdir,
             stop(sprintf("argument %s must not be empty string",
                          sQuote("software")))
         }
+    } else {
+        software <- formals(RPPASet)$software
     }
 
     ## Create new class
