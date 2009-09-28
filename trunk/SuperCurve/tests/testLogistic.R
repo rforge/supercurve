@@ -32,7 +32,7 @@ for (i in seq_len(nrow(proteins))) {
                  antibody=proteins$Antibody[i])
     assign(proteins$Antibody[i], temp, 1)
 }
-rm(i, temp)
+remove(i, temp)
 
 ######################################
 ## work out the appropriate design layout
@@ -44,7 +44,7 @@ series <- factor(paste(as.character(AKT@data$Sample),
                        sep="."))
 ## the name 'design' is required'
 design <- RPPADesign(AKT, steps=steps, series=series)
-rm(steps, rep.temp, series)
+remove(steps, rep.temp, series)
 
 ######################################
 ## must define the 'model' to use

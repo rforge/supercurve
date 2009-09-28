@@ -51,7 +51,7 @@ Loading required package: splines
 +     temp <- RPPA(proteins$File[i], path=home)
 +     assign(proteins$Antibody[i], temp, 1)
 + }
-> rm(i, temp)
+> remove(i, temp)
 > 
 > ######################################
 > # work out the appropriate design layout
@@ -63,7 +63,7 @@ Loading required package: splines
 +                              sep="."))
 > # the name 'design' is required'
 > design <- RPPADesign(AKT, steps=steps, series=series)
-> rm(steps, rep.temp, series)
+> remove(steps, rep.temp, series)
 > 
 > ######################################
 > # must define the 'model' to use
@@ -151,7 +151,7 @@ Warning in RPPAFitFromParams(rppa, design, params) :
   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
 [1] "CTNNB1 Mean.Net 4737490 928624"
 
-> rm(i, itemName, item, meansq, tmeansq)
+> remove(i, itemName, item, meansq, tmeansq)
 > 
 > method <- "nlrob"
 > source("testRblock", echo=TRUE, max.deparse.len=1024)
@@ -288,7 +288,7 @@ Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y
   failed to converge in 20 steps
 [1] "CTNNB1 Mean.Net 3931938 1054908"
 
-> rm(i, itemName, item, meansq, tmeansq)
+> remove(i, itemName, item, meansq, tmeansq)
 > 
 > method <- "nls"
 > source("testRblock", echo=TRUE, max.deparse.len=1024)
@@ -364,7 +364,7 @@ Warning in RPPAFitFromParams(rppa, design, params) :
   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
 [1] "CTNNB1 Mean.Net 3513461 1285953"
 
-> rm(i, itemName, item, meansq, tmeansq)
+> remove(i, itemName, item, meansq, tmeansq)
 > 
 > ######################################
 > ## print the concentrations from the last fit. These will

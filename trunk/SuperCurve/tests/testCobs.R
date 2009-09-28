@@ -31,7 +31,7 @@ for (i in seq_len(nrow(proteins))) {
                  antibody=proteins$Antibody[i])
     assign(proteins$Antibody[i], temp, 1)
 }
-rm(i, temp)
+remove(i, temp)
 
 ######################################
 ## work out the appropriate design layout

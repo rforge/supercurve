@@ -51,7 +51,7 @@ Loading required package: splines
 +     temp <- RPPA(proteins$File[i], path=home)
 +     assign(proteins$Antibody[i], temp, 1)
 + }
-> rm(i, temp)
+> remove(i, temp)
 > 
 > ######################################
 > # work out the appropriate design layout
@@ -138,7 +138,7 @@ model = cobs; method = nlrq; measure = Mean.Net
 [1] "GSK3 Mean.Net 390394 159987"
 [1] "JNK Mean.Net 327466 100243"
 
-> rm(i, itemName, item, meansq, tmeansq)
+> remove(i, itemName, item, meansq, tmeansq)
 > 
 > method <- 'nlrob'
 > source("testRblock", echo=TRUE, max.deparse.len=1024)
@@ -265,7 +265,7 @@ Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y
   failed to converge in 20 steps
 [1] "JNK Mean.Net 293567 104538"
 
-> rm(i, itemName, item, meansq, tmeansq)
+> remove(i, itemName, item, meansq, tmeansq)
 > 
 > method <- "nls"
 > source("testRblock", echo=TRUE, max.deparse.len=1024)
@@ -335,7 +335,7 @@ model = cobs; method = nls; measure = Mean.Net
 [1] "GSK3 Mean.Net 302740 165287"
 [1] "JNK Mean.Net 283742 114890"
 
-> rm(i, itemName, item, meansq, tmeansq)
+> remove(i, itemName, item, meansq, tmeansq)
 > 
 > ######################################
 > ## print the concentrations from the last fit. These will

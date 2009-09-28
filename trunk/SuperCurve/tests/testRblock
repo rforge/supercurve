@@ -55,5 +55,5 @@ for (i in seq_len(nrow(proteins))) {
     print(paste(itemName, measure, round(meansq), round(tmeansq)))
 }
 
-rm(i, itemName, item, meansq, tmeansq)
+remove(i, itemName, item, meansq, tmeansq)
 
