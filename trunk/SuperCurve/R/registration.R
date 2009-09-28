@@ -97,7 +97,7 @@ getRegisteredObjectKeys <- function(envir) {
     .validate.envir(envir)
 
     ## Begin processsing
-    return(keys <- ls(envir=envir))
+    return(keys <- objects(envir=envir))
 }
 
 getRegisteredMethodKeys <- getRegisteredObjectKeys

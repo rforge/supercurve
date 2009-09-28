@@ -552,7 +552,7 @@ RPPASet <- function(path,
     if (!identical(antibodies, abnames)) {
         warning("adjusting antibody names to be unique")
     }
-    rm(abnames)
+    remove(abnames)
 
     ## Load slides to process
     ## :TBD: Why was this construct used and not 'vector("list", numslides)'
@@ -582,7 +582,7 @@ RPPASet <- function(path,
                  design,
                  fitparams@measure)
 
-            rm(firstslide)
+            remove(firstslide)
         }
     }
     rownames(rppas) <- antibodies

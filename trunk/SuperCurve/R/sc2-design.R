@@ -434,7 +434,7 @@ RPPADesignFromParams <- function(raw,
                 ctrlnames <- as.character(with(raw.df,
                                                Sample[SpotType != "Sample"]))
                 controls <- as.list(unique(ctrlnames))
-                rm(ctrlnames)
+                remove(ctrlnames)
             },
             error=function(cond) {
                 stop(sprintf("cannot load slide design data from file %s - %s",

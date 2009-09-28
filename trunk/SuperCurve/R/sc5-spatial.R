@@ -200,7 +200,7 @@ spatialCorrection <- function(rppa,
                   gamma=gamma)
         surface <- paste("surface", dilution, sep="")
         assign(surface, predict.gam(b1, newdata=pd))
-        rm(b1)
+        remove(b1)
     }
 
     ## Plot the different surfaces
