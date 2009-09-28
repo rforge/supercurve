@@ -5,8 +5,8 @@
 \docType{methods}
 \title{Method "write.summary"}
 \description{
-  This method could be thought of as a \code{summary} method with side-effect
-  of writing to disk.
+  This method could be thought of as a \code{summary} method that writes
+  to disk, saving the summary information in an external format.
 }
 \usage{
 write.summary(object,

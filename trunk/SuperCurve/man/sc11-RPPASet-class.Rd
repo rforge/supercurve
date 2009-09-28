@@ -48,8 +48,8 @@ is.RPPASet(x)
 \details{
   Quantify all the slides in a directory using \code{RPPASet} generator.
   This returns an object containing slide data and fits for each slide.
-  Typically this is followed by a call to \code{summary} or \code{write.summary}
-  to write the resulting quantifications and diagnostic plots to a directory.
+  Typically this is followed by a call to \code{write.summary} to write
+  the resulting quantifications and diagnostic plots to a directory.
 }
 \section{Objects from the Class}{
   Although objects of the class can (in theory) be created by a direct call
@@ -74,7 +74,7 @@ is.RPPASet(x)
   \describe{
     \item{summary(object, \dots)}{Creates an object of class
       \code{RPPASetSummary}.}
-    \item{write.summary(object, path, prefix, graphs, tiffdir, \dots)}{
+    \item{write.summary(object, path, prefix, graphs, tiffdir)}{
       Writes a record of the entire RPPASet, including fitted values,
       residuals, and images of the processed slides. TODO
       See the documentation of \code{write.summary} for details.}
