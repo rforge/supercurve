@@ -18,6 +18,8 @@
   For a high-level summary of the changes for each revision, use
     \code{file.show(system.file("NEWS", package="SlideDesignerGUI"))}.
 }
-\author{P. Roebuck, \email{plroebuck@mdanderson.org}}
+\author{
+  P. Roebuck, \email{plroebuck@mdanderson.org}
+}
 \keyword{package}
 

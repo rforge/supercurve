@@ -14,9 +14,12 @@ sdui()
   for recording the layout of positive and negative controls of a slide
   design. The GUI uses Tk widgets (via the R TclTk interface by Peter Dalgaard)
   in order to provide a simple interface.
+
   The function \code{sdui} is an alias for the aforementioned function.
 }
-\author{P. Roebuck \email{plroebuck@mdanderson.org}}
+\author{
+  P. Roebuck \email{plroebuck@mdanderson.org}
+}
 \examples{
   \dontrun{
 slideDesignerGUI()
