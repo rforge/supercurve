@@ -53,7 +53,9 @@ registerMethod(key, method, ..., envir)
   \code{method} (and optionally other named arguments) by association to
   \code{key}.
 }
-\author{P. Roebuck \email{plroebuck@mdanderson.org}}
+\author{
+  P. Roebuck \email{plroebuck@mdanderson.org}
+}
 \seealso{
   The \code{envir} argument of \code{\link[base]{eval}},
   \code{\link[base]{get}}, and \code{\link[base]{exists}}.

@@ -33,7 +33,9 @@ registerNormalizationMethod(key, method, ui.label=names(key))
   \code{registerNormalizationMethod} is invoked for its side effect, which is
   registering \code{method} and \code{ui.label} by association to \code{key}.
 }
-\author{P. Roebuck \email{plroebuck@mdanderson.org}}
+\author{
+  P. Roebuck \email{plroebuck@mdanderson.org}
+}
 \seealso{
   \code{\link{getRegisteredObject}},
   \code{\link{getRegisteredObjectKeys}},

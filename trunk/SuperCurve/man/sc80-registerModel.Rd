@@ -33,7 +33,9 @@ registerModel(key, classname, ui.label=names(key))
   \code{registerModel} is invoked for its side effect, which is registering
   \code{classname} and \code{ui.label} by association to \code{key}.
 }
-\author{P. Roebuck \email{plroebuck@mdanderson.org}}
+\author{
+  P. Roebuck \email{plroebuck@mdanderson.org}
+}
 \seealso{
   \code{\link{getRegisteredObject}},
   \code{\link{getRegisteredObjectKeys}},
