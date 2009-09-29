@@ -1,0 +1,90 @@
+###
+### NAMESPACE
+###
+
+
+## Imported methods
+import(methods)
+importFrom("MASS", rlm)
+importFrom("graphics", hist)
+importFrom("graphics", image)
+importFrom("graphics", plot)
+importFrom("stats", coef, coefficients)
+importFrom("stats", fitted)
+importFrom("stats", loess)
+importFrom("stats", resid, residuals)
+
+## Public classes
+exportClasses(CobsFitClass)
+exportClasses(Directory)                  # not intended for public consumption
+exportClasses(FitClass)
+exportClasses(LoessFitClass)
+exportClasses(LogisticFitClass)
+exportClasses(RPPA)
+exportClasses(RPPADesign)
+exportClasses(RPPADesignParams)
+exportClasses(RPPAFit)
+exportClasses(RPPAFitParams)
+exportClasses(RPPASet)
+exportClasses(RPPASetSummary)
+exportClasses(SuperCurveSettings)
+
+## S4 methods
+exportMethods(coef, coefficients)
+exportMethods(coerce)
+exportMethods(dim)
+exportMethods(fitted)
+exportMethods(hist)
+exportMethods(image)
+exportMethods(names)
+exportMethods(paramString)
+exportMethods(plot)
+exportMethods(resid, residuals)
+exportMethods(summary)
+exportMethods(write.summary)
+
+## Public functions
+export(Directory)
+export(RPPA)
+export(RPPADesign)
+export(RPPADesignParams)
+export(RPPADesignFromParams)
+export(RPPAFit)
+export(RPPAFitParams)
+export(RPPAFitFromParams)
+export(RPPASet)
+export(RPPASetSummary)
+export(SuperCurveSettings)
+export(fitCurveAndSummarizeFromSettings)
+export(getConfidenceInterval)
+export(getSteps)
+export(is.Directory)
+export(is.FitClass)
+export(is.RPPA)
+export(is.RPPADesign)
+export(is.RPPADesignParams)
+export(is.RPPAFit)
+export(is.RPPAFitParams)
+export(is.RPPASet)
+export(is.SuperCurveSettings)
+export(seriesNames)
+
+## Registration functions (generic)
+export(getRegisteredMethod)
+export(getRegisteredMethodKeys)
+export(getRegisteredObject)
+export(getRegisteredObjectKeys)
+export(registerClassname)
+export(registerMethod)
+
+## Registration functions (specific)
+export(getRegisteredModel)
+export(getRegisteredModelKeys)
+export(getRegisteredModelLabel)
+export(registerModel)
+
+export(getRegisteredNormalizationMethod)
+export(getRegisteredNormalizationMethodKeys)
+export(getRegisteredNormalizationMethodLabel)
+export(registerNormalizationMethod)
+

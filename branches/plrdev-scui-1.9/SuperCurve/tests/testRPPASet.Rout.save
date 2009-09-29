@@ -1,0 +1,361 @@
+
+R version 2.7.2 (2008-08-25)
+Copyright (C) 2008 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ###
+> ### TESTRPPASET.R
+> ###
+> 
+> 
+> options(warn=1)
+> library(SuperCurve)
+Loading required package: MASS
+Loading required package: cobs
+Loading required package: SparseM
+Package SparseM (0.78) loaded.  To cite, see citation("SparseM")
+Loading required package: quantreg
+Loading required package: splines
+> source("checkFuncs")
+> 
+> ## create project directory in per-session temporary directory
+> ## Cannot successfully test without this...
+> persessionprojdir <- file.path(tempdir(), "supercurve")
+> if (!dir.create(persessionprojdir)) {
++     stop("cannot create per-session project directory")
++ }
+> 
+> 
+> path <- system.file("rppaTumorData", package="SuperCurve")
+> designparams <- RPPADesignParams(grouping="blockSample",
++                                  center=TRUE,
++                                  controls=list("neg con", "pos con"))
+> fitparams <- RPPAFitParams(measure="Mean.Net",
++                            model="logistic",
++                            method="nlrob",
++                            ignoreNegative=FALSE,
++                            warnLevel=-1)
+> 
+> fitset <- RPPASet(path, designparams, fitparams)
+reading ERK2.txt
+reading GSK3.txt
+reading JNK.txt
+fitting ERK2.txt - Please wait.
+Loading required package: robustbase
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+fitting GSK3.txt - Please wait.
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+fitting JNK.txt - Please wait.
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+> 
+> ###########################
+> ## tests of path
+> 
+> checkException(RPPASet(path=5),
++                msg="invalid value should fail")
+Error in RPPASet(path = 5) : argument 'path' must be character
+[1] TRUE
+> 
+> checkException(RPPASet(path=c("results1", "results2")),
++                msg="character vector should fail")
+Error in RPPASet(path = c("results1", "results2")) : 
+  argument 'path' must be of length 1
+[1] TRUE
+> 
+> nosuchdir <- file.path(persessionprojdir, "nosuch")
+> checkException(RPPASet(path=nosuchdir),
++                msg="nonexistent directory should fail")
+Error in RPPASet(path = nosuchdir) : 
+  directory "/tmp/RtmpSO0hXF/supercurve/nosuch" does not exist
+[1] TRUE
+> 
+> filenotdir <- file.path(persessionprojdir, "somefile")
+> file.create(filenotdir)
+[1] TRUE
+> checkException(RPPASet(path=filenotdir),
++                msg="not a directory should fail")
+Error in RPPASet(path = filenotdir) : 
+  directory "/tmp/RtmpSO0hXF/supercurve/somefile" does not exist
+[1] TRUE
+> 
+> emptydir <- file.path(persessionprojdir, "emptydir")
+> dir.create(emptydir)
+> checkException(RPPASet(path=emptydir,
++                        designparams,
++                        fitparams),
++                msg="directory without quantification files should fail")
+Error in RPPASet(path = emptydir, designparams, fitparams) : 
+  no quantification files found in directory "/tmp/RtmpSO0hXF/supercurve/emptydir"
+[1] TRUE
+> 
+> ###########################
+> ## tests of designparams and fitparams
+> 
+> checkException(RPPASet(path,
++                        designparams=fitparams),
++                msg="invalid object should fail")
+Error in RPPASet(path, designparams = fitparams) : 
+  argument 'designparams' must be object of class RPPADesignParams
+[1] TRUE
+> checkException(RPPASet(path,
++                        designparams,
++                        fitparams=RPPAFitParams(measure="bogus")),
++                msg="fitparams with invalid measure should fail")
+reading ERK2.txt
+reading GSK3.txt
+reading JNK.txt
+fitting ERK2.txt - Please wait.
+Error in RPPAFitFromParams(rppas[[i]], design = design, fitparams = fitparams) : 
+  supply the name of a valid measurement column to fit
+[1] TRUE
+> 
+> 
+> ###########################
+> ## tests of summary rppaset
+> 
+> outdir <- file.path(persessionprojdir, "results")
+> dir.create(outdir)
+> checkException(write.summary(designparams,
++                              path=outdir),
++                msg="invalid object should fail")
+Error in write.summary(designparams, path = outdir) : 
+  argument 'rppaset' must be object of class RPPASet
+[1] TRUE
+> 
+> ###########################
+> ## tests of summary path
+> 
+> checkException(write.summary(fitset,
++                              path=nosuchdir),
++                msg="nonexistent output directory should fail")
+Error in write.summary(fitset, path = nosuchdir) : 
+  directory "/tmp/RtmpSO0hXF/supercurve/nosuch" does not exist
+[1] TRUE
+> 
+> readonlydir <- file.path(persessionprojdir, "readonly")
+> dir.create(readonlydir, mode="0555")
+> checkException(write.summary(fitset,
++                              path=readonlydir),
++                msg="readonly output directory should fail")
+Error in write.summary(fitset, path = readonlydir) : 
+  directory "/tmp/RtmpSO0hXF/supercurve/readonly" is not writable
+[1] TRUE
+> 
+> ###########################
+> ## tests of summary prefix
+> 
+> checkException(write.summary(fitset,
++                              path=outdir,
++                              prefix=5),
++                msg="invalid value should fail")
+Error in write.summary(fitset, path = outdir, prefix = 5) : 
+  argument 'prefix' must be character
+[1] TRUE
+> 
+> checkException(write.summary(fitset,
++                              path=outdir,
++                              prefix=c("a", "b")),
++                msg="character vector should fail")
+Error in write.summary(fitset, path = outdir, prefix = c("a", "b")) : 
+  argument 'prefix' must be of length 1
+[1] TRUE
+> 
+> ###########################
+> ## tests of summary graphs
+> 
+> checkException(write.summary(fitset,
++                              path=outdir,
++                              graphs="yellow"),
++                msg="invalid value should fail")
+Error in write.summary(fitset, path = outdir, graphs = "yellow") : 
+  argument 'graphs' must be logical
+[1] TRUE
+> 
+> checkException(write.summary(fitset,
++                              path=outdir,
++                              graphs=c(FALSE, TRUE)),
++                msg="logical vector should fail")
+Error in write.summary(fitset, path = outdir, graphs = c(FALSE, TRUE)) : 
+  argument 'graphs' must be of length 1
+[1] TRUE
+> 
+> 
+> ###########################
+> ## tests of summary tiffdir
+> 
+> # :NOTE: if unspecified, "tiffdir" is assumed to be sibling of "path"
+> checkException(write.summary(fitset,
++                              path=outdir,
++                              graphs=1),
++                msg="not a directory should fail")
+Error in write.summary(fitset, path = outdir, graphs = 1) : 
+  directory "/tmp/RtmpSO0hXF/supercurve/results/../tif" does not exist
+[1] TRUE
+> 
+> checkException(write.summary(fitset,
++                              path=outdir,
++                              graphs=1,
++                              tiffdir=pi),
++                msg="invalid value should fail")
+Error in write.summary(fitset, path = outdir, graphs = 1, tiffdir = pi) : 
+  argument 'tiffdir' must be character
+[1] TRUE
+> 
+> # :NOTE: numeric "graphs" value silently converted to logical
+> checkException(write.summary(fitset,
++                              path=outdir,
++                              graphs=1,
++                              tiffdir=c("results1", "results2")),
++                msg="character vector should fail")
+Error in write.summary(fitset, path = outdir, graphs = 1, tiffdir = c("results1",  : 
+  argument 'tiffdir' must be of length 1
+[1] TRUE
+> 
+> checkException(write.summary(fitset,
++                              path=outdir,
++                              graphs=TRUE,
++                              tiffdir=nosuchdir),
++                msg="nonexistent directory should fail")
+Error in write.summary(fitset, path = outdir, graphs = TRUE, tiffdir = nosuchdir) : 
+  directory "/tmp/RtmpSO0hXF/supercurve/nosuch" does not exist
+[1] TRUE
+> 
+> checkException(write.summary(fitset,
++                              path=outdir,
++                              graphs=TRUE,
++                              tiffdir=filenotdir),
++                msg="not a directory should fail")
+Error in write.summary(fitset, path = outdir, graphs = TRUE, tiffdir = filenotdir) : 
+  directory "/tmp/RtmpSO0hXF/supercurve/somefile" does not exist
+[1] TRUE
+> 
+> ## :NOTE: If "tiffdir" contains no image files, error messages from the
+> ## ImageMagick binary appear onscreen, but they are not considered errors
+> ## as far as the R code goes - the return code isn't currently examined
+> ## for external failures. As many TIFF images contain "unrecognized tags",
+> ## this is handy for letting the code continue processing. But when files
+> ## are missing, should this be considered an error?
+> 
+> 
+> ###########################
+> ## tests of summary (missing ImageMagick binary)
+> 
+> switch(.Platform$OS.type,
++        unix={
++            # Willing to try test if 'convert' executable is not in /usr/bin
++            binary <- system("which convert", intern=TRUE)
++            if (!length(grep("/usr/bin", binary, fixed=TRUE))) {
++ 
++                ##--------------------------------------------------------------
++                simulateMissingConvertBinary <- function() {
++                    savePATH <- Sys.getenv("PATH")
++                    on.exit(Sys.setenv("PATH"=savePATH))
++                    Sys.setenv("PATH"="/usr/bin")
++ 
++                    tryCatch(write.summary(fitset,
++                                           path=outdir,
++                                           graphs=TRUE,
++                                           tiffdir=emptydir),
++                             warning=function(w) {
++                                 errmsg <- paste("(converted from warning)",
++                                                 w$message)
++                                 signalCondition(simpleError(errmsg))
++                             })
++                }
++ 
++                checkException(simulateMissingConvertBinary(),
++                               msg="missing ImageMagick binary should fail")
++            } else {
++                cat("skipped ImageMagick test",
++                    "-",
++                    "'convert' binary in /usr/bin",
++                    "\n")
++            }
++        },
++        windows={
++            cat("skipped ImageMagick test (not implemented)", "\n")
++        })
+merging tiff for ERK2
+sh: line 1: convert: command not found
+Error : (converted from warning) ImageMagick executable 'convert' not installed or unavailable via PATH
+[1] TRUE
+> 
+> 
+> ## test one that should work...
+> write.summary(fitset,
++               path=outdir,
++               prefix="testing",
++               graphs=FALSE)
+> 
+> 
+> 
+> ## If you need to save the results for some reason...
+> if (FALSE) {
++     savedir <- file.path(path.expand("~"), "supercurve", "results")
++     if (!file.exists(savedir)) {
++         if (!dir.create(savedir, recursive=TRUE)) {
++             stop(sprintf("directory %s could not be created",
++                          dQuote(savedir)))
++         }
++     }
++     file.copy(list.files(path=outdir, full.names=TRUE),
++               savedir,
++               overwrite=TRUE)
++ }
+> 
+> 
