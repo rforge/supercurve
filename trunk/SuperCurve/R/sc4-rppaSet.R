@@ -294,7 +294,8 @@ setMethod("write.summary", "RPPASet",
                    path,
                    prefix="supercurve",
                    graphs=TRUE,
-                   tiffdir=NULL) {
+                   tiffdir=NULL,
+                   ...) {
     ## Check arguments
     if (!is.character(path)) {
         stop(sprintf("argument %s must be character",
