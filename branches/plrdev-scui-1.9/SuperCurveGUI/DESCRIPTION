@@ -1,12 +1,13 @@
 Package: SuperCurveGUI
-Version: 1.1.5
-Date: 2008/12/05
+Version: 1.9.0
+Date: 2009/09/25
 Title: SuperCurve GUI Package
-Author: P. Roebuck, based on earlier work by Corwin Joy
+Author: P. Roebuck
 Maintainer: P. Roebuck <plroebuck@mdanderson.org>
 Description: Graphical User Interface for RPPA analysis using the SuperCurve package.
-Depends: R (>= 2.7), tcltk, SuperCurve (>= 1.3)
+Depends: R (>= 2.7), tcltk, SuperCurve (>= 1.3.4)
 SystemRequirements: Tcl/Tk
 License: file LICENSE
 LazyLoad: yes
+Collate: tkutil.R tkoptiondb.R tkmessagebox.R tknotebook.R tktabnotebook.R supercurveGUI.R zzz.R
 
