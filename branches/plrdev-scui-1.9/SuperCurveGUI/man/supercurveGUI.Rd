@@ -1,24 +1,29 @@
 \name{supercurveGUI}
 \alias{supercurveGUI}
 \alias{scui}
-\alias{sc}
 \title{Graphical User Interface for the SuperCurve package}
 \description{
   Graphical User Interface for the SuperCurve package.
 }
 \usage{
 supercurveGUI()
-sc()
+scui()
 }
 \details{
   The function \code{supercurveGUI} launches a Graphical User Interface
   for the SuperCurve package. The GUI uses Tk widgets (via the R TclTk
   interface by Peter Dalgaard) in order to provide a simple interface
   to the SuperCurve functions for analyzing reverse phase protein lysate
-  arrays. The functions \code{sc} and \code{scui} are aliases for the
-  aforementioned function.
+  arrays.
+
+  The function \code{scui} is an alias for the aforementioned function.
+
+  If set, the environment variable \env{SC_DIR} will be used as the
+  initial location for the directory containing quantification files.
 }
-\author{P. Roebuck \email{plroebuck@mdanderson.org}}
+\author{
+  P. Roebuck \email{plroebuck@mdanderson.org}
+}
 \examples{
   \dontrun{
 supercurveGUI()

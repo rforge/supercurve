@@ -9,8 +9,8 @@
   \tabular{ll}{
     Package: \tab SuperCurveGUI\cr
     Type: \tab Package\cr
-    Version: \tab 1.0-1\cr
-    Date: \tab 2008-06-06\cr
+    Version: \tab 1.9.0\cr
+    Date: \tab 2009-09-25\cr
     License: \tab See LICENSE for license information\cr
   }
 
@@ -18,6 +18,8 @@
   For a high-level summary of the changes for each revision, use
     \code{file.show(system.file("NEWS", package="SuperCurveGUI"))}.
 }
-\author{P. Roebuck, \email{plroebuck@mdanderson.org}}
+\author{
+  P. Roebuck \email{plroebuck@mdanderson.org}
+}
 \keyword{package}
 
