@@ -9,8 +9,7 @@
 
 ##-----------------------------------------------------------------------------
 .onAttach <- function(libname, pkgname) {
-    verbose <- getOption("verbose")
-    if (verbose) {
+    if (getOption("verbose")) {
         local({
             libraryPkgName <- function(pkgname, sep="_") {
                 unlist(strsplit(pkgname, sep, fixed=TRUE))[1]
@@ -24,12 +23,10 @@
             }
 
             desc <- packageDescription(pkgname)
-            msg <- sprintf("%s, version %s",
-                           desc$Title, desc$Version)
-            packageStartupMessage(msg)
-            msg <- sprintf("Type library(help=%s) to see package documentation",
-                           libraryPkgName(pkgname))
-            packageStartupMessage(msg)
+            packageStartupMessage(paste(desc$Title, desc$Version))
+            packageStartupMessage(
+                sprintf("Type library(help=%s) to see package documentation",
+                        libraryPkgName(pkgname)))
         })
     }
 }
