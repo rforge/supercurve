@@ -4,16 +4,16 @@
 \alias{RPPADesign}
 \alias{RPPADesignFromParams}
 \alias{RPPADesignParams}
+\alias{getSteps}
+\alias{is.RPPADesign}
+\alias{is.RPPADesignParams}
+\alias{seriesNames}
 \alias{dim,RPPADesign-method}
 \alias{image,RPPADesign-method}
 \alias{names,RPPADesign-method}
 \alias{paramString,RPPADesignParams-method}
 \alias{plot,RPPA,RPPADesign-method}
 \alias{summary,RPPADesign-method}
-\alias{getSteps}
-\alias{is.RPPADesign}
-\alias{is.RPPADesignParams}
-\alias{seriesNames}
 \docType{class}
 \title{Class "RPPADesign" and Class "RPPADesignParams"}
 \description{
@@ -53,10 +53,10 @@ is.RPPADesign(x)
 is.RPPADesignParams(x)
 seriesNames(design)
 \S4method{dim}{RPPADesign}(x)
-\S4method{image}{RPPADesign}(x, \dots)
+\S4method{image}{RPPADesign}(x, main, \dots)
 \S4method{names}{RPPADesign}(x)
-\S4method{paramString}{RPPADesignParams}(object, ...)
-\S4method{plot}{RPPA,RPPADesign}(x, y, ...)
+\S4method{paramString}{RPPADesignParams}(object, slots, \dots)
+\S4method{plot}{RPPA,RPPADesign}(x, y, measure, main, \dots)
 \S4method{summary}{RPPADesign}(object, \dots)
 }
 \arguments{
@@ -112,6 +112,10 @@ seriesNames(design)
   \item{object}{object of class \code{RPPADesign} (or \code{RPPADesignParams}
     in \code{paramString} method)}
   \item{design}{object of class \code{RPPADesign}}
+  \item{slots}{strings specifying \code{RPPADesignParams} slotnames to display
+    (for debuggging)}
+  \item{main}{overall title for plot}
+  \item{measure}{character string specifying measure to plot}
   \item{\dots}{extra arguments for generic or plotting routines.}
 }
 \details{

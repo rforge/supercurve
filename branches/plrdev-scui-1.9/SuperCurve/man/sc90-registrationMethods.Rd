@@ -18,8 +18,8 @@ getRegisteredObject(key,
 getRegisteredObjectKeys(envir)
 getRegisteredMethodKeys(envir)
 getRegisteredMethod(key, envir)
-registerClassname(key, classname, ..., envir)
-registerMethod(key, method, ..., envir)
+registerClassname(key, classname, \dots, envir)
+registerMethod(key, method, \dots, envir)
 }
 \arguments{
   \item{key}{character string representing a registered object}

@@ -1,10 +1,10 @@
 \name{RPPA-class}
 \alias{RPPA-class}
 \alias{RPPA}
+\alias{is.RPPA}
 \alias{dim,RPPA-method}
 \alias{image,RPPA-method}
 \alias{summary,RPPA-method}
-\alias{is.RPPA}
 \docType{class}
 \title{Class "RPPA"}
 \description{
@@ -15,7 +15,7 @@
 RPPA(file, path=".", antibody=NULL, software="microvigene")
 is.RPPA(x)
 \S4method{dim}{RPPA}(x)
-\S4method{image}{RPPA}(x, measure="Mean.Net", main=measure,
+\S4method{image}{RPPA}(x, measure="Mean.Net", main,
     colorbar=FALSE, col=terrain.colors(256), \dots)
 \S4method{summary}{RPPA}(object, \dots)
 }

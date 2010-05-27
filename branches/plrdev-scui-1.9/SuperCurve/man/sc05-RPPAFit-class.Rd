@@ -22,9 +22,10 @@
 \S4method{fitted}{RPPAFit}(object, type=c("Y", "y", "X", "x"), \dots)
 \S4method{hist}{RPPAFit}(x, type=c("Residuals", "StdRes", "ResidualsR2"),
   xlab=NULL, main=NULL, \dots)
-\S4method{image}{RPPAFit}(x, measure=c("Residuals", "ResidualsR2", "StdRes", "X", "Y"), \dots)
-\S4method{plot}{RPPAFit,missing}(x, y, type=c("cloud", "series", "individual"),
-  xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
+\S4method{image}{RPPAFit}(x, measure=c("Residuals", "ResidualsR2", "StdRes", "X", "Y"),
+  main, \dots)
+\S4method{plot}{RPPAFit,missing}(x, y, type=c("cloud", "series", "individual", "steps", "resid"),
+  col=NULL, main, xform=NULL, xlab="Log Concentration", ylab="Intensity", \dots)
 \S4method{resid}{RPPAFit}(object, type=c("raw", "standardized", "r2"),
   \dots)
 \S4method{residuals}{RPPAFit}(object, type=c("raw", "standardized", "r2"),
@@ -40,8 +41,10 @@
   \item{xlab}{graphics parameter specifying how the x-axis should be labeled}
   \item{ylab}{graphics parameter specifying how the y-axis should be labeled}
   \item{main}{character string specifying title for the plot}
+  \item{xform}{function to transform the raw data associated with the
+    \code{measure} for the plot. If \code{NULL}, no transformation occurs.}
   \item{y}{not used}
-  \item{colors}{graphics parameter, used only if \code{type='series'},
+  \item{col}{graphics parameter, used only if \code{type='series'},
     to color the lines connecting different dilution series.
     Eight default colors are used if the argument is \code{NULL}.}
   \item{\dots}{extra arguments for generic or plotting routines}

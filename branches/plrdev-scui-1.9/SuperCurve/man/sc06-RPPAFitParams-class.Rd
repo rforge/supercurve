@@ -3,9 +3,9 @@
 \alias{RPPAFitParams}
 \alias{RPPAFitFromParams}
 \alias{RPPAFit}
-\alias{paramString,RPPAFitParams-method}
 \alias{is.RPPAFit}
 \alias{is.RPPAFitParams}
+\alias{paramString,RPPAFitParams-method}
 \docType{class}
 \title{Fitting Dilution Curves to Protein Lysate Arrays with Class "RPPAFitParams"}
 \description{
@@ -49,7 +49,7 @@ RPPAFitFromParams(rppa,
 
 is.RPPAFit(x)
 is.RPPAFitParams(x)
-\S4method{paramString}{RPPAFitParams}(object, ...)
+\S4method{paramString}{RPPAFitParams}(object, slots, \dots)
 }
 \arguments{
   \item{rppa}{object of class \code{\link{RPPA}} containing the raw data
@@ -105,6 +105,8 @@ is.RPPAFitParams(x)
     the values returned.}
   \item{object}{object of class \code{RPPAFitParams}}
   \item{x}{object of class \code{RPPAFit} (or \code{RPPAFitParams})}
+  \item{slots}{strings specifying \code{RPPAFitParams} slotnames to display
+    (for debuggging)}
   \item{\dots}{extra arguments for generic routines.}
 }
 \details{
