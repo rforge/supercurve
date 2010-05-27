@@ -1,5 +1,7 @@
 \name{spatialCorrection}
 \alias{spatialCorrection}
+\alias{spatialAdjustment}
+\alias{spatialAdjustmentFromParams}
 \title{Spatial Correction}
 \description{
   This function estimates a smoothed surface from positive control spots on
@@ -8,6 +10,15 @@
   It is used before \code{RPPAFit}, one slide at a time.
 }
 \usage{
+spatialAdjustmentFromParams(rppa,
+                            design,
+                            spatialparams)
+spatialAdjustment(rppa,
+                  design,
+                  cutoff=0.8,
+                  k=100,
+                  gamma=0.1,
+                  plotSurface=FALSE)
 spatialCorrection(rppa,
                   design,
                   measure=c("Mean.Net", "Mean.Total"),
@@ -19,6 +30,8 @@ spatialCorrection(rppa,
 \arguments{
   \item{rppa}{object of class \code{RPPA}}
   \item{design}{object of class \code{RPPADesign}}
+  \item{spatialparams}{object of class \code{RPPASpatialParams} containing
+    parameters used to perform spatial adjustment}
   \item{measure}{character string specifying fit measure to smooth}
   \item{cutoff}{numeric scalar used to identify the background cutoff
     with value in range [0..1]}
@@ -71,7 +84,9 @@ spatialCorrection(rppa,
 }
 \value{
   Returns modified \code{rppa} with an additional measurement column
-  named \code{Spatial.Adj}.
+  named after the \code{measure} with an \code{Adj.} prefix. For example,
+  if the measure was \code{Mean.Net}, the name of the adjusted column
+  would be \code{Adj.Mean.Net}.
 }
 \references{
   % TBD reference Shannon's paper here.
@@ -86,6 +101,7 @@ spatialCorrection(rppa,
   positive control series. Currently untested.
 }
 \seealso{
+  \code{\linkS4class{RPPASpatialParams}},
   \code{\link[stats]{quantile}},
   \code{\link[mgcv]{gam}},
   \code{\link[mgcv]{s}},
@@ -95,14 +111,14 @@ spatialCorrection(rppa,
   \dontrun{
 ## :TODO: Need to be able to run this with included data...
 path <- system.file("rppaTumorData", package="SuperCurve")
-erk2 <- RPPA("ERK2.txt", path=path)
+rppa <- RPPA("ERK2.txt", path=path)
 designparams <- RPPADesignParams(grouping="blockSample",
-                                 controls=list("neg con", "pos con"))
-design <- RPPADesignFromParams(erk2, designparams)
+                                 designfile=file.path(path, "slidedesign.tsv"))
+design <- RPPADesignFromParams(rppa, designparams)
 
-erk2.sc <- spatialCorrection(rppa,
-                             design,
-                             measure="Mean.Net")
+rppa <- spatialCorrection(rppa,
+                          design,
+                          measure="Mean.Net")
   }
 }
 \keyword{smooth}
