@@ -4,11 +4,14 @@
 
 
 ##=============================================================================
+setClassUnion("OptionalRPPASpatialParams", c("RPPASpatialParams", "NULL"))
+
 setClass("RPPASet",
          representation=list(call="call",               # function call used to create the model
                              version="character",       # package version
                              design="RPPADesign",       # common design for all slides
                              rppas="array",             # vector of RPPAs
+                             spatialparams="OptionalRPPASpatialParams",
                              fitparams="RPPAFitParams", # parameters used for fitting
                              fits="array"))             # set of fits
 ## :KRC: Why is "rppas" an array or vector instead of a list (or environment)?
@@ -237,10 +240,12 @@ setMethod("summary", "RPPASet",
 
 
 ##-----------------------------------------------------------------------------
+## Provide a convenience function to save fit summary results as CSV files
 setMethod("write.summary", "RPPASetSummary",
           function(object,
                    path,
                    prefix="supercurve",
+                   monitor=NULL,
                    ...) {
     ## Check arguments
     if (!is.character(path)) {
@@ -255,6 +260,16 @@ setMethod("write.summary", "RPPASetSummary",
     } else if (!dir.writable(path)) {
         stop(sprintf("directory %s is not writable",
                      dQuote(path)))
+    }
+
+    if (!is.null(monitor)) {
+        if (!is.SCProgressMonitor(monitor)) {
+            stop(sprintf("argument %s must be object of class %s",
+                         sQuote("monitor"), "SCProgressMonitor"))
+        }
+    } else {
+        ## Create one, if necessary
+        monitor <- SCProgressMonitor()
     }
 
     if (!is.character(prefix)) {
@@ -288,13 +303,14 @@ setMethod("write.summary", "RPPASetSummary",
 
 
 ##-----------------------------------------------------------------------------
-## Provide a convenience function to save fit results to file
+## Provide a convenience function to save fit results to disk
 setMethod("write.summary", "RPPASet",
           function(object,
                    path,
                    prefix="supercurve",
                    graphs=TRUE,
                    tiffdir=NULL,
+                   monitor=NULL,
                    ...) {
     ## Check arguments
     if (!is.character(path)) {
@@ -331,6 +347,16 @@ setMethod("write.summary", "RPPASet",
                      sQuote("graphs")))
     }
 
+    if (!is.null(monitor)) {
+        if (!is.SCProgressMonitor(monitor)) {
+            stop(sprintf("argument %s must be object of class %s",
+                         sQuote("monitor"), "SCProgressMonitor"))
+        }
+    } else {
+        ## Create one, if necessary
+        monitor <- SCProgressMonitor()
+    }
+
     ## Begin processing
 
     ## Merge output, if requested
@@ -360,6 +386,7 @@ setMethod("write.summary", "RPPASet",
         }
 
         ## Save fit graphs
+        progressMarquee(monitor) <- "Creating Fit Graphs"
         .createFitGraphs(object, path, prefix)
 
         ## Merge output graphs with source tiff file for each antibody
@@ -373,9 +400,13 @@ setMethod("write.summary", "RPPASet",
                     }
 
         ## For each antibody...
+        progressMarquee(monitor) <- "Merging Fit Graphs With Images"
         antibodies <- names(object@fits)
-        for (antibody in antibodies) {
+        progressMaximum(monitor) <- length(antibodies)
+        for (i in seq_along(antibodies)) {
+            antibody <- antibodies[i]
 
+            progressLabel(monitor) <- antibody
             message(paste("merging graphs and image for", antibody))
             flush.console()
 
@@ -397,10 +428,12 @@ setMethod("write.summary", "RPPASet",
                 flush.console()
                 break
             }
+            progressValue(monitor) <- i
         }
     }
 
     ## Write CSV files
+    progressMarquee(monitor) <- "Writing Fit Summary Files"
     callGeneric(summary(object),
                 path,
                 prefix)
@@ -470,6 +503,8 @@ setMethod("write.summary", "RPPASet",
 RPPASet <- function(path,
                     designparams,
                     fitparams,
+                    spatialparams=NULL,
+                    monitor=SCProgressMonitor(),
                     antibodyfile=NULL,
                     software="microvigene") {
     ## Check arguments
@@ -492,6 +527,18 @@ RPPASet <- function(path,
     if (!is.RPPAFitParams(fitparams)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("fitparams"), "RPPAFitParams"))
+    }
+
+    if (!is.null(spatialparams)) {
+        if (!is.RPPASpatialParams(spatialparams)) {
+            stop(sprintf("argument %s must be object of class %s",
+                         sQuote("spatialparams"), "RPPASpatialParams"))
+        }
+    }
+
+    if (!is.SCProgressMonitor(monitor)) {
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("monitor"), "SCProgressMonitor"))
     }
 
     if (!is.null(antibodyfile)) {
@@ -528,6 +575,7 @@ RPPASet <- function(path,
     call <- match.call()
 
     ## Get filenames of slides to process
+    progressStage(monitor) <- "Data Input"
     slideFilenames <- getQuantificationFilenames(path)
     if (length(slideFilenames) == 0) {
         stop(sprintf("no quantification files found in directory %s",
@@ -536,6 +584,7 @@ RPPASet <- function(path,
 
     ## Load antibody information, if provided
     ab.list <- if (!is.null(antibodyfile)) {
+                   progressMarquee(monitor) <- "Loading Antibody File"
                    .loadAntibodyInfo(antibodyfile, slideFilenames)
                } else {
                    vector("list", length(slideFilenames))
@@ -556,11 +605,15 @@ RPPASet <- function(path,
     remove(abnames)
 
     ## Load slides to process
+    progressMarquee(monitor) <- "Reading slides"
+    progressMaximum(monitor) <- length(slideFilenames)
     rppas <- array(list(), length(slideFilenames))
     for (i in seq_along(slideFilenames)) {
+
         slideFilename <- slideFilenames[i]
         antibody <- antibodies[i]
 
+        progressLabel(monitor) <- slideFilename
         message(paste("reading", slideFilename))
         flush.console()
 
@@ -577,24 +630,69 @@ RPPASet <- function(path,
             design <- RPPADesignFromParams(firstslide, designparams)
 
             ## Plot the first slide as a quick design check
+            #dev.new(title="Design Check")
             plot(firstslide,
                  design,
                  fitparams@measure)
 
             remove(firstslide)
+            #browser(expr=FALSE)  ## :TBD: Helpful?
         }
+        progressValue(monitor) <- i
+        Sys.sleep(2)
     }
     rownames(rppas) <- antibodies
+    #dev.new(title="Output")
+
+
+    ##-------------------------------------------------------------------------
+    ## Determines if spatial adjustment processing is warranted
+    shouldPerformSpatialAdj <- function(spatialparams, fitparams) {
+        stopifnot(is.RPPAFitParams(fitparams))
+
+        measures <- eval(formals(spatialCorrection)$measure)
+        !is.null(spatialparams) && (fitparams@measure %in% measures)
+    }
+
+
+    ## Perform spatial adjustment, if enabled
+    doSpatialAdj <- shouldPerformSpatialAdj(spatialparams, fitparams)
+    if (doSpatialAdj) {
+        progressStage(monitor) <- "Spatial Adj"
+        progressMarquee(monitor) <- "Performing spatial adjustment on slides"
+        for (i in seq_along(slideFilenames)) {
+            progressLabel(monitor) <- antibodies[i]
+            message(paste("spatially adjusting slide",
+                          antibodies[i], "-", "please wait."))
+            flush.console()
+            rppas[[i]] <- spatialAdjustmentFromParams(rppas[[i]],
+                                                      design,
+                                                      spatialparams)
+            progressValue(monitor) <- i
+        }
+    }
 
     ## Create fits
+    progressStage(monitor) <- "Curve Fitting"
+    progressMarquee(monitor) <- "Fitting slides"
+
+    adj.fitparams <- fitparams
+    if (doSpatialAdj) {
+        message("fit will be performed using spatially adjusted measure")
+        adjMeasure <- paste("Adj", fitparams@measure, sep=".")
+        adj.fitparams@measure <- adjMeasure
+    }
     fits <- array(list(), length(slideFilenames), slideFilenames)
     for (i in seq_along(slideFilenames)) {
+        progressLabel(monitor) <- antibodies[i]
         message(paste("fitting", antibodies[i], "-", "please wait."))
         flush.console()
+        Sys.sleep(2)
 
         fits[[i]] <- RPPAFitFromParams(rppas[[i]],
                                        design=design,
-                                       fitparams=fitparams)
+                                       fitparams=adj.fitparams)
+        progressValue(monitor) <- i
     }
     rownames(fits) <- antibodies
 
@@ -603,6 +701,7 @@ RPPASet <- function(path,
         call=call,
         design=design,
         fitparams=fitparams,
+        spatialparams=spatialparams,
         fits=fits,
         rppas=rppas,
         version=packageDescription("SuperCurve", fields="Version"))
