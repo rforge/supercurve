@@ -4,11 +4,22 @@
 
 
 ##-----------------------------------------------------------------------------
-fitCurveAndSummarizeFromSettings <- function(settings) {
+fitCurveAndSummarizeFromSettings <- function(settings,
+                                             monitor) {
     ## Check arguments
     if (!is.SuperCurveSettings(settings)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("settings"), "SuperCurveSettings"))
+    }
+
+    if (!is.null(monitor)) {
+        if (!is.SCProgressMonitor(monitor)) {
+            stop(sprintf("argument %s must be object of class %s",
+                         sQuote("settings"), "SCProgressMonitor"))
+        }
+    } else {
+        ## Create one, if necessary
+        monitor <- SCProgressMonitor()
     }
 
 ###
@@ -23,16 +34,22 @@ fitCurveAndSummarizeFromSettings <- function(settings) {
 
     rppasetArgs <- list(path=txtdir,
                         designparams=settings@designparams,
-                        fitparams=settings@fitparams)
+                        fitparams=settings@fitparams,
+                        spatialparams=settings@spatialparams,
+                        monitor=monitor)
     ## :NOTE: Handle following after list construction so NULL values dropped
     rppasetArgs$antibodyfile <- settings@antibodyfile
     rppasetArgs$software <- settings@software
 
     ## Perform analysis
     fitset <- do.call(RPPASet, rppasetArgs)
+    progressStage(monitor) <- "Graphing"
     write.summary(fitset,
                   path=outdir,
                   graphs=TRUE,
-                  tiffdir=imgdir)
+                  tiffdir=imgdir,
+                  monitor=monitor)
+    progressStage(monitor) <- "Summary"
+    progressDone(monitor) <- TRUE
 }
 
