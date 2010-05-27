@@ -5,16 +5,24 @@
 
 ##=============================================================================
 setClassUnion("OptionalString", c("character", "NULL"))
+
 setClass("SuperCurveSettings",
          representation(txtdir="Directory",
                         imgdir="OptionalDirectory",
                         outdir="Directory",
                         designparams="RPPADesignParams",
                         fitparams="RPPAFitParams",
+                        spatialparams="OptionalRPPASpatialParams",
                         antibodyfile="OptionalFilename",
                         software="OptionalString",
                         version="character"),
          prototype(version="0.0-0"))
+
+
+##
+## :NOTE: If custom read.software routine used, settings will not reproduce
+## the runtime environment. How to cope? :TBD:
+##
 
 
 ##-----------------------------------------------------------------------------
@@ -107,6 +115,7 @@ SuperCurveSettings <- function(txtdir,
                                outdir,
                                designparams,
                                fitparams,
+                               spatialparams=NULL,
                                antibodyfile=NULL,
                                software=NULL) {
     ## Check arguments
@@ -135,6 +144,13 @@ SuperCurveSettings <- function(txtdir,
     if (!is.RPPAFitParams(fitparams)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("fitparams"), "RPPAFitParams"))
+    }
+
+    if (!is.null(spatialparams)) {
+        if (!is.RPPASpatialParams(spatialparams)) {
+            stop(sprintf("argument %s must be object of class %s",
+                         sQuote("spatialparams"), "RPPASpatialParams"))
+        }
     }
 
     if (!is.null(antibodyfile)) {
@@ -172,6 +188,7 @@ SuperCurveSettings <- function(txtdir,
         outdir=as(outdir, "Directory"),
         designparams=designparams,
         fitparams=fitparams,
+        spatialparams=spatialparams,
         antibodyfile=antibodyfile,
         software=software,
         version=packageDescription("SuperCurve", fields="Version"))
@@ -186,6 +203,7 @@ setMethod("paramString", "SuperCurveSettings",
           function(object,
                    designparams.slots,
                    fitparams.slots,
+                   spatialparams.slots,
                    ...) {
     if (missing(designparams.slots)) {
         designparams.slots <- c("grouping",
@@ -206,6 +224,13 @@ setMethod("paramString", "SuperCurveSettings",
                              "warnLevel")
     }
 
+    if (missing(spatialparams.slots)) {
+        spatialparams.slots <- c("cutoff",
+                                 "k",
+                                 "gamma",
+                                 "plotSurface")
+    }
+
 
     ##---------------------------------------------------------------------
     indent <- function(params.text,
@@ -220,20 +245,33 @@ setMethod("paramString", "SuperCurveSettings",
 
 
     ## Handle unspecified image directory
-    imgdir <- if (is.null(object@imgdir)) {
-                  NULL
-              } else {
+    imgdir <- if (!is.null(object@imgdir)) {
                   object@imgdir@path
+              } else {
+                  NULL
               }
+
+    ## Handle parameters
+    designparams  <- paramString(object@designparams, designparams.slots)
+    fitparams     <- paramString(object@fitparams, fitparams.slots)
+    spatialparams <- if (!is.null(object@spatialparams)) {
+                         paramString(object@spatialparams, spatialparams.slots)
+                     } else {
+                         NULL
+                     }
 
     ## Create param string
     paste(paste("txtdir:", shQuote(object@txtdir@path)), "\n",
           paste("imgdir:", shQuote(imgdir)), "\n",
           paste("outdir:", shQuote(object@outdir@path)), "\n",
           "designparams:", "\n",
-          indent(paramString(object@designparams, designparams.slots)), "\n",
+          indent(designparams), "\n",
           "fitparams:", "\n",
-          indent(paramString(object@fitparams, fitparams.slots)), "\n",
+          indent(fitparams), "\n",
+          if (!is.null(spatialparams)) {
+              paste("spatialparams:", "\n",
+                    indent(spatialparams), "\n")
+          },
           if (!is.null(object@antibodyfile)) {
               paste("antibodyfile:", shQuote(object@antibodyfile), "\n")
           },
