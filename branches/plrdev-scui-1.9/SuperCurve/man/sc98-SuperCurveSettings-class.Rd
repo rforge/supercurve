@@ -16,12 +16,14 @@ SuperCurveSettings(txtdir,
                    outdir,
                    designparams,
                    fitparams,
+                   spatialparams=NULL,
                    antibodyfile=NULL,
                    software=NULL)
 
-fitCurveAndSummarizeFromSettings(settings)
+fitCurveAndSummarizeFromSettings(settings, monitor)
 is.SuperCurveSettings(x)
-\S4method{paramString}{SuperCurveSettings}(object, ...)
+\S4method{paramString}{SuperCurveSettings}(object,
+  designparams.slots, fitparams.slots, spatialparams.slots, \dots)
 }
 \arguments{
   \item{txtdir}{character string specifying the directory containing
@@ -33,14 +35,22 @@ is.SuperCurveSettings(x)
     from analysis should be stored. Must be writable.}
   \item{designparams}{object of class \code{RPPADesignParams}}
   \item{fitparams}{object of class \code{RPPAFitParams}}
+  \item{spatialparams}{object of class \code{RPPASpatialParams}, or \code{NULL}}
   \item{antibodyfile}{character string specifying filename cantaining mapping
     from quantification files to antibodies, or NULL}
   \item{software}{character string specifying the software used to generate
     the quantification files (see section \sQuote{Details} of
     \code{\link{RPPA}}), or NULL to use the default value.}
+  \item{monitor}{object of (sub)class \code{ProgressMonitor}}
   \item{object}{object of class \code{SuperCurveSettings}}
   \item{settings}{object of class \code{SuperCurveSettings}}
   \item{x}{object of class \code{SuperCurveSettings}}
+  \item{designparams.slots}{strings specifying \code{RPPADesignParams}
+slotnames to display (for debuggging)}
+  \item{fitparams.slots}{strings specifying \code{RPPAFitParams}
+slotnames to display (for debuggging)}
+  \item{spatialparams.slots}{strings specifying \code{RPPASpatialParams}
+slotnames to display (for debuggging)}
   \item{\dots}{extra arguments for generic routines.}
 }
 \section{Objects from the Class}{
@@ -61,6 +71,8 @@ is.SuperCurveSettings(x)
       \acronym{RPPA} slides was designed}
     \item{\code{fitparams}:}{object of class \code{RPPAFitParams}
       specifying the parameters that control model fit}
+    \item{\code{spatialparams}:}{object of class \code{RPPASpatialParams}
+      specifying the parameters that control spatial adjustment}
     \item{antibodyfile}{character string specifying filename cantaining mapping
       from quantification files to antibodies, or NULL}
     \item{software}{character string specifying the software used to generate
@@ -94,8 +106,9 @@ is.SuperCurveSettings(x)
 }
 \seealso{
   \code{\linkS4class{Directory}},
+  \code{\linkS4class{RPPADesignParams}},
   \code{\linkS4class{RPPAFitParams}},
-  \code{\linkS4class{RPPADesignParams}}
+  \code{\linkS4class{RPPASpatialParams}}
 }
 \examples{
   \dontrun{
@@ -108,12 +121,14 @@ fitparams <- RPPAFitParams(ignoreNegative=FALSE,
                            model="loess",
                            warnLevel=-1)
 fitparams <- RPPAFitParams(grouping="blockSample")
+spatialparams <- RPPASpatialParams()
 settings <- SuperCurveSettings(txtdir=system.file("rppaTumorData",
                                                   package="SuperCurve"),
                                imgdir=file.path("", "path", "to", "images"),
                                outdir=tempdir(),
                                designparams=designparams,
                                fitparams=fitparams)
+                               spatialparams=spatialparams)
 fitCurveAndSummarizeFromSettings(settings)
   }
 }
