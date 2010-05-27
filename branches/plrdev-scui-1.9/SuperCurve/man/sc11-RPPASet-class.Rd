@@ -14,6 +14,8 @@
 RPPASet(path,
         designparams,
         fitparams,
+        spatialparams=NULL,
+        monitor=SCProgressMonitor(),
         antibodyfile=NULL,
         software="microvigene")
 is.RPPASet(x)
@@ -24,6 +26,7 @@ is.RPPASet(x)
                                   prefix="supercurve",
                                   graphs=TRUE,
                                   tiffdir=NULL,
+                                  monitor=NULL,
                                   \dots)
 }
 \arguments{
@@ -36,6 +39,9 @@ is.RPPASet(x)
     features common to all quantification files}
   \item{fitparams}{object of class \code{RPPAFitParams} containing
     parameters used to fit the supercurve model}
+  \item{spatialparams}{object of class \code{RPPASpatialParams} containing
+    parameters used to perform spatial adjustment, or \code{NULL}}
+  \item{monitor}{object of (sub)class \code{ProgressMonitor}}
   \item{antibodyfile}{character string specifying filename cantaining mapping
     from quantification files to antibodies}
   \item{software}{character string specifying the software used to generate
@@ -83,6 +89,8 @@ is.RPPASet(x)
     \item{\code{fitparams}:}{object of class \code{RPPAFitParams} that was
       used to construct the model fits}
     \item{\code{fits}:}{array of fitted objects of class \code{RPPAFit}}
+    \item{spatialparams}{object of class \code{RPPASpatialParams} that was
+      used to perform spatial adjustment, or \code{NULL}}
   }
 }
 \section{Methods}{
@@ -111,6 +119,7 @@ is.RPPASet(x)
   \code{\link{RPPA}},
   \code{\link{RPPADesign}},
   \code{\link{RPPAFit}}
+  \code{\link{SCProgressMonitor}}
 }
 \examples{
   \dontrun{
@@ -129,14 +138,16 @@ fitparams <- RPPAFitParams(measure="Mean.Net",
                            ignoreNegative=FALSE,
                            warnLevel=-1,
                            verbose=FALSE)
-
+monitor <- SCProgressMonitor()
 fitset <- RPPASet(txtdir,
                   designparams,
-                  fitparams)
+                  fitparams,
+                  monitor)
 write.summary(fitset,
               path=outdir,
               graphs=TRUE,
-              tiffdir=imgdir)
+              tiffdir=imgdir,
+              monitor=monitor)
   }
 }
 \keyword{models}
