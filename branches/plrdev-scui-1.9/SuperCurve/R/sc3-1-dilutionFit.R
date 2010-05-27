@@ -23,7 +23,10 @@ setClass("RPPAFit",
 
 
 ##=============================================================================
-setClassUnion("OptionalFunction", c("function", "NULL"))
+if (is.null(getClassDef("OptionalFunction", package="methods"))) {
+    ## Defined by 'methods' package in R-2.11.x
+    setClassUnion("OptionalFunction", c("function", "NULL"))
+}
 setClass("RPPAFitParams",
          representation=list(measure="character",
                              xform="OptionalFunction",
@@ -88,9 +91,9 @@ setMethod("image", signature(x="RPPAFit"),
     ## Begin processing
     rppa <- x@rppa
     rppa@data[[measure]] <- switch(EXPR=measure,
-                                   Residuals=resid(x),
-                                   StdRes=resid(x, "standardized"),
-                                   ResidualsR2=resid(x, "r2"),
+                                   Residuals=residuals(x),
+                                   StdRes=residuals(x, "standardized"),
+                                   ResidualsR2=residuals(x, "r2"),
                                    X=fitted(x, "X"),
                                    Y=fitted(x, "Y"),
                                    stop(sprintf("unrecognized measure %s",
@@ -175,8 +178,9 @@ setMethod("residuals", "RPPAFit",
 
 setMethod("resid", "RPPAFit",
           function(object,
+                   type=c("raw", "standardized", "r2"),
                    ...) {
-    residuals(object, ...)
+    residuals(object, type=type, ...)
 })
 
 
@@ -204,7 +208,7 @@ setMethod("hist", "RPPAFit",
 
     translate <- c("raw", "standardized", "r2")
     names(translate) <- c("Residuals", "StdRes", "ResidualsR2")
-    res <- resid(x, type=translate[type])
+    res <- residuals(x, type=translate[type])
     hist(res,
          main=main,
          sub=paste("File:", x@rppa@file),
@@ -368,7 +372,7 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
     } else if (type == "resid") {
         ## Show a plot of the residuals vs. estimated concentration
         ## to check for heteroscedasticity
-        r <- resid(x)
+        r <- residuals(x)
 
         ## Fit a model of abs(residual) vs. estimated concentration
         ## to do a rough check for increasing heteroscedasticity
@@ -431,7 +435,7 @@ getConfidenceInterval <- function(result,
     silent <- TRUE
     series <- seriesNames(result@design)
     steps <- getSteps(result@design)
-    res <- resid(result)         # actual residuals on the intensity scale
+    res <- residuals(result)     # actual residuals on the intensity scale
     yval <- fitted(result, "Y")  # best fit of the intensities
     xval <- fitted(result, "X")  # best fit concentrations on the log2 scale
 
