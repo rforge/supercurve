@@ -270,7 +270,7 @@ setMethod("paramString", "SuperCurveSettings",
           indent(fitparams), "\n",
           if (!is.null(spatialparams)) {
               paste("spatialparams:", "\n",
-                    indent(spatialparams), "\n")
+                    indent(spatialparams), "\n", sep="")
           },
           if (!is.null(object@antibodyfile)) {
               paste("antibodyfile:", shQuote(object@antibodyfile), "\n")
