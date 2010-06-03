@@ -34,21 +34,8 @@ validRPPADesign <- function(object) {
     cat("validating", class(object), "object", "\n")
     msg <- NULL
 
-    reqdMeasures = c("Main.Row",
-                     "Main.Col",
-                     "Sub.Row",
-                     "Sub.Col",
-                     "Sample")
-    nreqdMeasures <- length(reqdMeasures) + 1
-
-    #:KRC: waste of time. Next check alrady includes this, and gives
-    # the user better information.
-    ## Ensure minimum number of columns
-    if (!(ncol(object@layout) >= nreqdMeasures)) {
-        msg <- c(msg, "not enough columns in layout")
-    }
-
     ## Ensure required columns
+    reqdMeasures <- c(.locationColnames(), "Sample")
     found <- reqdMeasures %in% colnames(object@layout)
     if (!all(found)) {
         missingColumns <- reqdMeasures[!found]
@@ -301,11 +288,8 @@ RPPADesignFromParams <- function(raw,
     ## Begin processing
     call <- match.call()
 
-    raw.df <- data.frame(raw[, c("Main.Row",
-                                 "Main.Col",
-                                 "Sub.Row",
-                                 "Sub.Col",
-                                 "Sample")])
+    reqdMeasures <- c(.locationColnames(), "Sample")
+    raw.df <- data.frame(raw[, reqdMeasures])
     if (all(c(length(steps), length(series)) == 1)) {
         steps <- rep(NA, nrow(raw))
         series <- rep(NA, nrow(raw))
@@ -426,7 +410,8 @@ RPPADesignFromParams <- function(raw,
                 }
 
                 ## Attempt to merge columns from slide design file
-                raw.df <- merge(raw.df, design.df)
+                raw.df <- merge(raw.df, design.df, sort=FALSE)
+                raw.df <- raw.df[do.call(order, raw.df), ]
 
                 ## Provide control names from slide design information
                 ctrlnames <- as.character(with(raw.df,
