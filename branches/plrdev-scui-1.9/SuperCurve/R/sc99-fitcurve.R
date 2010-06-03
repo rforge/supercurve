@@ -5,7 +5,7 @@
 
 ##-----------------------------------------------------------------------------
 fitCurveAndSummarizeFromSettings <- function(settings,
-                                             monitor) {
+                                             monitor=NULL) {
     ## Check arguments
     if (!is.SuperCurveSettings(settings)) {
         stop(sprintf("argument %s must be object of class %s",
@@ -43,13 +43,17 @@ fitCurveAndSummarizeFromSettings <- function(settings,
 
     ## Perform analysis
     fitset <- do.call(RPPASet, rppasetArgs)
+
+    ## Save results (as fitset takes forever to generate)
+    rda.pathname <- file.path(outdir, paste("sc-fitset", "rda", sep="."))
+    save(fitset, file=rda.pathname, ascii=TRUE)
+
+    ## Summarize the results
     progressStage(monitor) <- "Graphing"
     write.summary(fitset,
                   path=outdir,
                   graphs=TRUE,
                   tiffdir=imgdir,
                   monitor=monitor)
-    progressStage(monitor) <- "Summary"
-    progressDone(monitor) <- TRUE
 }
 
