@@ -70,16 +70,14 @@ setValidity("RPPADesign", validRPPADesign)
 
 
 ##-----------------------------------------------------------------------------
-#:KRC: Why not just acll inherits in the code whwere it is needed? If you want
-# to obfuscate the code, wrap an eval around a base64 decode.
 is.RPPADesign <- function(x) {
-    inherits(x, "RPPADesign")
+    is(x, "RPPADesign")
 }
 
 
 ##-----------------------------------------------------------------------------
 is.RPPADesignParams <- function(x) {
-    inherits(x, "RPPADesignParams")
+    is(x, "RPPADesignParams")
 }
 
 
@@ -254,7 +252,7 @@ setMethod("paramString", "RPPADesignParams",
     stopifnot(is.character(slots) && length(slots) >= 1)
 
     ## :TODO: Implementation currently ignores the 'slots' argument
-    ## and returns string containing parameters from various slots.
+    ## and returns string containing parameters from various slots
     ## as though:
     ##     slotsToDisplay <- c("grouping", "ordering", "center",
     ##                         "controls", "aliasfile", "designfile")

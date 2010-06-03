@@ -44,7 +44,7 @@ setValidity("Directory", validDirectory)
 
 ##-----------------------------------------------------------------------------
 is.Directory <- function(x) {
-    inherits(x, "Directory")
+    is(x, "Directory")
 }
 
 

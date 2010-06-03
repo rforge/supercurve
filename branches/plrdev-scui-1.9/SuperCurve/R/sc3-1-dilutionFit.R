@@ -43,13 +43,13 @@ setClass("RPPAFitParams",
 
 ##-----------------------------------------------------------------------------
 is.RPPAFit <- function(x) {
-    inherits(x, "RPPAFit")
+    is(x, "RPPAFit")
 }
 
 
 ##-----------------------------------------------------------------------------
 is.RPPAFitParams <- function(x) {
-    inherits(x, "RPPAFitParams")
+    is(x, "RPPAFitParams")
 }
 
 

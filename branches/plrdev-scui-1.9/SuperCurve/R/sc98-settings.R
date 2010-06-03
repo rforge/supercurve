@@ -104,7 +104,7 @@ setValidity("SuperCurveSettings", validSuperCurveSettings)
 
 ##-----------------------------------------------------------------------------
 is.SuperCurveSettings <- function(x) {
-    inherits(x, "SuperCurveSettings")
+    is(x, "SuperCurveSettings")
 }
 
 

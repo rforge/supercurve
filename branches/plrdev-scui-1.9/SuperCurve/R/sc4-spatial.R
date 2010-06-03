@@ -13,7 +13,7 @@ setClass("RPPASpatialParams",
 
 ##-----------------------------------------------------------------------------
 is.RPPASpatialParams <- function(x) {
-    inherits(x, "RPPASpatialParams")
+    is(x, "RPPASpatialParams")
 }
 
 

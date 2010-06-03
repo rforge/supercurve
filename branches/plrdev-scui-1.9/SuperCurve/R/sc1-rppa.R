@@ -11,10 +11,8 @@ setClass("RPPA",
 
 
 ##-----------------------------------------------------------------------------
-#:KRC: Why do we need all these "is" functions when using 'inherits"
-# directly gives better local documentation of behavior.
 is.RPPA <- function(x) {
-    inherits(x, "RPPA")
+    is(x, "RPPA")
 }
 
 

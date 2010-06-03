@@ -27,13 +27,13 @@ setClass("RPPASetSummary",
 
 ##-----------------------------------------------------------------------------
 is.RPPASet <- function(x) {
-    inherits(x, "RPPASet")
+    is(x, "RPPASet")
 }
 
 
 ##-----------------------------------------------------------------------------
 is.RPPASetSummary <- function(x) {
-    inherits(x, "RPPASetSummary")
+    is(x, "RPPASetSummary")
 }
 
 
