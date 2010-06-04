@@ -20,7 +20,7 @@ SuperCurveSettings(txtdir,
                    antibodyfile=NULL,
                    software=NULL)
 
-fitCurveAndSummarizeFromSettings(settings, monitor)
+fitCurveAndSummarizeFromSettings(settings, monitor=NULL)
 is.SuperCurveSettings(x)
 \S4method{paramString}{SuperCurveSettings}(object,
   designparams.slots, fitparams.slots, spatialparams.slots, \dots)
@@ -41,7 +41,7 @@ is.SuperCurveSettings(x)
   \item{software}{character string specifying the software used to generate
     the quantification files (see section \sQuote{Details} of
     \code{\link{RPPA}}), or NULL to use the default value.}
-  \item{monitor}{object of (sub)class \code{ProgressMonitor}}
+  \item{monitor}{object of (sub)class \code{ProgressMonitor}, or \code{NULL}}
   \item{object}{object of class \code{SuperCurveSettings}}
   \item{settings}{object of class \code{SuperCurveSettings}}
   \item{x}{object of class \code{SuperCurveSettings}}
@@ -120,15 +120,13 @@ fitparams <- RPPAFitParams(ignoreNegative=FALSE,
                            method="nlrob",
                            model="loess",
                            warnLevel=-1)
-fitparams <- RPPAFitParams(grouping="blockSample")
-spatialparams <- RPPASpatialParams()
 settings <- SuperCurveSettings(txtdir=system.file("rppaTumorData",
                                                   package="SuperCurve"),
                                imgdir=file.path("", "path", "to", "images"),
                                outdir=tempdir(),
                                designparams=designparams,
                                fitparams=fitparams)
-                               spatialparams=spatialparams)
+                               spatialparams=NULL)
 fitCurveAndSummarizeFromSettings(settings)
   }
 }
