@@ -14,6 +14,9 @@ NEW FEATURES
     o	Spatial adjustment is now part of mainstream processing.
 	If not disabled, a slide design file (from SlideDesignerGUI)
 	is now mandatory for processing of RPPA datafiles.
+    o	RPPASet() method is now far more tolerant of bad datafiles;
+	it continues processing if at all possible. As a consequence,
+	results may be incomplete and should be verified.
     o	Backend changes now provide a sort of abstract progress
 	monitoring. This capability will be heavily exploited by
 	its sibling package (SuperCurveGUI).
@@ -21,6 +24,9 @@ NEW FEATURES
 
 BUG FIXES
 
+    o	RPPADesignFromParams() method "sorted" the rows of the 'layout'
+	slot when 'designfile' argument was given, which caused major
+	problems when it came time to perform curve fitting.
     o	spatialCorrection() method did not check that the requested
 	measure actually existed in the RPPA.
     o	Updated documentation in many places to account for the stricter
