@@ -1014,26 +1014,26 @@ createDirectoryPanel <- function(parent) {
 
 
 ##-----------------------------------------------------------------------------
-createModelParamsPanel <- function(parent) {
-    designparams.frame <- tklabelframe(parent,
-                                       text="Design Parameters")
-    {
-        createDesignParamsPanel(designparams.frame)
-    }
-
-    fitparams.frame <- tklabelframe(parent,
-                                    text="Fit Parameters")
-    {
-        createFitParamsPanel(fitparams.frame)
-    }
-
-    tkpack(designparams.frame,
-           fill="y",
-           side="left")
-    tkpack(fitparams.frame,
-           fill="y",
-           side="right")
-}
+#createModelParamsPanel <- function(parent) {
+#    designparams.frame <- tklabelframe(parent,
+#                                       text="Design Parameters")
+#    {
+#        createDesignParamsPanel(designparams.frame)
+#    }
+#
+#    fitparams.frame <- tklabelframe(parent,
+#                                    text="Fit Parameters")
+#    {
+#        createFitParamsPanel(fitparams.frame)
+#    }
+#
+#    tkpack(designparams.frame,
+#           fill="y",
+#           side="left")
+#    tkpack(fitparams.frame,
+#           fill="y",
+#           side="right")
+#}
 
 
 ##-----------------------------------------------------------------------------
@@ -1282,6 +1282,105 @@ createFitParamsPanel <- function(parent) {
 
 
 ##-----------------------------------------------------------------------------
+createSpatialAdjParamsPanel <- function(parent) {
+    ## Check arguments
+    stopifnot(is.tkwin(parent))
+
+    ## Check arguments
+    stopifnot(is.tkwin(parent))
+
+    ## Begin processing
+    class.args <- formals(SuperCurve:::spatialCorrection)
+    measure <- tclvalue(getenv("measure.var"))
+    adjEnabled.arg <- list(default=as.character(FALSE),
+                           values=as.character(c(TRUE, FALSE)))
+
+    ## Prepare possible input values
+    cutoff.arg <- list(default=eval(class.args$cutoff))
+    k.arg <- list(default=eval(class.args$k))
+    gamma.arg <- list(default=eval(class.args$gamma))
+    plotSurface.arg <- list(default=as.character(FALSE),
+                            values=as.character(c(TRUE, FALSE)))
+
+    ##-------------------------------------------------------------------------
+    ## Weird but it won't handle 'tclvalue(getenv("grouping.var")) <- value'
+    ## This achieves the same via temporary variable.
+    setVariable <- function(x, value) {
+        stopifnot(is.tclVar(x))
+        stopifnot(!missing(value))
+
+        tclvalue(x) <- value
+    }
+
+## :NOPE: Works but painful...
+#    tcl("set", objects(unclass(getenv("grouping.var"))$env), grouping.arg$default)
+
+## :BROKEN: Basic idea but doesn't work...
+#    tclvalue(getenv("grouping.var")) <- grouping.arg$default   # "blockSample"
+
+## Works via temporary...
+    setVariable(getenv("cutoff.var"), cutoff.arg$default)
+    setVariable(getenv("k.var"), k.arg$default)
+    setVariable(getenv("gamma.var"), gamma.arg$default)
+    setVariable(getenv("plotSurface.var"), plotSurface.arg$default)
+
+    ## Create input section for 'cutoff' argument
+    cutoff.spinbox.min <- as.numeric(0)
+    cutoff.spinbox.max <- as.numeric(1)
+    cutoff.spinbox.width <- as.numeric(10)
+
+    cutoff.label <- tklabel(parent,
+                            text="Cutoff:")
+    cutoff.spinbox <- tkspinbox(parent,
+                                from=cutoff.spinbox.min,
+                                state="readonly",
+                                to=cutoff.spinbox.max,
+                                textvariable=getenv("cutoff.var"),
+                                width=cutoff.spinbox.width)
+
+    ## Create input section for 'k' argument
+    k.label <- tklabel(parent,
+                       text="k:")
+    k.entry <- tkentry(parent,
+                       textvariable=getenv("k.var"))
+
+    ## Create input section for 'gamma' argument
+    gamma.label <- tklabel(parent,
+                           text="Gamma:")
+    gamma.entry <- tkentry(parent,
+                           textvariable=getenv("gamma.var"))
+
+    ## Create input section for 'plotSurface' argument
+    plotSurface.label <- tklabel(parent,
+                                 text="Plot Surface?:")
+    plotSurface.optmenu <- createOptionMenu(parent,
+                                            getenv("plotSurface.var"),
+                                            plotSurface.arg$values)
+
+    ## Manage widgets
+    tkgrid(cutoff.label,
+           cutoff.spinbox)
+    tkgrid(k.label,
+           k.entry)
+    tkgrid(gamma.label,
+           gamma.entry)
+    tkgrid(plotSurface.label,
+           plotSurface.optmenu)
+
+    tkgrid.configure(cutoff.label,
+                     k.label,
+                     gamma.label,
+                     plotSurface.label,
+                     sticky="e")
+    tkgrid.configure(cutoff.spinbox,
+                     k.entry,
+                     gamma.entry,
+                     plotSurface.optmenu,
+                     sticky="w")
+}
+
+
+##-----------------------------------------------------------------------------
 createSettingsFromUserInput <- function() {
 
     ##-------------------------------------------------------------------------
@@ -1333,6 +1432,12 @@ createSettingsFromUserInput <- function() {
                ci=tclvalue(getenv("ci.var")),
                ignoreNegative=tclvalue(getenv("ignoreNegative.var")))
 
+    ## Collect spatial parameters
+    sp <- list(cutoff=tclvalue(getenv("cutoff.var")),
+               k=tclvalue(getenv("k.var")),
+               gamma=tclvalue(getenv("gamma.var")),
+               plotSurface=tclvalue(getenv("plotSurface.var")))
+
     ## Postprocess
     dp$center <- as.logical(dp$center)
 
@@ -1341,15 +1446,22 @@ createSettingsFromUserInput <- function() {
     fp$ignoreNegative <- as.logical(fp$ignoreNegative)
     fp$warnLevel <- as.integer(-1)
 
+    sp$cutoff <- as.numeric(sp$cutoff)
+    sp$k <- as.numeric(sp$k)
+    sp$gamma <- as.numeric(sp$gamma)
+    sp$plotSurface <- as.logical(sp$plotSurface)
+
     ## Create appropriate classes
     designparams <- do.call(SuperCurve::RPPADesignParams, dp)
     fitparams <- do.call(SuperCurve::RPPAFitParams, fp)
+    spatialparams <- do.call(SuperCurve::RPPASpatialParams, sp)
 
     SuperCurve::SuperCurveSettings(txtdir,
                                    imgdir,
                                    outdir,
                                    designparams,
                                    fitparams,
+                                   spatialparams,
                                    antibodyfile)
 }
 
@@ -1386,6 +1498,360 @@ saveSettings <- function(settings,
         "\n",  # blank line at EOF
         sep="",
         file=txt.pathname)
+}
+
+
+##-----------------------------------------------------------------------------
+## Saves names of stages to be displayed by progress dialog in environment.
+setStages <- function(settings) {
+    stages <- SuperCurve::getStages()
+
+    ## If spatial adjustment not enabled, remove it
+    if (is.null(settings@spatialparams)) {
+        stages[match("spatial", names(stages))] <- NULL
+    }
+
+    final <- "Summary"
+    names(final) <- "summary"
+
+    setenv("stages", c(stages, final))
+}
+
+
+##-----------------------------------------------------------------------------
+## Redisplays radiobutton widgets to represent a completed stage.
+displayAsCompleted <- function(radiobutton) {
+    .appEntryStr("displayAsCompleted")
+    stopifnot(is.tkwin(radiobutton))
+    stopifnot(tclvalue(tkwinfo.class(radiobutton)) == "Radiobutton")
+
+#message("displayAsCompleted()")
+#tkflash(radiobutton)
+
+    tkconfigure(radiobutton,
+                selectcolor="")
+}
+
+
+##-----------------------------------------------------------------------------
+## Redisplays radiobutton widget to represent the stage in work.
+displayAsInProgress <- function(radiobutton) {
+    .appEntryStr("displayAsInProgress")
+    stopifnot(is.tkwin(radiobutton))
+    stopifnot(tclvalue(tkwinfo.class(radiobutton)) == "Radiobutton")
+
+#message("displayAsInProgress()")
+#tkflash(radiobutton)
+
+    stageFont <- "stagead"    ## Must be same as in supercurveGUI()
+    tkconfigure(radiobutton,
+                command=function() {
+                    displayAsCompleted(radiobutton)
+                },
+                font=stageFont,
+                selectcolor="blue")
+}
+
+
+##-----------------------------------------------------------------------------
+createProgressDialog <- function(parent,
+                                 stages,
+                                 pbcol="green") {
+    ## Check arguments
+    stopifnot(is.tkwin(parent))
+    stopifnot(is.character(stages) && all(nzchar(stages)))
+
+    ## Begin processing
+
+    ## Create toplevel shell and frame as its child
+    dialog <- tktoplevel(parent=parent)
+    tkwm.title(dialog, "ProgressDialog")
+    tkwm.group(dialog, parent)
+
+    tkpack(progress.frame <- tkframe(dialog,
+                                     class="ProgressBarDialog"))
+
+    ## Create area frames and separator
+    tkpack(command.area <- commandArea(progress.frame),
+           fill="x",
+           padx="2m",
+           pady="2m")
+    tkpack(separator    <- tkSeparator(progress.frame),
+           fill="x",
+           pady="3m")
+    tkpack(action.area  <- actionArea(progress.frame),
+           fill="x",
+           padx="2m",
+           pady="2m")
+
+    ## Create command area
+
+    stages.frame <- tkframe(command.area,
+                            class="RadioBox")
+    for (i in seq_along(stages)) {
+        stage <- stages[i]
+        stopifnot(!is.null(names(stage)))
+        ## :TODO: Convert 'value' to use key (aka, names(stage)) instead
+        radiobutton <- tkradiobutton(stages.frame,
+                                     anchor="w",
+                                     text=stage,
+                                     value=stage)
+        cmd <- substitute(function() displayAsInProgress(widget),
+                          list(widget=radiobutton))
+        tkconfigure(radiobutton,
+                    command=eval(cmd))
+        tkpack(radiobutton,
+               side="top",
+               fill="x")
+    }
+
+    ## Create frame for progress bar and marquee/detail labels
+    details.frame <- tkframe(command.area,
+                             background="white",
+                             relief="sunken")
+
+    ## :TBD: Are these label width settings the problem with dialog width?
+    marquee.label <- tklabel(details.frame,
+                             background="white",
+                             font="banner",
+                             width="100")
+    detail.label <- tklabel(details.frame,
+                            background="white",
+                            text="-",
+                            width="100")
+    progressbar <- progressbar_create(details.frame,
+                                      pbcol)
+
+    tkpack(marquee.label,
+           progressbar,
+           detail.label,
+           expand=TRUE,
+           fill="both",
+           padx=10,
+           pady=10)
+
+    tkpack(stages.frame,
+           side="left",
+           padx=10,
+           pady=10)
+    tkpack(details.frame,
+           side="right",
+           padx=10,
+           pady=10)
+
+    ## Create action area
+    #button <- tkbutton(action.area,
+    #                   text="Cancel")
+    #tkpack(button)
+
+    ## Save userdata
+    userdata <- list(RadioBox=stages.frame,
+                     Marquee=marquee.label,
+                     Detail=detail.label,
+                     ProgressBar=progressbar)
+    assign("userdata", userdata, env=dialog$env)
+
+    return(dialog)
+}
+
+
+##-----------------------------------------------------------------------------
+monitorAnalysis <- function(dialog,
+                            monitor,
+                            settings) {
+    message("monitorAnalysis() entry")
+    stopifnot(is.tkwin(dialog))
+    stopifnot(is.SCProgressMonitor(monitor))
+
+    ## Do update before processing starts
+    tclupdate()
+
+    ## Start...
+    tryCatch({
+            ## Perform analysis
+            SuperCurve:::fitCurveAndSummarizeFromSettings(settings, monitor)
+            ## :TBD: Move 'Summary' stage into SCUI's progressDone() method?
+            progressStage(monitor) <- "Summary"
+            progressDone(monitor) <- TRUE
+        },
+        interrupt=function(cond) {
+            message("\tin interrupt clause of tryCatch()")
+            progressError(monitor) <- TRUE
+
+            showwarning(title="Processing Interrupted",
+                        message=conditionMessage(cond))
+        },
+        error=function(cond) {
+            message("\tin error clause of tryCatch()")
+            progressError(monitor) <- TRUE
+
+            showerror(title="Processing Error",
+                      message=conditionMessage(cond))
+            setenv("errmsg", conditionMessage(cond))
+        },
+        finally={
+            message("\tin finally clause of tryCatch()")
+cat("monitor@stage.var:", tclvalue(monitor@stage.var), "\n")
+cat("monitor@marquee.var:", tclvalue(monitor@marquee.var), "\n")
+cat("monitor@label.var:", tclvalue(monitor@label.var), "\n")
+        })
+}
+
+
+##-----------------------------------------------------------------------------
+displayProgressDialog <- function(dialog,
+                                  monitor,
+                                  settings) {
+    stopifnot(is.tkwin(dialog))
+    stopifnot(is.SCProgressMonitor(monitor))
+
+    ##-------------------------------------------------------------------------
+    ## Update window manager's geometry to shrink the progress dialog.
+    wmGeometry <- function() {
+        .appEntryStr("wmGeometry")
+
+        tclupdate("idletasks")
+        toplevel <- getenv("toplevel")
+
+        screenwidth <- as.integer(tclvalue(tkwinfo.screenwidth(toplevel)))
+        screenheight <- as.integer(tclvalue(tkwinfo.screenheight(toplevel)))
+        cat("screen width:", screenwidth, "\n")
+        cat("screen height:", screenheight, "\n")
+
+        toplevel.reqwidth <- tclvalue(tkwinfo.reqwidth(toplevel))
+        toplevel.reqheight <- tclvalue(tkwinfo.reqheight(toplevel))
+        cat("toplevel reqwidth:", toplevel.reqwidth, "\n")
+        cat("toplevel reqheight:", toplevel.reqheight, "\n")
+
+        dialog.reqwidth <- tclvalue(tkwinfo.reqwidth(dialog))
+        dialog.reqheight <- tclvalue(tkwinfo.reqheight(dialog))
+        cat("dialog reqwidth:", dialog.reqwidth, "\n")
+        cat("dialog reqheight:", dialog.reqheight, "\n")
+
+        dialog.width <- as.integer(toplevel.reqwidth) * 2
+        dialog.height <- as.integer(dialog.reqheight)
+
+        ## Update geometry
+        geometry <- sprintf("%dx%d",
+                            dialog.width,
+                            dialog.height)
+        cat("new wm geometry:", geometry, "\n")
+        flush.console()
+        tkwm.geometry(dialog, geometry)
+
+        ## :HACK: For some reason, the 'detail' label on the progress dialog
+        ## doesn't seem to get updated for quite some time, unless the dialog
+        ## gets resized. Since we REALLY want to be able to see details during
+        ## processing, set a timer to resize the dialog by one pixel.
+        tclafter(1000, wmGeometryHack)
+    }
+
+
+    ##-------------------------------------------------------------------------
+    ## Update window manager's geometry to enlarge progress dialog's width
+    ## by one pixel.
+    wmGeometryHack <- function() {
+        .appEntryStr("wmGeometry")
+
+        geometry <- tclvalue(tkwm.geometry(dialog))
+        nonumbers.re <- "[^[:digit:]]"
+        geometry.vals <- unlist(strsplit(geometry, nonumbers.re))
+
+        dialog.width <- as.integer(geometry.vals[1]) + 1
+        dialog.height <- as.integer(geometry.vals[2])
+
+        ## Update geometry
+        geometry <- sprintf("%dx%d",
+                            dialog.width,
+                            dialog.height)
+        cat("new wm geometry:", geometry, "(YA)", "\n")
+        flush.console()
+        tkwm.geometry(dialog, geometry)
+    }
+
+
+    ##-------------------------------------------------------------------------
+    ## Update window manager's minimum width of dialog to half that of toplevel.
+    wmMinSizeResetWidth <- function() {
+        .appEntryStr("wmMinSizeResetWidth")
+
+        tclupdate("idletasks")
+        toplevel <- getenv("toplevel")
+
+        minwidth <- as.integer(tclvalue(tkwinfo.reqwidth(toplevel)))
+        minheight <- as.integer(tclvalue(tkwinfo.height(dialog)))
+        cat("new wm minsize:", paste(minwidth, "x", minheight, sep=""), "\n")
+        flush.console()
+        tkwm.minsize(dialog, minwidth, minheight)
+    }
+
+
+    ## Handle WM close button
+    tkwm.protocol(dialog,
+                  "WM_DELETE_WINDOW",
+                  function() {
+                      message("[WM close requested on dialog]")
+                      tkwm.withdraw(dialog)
+                      tclupdate()
+                      tkdestroy(dialog)
+                  })
+
+    ## Get canvas from progress dialog
+    progressbar <- .getProgressBarFromDialog(dialog)
+    stopifnot(is.tkwin(progressbar))
+
+    ## Bind to single dialog item (bind to dialog itself applies to all widgets)
+    tkbind(progressbar,
+           "<Map>",
+           function() {
+               message("[dialog mapped]")
+               monitorAnalysis(dialog, monitor, settings)
+           })
+    tkbind(progressbar,
+           "<Unmap>",
+           function() {
+               message("[dialog unmapped]")
+               monitor@widget <- NULL
+show(str(monitor))
+cat("monitor@stage.var:", tclvalue(monitor@stage.var), "\n")
+cat("monitor@marquee.var:", tclvalue(monitor@marquee.var), "\n")
+cat("monitor@label.var:", tclvalue(monitor@label.var), "\n")
+           })
+
+    ## Resize dialog to something more appropriate
+    ## :PLR: Why is it so big to begin with?
+    tclafter.idle(wmGeometry)
+
+    ## Set minimum size for dialog
+    tclafter.idle(wmMinSizeResetWidth)
+
+    ## Designate dialog as the focus window for input
+    tkfocus(dialog)
+
+    invisible(NULL)
+}
+
+
+##-----------------------------------------------------------------------------
+.getProgressBarFromDialog <- function(dialog) {
+    userdata <- get("userdata", envir=dialog$env)
+    stopifnot(is.list(userdata))
+    progressbar <- userdata$ProgressBar
+}
+
+
+##-----------------------------------------------------------------------------
+.getRadioBoxFromDialog <- function(dialog) {
+    userdata <- get("userdata", envir=dialog$env)
+    stopifnot(is.list(userdata))
+    radiobox <- userdata$RadioBox
+}
+
+
+##-----------------------------------------------------------------------------
+.getRadioButtons <- function(radiobox) {
+    stopifnot(is.tkwin(radiobox))
+    unlist(strsplit(tclvalue(tkwinfo.children(radiobox)), ' '))
 }
 
 
@@ -1440,10 +1906,35 @@ performAnalysis <- function(settings) {
                         }
                     })
 
+    ## Configure progress dialog
+    setStages(settings)
+    progressDialog <- createProgressDialog(getenv("toplevel"),
+                                           getenv("stages"))
+    monitor <- TkProgressMonitor(progressDialog)
+    userdata <- get("userdata", envir=progressDialog$env)
+    stopifnot(is.list(userdata))
+    {
+        radiobox <- userdata$RadioBox
+        marquee.label <- userdata$Marquee
+        detail.label <- userdata$Detail
+cat('detail.label:', '\n')
+str(detail.label)
 
+        ## Glue progress monitor values to dialog widgets
+        children <- .getRadioButtons(radiobox)
+        for (child in children) {
+            radiobutton <- .Tk.newwin(child)
+            tkconfigure(radiobutton,
+                        variable=monitor@stage.var)
+        }
+        tkconfigure(marquee.label,
+                    textvariable=monitor@marquee.var)
+        tkconfigure(detail.label,
+                    textvariable=monitor@label.var)
+    }
 
-    ## Perform analysis
-    SuperCurve:::fitCurveAndSummarizeFromSettings(settings)
+    ## Display progress dialog
+    displayProgressDialog(progressDialog, monitor, settings)
 }
 
 
@@ -1662,13 +2153,12 @@ appExit <- function() {
 ##      be.
 supercurveGUI <- function() {
 
-    bannerFont <- "banner"
+    bannerFont   <- "banner"
+    prestageFont <- "stagebc"
+    stageFont    <- "stagead"
 
     ## Add entries to Tk option database
     local({
-        ## Add "fake" resource values into options database
-        ## :TODO: later...
-
         ## Add widget resource values into options database
         initOptions(list("*BannerFrame.Label.font"=bannerFont,
                          "*BannerFrame.Label.justify"="left",
@@ -1678,27 +2168,45 @@ supercurveGUI <- function() {
                          "*Entry.selectBackground"="yellow",
                          "*Entry.selectForeground"="black",
                          "*Dialog.msg.font"="courier",
-                         "*Dialog.msg.wrapLength"="9i"))
+                         "*Dialog.msg.wrapLength"="9i",
+                         "*RadioBox.Radiobutton.font"=prestageFont,
+                         "*Progressbar.borderWidth"="2",
+                         "*Progressbar.relief"="sunken",
+                         "*Progressbar.length"="200"))
     })
 
-    ## Create named font for later use
-    if (!(bannerFont %in% unlist(strsplit(tclvalue(tkfont.names()), " ")))) {
+    ## Create named fonts for later use
+    availableFonts <- unlist(strsplit(tclvalue(tkfont.names()), " "))
+    if (!(bannerFont %in% availableFonts)) {
         #cat(sprintf("creating %s font", sQuote(bannerFont)), "\n")
         tkfont.create(bannerFont,
                       family="helvetica",
-                      size=18,
+                      size=16,
                       weight="bold")
-        on.exit({
-            #cat("destroying font", "\n")
-            tkfont.delete(bannerFont)
-        })
-    } else {
-        #cat(sprintf("%s font already exists", sQuote(bannerFont)), "\n")
+        on.exit(tkfont.delete(bannerFont))
+    }
+
+    if (!(stageFont %in% availableFonts)) {
+        #cat(sprintf("creating %s font", sQuote(stageFont)), "\n")
+        tkfont.create(stageFont,
+                      family="helvetica",
+                      size=12,
+                      weight="bold")
+        on.exit(tkfont.delete(stageFont))
+    }
+
+    if (!(prestageFont %in% availableFonts)) {
+        #cat(sprintf("creating %s font", sQuote(prestageFont)), "\n")
+        tkfont.create(prestageFont,
+                      family="helvetica",
+                      size=12,
+                      weight="normal")
+        on.exit(tkfont.delete(prestageFont))
     }
 
     ## Create toplevel shell and pair of frames as its children
     toplevel <- tktoplevel()
-    tktitle(toplevel) <- "SuperCurve"
+    tkwm.title(toplevel, "SuperCurve")
 
     ## Initialize "global" variables
     initGlobals(list(
@@ -1706,20 +2214,24 @@ supercurveGUI <- function() {
                      antibodyfile.var=tclVar(""),
                      center.var=tclVar(""),
                      ci.var=tclVar(""),
+                     cutoff.var=tclVar(""),
                      designfile.var=tclVar(""),
                      dirty=FALSE,
+                     errmsg=NULL,
+                     gamma.var=tclVar(""),
                      grouping.var=tclVar(""),
                      ignoreNegative.var=tclVar(""),
-                     ordering.var=tclVar(""),
                      imgdir.var=tclVar(""),
                      initialdir=.getDefaultDirectory(),
-                     labelstring="Press one of the buttons below.",
+                     k.var=tclVar(""),
                      measure.optmenu=NULL,
                      measure.var=tclVar(""),
                      method.var=tclVar(""),
                      model.label.var=tclVar(""),
                      model.var=tclVar(""),
+                     ordering.var=tclVar(""),
                      outdir.var=tclVar(""),
+                     plotSurface.var=tclVar(""),
                      settings=NULL,
                      toplevel=toplevel,
                      trim.var=tclVar(""),
@@ -1751,6 +2263,8 @@ supercurveGUI <- function() {
     createDesignParamsPanel(designparamspage)
     fitparamspage <- tabnotebook_page(tabnotebook, "FitParams")
     createFitParamsPanel(fitparamspage)
+    spatialparamspage <- tabnotebook_page(tabnotebook, "SpatialAdj")
+    createSpatialAdjParamsPanel(spatialparamspage)
     tclupdate()
 
     ## :KRC: Post-processing steps (truncation, normalization) should be added.
@@ -1787,6 +2301,9 @@ supercurveGUI <- function() {
     buildMenus(menubar)
     tkconfigure(toplevel,
                 menu=menubar)
+
+    ## Map window manager's close button to exit function
+    tkwm.protocol(toplevel, "WM_DELETE_WINDOW", appExit)
 
     ## Give R some time to process its event loop
     tclafter.idle(idleTask)
