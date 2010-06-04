@@ -1,6 +1,7 @@
 \name{SCProgressMonitor-class}
 \alias{SCProgressMonitor-class}
 \alias{SCProgressMonitor}
+\alias{getStages}
 \alias{is.SCProgressMonitor}
 \alias{progressMarquee,SCProgressMonitor-method}
 \alias{progressMarquee<-,SCProgressMonitor,character-method}
@@ -16,6 +17,7 @@ via a progressbar and provides means to get/set values for such a widget.
 \usage{
 SCProgressMonitor(stage="")
 is.SCProgressMonitor(x)
+getStages()
 %%\S4method{progressMarquee}{SCProgressMonitor}(object)
 %%\S4method{progressMarquee}{SCProgressMonitor}(object, \dots) <- value
 %%\S4method{progressStage}{SCProgressMonitor}(object)
@@ -62,6 +64,9 @@ is.SCProgressMonitor(x)
 \value{
   The \code{SCProgressMonitor} generator returns an object of class
   \code{SCProgressMonitor}.
+
+  The \code{getStages} method returns a named character vector specifying
+  the stages processed by this package.
 
   The \code{is.SCProgressMonitor} method returns \code{TRUE} if its
   argument is an object of class \code{SCProgressMonitor}.

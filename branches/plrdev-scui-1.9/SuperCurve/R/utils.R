@@ -218,6 +218,21 @@ dir.writable <- function(path) {
 
 
 ##-----------------------------------------------------------------------------
+## Specifies names of possible stages as set by process monitoring code. If a
+## new capability is added to the package, so should an associated stage.
+getStages <- function() {
+    stagesList <- list(input  = "Data Input",
+                       adjust = "Spatial Adj",
+                       fit    = "Curve Fitting",
+                       graph  = "Graphing")
+    stages <- as.character(stagesList)
+    names(stages) <- names(stagesList)
+
+    return(stages)
+}
+
+
+##-----------------------------------------------------------------------------
 ## A version of all.equal() for the slots of an object
 slot.all.equal <- function(x,
                            y,
