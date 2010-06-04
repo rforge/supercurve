@@ -44,7 +44,8 @@ optiondb_add <- function(pattern,
 ## Fetches value from Tcl options database.
 optiondb_get <- function(widget=".",
                          rsrcName,
-                         rsrcClass) {
+                         rsrcClass,
+                         verbose=FALSE) {
     if (is.tkwin(widget)) {
         widget <- widget$ID
     }
@@ -52,6 +53,10 @@ optiondb_get <- function(widget=".",
     stopifnot(is.character(widget) && length(widget) == 1)
     stopifnot(is.character(rsrcName) && length(rsrcName) == 1)
     stopifnot(is.character(rsrcClass) && length(rsrcClass) == 1)
+
+    if (verbose) {
+        cat("option", "get", widget, rsrcName, rsrcClass, "\n")
+    }
 
     tcl("option", "get", widget, rsrcName, rsrcClass)
 }
