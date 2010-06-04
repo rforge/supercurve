@@ -401,6 +401,7 @@ setMethod("write.summary", "RPPASet",
 
         ## For each antibody...
         progressMarquee(monitor) <- "Merging Fit Graphs With Images"
+        progressValue(monitor) <- 0
         antibodies <- names(object@fits)
         progressMaximum(monitor) <- length(antibodies)
         for (i in seq_along(antibodies)) {
@@ -459,11 +460,6 @@ setMethod("write.summary", "RPPASet",
 
             reqdColnames <- c("Antibody",
                               "Filename")
-
-            ## Ensure minimum number of columns
-            if (!(ncol(proteinassay.df) >= length(reqdColnames))) {
-                stop("not enough columns")
-            }
 
             ## Ensure required columns exist
             found <- reqdColnames %in% colnames(proteinassay.df)
@@ -607,7 +603,7 @@ RPPASet <- function(path,
     ## Load slides to process
     progressMarquee(monitor) <- "Reading slides"
     progressMaximum(monitor) <- length(slideFilenames)
-    rppas <- array(list(), length(slideFilenames))
+    rppas <- array(list(), length(slideFilenames), list(antibodies))
     for (i in seq_along(slideFilenames)) {
 
         slideFilename <- slideFilenames[i]
@@ -617,14 +613,20 @@ RPPASet <- function(path,
         message(paste("reading", slideFilename))
         flush.console()
 
-        rppas[[i]] <- RPPA(slideFilename,
-                           path=path,
-                           antibody=antibody,
-                           software=software)
+        rppas[[i]] <- tryCatch(RPPA(slideFilename,
+                                    path=path,
+                                    antibody=antibody,
+                                    software=software),
+                               error=function(e) {
+                                   message(conditionMessage(e))
+                                   NULL
+                               })
 
         ## If this is first slide read...
         if (i == 1) {
             firstslide <- rppas[[1]]
+
+            ## :BUG: If above fails to read first file...
 
             ## Create design
             design <- RPPADesignFromParams(firstslide, designparams)
@@ -639,9 +641,9 @@ RPPASet <- function(path,
             #browser(expr=FALSE)  ## :TBD: Helpful?
         }
         progressValue(monitor) <- i
-        Sys.sleep(2)
+        #Sys.sleep(2)
     }
-    rownames(rppas) <- antibodies
+
     #dev.new(title="Output")
 
 
@@ -660,14 +662,27 @@ RPPASet <- function(path,
     if (doSpatialAdj) {
         progressStage(monitor) <- "Spatial Adj"
         progressMarquee(monitor) <- "Performing spatial adjustment on slides"
+        progressValue(monitor) <- 0
         for (i in seq_along(slideFilenames)) {
-            progressLabel(monitor) <- antibodies[i]
+            antibody <- antibodies[i]
+
+            progressLabel(monitor) <- antibody
             message(paste("spatially adjusting slide",
-                          antibodies[i], "-", "please wait."))
+                          antibody, "-", "please wait."))
             flush.console()
-            rppas[[i]] <- spatialAdjustmentFromParams(rppas[[i]],
-                                                      design,
-                                                      spatialparams)
+            if (!is.null(rppas[[i]])) {
+                rppas[[i]] <- tryCatch({
+                                       spatialAdjustmentFromParams(rppas[[i]],
+                                                                   design,
+                                                                  spatialparams)
+                                   },
+                                   error=function(e) {
+                                       message(conditionMessage(e))
+                                       NULL
+                                   })
+            } else {
+                warning(paste("no slide to adjust for", antibody))
+            }
             progressValue(monitor) <- i
         }
     }
@@ -675,26 +690,36 @@ RPPASet <- function(path,
     ## Create fits
     progressStage(monitor) <- "Curve Fitting"
     progressMarquee(monitor) <- "Fitting slides"
+    progressValue(monitor) <- 0
 
     adj.fitparams <- fitparams
     if (doSpatialAdj) {
-        message("fit will be performed using spatially adjusted measure")
+        message("fits will be performed using spatially adjusted measure")
         adjMeasure <- paste("Adj", fitparams@measure, sep=".")
         adj.fitparams@measure <- adjMeasure
     }
-    fits <- array(list(), length(slideFilenames), slideFilenames)
+    fits <- array(list(), length(slideFilenames), list(antibodies))
     for (i in seq_along(slideFilenames)) {
-        progressLabel(monitor) <- antibodies[i]
-        message(paste("fitting", antibodies[i], "-", "please wait."))
-        flush.console()
-        Sys.sleep(2)
+        antibody <- antibodies[i]
 
-        fits[[i]] <- RPPAFitFromParams(rppas[[i]],
-                                       design=design,
-                                       fitparams=adj.fitparams)
+        progressLabel(monitor) <- antibody
+        message(paste("fitting", antibody, "-", "please wait."))
+        flush.console()
+
+        fits[[i]] <- if (!is.null(rppas[[i]])) {
+                         tryCatch(RPPAFitFromParams(rppas[[i]],
+                                                    design=design,
+                                                    fitparams=adj.fitparams),
+                                  error=function(e) {
+                                      message(conditionMessage(e))
+                                      NULL
+                                  })
+                     } else {
+                         warning(paste("no slide to fit for", antibody))
+                         NULL
+                     }
         progressValue(monitor) <- i
     }
-    rownames(fits) <- antibodies
 
     ## Create new class
     new("RPPASet",
