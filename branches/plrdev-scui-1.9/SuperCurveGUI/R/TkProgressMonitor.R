@@ -72,10 +72,20 @@ cat("children:", children, "\n")
                                } else {
                                    NULL
                                }
-                for (buttonID in c(currStageID, newStageID)) {
-                    radiobutton <- .Tk.newwin(buttonID)
-                    tkinvoke(radiobutton)
-                }
+message(sprintf("******** %s ********", value))
+                sapply(c(currStageID, newStageID),
+                       function(buttonID) {
+                           if (nzchar(buttonID)) {
+                               radiobutton <- .Tk.newwin(buttonID)
+                               tkconfigure(radiobutton,
+                                           state="normal")
+                               message(sprintf("\tinvoking %s (%s)",
+                                               buttonID,
+                                               tclvalue(tkcget(radiobutton,
+                                                               "-state"))))
+                               tkinvoke(radiobutton)
+                           }
+                       })
 
                 tclupdate()
 #browser(text="Tricky Updater?", expr=FALSE)
@@ -221,7 +231,7 @@ setReplaceMethod("progressDone",
                 ## :TODO: Can we save/retrieve geterrmessage() instead?
                 #progressLabel(object) <- getenv("errmsg")
                 #progressLabel(object) <- geterrmessage()
-                progressLabel(object) <- "Another abject failure..."
+                progressLabel(object) <- "See session logfile for details..."
             }
         }
 
