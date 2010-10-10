@@ -3,6 +3,7 @@
 ###
 
 ## Imported methods
+import(methods)
 importClassesFrom(SuperCurve, BoundedRange)
 importClassesFrom(SuperCurve, ProgressMonitor, DefaultProgressMonitor)
 importClassesFrom(SuperCurve, SCProgressMonitor)
