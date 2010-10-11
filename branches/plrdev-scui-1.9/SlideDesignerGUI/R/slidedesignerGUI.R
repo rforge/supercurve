@@ -1928,6 +1928,12 @@ finalStepCB <- function() {
                                      justify="left",
                                      text=labelstring),
            pady="8m")
+    labelstring <- "Convert to single main row/col layout"
+    tkpack(layout.checkbox <- tkcheckbutton(command.area,
+                                            justify="left",
+                                            text=labelstring,
+                                            variable=getenv("idiot.layout")),
+           pady="8m")
 
     ## Create action area
     view.button <- tkbutton(action.area,
@@ -2505,9 +2511,14 @@ createGrid <- function(subgrid.df) {
     ##-------------------------------------------------------------------------
     ## Determine subgrid number for requested type.
     getSubgridNum <- function(df, spottype) {
-        with(df, SubgridNum[SpotType == spottype])
+        ans <- with(df, SubgridNum[SpotType == spottype])
+        return(if (isTRUE(is.na(ans))) {
+                   as.integer(0)
+               } else {
+                   ans
+               })
     }
-    
+
     ## Determine subgrid maximums
     max.subgridnum.sample  <- max(getSubgridNum(subgrid.df, "Sample"))
     max.subgridnum.posctrl <- max(getSubgridNum(subgrid.df, "PosCtrl"))
@@ -2554,7 +2565,7 @@ createGrid <- function(subgrid.df) {
                                         tmp.df$GridNum)
             tmp.df$SubgridNum <- NULL  # Remove afterwards
             tmp.df$GridNum    <- NULL  # Remove afterwards
-            
+
             ## Update grid offsets
             off.sample  <- as.integer(off.sample  + max.subgridnum.sample)
             off.posctrl <- as.integer(off.posctrl + max.subgridnum.posctrl)
@@ -2606,6 +2617,56 @@ writeGridToFile <- function(grid.df, pathname) {
 
 
 ##-----------------------------------------------------------------------------
+## Converts from true layout to bastardized one used by labs for certain
+## datasets.
+truth2idiot <- function(grid.df) {
+    .appEntryStr("truth2idiot")
+    stopifnot(is.data.frame(grid.df))
+
+    ## Re-arrange the row order into 'idiot' order
+    orig.ord <- seq_len(nrow(grid.df))    # 1..5808
+    n.mr <- max(grid.df$Main.Row)    # 4
+    n.mc <- max(grid.df$Main.Col)    # 12
+    n.sr <- max(grid.df$Sub.Row)     # 11
+    n.sc <- max(grid.df$Sub.Col)     # 11
+
+    nspots.mr <- n.mc * (n.sr * n.sc)         # number of spots per main row
+    tmp.ord  <- ceiling(orig.ord / nspots.mr)
+    tmp.ord2 <- ceiling(seq_len(nspots.mr) / (n.sr * n.sc))
+
+    new.ord <- NULL
+    for (i in seq_len(n.mr)) {
+        tmp <- orig.ord[tmp.ord == i]
+
+        mr <- NULL
+        for (j in seq_len(n.mc)) {
+            mr <- cbind(mr, matrix(tmp[tmp.ord2 == j], byrow=TRUE, ncol=n.sc))
+        }
+        new.ord <- rbind(new.ord, mr)
+    }
+    idiot.ord <- as.vector(t(new.ord))
+
+    ## Idiot design layout
+    idiot.df <- grid.df[idiot.ord, ]
+    location.colnames <- 1:4
+    truth.loc.df <- idiot.df[, location.colnames]
+    names(truth.loc.df) <- c("Main.Row.Real",
+                             "Main.Col.Real",
+                             "Sub.Row.Real",
+                             "Sub.Col.Real")
+    sr.idiot <- rep(seq_len(n.mr * n.sr), each=(n.mc * n.sc))
+    sc.idiot <- rep(seq_len(n.mc * n.sc), (n.mr * n.sr))
+    idiot.df$Main.Row <- as.integer(1)
+    idiot.df$Main.Col <- as.integer(1)
+    idiot.df$Sub.Row  <- as.integer(sr.idiot)
+    idiot.df$Sub.Col  <- as.integer(sc.idiot)
+
+    ## Append actual location columns before returning data frame
+    return(cbind(idiot.df, truth.loc.df))
+}
+
+
+##-----------------------------------------------------------------------------
 ## Save the grid design.
 saveGrid <- function(subgrid.df) {
     .appEntryStr("saveGrid")
@@ -2620,7 +2681,14 @@ saveGrid <- function(subgrid.df) {
         return(-1)
     }
 
-    return(writeGridToFile(createGrid(subgrid.df), pathname))
+    grid.df <- createGrid(subgrid.df)
+
+    idiot.layout <- as.integer(tclvalue(getenv("idiot.layout")))
+    if (as.logical(idiot.layout)) {
+        grid.df <- truth2idiot(grid.df)
+    }
+
+    return(writeGridToFile(grid.df, pathname))
 }
 
 
@@ -2981,6 +3049,7 @@ slidedesignerGUI <- function() {
                      dilution.nseries.row=tclVar("1"),
                      dilution.steprate=tclVar("2"),
                      dirty=FALSE,
+                     idiot.layout=tclVar("0"),
                      labelstring="Press one of the buttons below.",
                      left.frame=left.frame,
                      nmainrow=tclVar("4"),
