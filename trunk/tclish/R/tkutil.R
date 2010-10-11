@@ -74,6 +74,13 @@ tclinfo.exists <- function(...) {
 
 
 ##-----------------------------------------------------------------------------
+## Returns name of the computer on which this invocation is being executed.
+tclinfo.hostname <- function(...) {
+    tcl("info", "hostname", ...)
+}
+
+
+##-----------------------------------------------------------------------------
 ## Alternative version of tclRequire() that allows version checking.
 tclpackage.require <- function (package, version="", warn=TRUE) {
     a <- if (version == "") {
