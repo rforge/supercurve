@@ -15,6 +15,7 @@
 \alias{tclcatch}
 \alias{tclinfo}
 \alias{tclinfo.exists}
+\alias{tclinfo.hostname}
 \alias{tclpackage.require}
 \alias{tclupdate}
 \alias{tktk}
