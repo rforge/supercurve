@@ -9,7 +9,7 @@
   \tabular{ll}{
     Package: \tab SlideDesignerGUI\cr
     Type: \tab Package\cr
-    Version: \tab 1.3.1\cr
+    Version: \tab 1.3.2\cr
     Date: \tab 2010-10-08\cr
     License: \tab See LICENSE for license information\cr
   }
@@ -18,6 +18,8 @@
   For a high-level summary of the changes for each revision, use
     \code{file.show(system.file("NEWS", package="SlideDesignerGUI"))}.
 }
-\author{P. Roebuck, \email{plroebuck@mdanderson.org}}
+\author{
+  P. Roebuck, \email{plroebuck@mdanderson.org}
+}
 \keyword{package}
 
