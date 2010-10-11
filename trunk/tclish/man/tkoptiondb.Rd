@@ -35,9 +35,10 @@ optiondb_readfile(filename,
 }
 \details{
   \code{optiondb_add} adds an entry into Tcl options database with given
-  priority; \code{optiondb_readfile} adds a file's contents.
+  priority; \code{optiondb_readfile} adds a file's contents. To clear an
+  entry, invoke \code{optiondb_add} with an empty string for \code{value}.
 
-  \code{optiondb_get} fetches value from Tcl options database.
+  \code{optiondb_get} fetches a value from Tcl options database.
 
   There is a fundamental difference between the way Tcl handles options
   and the way Xt handles options; Tcl has separate priorities and within
