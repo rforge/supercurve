@@ -3,6 +3,7 @@
 ###
 
 require(tcltk) || stop("tcltk support is missing")
+library(tclish)
 
 tclpackage.require("Tcl", "8.4")               # Requires Tcl 8.4 or later
 
@@ -2916,8 +2917,21 @@ appExit <- function() {
 ##-----------------------------------------------------------------------------
 ## This is the only user-visible function in the file. You call this
 ## function to start the application.
-slideDesignerGUI <- function() {
+slidedesignerGUI <- function() {
+    ## Set WM_CLIENT_MACHINE property on root window
+    tkwm.client('.', tclinfo.hostname())
+
+    ## Create named font for later use
+    availableFonts <- unlist(strsplit(tclvalue(tkfont.names()), " "))
     bannerFont <- "banner"
+    if (!(bannerFont %in% availableFonts)) {
+        #.appDebugStr(sprintf("creating %s font", sQuote(bannerFont)))
+        tkfont.create(bannerFont,
+                      family="helvetica",
+                      size=18,
+                      weight="bold")
+        on.exit(tkfont.delete(bannerFont))
+    }
 
     ## Add entries to Tk option database
     local({
@@ -2943,22 +2957,10 @@ slideDesignerGUI <- function() {
                          "*Entry.selectBackground"="yellow",
                          "*Entry.selectForeground"="black",
                          "*SpotFrame.Button.background"=unmarked))
-    })
 
-    ## Create named font for later use
-    if (!(bannerFont %in% unlist(strsplit(tclvalue(tkfont.names()), " ")))) {
-        .appDebugStr(sprintf("creating %s font", sQuote(bannerFont)))
-        tkfont.create(bannerFont,
-                      family="helvetica",
-                      size=18,
-                      weight="bold")
-        on.exit({
-            .appDebugStr(sprintf("destroying %s font", sQuote(bannerFont)))
-            tkfont.delete(bannerFont)
-        })
-    } else {
-        .appDebugStr(sprintf("%s font already exists", sQuote(bannerFont)))
-    }
+        ## Handle app-defaults file(s), if any exist
+        loadAppDefaults(appdefaultsfile <- "slideDesignerGUI")
+    })
 
     ## Create toplevel shell and pair of frames as its children
     toplevel <- tktoplevel()
@@ -3183,5 +3185,5 @@ slideDesignerGUI <- function() {
     tkwait.window(toplevel)
 }
 
-sdui <- slideDesignerGUI
+sdui <- slidedesignerGUI
 
