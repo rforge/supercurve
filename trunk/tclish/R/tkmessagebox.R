@@ -132,8 +132,8 @@ askyesno <- function(title,
 ##-----------------------------------------------------------------------------
 ## Ask if operation should be retried; return TRUE if the answer is retry.
 askretrycancel <- function(title,
-                        message,
-                        ...) {
+                           message,
+                           ...) {
     response <- tkmessageBox(title=title,
                              message=message,
                              icon=.icons$WARNING,
