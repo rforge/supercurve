@@ -6,7 +6,21 @@
 	**************************************************
 
 
-		CHANGES IN SLIDEDESIGNERGUI VERSION 1.3.0
+		CHANGES IN R VERSION 1.3.1
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+
+NEW FEATURES
+
+    o	Mostly minor tweaks to standardize coding with other
+	Tcl/Tk GUI packages. As part of that, common routines
+	were moved into new package dependency. Also, appdefault
+	handling was added.
+
+
+		CHANGES IN R VERSION 1.3.0
 
 
 SIGNIFICANT USER-VISIBLE CHANGES
@@ -26,7 +40,7 @@ NEW FEATURES
 	**************************************************
 
 
-		CHANGES IN SLIDEDESIGNERGUI VERSION 1.2.0
+		CHANGES IN R VERSION 1.2.0
 
 
 SIGNIFICANT USER-VISIBLE CHANGES
@@ -45,7 +59,7 @@ NEW FEATURES
 	**************************************************
 
 
-		CHANGES IN SLIDEDESIGNERGUI VERSION 1.1.0
+		CHANGES IN R VERSION 1.1.0
 
 
 SIGNIFICANT USER-VISIBLE CHANGES
@@ -83,7 +97,7 @@ BUG FIXES
 	**************************************************
 
 
-		CHANGES IN SLIDEDESIGNERGUI VERSION 1.0.1
+		CHANGES IN R VERSION 1.0.1
 
 
 SIGNIFICANT USER-VISIBLE CHANGES
@@ -95,7 +109,7 @@ BUG FIXES
 	expected by SuperCurve package.
 
 
-		CHANGES IN SLIDEDESIGNERGUI VERSION 1.0.0
+		CHANGES IN R VERSION 1.0.0
 
 
 SIGNIFICANT USER-VISIBLE CHANGES
