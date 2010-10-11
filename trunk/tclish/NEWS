@@ -2,12 +2,23 @@
 
 	**************************************************
 	*						 *
-	*	       1.0 SERIES NEWS			 *
+	*	       0.7 SERIES NEWS			 *
 	*						 *
 	**************************************************
 
 
-		CHANGES IN R VERSION 1.0.0
+		CHANGES IN R VERSION 0.7.1
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+
+NEW FEATURES
+
+    o	Added tclinfo.hostname() method.
+
+
+		CHANGES IN R VERSION 0.7.0
 
 
 SIGNIFICANT USER-VISIBLE CHANGES
