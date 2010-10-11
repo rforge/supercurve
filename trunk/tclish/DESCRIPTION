@@ -1,0 +1,13 @@
+Package: tclish
+Version: 0.7.0
+Date: 2010/10/01
+Title: Tcl/Tk Utilities Package
+Author: P. Roebuck
+Maintainer: P. Roebuck <plroebuck@mdanderson.org>
+Description: Variety of Tcl/Tk methods used for GUI development.
+Depends: R (>= 2.8), tcltk
+SystemRequirements: Tcl/Tk (>= 8.5)
+License: file LICENSE
+LazyLoad: yes
+Collate: tkutil.R tkoptiondb.R tkmessagebox.R tknotebook.R tktabnotebook.R tkprogressbar.R zzz.R
+
