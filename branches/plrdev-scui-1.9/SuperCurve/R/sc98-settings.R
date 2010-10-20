@@ -36,10 +36,11 @@ validSuperCurveSettings <- function(object) {
     {
         path <- object@txtdir@path
 
-        ## Ensure directory contains TXT files
-        txt.re <- ".*[tT][xX][tT]$"
-        if (length(list.files(path, pattern=txt.re)) == 0) {
-            msg <- c(msg, "txt directory contains no text files")
+        ## Ensure directory contains TEXT files
+        txt.re <- "\\.*[tT][xX][tT]$"
+        txtfiles <- list.files(path, pattern=txt.re)
+        if (length(txtfiles) == 0) {
+            msg <- c(msg, "txt directory contains no TEXT files")
         }
     }
 
@@ -49,9 +50,15 @@ validSuperCurveSettings <- function(object) {
             path <- object@imgdir@path
 
             ## Ensure directory contains TIFF files
-            tiff.re <- ".*[tT][iI][fF]{1,2}$"
-            if (length(list.files(path, pattern=tiff.re)) == 0) {
-                msg <- c(msg, "img directory contains no TIFF files")
+            tif.re <- "\\.*[tT][iI][fF]{1,2}$"
+            tiffiles <- list.files(path, pattern=tif.re)
+            if (length(tiffiles) == 0) {
+                #msg <- c(msg, "image directory contains no TIFF files")
+                ## :PLR: K. Coombes wants warning here (2010/08/17)
+                warning(sprintf("image directory %s contains no TIFF files",
+                                dQuote(path)))
+            } else {
+                ## :TODO: Do they correspond to ANY of the TEXT files?
             }
         }
     }
@@ -261,23 +268,58 @@ setMethod("paramString", "SuperCurveSettings",
                      }
 
     ## Create param string
-    paste(paste("txtdir:", shQuote(object@txtdir@path)), "\n",
-          paste("imgdir:", shQuote(imgdir)), "\n",
-          paste("outdir:", shQuote(object@outdir@path)), "\n",
-          "designparams:", "\n",
-          indent(designparams), "\n",
-          "fitparams:", "\n",
-          indent(fitparams), "\n",
+    paste(sprintf("txtdir: %s\n", shQuote(object@txtdir@path)),
+          sprintf("imgdir: %s\n", shQuote(imgdir)),
+          sprintf("outdir: %s\n", shQuote(object@outdir@path)),
+          sprintf("designparams:\n%s\n", indent(designparams)),
+          sprintf("fitparams:\n%s\n", indent(fitparams)),
           if (!is.null(spatialparams)) {
-              paste("spatialparams:", "\n",
-                    indent(spatialparams), "\n", sep="")
+              sprintf("spatialparams:\n%s\n", indent(spatialparams))
+          } else {
+              sprintf("dospatialadj: %s\n", FALSE)
           },
           if (!is.null(object@antibodyfile)) {
-              paste("antibodyfile:", shQuote(object@antibodyfile), "\n")
+              sprintf("antibodyfile: %s\n", shQuote(object@antibodyfile))
           },
           if (!is.null(object@software)) {
-              paste("software:", object@software, "\n")
+              sprintf("software: %s\n", object@software)
           },
           sep="")
 })
+
+
+##-----------------------------------------------------------------------------
+## Returns list of prerequisite packages based on requested processing.
+getPrerequisitePackages <- function(settings) {
+    ## Check arguments
+    if (!is.SuperCurveSettings(settings)) {
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("settings"), "SuperCurveSettings"))
+    }
+
+    ## Begin processing
+
+    ## Get model-specific prerequisites
+    model.prereqs <- switch(EXPR=settings@fitparams@model,
+                            cobs=c("cobs", "splines"),
+                            logistic="boot")
+    prerequisites <- model.prereqs
+
+    ## Get fitmethod-specific prerequisites
+    method.prereqs <- switch(EXPR=settings@fitparams@method,
+                             nlrq="quantreg",
+                             nlrob="robustbase")
+    prerequisites <- c(prerequisites, method.prereqs)
+
+    ## Get processing-specific prerequisites
+    if (!is.null(settings@spatialparams)) {
+        prerequisites <- c(prerequisites, "mgcv")
+    }
+
+    if (settings@doprefitqc) {
+        prerequisites <- c(prerequisites, "timeDate")
+    }
+
+    prerequisites
+}
 
