@@ -283,8 +283,7 @@ spatialCorrection <- function(rppa,
     pd <- data.frame(Row=mydata$Row, Col=mydata$Col)
 
     ## Borrow SpotType and Dilution information from design
-    layout <- design@layout
-    mydata <- merge(mydata, layout, by=c(.locationColnames(), "Sample"))
+    mydata <- .mergeDataWithLayout(mydata, design)
 
     ## Compute background cutoff
     bgCut <- .computeBackgroundCutoff(mydata, measure, cutoff)

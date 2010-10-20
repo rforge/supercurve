@@ -83,7 +83,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
                              aliasfile=NULL,
                              designfile=NULL,
                              path=".") {
-  #:KRC:  Since you have defined a validity fuinction, why are you
+  #:KRC:  Since you have defined a validity function, why are you
   # replicating the error checking?
     ## Check arguments
     if (!is.numeric(steps)) {
@@ -124,7 +124,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
         }
     }
 
-    # try(as.logical())
+    ## Convert numeric argument to logical counterpart
     if (is.numeric(center)) {
         center <- as.logical(center)
     }
@@ -410,8 +410,7 @@ RPPADesignFromParams <- function(raw,
                 }
 
                 ## Attempt to merge columns from slide design file
-                raw.df <- merge(raw.df, design.df, sort=FALSE)
-                raw.df <- raw.df[do.call(order, raw.df), ]
+                raw.df <- .mergeDataWithLayout(raw.df, design.df)
 
                 ## Provide control names from slide design information
                 ctrlnames <- as.character(with(raw.df,

@@ -144,6 +144,7 @@
 .portableFilename <- function(filename) {
     ## Check arguments
     stopifnot(is.character(filename) && length(filename) == 1)
+    stopifnot(nzchar(filename))
 
     ## Begin processing
 
@@ -221,14 +222,36 @@ dir.writable <- function(path) {
 ## Specifies names of possible stages as set by process monitoring code. If a
 ## new capability is added to the package, so should an associated stage.
 getStages <- function() {
-    stagesList <- list(input  = "Data Input",
-                       adjust = "Spatial Adj",
-                       fit    = "Curve Fitting",
-                       graph  = "Graphing")
+    ## :NOTE: SuperCurveGUI::setStages() uses these EXACT list names...
+    stagesList <- list(input    = "Data Input",
+                       spatial  = "Spatial Adj",
+                       fit      = "Curve Fitting",
+                       graph    = "Graphing")
     stages <- as.character(stagesList)
     names(stages) <- names(stagesList)
 
     return(stages)
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns data.frame containing RPPA data merged with design layout.
+.mergeDataWithLayout <- function(rppadata, layout) {
+    ## Check arguments
+    if (is.RPPA(rppadata)) {
+        rppadata <- rppadata@data
+    }
+    if (is.RPPADesign(layout)) {
+        layout <- layout@layout
+    }
+    stopifnot(is.data.frame(rppadata))
+    stopifnot(is.data.frame(layout))
+
+    ## Begin processing
+    #merge.by <- c(.locationColnames(), "Sample")
+    #merged.df <- merge(rppadata, layout, by=merge.by)
+    merged.df <- merge(rppadata, layout, sort=FALSE)
+    merged.df[do.call(order, merged.df), ]
 }
 
 
