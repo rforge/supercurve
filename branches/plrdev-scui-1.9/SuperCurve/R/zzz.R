@@ -40,5 +40,24 @@
     ## In case namespace is loaded (via import) by package that doesn't depend
     ## on S4 methods and used in a session with non-default set of packages
     require(methods)
+
+    ## Preflight check use of ImageMagick 'convert' binary
+    preflightCheck <- function() {
+        command <- "convert --version"
+        output <- switch(EXPR=.Platform$OS.type,
+                         unix=system(command,
+                                     intern=TRUE,
+                                     ignore.stderr=TRUE),
+                         windows=shell(command,
+                                       intern=TRUE,
+                                       ignore.stderr=TRUE),
+                         "")
+        grepl("ImageMagick", output[1], fixed=TRUE)
+    }
+
+    if (!preflightCheck()) {
+        warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH",
+                        sQuote("convert")))
+    }
 }
 
