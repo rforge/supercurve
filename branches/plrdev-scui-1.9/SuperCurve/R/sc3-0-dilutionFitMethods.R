@@ -182,7 +182,7 @@ setMethod("coef", "FitClass",
                },
                silent=silent)
 
-    if (is(tmp, "try-error")) {
+    if (inherits(tmp, "try-error")) {
         warn <- "unavoidable nls/rlm error"
         ## :TBD: Should 'est.conc' be set to something different on error?
         resids <- 0
@@ -548,7 +548,7 @@ setMethod("fitSlide", "LogisticFitClass",
                                     gamma=cf$gamma),
                          control=nls.control(maxiter=100),
                          na.action="na.omit"))
-    if (is(nls.model, "try-error")) {
+    if (inherits(nls.model, "try-error")) {
         warning("unable to perform first pass overall slide fit. trying quantiles.")
         ## Crude (but robust) way to get alpha and beta
         cf <- .coef.quantile.est(intensity)
