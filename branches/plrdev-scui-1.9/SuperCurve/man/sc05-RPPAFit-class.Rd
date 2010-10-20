@@ -179,24 +179,23 @@ erk2 <- RPPA("ERK2.txt", path=path)
 design <- RPPADesign(erk2,
                      grouping="blockSample",
                      controls=list("neg con", "pos con"))
-fit.nls <- RPPAFit(erk2, design, "Mean.Net")
+erk2.fit <- RPPAFit(erk2, design, "Mean.Net")
 showMethods('image')
-class(fit.nls)
+class(erk2.fit)
 
-image(fit.nls)
-image(fit.nls, measure="Residuals")
-plot(fit.nls, type="cloud")
+image(erk2.fit)
+image(erk2.fit, measure="Residuals")
+plot(erk2.fit, type="cloud")
+coef(erk2.fit)
 
-## :TBD: Why recreate exact same fit as above?
-fit.q <- RPPAFit(erk2, design, "Mean.Net")
-hist(fit.q, type="StdRes")
-plot(fit.q, type="series")
-
-coef(fit.nls)
-coef(fit.q)
-
-plot(fitted(fit.q), resid(fit.q))
+jnk <- RPPA("JNK.txt", path=path)
+jnk.fit <- RPPAFit(jnk, design, "Mean.Net")
+hist(jnk.fit, type="StdRes")
+plot(jnk.fit, type="series")
+coef(jnk.fit)
+plot(fitted(jnk.fit), resid(jnk.fit))
 }
+\keyword{classes}
 \keyword{regression}
 \keyword{robust}
 
