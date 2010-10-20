@@ -7,7 +7,10 @@
   dilution series in a reverse-phase protein array experiment.
 }
 \usage{
-getConfidenceInterval(result, alpha=0.1, nSim=50)
+getConfidenceInterval(result,
+                      alpha=0.1,
+                      nSim=50,
+                      progmethod=NULL)
 }
 \arguments{
   \item{result}{object of class \code{\link{RPPAFit}} representing the
@@ -16,6 +19,7 @@ getConfidenceInterval(result, alpha=0.1, nSim=50)
     confidence interval; the width of the resulting interval is 1 - alpha.}
   \item{nSim}{numeric scalar specifying number of times to resample the
     data in order to estimate the confidence intervals.}
+  \item{progmethod}{optional function that can be used to report progress.}
 }
 \details{
   In order to compute the confidence intervals, the function assumes

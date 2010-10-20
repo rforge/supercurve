@@ -45,7 +45,8 @@ RPPAFitParams(measure,
 
 RPPAFitFromParams(rppa,
                   design,
-                  fitparams)
+                  fitparams,
+                  progmethod=NULL)
 
 is.RPPAFit(x)
 is.RPPAFitParams(x)
@@ -58,6 +59,7 @@ is.RPPAFitParams(x)
     of the array}
   \item{fitparams}{object of the class \code{RPPAFitParams}, bundling
     together the following arguments.}
+  \item{progmethod}{optional function that can be used to report progress.}
   \item{measure}{character string identifying the column of the raw RPPA data
     that should be used to fit to the model.}
   \item{model}{character string specifying the model for the response curve
@@ -153,11 +155,11 @@ is.RPPAFitParams(x)
     \item{\code{measure}:}{character; see arguments above}
     \item{\code{xform}:}{function or NULL; see arguments above}
     \item{\code{method}:}{character; see arguments above}
-    \item{\code{ci}:}{logical; see arguments above}
-    \item{\code{ignoreNegative}:}{logical; see arguments above}
-    \item{\code{trace}:}{logical; see arguments above}
-    \item{\code{verbose}:}{logical; see arguments above}
-    \item{\code{veryVerbose}:}{logical; see arguments above}
+    \item{\code{ci}:}{logical scalar; see arguments above}
+    \item{\code{ignoreNegative}:}{logical scalar; see arguments above}
+    \item{\code{trace}:}{logical scalar; see arguments above}
+    \item{\code{verbose}:}{logical scalar; see arguments above}
+    \item{\code{veryVerbose}:}{logical scalar; see arguments above}
     \item{\code{warnLevel}:}{numeric; see arguments above}
     \item{\code{trim}:}{numeric; see arguments above}
     \item{\code{model}:}{character; see arguments above}
@@ -210,8 +212,9 @@ fit.nls <- RPPAFit(erk2, design, "Mean.Net")
 summary(fit.nls)
 coef(fit.nls)
 }
+\keyword{classes}
 \keyword{models}
-\keyword{regression}
 \keyword{nonlinear}
+\keyword{regression}
 \keyword{robust}
 

@@ -405,7 +405,8 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
 ##-----------------------------------------------------------------------------
 getConfidenceInterval <- function(result,
                                   alpha=0.10,
-                                  nSim=50) {
+                                  nSim=50,
+                                  progmethod=NULL) {
     ## Check arguments
     if (!is.RPPAFit(result)) {
         stop(sprintf("argument %s must be object of class %s",
@@ -428,6 +429,16 @@ getConfidenceInterval <- function(result,
                      sQuote("nSim")))
     }
 
+    if (!is.null(progmethod)) {
+        if (!is.function(progmethod)) {
+            stop(sprintf("argument %s must be function, if specified",
+                         sQuote("progmethod")))
+        }
+    } else {
+        ## Create a placeholder function
+        progmethod <- function(phase) {}
+    }
+
     nSim <- as.integer(nSim)
 
     ## Begin processing
@@ -442,12 +453,15 @@ getConfidenceInterval <- function(result,
     ## We assume the residuals vary smoothly with concentration or intensity
     ## so, we use loess to fit the absolute residuals as a function of the
     ## fitted concentration
+    progmethod("ci fit resid")
     lo <- loess(ares ~ xval, data.frame(ares=abs(res), xval=xval))
 
     ## We assume the residuals locally satisfy R ~ N(0, sigma).
     ## Then the expected value of |R| is sigma*sqrt(2/pi), so:
     sigma <- sqrt(pi / 2) * fitted(lo)
 
+    series.len <- length(series)
+    i.this <- as.integer(1)
     for (this in series) {
         items <- result@design@layout$Series == this
         xhat <- xval[items]
@@ -457,9 +471,14 @@ getConfidenceInterval <- function(result,
         for (j in seq_len(nSim)) {
             ## Sample the residuals
             resid.boot <- rnorm(sum(items), 0, sigma[items])
-            ## Add resid.boot to y_hat;  refit;
+            ## Add resid.boot to y_hat
             ysim <- yhat + resid.boot
-
+            ## Refit
+            progmethod(sprintf("ci refit series (%d/%d) sample (%d/%d)",
+                               i.this,
+                               series.len,
+                               j,
+                               nSim))
             fs <- fitSeries(result@model,
                             diln=steps[items],
                             intensity=ysim,
@@ -471,6 +490,8 @@ getConfidenceInterval <- function(result,
         }
         result@lower[this] <- quantile(sim, probs=alpha/2, na.rm=TRUE)
         result@upper[this] <- quantile(sim, probs=1 - alpha/2, na.rm=TRUE)
+
+        i.this <- as.integer(i.this + 1)
     }
     result@conf.width <- 1-alpha
 
