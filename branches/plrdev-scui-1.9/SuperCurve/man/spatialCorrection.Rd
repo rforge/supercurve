@@ -38,7 +38,7 @@ spatialCorrection(rppa,
   \item{k}{numeric scalar used as smoothing model argument.}
   \item{gamma}{numeric scalar used as model parameter with value in
    range [0..2]}
-  \item{plotSurface}{logical scalar specifying whether to plot surfaces}
+  \item{plotSurface}{logical scalar. If \code{TRUE}, plot surfaces.}
 }
 \details{
   The observed spot intensities are assumed to be a combination of true
