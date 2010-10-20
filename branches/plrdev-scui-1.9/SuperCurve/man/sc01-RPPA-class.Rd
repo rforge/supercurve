@@ -68,7 +68,9 @@ is.RPPA(x)
   return a data frame containing the file's data. The method will be searched
   for in the global namespace, then within the package itself. The default
   value selects method \code{read.microvigene}, which this package provides
-  to read \emph{MicroVigene} quantification files in text format.
+  to read \emph{MicroVigene} quantification files in text format. An additional
+  method, \code{read.superslide}, is provided to convert a single subgrid
+  physical layout (in MicroVigene format) into its actual logical one.
 }
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to
@@ -122,6 +124,9 @@ is.RPPA(x)
   \code{\linkS4class{RPPADesign}}
 }
 \examples{
+  \dontrun{
+rppa.ss <- RPPA("Cyclin D1(V)_GBL0009999.txt", software="superslide")
+  }
 path <- system.file("rppaTumorData", package="SuperCurve")
 erk2 <- RPPA("ERK2.txt", path=path)
 dim(erk2)
@@ -130,7 +135,8 @@ image(erk2)
 image(erk2, colorbar=TRUE)
 image(erk2, "Vol.Bkg", main="Background Estimates", colorbar=TRUE)
 }
-\keyword{hplot}
 \keyword{color}
+\keyword{classes}
 \keyword{file}
+\keyword{hplot}
 
