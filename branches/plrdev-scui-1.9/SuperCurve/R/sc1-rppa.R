@@ -73,8 +73,9 @@ RPPA <- function(file,
         }
     } else {
         ## Use filename without extension as default value
-        txt.re <- "\\.[Tt][Xx][Tt]$"
-        antibody <- sub(txt.re, "", filename)
+        txt.re <- "\\.[tT][xX][tT]$"
+        basename <- sub(txt.re, "", filename)
+        antibody <- sub("[[:space:]]+$", "", basename)
     }
 
     ## Read quantification file
@@ -201,7 +202,7 @@ setMethod("image", signature(x="RPPA"),
 
     image(seq_len(mx),
           seq_len(my),
-          geo,
+          z=geo,
           col=col,
           main=main,
           sub=paste("File:", x@file),
