@@ -585,8 +585,6 @@ setMethod("image", signature(x="RPPADesign"),
     invisible(geo.steps)
 })
 
-## :NOTE: default "measure" in various routines is inconsistent.
-## plot(RPPA,Design) here uses "Mean.Total", while image(RPPA) uses "Mean.Net"
 
 ##-----------------------------------------------------------------------------
 ## Plot the series in an RPPA under a given design layout to see if the series
@@ -595,7 +593,7 @@ setMethod("image", signature(x="RPPADesign"),
 setMethod("plot", signature(x="RPPA", y="RPPADesign"),
           function(x,
                    y,
-                   measure="Mean.Total",
+                   measure="Mean.Net",
                    main="",
                    ...) {
     ## Check arguments
