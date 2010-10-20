@@ -32,9 +32,10 @@ SCProgressMonitor <- function(stage="") {
 setMethod("progressStage",
     signature(object="SCProgressMonitor"),
     function(object) {
-        message('progressStage(SCProgressMonitor)')
+        #message('progressStage(SCProgressMonitor)')
         object@stage
     })
+
 
 ##-----------------------------------------------------------------------------
 setReplaceMethod("progressStage",
@@ -42,22 +43,25 @@ setReplaceMethod("progressStage",
     function(object,
              ...,
              value) {
-        message('progressStage<-(SCProgressMonitor, character)')
+        #message('progressStage<-(SCProgressMonitor, character)')
         stopifnot(length(value) == 1)
         object@stage <- value
         #progressMarquee(object) <- ""
         object@marquee <- ""
         object@label <- ""
+        object@elapsed <- as.numeric(proc.time()["elapsed"]) - object@start
         object
     })
+
 
 ##-----------------------------------------------------------------------------
 setMethod("progressMarquee",
     signature(object="SCProgressMonitor"),
     function(object) {
-        message('progressMarquee(SCProgressMonitor)')
+        #message('progressMarquee(SCProgressMonitor)')
         object@marquee
     })
+
 
 ##-----------------------------------------------------------------------------
 setReplaceMethod("progressMarquee",
@@ -65,11 +69,12 @@ setReplaceMethod("progressMarquee",
     function(object,
              ...,
              value) {
-        message('progressMarquee<-(SCProgressMonitor, character)')
+        #message('progressMarquee<-(SCProgressMonitor, character)')
         stopifnot(length(value) == 1)
         object@marquee <- value
         #progressLabel(object) <- ""
         object@label <- ""
+        object@elapsed <- as.numeric(proc.time()["elapsed"]) - object@start
         object
     })
 
