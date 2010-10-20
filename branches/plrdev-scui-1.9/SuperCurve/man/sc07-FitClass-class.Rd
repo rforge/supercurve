@@ -60,9 +60,12 @@ is.FitClass(x)
   argument is an object of subclass of class \code{FitClass}.
 }
 \references{KRC}
-\author{P. Roebuck \email{plroebuck@mdanderson.org}}
+\author{
+  P. Roebuck \email{plroebuck@mdanderson.org}
+}
+\keyword{classes}
 \keyword{models}
-\keyword{regression}
 \keyword{nonlinear}
+\keyword{regression}
 \keyword{robust}
 
