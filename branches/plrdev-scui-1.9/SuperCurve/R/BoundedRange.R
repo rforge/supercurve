@@ -23,7 +23,7 @@ setClass("BoundedRange",
 ## Invoked by validObject() method.
 validBoundedRange <- function(object) {
 
-    cat("validating", class(object), "object", "\n")
+    #cat("validating", class(object), "object", "\n")
     msg <- NULL
 
     ## Validate value slot
@@ -97,10 +97,10 @@ setReplaceMethod("progressMinimum",
     function(object,
              ...,
              value) {
-        message("progressMinimum<-(BoundedRange, numeric)")
+        #message("progressMinimum<-(BoundedRange, numeric)")
         stopifnot(length(value) == 1)
         object@minimum <- as.integer(value)
-        message("leaving progressMinimum<-(BoundedRange)")
+        #message("leaving progressMinimum<-(BoundedRange)")
         object
     })
 
@@ -117,10 +117,10 @@ setReplaceMethod("progressMaximum",
     function(object,
              ...,
              value) {
-        message("progressMaximum<-(BoundedRange, numeric)")
+        #message("progressMaximum<-(BoundedRange, numeric)")
         stopifnot(length(value) == 1)
         object@maximum <- as.integer(value)
-        message("leaving progressMaximum<-(BoundedRange)")
+        #message("leaving progressMaximum<-(BoundedRange)")
         object
     })
 
@@ -137,10 +137,10 @@ setReplaceMethod("progressValue",
     function(object,
              ...,
              value) {
-        message("progressValue<-(BoundedRange, numeric)")
+        #message("progressValue<-(BoundedRange, numeric)")
         stopifnot(length(value) == 1)
         object@value <- as.integer(value)
-        message("leave progressValue<-(BoundedRange)")
+        #message("leave progressValue<-(BoundedRange)")
         object
     })
 
