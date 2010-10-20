@@ -452,11 +452,7 @@ RPPADesignFromParams <- function(raw,
     ## Validate alias
     {
         reqdNames <- c("Alias", "Sample")
-        if (!(length(alias) >= length(reqdNames))) {
-            stop(sprintf("slot %s must be of length %d or greater",
-                         sQuote("alias"),
-                         length(reqdNames)))
-        } else if (!(all(reqdNames %in% names(alias)))) {
+        if (!(all(reqdNames %in% names(alias)))) {
             missingNames <- reqdNames[!reqdNames %in% names(alias)]
             stop(sprintf(ngettext(length(missingNames),
                                   "slot %s missing component: %s",
