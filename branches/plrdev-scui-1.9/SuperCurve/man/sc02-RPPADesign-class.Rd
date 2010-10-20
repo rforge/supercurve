@@ -90,8 +90,8 @@ seriesNames(design)
     biologically relevant descriptors to the dilution series with the
     following required named components:
     \tabular{ll}{
-      \code{Alias}  \tab TBD description \cr
-      \code{Sample} \tab TBD description \cr
+      \code{Alias}  \tab Label to use in lieu of sample name \cr
+      \code{Sample} \tab Sample name to match \cr
     }}
   \item{aliasfile}{optional character string specifying filename. Data
     would be read by \code{read.delim} and expected format is as described
@@ -285,5 +285,6 @@ dim(design40)
 image(design40)
 summary(design40)
 }
+\keyword{classes}
 \keyword{regression}
 
