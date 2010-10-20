@@ -333,15 +333,17 @@ spatialCorrection <- function(rppa,
 
     ## Plot the different surfaces
     if (plotSurface) {
+        imageRPPA <- getMethod("image", class(rppa))
         temprppa <- rppa
         par(ask=TRUE)
         for (surface in surfaces) {
+            main <- .mkPlotTitle(measure,
+                                 sprintf("%s [%s]", rppa@antibody, surface))
             temprppa@data[, surface] <- eval(as.name(surface))
-            image(temprppa,
-                  colorbar=TRUE,
-                  measure=surface,
-                  xlab="",
-                  ylab="")
+            imageRPPA(temprppa,
+                      colorbar=TRUE,
+                      measure=surface,
+                      main=main)
         }
         par(ask=FALSE)
     }
