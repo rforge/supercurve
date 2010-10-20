@@ -11,6 +11,7 @@ fitCurveAndSummarizeFromSettings <- function(settings,
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("settings"), "SuperCurveSettings"))
     }
+    validObject(settings, complete=TRUE)  ## Invokes stop() if invalid
 
     if (!is.null(monitor)) {
         if (!is.SCProgressMonitor(monitor)) {
@@ -22,15 +23,14 @@ fitCurveAndSummarizeFromSettings <- function(settings,
         monitor <- SCProgressMonitor()
     }
 
-###
-### :TODO: Find out how best to do this. Meantime, die loudly...
-###
-    stopifnot(validObject(settings))
-
     ## Begin processing
     txtdir <- as(settings@txtdir, "character")
-    imgdir <- as(settings@imgdir, "character")
     outdir <- as(settings@outdir, "character")
+    imgdir <- if (is.Directory(settings@imgdir)) {
+                  as(settings@imgdir, "character")
+              } else {
+                  NULL
+              }
 
     rppasetArgs <- list(path=txtdir,
                         designparams=settings@designparams,
@@ -42,15 +42,15 @@ fitCurveAndSummarizeFromSettings <- function(settings,
     rppasetArgs$software <- settings@software
 
     ## Perform analysis
-    fitset <- do.call(RPPASet, rppasetArgs)
+    rppaset <- do.call(RPPASet, rppasetArgs)
 
-    ## Save results (as fitset takes forever to generate)
-    rda.pathname <- file.path(outdir, paste("sc-fitset", "rda", sep="."))
-    save(fitset, file=rda.pathname, ascii=TRUE)
+    ## Save results (as rppaset takes forever to generate)
+    rda.filename <- "sc-rppaset.RData"
+    save(rppaset, file=file.path(outdir, rda.filename))
 
     ## Summarize the results
     progressStage(monitor) <- "Graphing"
-    write.summary(fitset,
+    write.summary(rppaset,
                   path=outdir,
                   graphs=TRUE,
                   tiffdir=imgdir,
