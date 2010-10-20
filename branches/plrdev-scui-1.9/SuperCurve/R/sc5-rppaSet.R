@@ -95,11 +95,11 @@ is.RPPASetSummary <- function(x) {
         antibody <- antibodies[i]
         rppafit <- rppaset@fits[[i]]
 
-        ptitle <- .mkPlotTitle(rppafit@measure, antibody)
+        main <- .mkPlotTitle(rppafit@measure, antibody)
 
         ## First pair of plots
         try(plot(rppafit,
-                 main=ptitle,
+                 main=main,
                  xform=fitxform,
                  xlim=c(-15, 15)))
 
@@ -110,9 +110,7 @@ is.RPPASetSummary <- function(x) {
                      measure="ResidualsR2",
                      zlim=c(0.4, 1))
 
-        filename <- paste(paste(prefix, antibody, "1",  sep="_"),
-                          "png",
-                          sep=".")
+        filename <- sprintf("%s_%s_1.png", prefix, antibody)
         dev.copy(png,
                  file.path(path, .portableFilename(filename)),
                  width=640,
@@ -121,19 +119,17 @@ is.RPPASetSummary <- function(x) {
 
         ## Second pair of plots
         try(plot(rppafit,
-                 main=ptitle,
+                 main=main,
                  type="resid",
                  xform=fitxform,
                  xlim=c(-15, 15)))
         try(plot(rppafit,
-                 main=ptitle,
+                 main=main,
                  type="steps",
                  xform=fitxform,
                  xlim=c(-15, 15)))
 
-        filename <- paste(paste(prefix, antibody, "2", sep="_"),
-                          "png",
-                          sep=".")
+        filename <- sprintf("%s_%s_2.png", prefix, antibody)
         dev.copy(png,
                  file.path(path, .portableFilename(filename)),
                  width=640,
@@ -156,17 +152,13 @@ is.RPPASetSummary <- function(x) {
     stopifnot(is.character(tiff)      && length(tiff) == 1)
 
     ## Begin processing
-    filename <- paste(paste(prefix, antibody, "1", sep="_"),
-                      "png",
-                      sep=".")
+    filename <- sprintf("%s_%s_1.png", prefix, antibody)
     pg1 <- file.path(outputdir, .portableFilename(filename))
 
-    filename <- paste(paste(prefix, antibody, "2", sep="_"),
-                      "png",
-                      sep=".")
+    filename <- sprintf("%s_%s_2.png", prefix, antibody)
     pg2 <- file.path(outputdir, .portableFilename(filename))
 
-    filename <- paste(antibody, "jpg", sep=".")
+    filename <- sprintf("%s.jpg", antibody)
     output <- file.path(outputdir, .portableFilename(filename))
 
     ## Use ImageMagick 'convert' binary to perform merge
@@ -199,16 +191,17 @@ RPPASetSummary <- function(rppaset) {
     }
 
     ## Begin processing
+    design <- rppaset@design
     conc.raw <- .fitSlot(rppaset, "concentrations")
-    conc.ss <- .fitSlot(rppaset, "ss.ratio")
-    if (sum(as.character(rppaset@design@alias$Alias) ==
-            as.character(rppaset@design@alias$Sample)) < nrow(conc.raw)) {
+    conc.ss  <- .fitSlot(rppaset, "ss.ratio")
+    if (sum(as.character(design@alias$Alias) ==
+            as.character(design@alias$Sample)) < nrow(conc.raw)) {
         ## We have non-trivial alias names.
         ## Use sample aliases to write out data
         rno <- rownames(conc.raw)
-        sn <- rppaset@design@sampleMap[rno]
-        lookup.sn <- match(sn, rppaset@design@alias$Sample)
-        alias.name <- as.character(rppaset@design@alias$Alias)[lookup.sn]
+        sn <- design@sampleMap[rno]
+        lookup.sn <- match(sn, design@alias$Sample)
+        alias.name <- as.character(design@alias$Alias)[lookup.sn]
         rownames(conc.raw) <- alias.name
         rownames(conc.ss) <- alias.name
     }
@@ -283,21 +276,15 @@ setMethod("write.summary", "RPPASetSummary",
     ## Begin processing
 
     ## Write file for raw concentrations
-    filename <- paste(paste(prefix, "conc_raw", sep="_"),
-                      "csv",
-                      sep=".")
+    filename <- sprintf("%s_conc_raw.csv", prefix)
     write.csv(object@raw, file=file.path(path, .portableFilename(filename)))
 
     ## Write file for R^2 statistics
-    filename <- paste(paste(prefix, "ss_ratio", sep="_"),
-                      "csv",
-                      sep=".")
+    filename <- sprintf("%s_ss_ratio.csv", prefix)
     write.csv(object@ss, file=file.path(path, .portableFilename(filename)))
 
     ## Write file for polished concentration
-    filename <- paste(paste(prefix, "conc_med_polish", sep="_"),
-                      "csv",
-                      sep=".")
+    filename <- sprintf("%s_conc_med_polish.csv", prefix)
     write.csv(object@medpol, file=file.path(path, .portableFilename(filename)))
 })
 
@@ -359,13 +346,13 @@ setMethod("write.summary", "RPPASet",
 
     ## Begin processing
 
-    ## Merge output, if requested
+    ## Graph fits, if requested
     if (graphs) {
         pkgimgdir <- system.file("images", package="SuperCurve")
 
         if (is.null(tiffdir)) {
             ## Assume the tif images are in a sibling directory named "tif"
-            tiffdir <- normalizePath(file.path(path, "..", "tif"))
+            tiffdir <- normalizePath(file.path(dirname(path), "tif"))
             if (!dir.exists(tiffdir)) {
                 ## As last resort, use package directory for missing image
                 message(sprintf("image directory unspecified and sibling directory %s does not exist",
@@ -406,8 +393,8 @@ setMethod("write.summary", "RPPASet",
         progressMaximum(monitor) <- length(antibodies)
         for (i in seq_along(antibodies)) {
             antibody <- antibodies[i]
-
             progressLabel(monitor) <- antibody
+
             message(paste("merging graphs and image for", antibody))
             flush.console()
 
@@ -451,6 +438,9 @@ setMethod("write.summary", "RPPASet",
     ## Begin processing
     tryCatch({
             stopifnot(file.exists(antibodyfile))
+            if (file.info(antibodyfile)$isdir) {
+                stop("argument is not a file")
+            }
 
             ## Read datafile
             proteinassay.df <- read.delim(antibodyfile,
@@ -653,7 +643,7 @@ RPPASet <- function(path,
         stopifnot(is.RPPAFitParams(fitparams))
 
         measures <- eval(formals(spatialCorrection)$measure)
-        !is.null(spatialparams) && (fitparams@measure %in% measures)
+        is.RPPASpatialParams(spatialparams) && (fitparams@measure %in% measures)
     }
 
 
@@ -663,6 +653,7 @@ RPPASet <- function(path,
         progressStage(monitor) <- "Spatial Adj"
         progressMarquee(monitor) <- "Performing spatial adjustment on slides"
         progressValue(monitor) <- 0
+
         for (i in seq_along(slideFilenames)) {
             antibody <- antibodies[i]
 
