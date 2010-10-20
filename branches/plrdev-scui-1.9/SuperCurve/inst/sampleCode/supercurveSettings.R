@@ -14,3 +14,4 @@ diagnostics <- TRUE
 addclinical <- FALSE
 medsub <- FALSE
 spot.intensity <- 'mean.net'
+
