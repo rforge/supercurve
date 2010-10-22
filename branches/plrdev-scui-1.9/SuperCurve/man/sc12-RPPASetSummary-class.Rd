@@ -6,7 +6,8 @@
 \docType{class}
 \title{Class "RPPASetSummary"}
 \description{
-  The RPPASetSummary class is currently undocumented (TODO).
+  The RPPASetSummary class contains the summary information derived from
+  an RPPASet object.
 }
 \usage{
 RPPASetSummary(rppaset)
@@ -28,9 +29,6 @@ is.RPPASetSummary(x)
   \item{x}{object of class \code{RPPASetSummary}}
   \item{\dots}{extra arguments for generic or plotting routines}
 }
-\details{
-  TODO.
-}
 \section{Objects from the Class}{
   Although objects of the class can (in theory) be created by a direct call
   to \link[methods]{new}, the only realistic method is to use the
@@ -38,9 +36,12 @@ is.RPPASetSummary(x)
 }
 \section{Slots}{
   \describe{
-    \item{\code{raw}:}{TODO}
-    \item{\code{ss}:}{TODO}
-    \item{\code{medpol}:}{TODO}
+    \item{\code{raw}:}{numeric matrix of raw concentrations}
+    \item{\code{ss}:}{numeric matrix of \eqn{R^2} statistical values}
+    \item{\code{medpol}:}{numeric matrix of median polished concentrations}
+    \item{\code{probs}:}{numeric vector of goodness of fit probabilities}
+    \item{\code{completed}:}{logical matrix specifying stage completion
+      for each slide}
   }
 }
 \section{Methods}{
@@ -49,7 +50,11 @@ is.RPPASetSummary(x)
       \code{RPPASetSummary}.}
     \item{write.summary(object, path, prefix, monitor, \dots)}{
       Generates three \acronym{CSV} files: one for the raw concentrations, one
-      for the \eqn{R^2} statistics, and one for the polished concentrations.}
+      for the \eqn{R^2} statistics and one for the polished concentrations; a
+      fourth file containing the goodness of fit probabilities may be present
+      if prefit QC analysis was requested. Additionally, a \acronym{TSV} file
+      detailing completion of each stage of processing for each slide is
+      produced.}
   }
 }
 \value{
@@ -61,7 +66,6 @@ is.RPPASetSummary(x)
 }
 \references{KRC}
 \author{
-  Kevin R. Coombes \email{kcoombes@mdanderson.org},
   P. Roebuck \email{plroebuck@mdanderson.org}
 }
 \seealso{
@@ -84,18 +88,19 @@ fitparams <- RPPAFitParams(measure="Mean.Net",
                            warnLevel=-1,
                            verbose=FALSE)
 
-fitset <- RPPASet(txtdir,
-                  designparams,
-                  fitparams)
+rppaset <- RPPASet(txtdir,
+                   designparams,
+                   fitparams)
 ## If you REALLY want to do this manually. It will be invoked
-## automatically if you invoke write.summary(fitset) instead...
-write.summary(summary(fitset),
+## automatically if you invoke write.summary(rppaset) instead...
+write.summary(summary(rppaset),
               path=outdir)
   }
 }
+\keyword{classes}
 \keyword{models}
-\keyword{regression}
 \keyword{nonlinear}
 \keyword{nonparametric}
+\keyword{regression}
 \keyword{robust}
 
