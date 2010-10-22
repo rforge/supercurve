@@ -17,6 +17,7 @@ SuperCurveSettings(txtdir,
                    designparams,
                    fitparams,
                    spatialparams=NULL,
+                   doprefitqc=TRUE,
                    antibodyfile=NULL,
                    software=NULL)
 
@@ -36,6 +37,7 @@ is.SuperCurveSettings(x)
   \item{designparams}{object of class \code{RPPADesignParams}}
   \item{fitparams}{object of class \code{RPPAFitParams}}
   \item{spatialparams}{object of class \code{RPPASpatialParams}, or \code{NULL}}
+  \item{doprefitqc}{logical scalar. If \code{TRUE}, perform pre-fit quality control.}
   \item{antibodyfile}{character string specifying filename cantaining mapping
     from quantification files to antibodies, or NULL}
   \item{software}{character string specifying the software used to generate
@@ -73,6 +75,8 @@ slotnames to display (for debuggging)}
       specifying the parameters that control model fit}
     \item{\code{spatialparams}:}{object of class \code{RPPASpatialParams}
       specifying the parameters that control spatial adjustment}
+    \item{\code{doprefitqc}:}{logical scalar specifying whether to perform
+      pre-fit quality control}
     \item{antibodyfile}{character string specifying filename cantaining mapping
       from quantification files to antibodies, or NULL}
     \item{software}{character string specifying the software used to generate
@@ -130,5 +134,6 @@ settings <- SuperCurveSettings(txtdir=system.file("rppaTumorData",
 fitCurveAndSummarizeFromSettings(settings)
   }
 }
+\keyword{classes}
 \keyword{file}
 
