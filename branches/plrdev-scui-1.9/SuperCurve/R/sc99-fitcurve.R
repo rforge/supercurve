@@ -36,6 +36,7 @@ fitCurveAndSummarizeFromSettings <- function(settings,
                         designparams=settings@designparams,
                         fitparams=settings@fitparams,
                         spatialparams=settings@spatialparams,
+                        doprefitqc=settings@doprefitqc,
                         monitor=monitor)
     ## :NOTE: Handle following after list construction so NULL values dropped
     rppasetArgs$antibodyfile <- settings@antibodyfile
