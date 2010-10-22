@@ -31,7 +31,7 @@ setClass("RPPADesignParams",
 ## Invoked by validObject() method.
 validRPPADesign <- function(object) {
 
-    cat("validating", class(object), "object", "\n")
+    #cat("validating", class(object), "object", "\n")
     msg <- NULL
 
     ## Ensure required columns

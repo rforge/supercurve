@@ -41,7 +41,7 @@ RPPASpatialParams <- function(cutoff=0.8,
 ## Invoked by validObject() method.
 validSpatialParams <- function(object) {
 
-    cat("validating", class(object), "object", "\n")
+    #cat("validating", class(object), "object", "\n")
     msg <- NULL
 
     ## Validate cutoff slot

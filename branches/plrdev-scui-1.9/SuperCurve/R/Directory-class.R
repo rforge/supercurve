@@ -14,7 +14,7 @@ setClassUnion("OptionalDirectory", c("Directory", "NULL"))
 ## Invoked by validObject() method.
 validDirectory <- function(object) {
 
-    cat("validating", class(object), "object", "\n")
+    #cat("validating", class(object), "object", "\n")
     msg <- NULL
 
     ## Validate path slot
