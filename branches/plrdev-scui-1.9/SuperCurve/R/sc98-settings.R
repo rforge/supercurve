@@ -13,10 +13,11 @@ setClass("SuperCurveSettings",
                         designparams="RPPADesignParams",
                         fitparams="RPPAFitParams",
                         spatialparams="OptionalRPPASpatialParams",
+                        doprefitqc="logical",
                         antibodyfile="OptionalFilename",
                         software="OptionalString",
                         version="character"),
-         prototype(version="0.0-0"))
+         prototype(version="0.0.0"))
 
 
 ##
@@ -29,7 +30,7 @@ setClass("SuperCurveSettings",
 ## Invoked by validObject() method.
 validSuperCurveSettings <- function(object) {
 
-    cat("validating", class(object), "object", "\n")
+    #cat("validating", class(object), "object", "\n")
     msg <- NULL
 
     ## Validate txtdir slot
@@ -123,6 +124,7 @@ SuperCurveSettings <- function(txtdir,
                                designparams,
                                fitparams,
                                spatialparams=NULL,
+                               doprefitqc=FALSE,
                                antibodyfile=NULL,
                                software=NULL) {
     ## Check arguments
@@ -158,6 +160,14 @@ SuperCurveSettings <- function(txtdir,
             stop(sprintf("argument %s must be object of class %s",
                          sQuote("spatialparams"), "RPPASpatialParams"))
         }
+    }
+
+    if (!is.logical(doprefitqc)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("doprefitqc")))
+    } else if (!(length(doprefitqc) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("doprefitqc")))
     }
 
     if (!is.null(antibodyfile)) {
@@ -196,6 +206,7 @@ SuperCurveSettings <- function(txtdir,
         designparams=designparams,
         fitparams=fitparams,
         spatialparams=spatialparams,
+        doprefitqc=doprefitqc,
         antibodyfile=antibodyfile,
         software=software,
         version=packageDescription("SuperCurve", fields="Version"))
@@ -277,6 +288,9 @@ setMethod("paramString", "SuperCurveSettings",
               sprintf("spatialparams:\n%s\n", indent(spatialparams))
           } else {
               sprintf("dospatialadj: %s\n", FALSE)
+          },
+          if (!is.null(object@doprefitqc)) {
+              sprintf("doprefitqc: %s\n", object@doprefitqc)
           },
           if (!is.null(object@antibodyfile)) {
               sprintf("antibodyfile: %s\n", shQuote(object@antibodyfile))
