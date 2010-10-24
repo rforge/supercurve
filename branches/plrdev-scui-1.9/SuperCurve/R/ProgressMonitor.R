@@ -100,6 +100,7 @@ setMethod("progressLabel",
         object@label
     })
 
+
 ##-----------------------------------------------------------------------------
 setReplaceMethod("progressLabel",
     signature(object="DefaultProgressMonitor", value="character"),
@@ -111,6 +112,7 @@ setReplaceMethod("progressLabel",
         object
     })
 
+
 ##-----------------------------------------------------------------------------
 setMethod("progressValue",
     signature(object="DefaultProgressMonitor"),
@@ -118,21 +120,19 @@ setMethod("progressValue",
         callGeneric(object@range)
     })
 
+
 ##-----------------------------------------------------------------------------
 setReplaceMethod("progressValue",
     signature(object="DefaultProgressMonitor", value="numeric"),
     function(object,
              ...,
              value) {
-        message("progressValue<-(DefaultProgressMonitor, numeric)")
-        ## :BUG?: This works in SuperCurve itself, but not from SuperCurveGUI
-        #object@range <- callGeneric(object@range, ..., value=value)
-        ## Break encapsulation and manipulate internal slots directly
-        #object@range@value <- value
+        #message("progressValue<-(DefaultProgressMonitor, numeric)")
         ## Invoke same method for BoundedRange object
         progressValue(object@range) <- value
         object
     })
+
 
 ##-----------------------------------------------------------------------------
 setMethod("progressMinimum",
@@ -141,18 +141,18 @@ setMethod("progressMinimum",
         callGeneric(object@range)
     })
 
+
 ##-----------------------------------------------------------------------------
 setReplaceMethod("progressMinimum",
     signature(object="DefaultProgressMonitor", value="numeric"),
     function(object,
              ...,
              value) {
-        ## Using alternative for consistency
-        #object@range <- callGeneric(object@range, ..., value=value)
         ## Invoke same method for BoundedRange object
         progressMinimum(object@range) <- value
         object
     })
+
 
 ##-----------------------------------------------------------------------------
 setMethod("progressMaximum",
@@ -161,18 +161,18 @@ setMethod("progressMaximum",
         callGeneric(object@range)
     })
 
+
 ##-----------------------------------------------------------------------------
 setReplaceMethod("progressMaximum",
     signature(object="DefaultProgressMonitor", value="numeric"),
     function(object,
              ...,
              value) {
-        ## Using alternative for consistency
-        #object@range <- callGeneric(object@range, ..., value=value)
         ## Invoke same method for BoundedRange object
         progressMaximum(object@range) <- value
         object
     })
+
 
 ##-----------------------------------------------------------------------------
 setMethod("progressError",
@@ -180,6 +180,7 @@ setMethod("progressError",
     function(object) {
         object@err
     })
+
 
 ##-----------------------------------------------------------------------------
 setReplaceMethod("progressError",
@@ -189,11 +190,10 @@ setReplaceMethod("progressError",
              value) {
         stopifnot(length(value) == 1)
         object@err <- value
-        #object@done <- value
-        ### :PLR?: progressDone(object) <- value
         progressDone(object) <- value
         object
     })
+
 
 ##-----------------------------------------------------------------------------
 setMethod("progressDone",
@@ -201,6 +201,7 @@ setMethod("progressDone",
     function(object) {
         object@done
     })
+
 
 ##-----------------------------------------------------------------------------
 setReplaceMethod("progressDone",
