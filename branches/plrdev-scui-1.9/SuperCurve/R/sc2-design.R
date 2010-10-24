@@ -5,26 +5,26 @@
 
 ##=============================================================================
 setClass("RPPADesign",
-         representation=list(call="call",
-                             layout="data.frame",
-                             alias="list",
-                             sampleMap="character",
-                             controls="list"))
+         representation(call="call",
+                        layout="data.frame",
+                        alias="list",
+                        sampleMap="character",
+                        controls="list"))
 
 
 ##=============================================================================
 setClassUnion("OptionalFilename", c("character", "NULL"))
 setClassUnion("OptionalList", c("list", "NULL"))
 setClass("RPPADesignParams",
-         representation=list(steps="numeric",
-                             series="factor",
-                             grouping="character",
-                             ordering="character",
-                             center="logical",
-                             controls="OptionalList",
-                             alias="OptionalList",
-                             aliasfile="OptionalFilename",
-                             designfile="OptionalFilename"))
+         representation(steps="numeric",
+                        series="factor",
+                        grouping="character",
+                        ordering="character",
+                        center="logical",
+                        controls="OptionalList",
+                        alias="OptionalList",
+                        aliasfile="OptionalFilename",
+                        designfile="OptionalFilename"))
 
 
 ##-----------------------------------------------------------------------------

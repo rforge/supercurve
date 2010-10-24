@@ -18,11 +18,11 @@ setClass("ProgressMonitor",
 
 ##=============================================================================
 setClass("DefaultProgressMonitor",
-         representation=list("ProgressMonitor",     ## inheritance
-                             range="BoundedRange",  ## progressbar range model
-                             label="character",     ## progressbar label value
-                             err="logical",         ## has error occurred?
-                             done="logical"),       ## completed yet?
+         contains="ProgressMonitor",                ## inheritance
+         representation(range="BoundedRange",       ## progressbar range model
+                        label="character",          ## progressbar label value
+                        err="logical",              ## has error occurred?
+                        done="logical"),            ## completed yet?
          prototype(err=FALSE,
                    done=FALSE))
 

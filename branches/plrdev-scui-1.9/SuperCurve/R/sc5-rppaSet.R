@@ -7,22 +7,22 @@
 setClassUnion("OptionalRPPASpatialParams", c("RPPASpatialParams", "NULL"))
 
 setClass("RPPASet",
-         representation=list(call="call",               # function call used to create the model
-                             version="character",       # package version
-                             design="RPPADesign",       # common design for all slides
-                             rppas="array",             # vector of RPPAs
-                             spatialparams="OptionalRPPASpatialParams",
-                             fitparams="RPPAFitParams", # parameters used for fitting
-                             fits="array"))             # set of fits
+         representation(call="call",               ## function invocation
+                        design="RPPADesign",       ## common for all slides
+                        rppas="array",             ## vector of RPPAs
+                        spatialparams="OptionalRPPASpatialParams",
+                        fitparams="RPPAFitParams", ## arguments used for fitting
+                        fits="array",              ## set of fits
+                        version="character"))      ## package version
 ## :KRC: Why is "rppas" an array or vector instead of a list (or environment)?
 ## :PLR: Because Corwin? wrote it this way...
 
 
 ##=============================================================================
 setClass("RPPASetSummary",
-         representation=list(raw="matrix",
-                             ss="matrix",
-                             medpol="matrix"))
+         representation(raw="matrix",
+                        ss="matrix",
+                        medpol="matrix"))
 
 
 ##-----------------------------------------------------------------------------

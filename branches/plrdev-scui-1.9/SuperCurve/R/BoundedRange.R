@@ -12,9 +12,9 @@ options(warn=1)
 
 ##=============================================================================
 setClass("BoundedRange",
-         representation=list(minimum="integer",     ## bounded range min value
-                             maximum="integer",     ## bounded range max value
-                             value="integer"),      ## bounded range value
+         representation(minimum="integer",          ## bounded range min value
+                        maximum="integer",          ## bounded range max value
+                        value="integer"),           ## bounded range value
          prototype(minimum=as.integer(1),
                    maximum=as.integer(100)))
 

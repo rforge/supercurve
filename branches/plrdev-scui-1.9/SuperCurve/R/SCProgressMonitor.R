@@ -5,9 +5,9 @@
 
 ##=============================================================================
 setClass("SCProgressMonitor",
-         representation=list("DefaultProgressMonitor", ## inheritance
-                             stage="character",        ## stage label value
-                             marquee="character"))     ## marquee label value
+         contains="DefaultProgressMonitor",            ## inheritance
+         representation(stage="character",             ## stage label value
+                        marquee="character"))          ## marquee label value
 
 
 ##-----------------------------------------------------------------------------

@@ -5,10 +5,10 @@
 
 ##=============================================================================
 setClass("RPPASpatialParams",
-         representation=list(cutoff="numeric",
-                             k="numeric",
-                             gamma="numeric",
-                             plotSurface="logical"))
+         representation(cutoff="numeric",
+                        k="numeric",
+                        gamma="numeric",
+                        plotSurface="logical"))
 
 
 ##-----------------------------------------------------------------------------

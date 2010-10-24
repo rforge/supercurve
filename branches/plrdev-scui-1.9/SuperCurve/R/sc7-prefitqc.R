@@ -10,8 +10,8 @@ setClass("RPPAPreFitQC",
 
 ##=============================================================================
 setClass("DS5RPPAPreFitQC",
-         representation("RPPAPreFitQC",
-                        slopediff="numeric",
+         contains="RPPAPreFitQC",
+         representation(slopediff="numeric",
                         cvs="numeric",
                         drdiffs="numeric",
                         slopes="numeric",

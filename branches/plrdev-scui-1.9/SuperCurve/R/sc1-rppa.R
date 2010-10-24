@@ -5,9 +5,9 @@
 
 ##=============================================================================
 setClass("RPPA",
-         representation=list(data="data.frame",
-                             file="character",
-                             antibody="character"))
+         representation(data="data.frame",
+                        file="character",
+                        antibody="character"))
 
 
 ##-----------------------------------------------------------------------------

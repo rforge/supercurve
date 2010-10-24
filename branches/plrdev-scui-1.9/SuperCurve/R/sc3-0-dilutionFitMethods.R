@@ -9,23 +9,23 @@ setClass("FitClass",
 
 ##=============================================================================
 setClass("LogisticFitClass",
-         representation("FitClass",
-                        coefficients="numeric"),
+         contains="FitClass",
+         representation(coefficients="numeric"),
          prototype=prototype(coefficients=c(alpha=0, beta=0, gamma=0)))
 
 ##=============================================================================
 setOldClass("cobs")
 setClass("CobsFitClass",
-         representation("FitClass",
-                        model="cobs",
+         contains="FitClass",
+         representation(model="cobs",
                         lambda="numeric"),
          prototype=prototype(lambda=0))
 
 ##=============================================================================
 setOldClass("loess")
 setClass("LoessFitClass",
-         representation("FitClass",
-                        model="loess"))
+         contains="FitClass",
+         representation(model="loess"))
 
 
 ##-----------------------------------------------------------------------------
