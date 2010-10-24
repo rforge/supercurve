@@ -14,11 +14,11 @@ setOldClass("tclVar")
 setOldClass("tkwin")
 setClassUnion("OptionalWidget", c("tkwin", "NULL"))
 setClass("TkProgressMonitor",
-         representation=list("SCProgressMonitor",     ## inheritance
-                             widget="OptionalWidget", ## dialog or NULL
-                             stage.var="tclVar",      ## stage label tclvalue
-                             marquee.var="tclVar",    ## marquee label tclvalue
-                             label.var="tclVar"))     ## progbar label tclvalue
+         contains="SCProgressMonitor",                ## inheritance
+         representation(widget="OptionalWidget",      ## dialog or NULL
+                        stage.var="tclVar",           ## stage label tclvalue
+                        marquee.var="tclVar",         ## marquee label tclvalue
+                        label.var="tclVar"))          ## progbar label tclvalue
 
 
 ##-----------------------------------------------------------------------------
