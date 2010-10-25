@@ -11,8 +11,10 @@ setClass("RPPASet",
                         design="RPPADesign",       ## common for all slides
                         rppas="array",             ## vector of RPPAs
                         spatialparams="OptionalRPPASpatialParams",
-                        fitparams="RPPAFitParams", ## arguments used for fitting
+                        fitparams="RPPAFitParams",
+                        prefitqcs="array",         ## vector of QC values
                         fits="array",              ## set of fits
+                        completed="matrix",        ## what worked/failed
                         version="character"))      ## package version
 ## :KRC: Why is "rppas" an array or vector instead of a list (or environment)?
 ## :PLR: Because Corwin? wrote it this way...
@@ -22,7 +24,9 @@ setClass("RPPASet",
 setClass("RPPASetSummary",
          representation(raw="matrix",
                         ss="matrix",
-                        medpol="matrix"))
+                        medpol="matrix",
+                        probs="numeric",
+                        completed="matrix"))
 
 
 ##-----------------------------------------------------------------------------
@@ -45,13 +49,16 @@ is.RPPASetSummary <- function(x) {
     stopifnot(is.RPPASet(rppaset))
     stopifnot(is.character(slotname) && length(slotname) == 1)
 
-    if (!(slotname %in% slotNames(rppaset@fits[[1]]))) {
+    rppafits.tf <- rppaset@completed[, 'fit']
+    rppafits <- rppaset@fits[rppafits.tf]
+
+    if (!(slotname %in% slotNames(rppafits[[1]]))) {
         stop(sprintf("invalid slotname %s",
                      sQuote(slotname)))
     }
 
     ## Begin processing
-    sapply(rppaset@fits,
+    sapply(rppafits,
            slot,
            name=slotname)
 }
@@ -94,6 +101,11 @@ is.RPPASetSummary <- function(x) {
     for (i in seq_along(antibodies)) {
         antibody <- antibodies[i]
         rppafit <- rppaset@fits[[i]]
+
+        if (!is.RPPAFit(rppafit)) {
+            warning(paste("cannot create fit graphs for", antibody))
+            next
+        }
 
         main <- .mkPlotTitle(rppafit@measure, antibody)
 
@@ -215,11 +227,23 @@ RPPASetSummary <- function(rppaset) {
     conc.medpol <- cbind(pol$row, pol$residuals)
     colnames(conc.medpol)[1] <- "Correction"
 
+    ## Generate probabilities (goodness) for each processed slide (if any)
+    prefitqcs.tf <- rppaset@completed[, 'prefitqc']
+    probs <- if (!all(is.na(prefitqcs.tf))) {
+                 prefitqcs <- rppaset@prefitqcs[prefitqcs.tf]
+                 names(prefitqcs) <- names(prefitqcs.tf[prefitqcs.tf])
+                 sapply(prefitqcs, qcprob)
+             } else {
+                 as.numeric(NaN)
+             }
+
     ## Create new class
     new("RPPASetSummary",
         raw=conc.raw,
         ss=conc.ss,
-        medpol=conc.medpol)
+        medpol=conc.medpol,
+        probs=probs,
+        completed=rppaset@completed)
 }
 
 
@@ -286,6 +310,23 @@ setMethod("write.summary", "RPPASetSummary",
     ## Write file for polished concentration
     filename <- sprintf("%s_conc_med_polish.csv", prefix)
     write.csv(object@medpol, file=file.path(path, .portableFilename(filename)))
+
+    ## If QC processing was performed...
+    if (!(length(object@probs) == 1 && is.na(object@probs))) {
+        ## Write file for QC probabilities
+        filename <- sprintf("%s_prefit_qc.csv", prefix)
+        probs.df <- data.frame("Filename"=names(object@probs),
+                               "Probabilities"=object@probs,
+                               row.names=seq_along(object@probs))
+        write.csv(probs.df, file=file.path(path, .portableFilename(filename)))
+    }
+
+    ## Write file for stage completion summary
+    filename <- sprintf("%s_summary.tsv", prefix)
+    write.table(object@completed,
+                file=file.path(path, .portableFilename(filename)),
+                sep='\t',
+                col.names=NA)
 })
 
 
@@ -346,6 +387,12 @@ setMethod("write.summary", "RPPASet",
 
     ## Begin processing
 
+    ## Make sure at least one fit exists
+    rppafits <- object@fits
+    if (all(sapply(rppafits, is.null))) {
+        stop("cannot summarize as no fits were stored")
+    }
+
     ## Graph fits, if requested
     if (graphs) {
         pkgimgdir <- system.file("images", package="SuperCurve")
@@ -373,14 +420,19 @@ setMethod("write.summary", "RPPASet",
         }
 
         ## Save fit graphs
+        dev.new(title="Fit Graphs")
         progressMarquee(monitor) <- "Creating Fit Graphs"
         .createFitGraphs(object, path, prefix)
 
         ## Merge output graphs with source tiff file for each antibody
         imgfiles <- {
-                        txtfiles <- sapply(object@fits,
+                        txtfiles <- sapply(rppafits,
                                            function(fit) {
-                                               fit@rppa@file
+                                               if (is.RPPAFit(fit)) {
+                                                   fit@rppa@file
+                                               } else {
+                                                   NULL
+                                               }
                                            })
                         txt.re <- "\\.[tT][xX][tT]$"
                         sub(txt.re, ".tif", txtfiles)
@@ -389,32 +441,35 @@ setMethod("write.summary", "RPPASet",
         ## For each antibody...
         progressMarquee(monitor) <- "Merging Fit Graphs With Images"
         progressValue(monitor) <- 0
-        antibodies <- names(object@fits)
+        antibodies <- names(rppafits)
         progressMaximum(monitor) <- length(antibodies)
         for (i in seq_along(antibodies)) {
             antibody <- antibodies[i]
             progressLabel(monitor) <- antibody
 
-            message(paste("merging graphs and image for", antibody))
-            flush.console()
-
-            ## If no corresponding image exists, substitute "missing" image
-            imgfile <- file.path(tiffdir, imgfiles[antibody])
-            if (!file.exists(imgfile)) {
-                imgfile <- file.path(pkgimgdir, "missing_slide.tif")
-            }
-
-            ## Create merged image
-            rc <- .mergeGraphsAndImage(antibody,
-                                       prefix,
-                                       path,
-                                       imgfile)
-            if (rc == 32512) {
-                warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH",
-                                sQuote("convert")))
-                message("some output files may be missing")
+            rppafit <- rppafits[[i]]
+            if (is.RPPAFit(rppafit)) {
+                message(paste("merging graphs and image for", antibody))
                 flush.console()
-                break
+
+                ## If no corresponding image exists, substitute "missing" image
+                imgfile <- file.path(tiffdir, imgfiles[antibody])
+                if (!file.exists(imgfile)) {
+                    imgfile <- file.path(pkgimgdir, "missing_slide.tif")
+                }
+
+                ## Create merged image
+                rc <- .mergeGraphsAndImage(antibody,
+                                           prefix,
+                                           path,
+                                           imgfile)
+                if (rc == 32512) {
+                    warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH",
+                                    sQuote("convert")))
+                    message("some output files may be missing")
+                    flush.console()
+                    break
+                }
             }
             progressValue(monitor) <- i
         }
@@ -490,6 +545,7 @@ RPPASet <- function(path,
                     designparams,
                     fitparams,
                     spatialparams=NULL,
+                    doprefitqc=FALSE,
                     monitor=SCProgressMonitor(),
                     antibodyfile=NULL,
                     software="microvigene") {
@@ -554,7 +610,11 @@ RPPASet <- function(path,
 
         ## Assumes all .txt files in the directory are slides
         txt.re <- "\\.[tT][xX][tT]$"
-        list.files(path=path, pattern=txt.re)
+        txtfiles <- list.files(path=path, pattern=txt.re)
+        ## If SuperCurveGUI's input and output directories refer to the same
+        ## path, then its settings file in TEXT format could be present...
+        settingsfile.tf <- txtfiles %in% "sc-settings.txt"
+        txtfiles[!settingsfile.tf]
     }
 
     ## Begin processing
@@ -590,9 +650,17 @@ RPPASet <- function(path,
     }
     remove(abnames)
 
+    ## Tracking success/failure of each step
+    input.tf    <- logical(length(slideFilenames))
+    spatial.tf  <- logical(length(slideFilenames))
+    prefitqc.tf <- logical(length(slideFilenames))
+    fits.tf     <- logical(length(slideFilenames))
+
     ## Load slides to process
     progressMarquee(monitor) <- "Reading slides"
     progressMaximum(monitor) <- length(slideFilenames)
+
+    design <- NULL
     rppas <- array(list(), length(slideFilenames), list(antibodies))
     for (i in seq_along(slideFilenames)) {
 
@@ -603,39 +671,40 @@ RPPASet <- function(path,
         message(paste("reading", slideFilename))
         flush.console()
 
-        rppas[[i]] <- tryCatch(RPPA(slideFilename,
-                                    path=path,
-                                    antibody=antibody,
-                                    software=software),
-                               error=function(e) {
-                                   message(conditionMessage(e))
-                                   NULL
-                               })
+        rppa <- tryCatch({
+                        RPPA(slideFilename,
+                             path=path,
+                             antibody=antibody,
+                             software=software)
+                    },
+                    error=function(e) {
+                        message(conditionMessage(e))
+                        NULL
+                    })
 
-        ## If this is first slide read...
-        if (i == 1) {
-            firstslide <- rppas[[1]]
+        if (is.RPPA(rppa)) {
+            ## Update only on success
+            rppas[[i]] <- rppa
+            input.tf[i] <- TRUE
 
-            ## :BUG: If above fails to read first file...
+            ## If design has not been created...
+            if (is.null(design)) {
+                ## Create design
+                design <- RPPADesignFromParams(rppa, designparams)
 
-            ## Create design
-            design <- RPPADesignFromParams(firstslide, designparams)
+                ## Plot the first possible slide as a quick design check
+                dev.new(title="Design Check")
+                plot(rppa,
+                     design,
+                     fitparams@measure)
 
-            ## Plot the first slide as a quick design check
-            #dev.new(title="Design Check")
-            plot(firstslide,
-                 design,
-                 fitparams@measure)
-
-            remove(firstslide)
-            #browser(expr=FALSE)  ## :TBD: Helpful?
+                ## :TODO: Need method to force R graphics system to update the
+                ## plot window on OS X, which otherwise doesn't display until
+                ## the computation ends (defeating its purpose).
         }
+
         progressValue(monitor) <- i
-        #Sys.sleep(2)
     }
-
-    #dev.new(title="Output")
-
 
     ##-------------------------------------------------------------------------
     ## Determines if spatial adjustment processing is warranted
@@ -650,6 +719,11 @@ RPPASet <- function(path,
     ## Perform spatial adjustment, if enabled
     doSpatialAdj <- shouldPerformSpatialAdj(spatialparams, fitparams)
     if (doSpatialAdj) {
+        if (spatialparams@plotSurface) {
+            ## Open new device if surface plots were requested
+            dev.new(title="Surface Plots")
+            message("*** watch for prompts to plot on R console ***")
+        }
         progressStage(monitor) <- "Spatial Adj"
         progressMarquee(monitor) <- "Performing spatial adjustment on slides"
         progressValue(monitor) <- 0
@@ -661,22 +735,88 @@ RPPASet <- function(path,
             message(paste("spatially adjusting slide",
                           antibody, "-", "please wait."))
             flush.console()
-            if (!is.null(rppas[[i]])) {
-                rppas[[i]] <- tryCatch({
-                                       spatialAdjustmentFromParams(rppas[[i]],
-                                                                   design,
-                                                                  spatialparams)
-                                   },
-                                   error=function(e) {
-                                       message(conditionMessage(e))
-                                       NULL
-                                   })
+
+            rppa <- rppas[[i]]
+            if (!is.null(rppa)) {
+                rppa <- tryCatch({
+                                spatialAdjustmentFromParams(rppa,
+                                                            design,
+                                                            spatialparams)
+                            },
+                            error=function(e) {
+                                traceback()
+                                message(conditionMessage(e))
+                                NULL
+                            })
+                if (is.RPPA(rppa)) {
+                    ncols.list <- lapply(c(rppa, rppas[[i]]),
+                                         function(x) {
+                                             ncol(df <- slot(x, "data"))
+                                         })
+                    if (!do.call("identical", ncols.list)) {
+                        ## Update only on modification
+                        rppas[[i]] <- rppa
+                        spatial.tf[i] <- TRUE
+                    }
+                    remove(ncols.list)
+                }
             } else {
                 warning(paste("no slide to adjust for", antibody))
             }
             progressValue(monitor) <- i
         }
+    } else {
+        spatial.tf <- rep(NA, length(spatial.tf))
     }
+
+    ## Perform pre-fit QC, if enabled
+    prefitqcs <- array(list(), length(slideFilenames), list(antibodies))
+    if (doprefitqc) {
+        progressStage(monitor) <- "Pre-Fit QC"
+        progressMarquee(monitor) <- "Performing quality checks on slides"
+        progressValue(monitor) <- 0
+
+        for (i in seq_along(slideFilenames)) {
+            antibody <- antibodies[i]
+
+            progressLabel(monitor) <- antibody
+            message(paste("quality checking slide",
+                          antibody, "-", "please wait."))
+            flush.console()
+
+            rppa <- rppas[[i]]
+            if (!is.null(rppa)) {
+                prefitqc <- tryCatch({
+                                RPPAPreFitQC(rppa,
+                                             design,
+                                             doSpatialAdj)
+                            },
+                            error=function(e) {
+                                traceback()
+                                message(conditionMessage(e))
+                                NULL
+                            })
+                ## Update only on success
+                if (is.RPPAPreFitQC(prefitqc)) {
+                    prefitqcs[[i]] <- prefitqc
+                    prefitqc.tf[i] <- TRUE
+                }
+            } else {
+                warning(paste("no slide to quality check for", antibody))
+            }
+            progressValue(monitor) <- i
+        }
+    } else {
+        prefitqc.tf <- rep(NA, length(prefitqc.tf))
+    }
+
+    ##-------------------------------------------------------------------------
+    ## Reporting of progress through fitting is unbearably slow. Modify the
+    ## label only so the program still looks alive...
+    updateLabelWhileFitting <- function(phase) {
+        progressLabel(monitor) <- sprintf("%s [%s]", antibody, phase)
+    }
+
 
     ## Create fits
     progressStage(monitor) <- "Curve Fitting"
@@ -697,29 +837,47 @@ RPPASet <- function(path,
         message(paste("fitting", antibody, "-", "please wait."))
         flush.console()
 
-        fits[[i]] <- if (!is.null(rppas[[i]])) {
-                         tryCatch(RPPAFitFromParams(rppas[[i]],
-                                                    design=design,
-                                                    fitparams=adj.fitparams),
-                                  error=function(e) {
-                                      message(conditionMessage(e))
-                                      NULL
-                                  })
-                     } else {
-                         warning(paste("no slide to fit for", antibody))
-                         NULL
-                     }
+        rppa <- rppas[[i]]
+        if (!is.null(rppa)) {
+            fit <- tryCatch({
+                            RPPAFitFromParams(rppa,
+                                              design=design,
+                                              fitparams=adj.fitparams,
+                                              updateLabelWhileFitting)
+                        },
+                        error=function(e) {
+                            message(conditionMessage(e))
+                            NULL
+                        })
+            ## Update only on success
+            if (is.RPPAFit(fit)) {
+                fits[[i]] <- fit
+                fits.tf[i] <- TRUE
+            }
+        } else {
+            warning(paste("no slide to fit for", antibody))
+        }
         progressValue(monitor) <- i
     }
+
+    ## Create matrix for tracking what succeeded/failed
+    completed <- cbind(input.tf,
+                       spatial.tf,
+                       prefitqc.tf,
+                       fits.tf)
+    rownames(completed) <- slideFilenames
+    colnames(completed) <- names(getStages()[1:4])
 
     ## Create new class
     new("RPPASet",
         call=call,
-        design=design,
-        fitparams=fitparams,
         spatialparams=spatialparams,
-        fits=fits,
+        fitparams=fitparams,
+        design=design,
         rppas=rppas,
+        prefitqcs=prefitqcs,
+        fits=fits,
+        completed=completed,
         version=packageDescription("SuperCurve", fields="Version"))
 }
 
