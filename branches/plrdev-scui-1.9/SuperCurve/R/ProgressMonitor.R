@@ -17,14 +17,15 @@ setClass("ProgressMonitor",
 
 
 ##=============================================================================
+setOldClass("difftime")
 setClass("DefaultProgressMonitor",
          contains="ProgressMonitor",                ## inheritance
          representation(range="BoundedRange",       ## progressbar range model
                         label="character",          ## progressbar label value
                         err="logical",              ## has error occurred?
-                        done="logical"),            ## completed yet?
-         prototype(err=FALSE,
-                   done=FALSE))
+                        done="logical",             ## completed yet?
+                        etime="ElapsedTime",        ## elapsed time object
+                        elapsed="difftime"))        ## elapsed time (secs)
 
 
 ##-----------------------------------------------------------------------------
@@ -94,6 +95,23 @@ rm(mkDefaultReplaceMethod)
 ##
 
 ##-----------------------------------------------------------------------------
+setMethod("initialize",
+    signature(.Object="DefaultProgressMonitor"),
+    function(.Object, ...) {
+        .Object@elapsed <- structure(0, units="secs", class="difftime")
+        callNextMethod(.Object, ...)
+    })
+
+
+##-----------------------------------------------------------------------------
+setMethod("elapsed",
+    signature(object="DefaultProgressMonitor"),
+    function(object) {
+        elapsed(object@etime, units="secs")
+    })
+
+
+##-----------------------------------------------------------------------------
 setMethod("progressLabel",
     signature(object="DefaultProgressMonitor"),
     function(object) {
@@ -109,6 +127,7 @@ setReplaceMethod("progressLabel",
              value) {
         stopifnot(length(value) == 1)
         object@label <- value
+        object@elapsed <- elapsed(object)
         object
     })
 
@@ -128,8 +147,8 @@ setReplaceMethod("progressValue",
              ...,
              value) {
         #message("progressValue<-(DefaultProgressMonitor, numeric)")
-        ## Invoke same method for BoundedRange object
         progressValue(object@range) <- value
+        object@elapsed <- elapsed(object)
         object
     })
 
@@ -148,8 +167,8 @@ setReplaceMethod("progressMinimum",
     function(object,
              ...,
              value) {
-        ## Invoke same method for BoundedRange object
         progressMinimum(object@range) <- value
+        object@elapsed <- elapsed(object)
         object
     })
 
@@ -168,8 +187,8 @@ setReplaceMethod("progressMaximum",
     function(object,
              ...,
              value) {
-        ## Invoke same method for BoundedRange object
         progressMaximum(object@range) <- value
+        object@elapsed <- elapsed(object)
         object
     })
 
@@ -211,6 +230,7 @@ setReplaceMethod("progressDone",
              value) {
         stopifnot(length(value) == 1)
         object@done <- value
+        object@elapsed <- elapsed(object)
         object
     })
 
