@@ -2,6 +2,7 @@
 \alias{DefaultProgressMonitor-class}
 \alias{DefaultProgressMonitor}
 \alias{is.DefaultProgressMonitor}
+\alias{elapsed,DefaultProgressMonitor-method}
 \alias{progressDone,DefaultProgressMonitor-method}
 \alias{progressDone<-,DefaultProgressMonitor,logical-method}
 \alias{progressError,DefaultProgressMonitor-method}
@@ -23,6 +24,7 @@ via a progressbar and provides means to get/set values for such a widget.
 }
 \usage{
 DefaultProgressMonitor(label, value, minimum=0, maximum=100)
+%%\S4method{elapsed}{DefaultProgressMonitor}(object)
 %%\S4method{progressDone}{DefaultProgressMonitor}(object)
 %%\S4method{progressDone}{DefaultProgressMonitor}(object, \dots) <- value
 %%\S4method{progressError}{DefaultProgressMonitor}(object)
@@ -50,12 +52,15 @@ DefaultProgressMonitor(label, value, minimum=0, maximum=100)
 }
 \section{Slots}{
   \describe{
-    \item{\code{range}:}{object of class \code{BoundedRange}}
+    \item{\code{done}:}{logical scalar specifying if task completed.
+      Default is \code{FALSE}.}
+    \item{\code{err}:}{logical scalar specifying if an error has occurred.
+      Default is \code{FALSE}.}
     \item{\code{label}:}{string specifying label for abstract progressbar}
-    \item{\code{done}:}{logical specifying if task completed.
-      Default is \code{FALSE}.}
-    \item{\code{err}:}{logical specifying if an error has occurred.
-      Default is \code{FALSE}.}
+    \item{\code{range}:}{object of class \code{BoundedRange}}
+    \item{\code{etime}:}{object of class \code{ElapsedTime}}
+    \item{\code{elapsed}:}{object of class \code{difftime} specifying seconds
+      since last update}
   }
 }
 \section{Extends}{
