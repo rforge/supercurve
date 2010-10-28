@@ -17,6 +17,12 @@
   \item{object}{object of class \code{DS5RPPAPreFitQC}}
   \item{\dots}{extra arguments for generic routines}
 }
+\details{
+  The prediction model used multiple training datasets from the RPPA Core
+  Facility by fitting a logistic regression model using an expert rating of
+  a slide's quality (good, fair, or poor) as the response variable and a
+  host of metrics about the raw positive control data as predicting variables.
+}
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to
   \link[methods]{new}, the preferred method is to use the \code{RPPAPreFitQC}
