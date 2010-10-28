@@ -48,7 +48,7 @@ Loading required package: splines
 +                            ignoreNegative=FALSE,
 +                            warnLevel=-1)
 > 
-> fitset <- RPPASet(path, designparams, fitparams)
+> rppaset <- RPPASet(path, designparams, fitparams)
 reading ERK2.txt
 reading GSK3.txt
 reading JNK.txt
@@ -180,57 +180,57 @@ Error in write.summary(designparams, path = outdir) :
 > ###########################
 > ## tests of summary path
 > 
-> checkException(write.summary(fitset,
+> checkException(write.summary(rppaset,
 +                              path=nosuchdir),
 +                msg="nonexistent output directory should fail")
-Error in write.summary(fitset, path = nosuchdir) : 
+Error in write.summary(rppaset, path = nosuchdir) : 
   directory "/tmp/RtmpSO0hXF/supercurve/nosuch" does not exist
 [1] TRUE
 > 
 > readonlydir <- file.path(persessionprojdir, "readonly")
 > dir.create(readonlydir, mode="0555")
-> checkException(write.summary(fitset,
+> checkException(write.summary(rppaset,
 +                              path=readonlydir),
 +                msg="readonly output directory should fail")
-Error in write.summary(fitset, path = readonlydir) : 
+Error in write.summary(rppaset, path = readonlydir) : 
   directory "/tmp/RtmpSO0hXF/supercurve/readonly" is not writable
 [1] TRUE
 > 
 > ###########################
 > ## tests of summary prefix
 > 
-> checkException(write.summary(fitset,
+> checkException(write.summary(rppaset,
 +                              path=outdir,
 +                              prefix=5),
 +                msg="invalid value should fail")
-Error in write.summary(fitset, path = outdir, prefix = 5) : 
+Error in write.summary(rppaset, path = outdir, prefix = 5) : 
   argument 'prefix' must be character
 [1] TRUE
 > 
-> checkException(write.summary(fitset,
+> checkException(write.summary(rppaset,
 +                              path=outdir,
 +                              prefix=c("a", "b")),
 +                msg="character vector should fail")
-Error in write.summary(fitset, path = outdir, prefix = c("a", "b")) : 
+Error in write.summary(rppaset, path = outdir, prefix = c("a", "b")) : 
   argument 'prefix' must be of length 1
 [1] TRUE
 > 
 > ###########################
 > ## tests of summary graphs
 > 
-> checkException(write.summary(fitset,
+> checkException(write.summary(rppaset,
 +                              path=outdir,
 +                              graphs="yellow"),
 +                msg="invalid value should fail")
-Error in write.summary(fitset, path = outdir, graphs = "yellow") : 
+Error in write.summary(rppaset, path = outdir, graphs = "yellow") : 
   argument 'graphs' must be logical
 [1] TRUE
 > 
-> checkException(write.summary(fitset,
+> checkException(write.summary(rppaset,
 +                              path=outdir,
 +                              graphs=c(FALSE, TRUE)),
 +                msg="logical vector should fail")
-Error in write.summary(fitset, path = outdir, graphs = c(FALSE, TRUE)) : 
+Error in write.summary(rppaset, path = outdir, graphs = c(FALSE, TRUE)) : 
   argument 'graphs' must be of length 1
 [1] TRUE
 > 
@@ -239,48 +239,48 @@ Error in write.summary(fitset, path = outdir, graphs = c(FALSE, TRUE)) :
 > ## tests of summary tiffdir
 > 
 > # :NOTE: if unspecified, "tiffdir" is assumed to be sibling of "path"
-> checkException(write.summary(fitset,
+> checkException(write.summary(rppaset,
 +                              path=outdir,
 +                              graphs=1),
 +                msg="not a directory should fail")
-Error in write.summary(fitset, path = outdir, graphs = 1) : 
+Error in write.summary(rppaset, path = outdir, graphs = 1) : 
   directory "/tmp/RtmpSO0hXF/supercurve/results/../tif" does not exist
 [1] TRUE
 > 
-> checkException(write.summary(fitset,
+> checkException(write.summary(rppaset,
 +                              path=outdir,
 +                              graphs=1,
 +                              tiffdir=pi),
 +                msg="invalid value should fail")
-Error in write.summary(fitset, path = outdir, graphs = 1, tiffdir = pi) : 
+Error in write.summary(rppaset, path = outdir, graphs = 1, tiffdir = pi) : 
   argument 'tiffdir' must be character
 [1] TRUE
 > 
 > # :NOTE: numeric "graphs" value silently converted to logical
-> checkException(write.summary(fitset,
+> checkException(write.summary(rppaset,
 +                              path=outdir,
 +                              graphs=1,
 +                              tiffdir=c("results1", "results2")),
 +                msg="character vector should fail")
-Error in write.summary(fitset, path = outdir, graphs = 1, tiffdir = c("results1",  : 
+Error in write.summary(rppaset, path = outdir, graphs = 1, tiffdir = c("results1",  : 
   argument 'tiffdir' must be of length 1
 [1] TRUE
 > 
-> checkException(write.summary(fitset,
+> checkException(write.summary(rppaset,
 +                              path=outdir,
 +                              graphs=TRUE,
 +                              tiffdir=nosuchdir),
 +                msg="nonexistent directory should fail")
-Error in write.summary(fitset, path = outdir, graphs = TRUE, tiffdir = nosuchdir) : 
+Error in write.summary(rppaset, path = outdir, graphs = TRUE, tiffdir = nosuchdir) : 
   directory "/tmp/RtmpSO0hXF/supercurve/nosuch" does not exist
 [1] TRUE
 > 
-> checkException(write.summary(fitset,
+> checkException(write.summary(rppaset,
 +                              path=outdir,
 +                              graphs=TRUE,
 +                              tiffdir=filenotdir),
 +                msg="not a directory should fail")
-Error in write.summary(fitset, path = outdir, graphs = TRUE, tiffdir = filenotdir) : 
+Error in write.summary(rppaset, path = outdir, graphs = TRUE, tiffdir = filenotdir) : 
   directory "/tmp/RtmpSO0hXF/supercurve/somefile" does not exist
 [1] TRUE
 > 
@@ -307,7 +307,7 @@ Error in write.summary(fitset, path = outdir, graphs = TRUE, tiffdir = filenotdi
 +                    on.exit(Sys.setenv("PATH"=savePATH))
 +                    Sys.setenv("PATH"="/usr/bin")
 + 
-+                    tryCatch(write.summary(fitset,
++                    tryCatch(write.summary(rppaset,
 +                                           path=outdir,
 +                                           graphs=TRUE,
 +                                           tiffdir=emptydir),
@@ -337,7 +337,7 @@ Error : (converted from warning) ImageMagick executable 'convert' not installed 
 > 
 > 
 > ## test one that should work...
-> write.summary(fitset,
+> write.summary(rppaset,
 +               path=outdir,
 +               prefix="testing",
 +               graphs=FALSE)
