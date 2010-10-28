@@ -40,5 +40,6 @@ is.Directory(x)
   txtdir <- Directory(system.file("rppaTumorData", package="SuperCurve"))
   txtdir.path <- as(txtdir, "character")
 }
+\keyword{classes}
 \keyword{file}
 
