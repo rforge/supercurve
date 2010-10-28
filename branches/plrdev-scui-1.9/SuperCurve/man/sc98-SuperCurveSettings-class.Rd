@@ -17,7 +17,7 @@ SuperCurveSettings(txtdir,
                    designparams,
                    fitparams,
                    spatialparams=NULL,
-                   doprefitqc=TRUE,
+                   doprefitqc=FALSE,
                    antibodyfile=NULL,
                    software=NULL)
 
