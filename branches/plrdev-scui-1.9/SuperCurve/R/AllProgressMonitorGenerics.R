@@ -6,6 +6,11 @@
 ##
 ## Accessors
 ##
+if (!isGeneric("elapsed")) {
+    setGeneric("elapsed",
+               function(object, ...) standardGeneric("elapsed"))
+}
+
 if (!isGeneric("progressLabel")) {
     setGeneric("progressLabel",
                function(object, ...) standardGeneric("progressLabel"))
