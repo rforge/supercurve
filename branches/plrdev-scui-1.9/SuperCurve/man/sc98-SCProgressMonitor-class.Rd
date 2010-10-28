@@ -38,9 +38,9 @@ getStages()
     \item{\code{marquee}:}{string specifying marquee for current task}
     \item{\code{range}:}{object of class \code{BoundedRange}}
     \item{\code{label}:}{string specifying detail label for current task}
-    \item{\code{done}:}{logical specifying if task completed.
+    \item{\code{done}:}{logical scalar specifying if task completed.
       Default is \code{FALSE}.}
-    \item{\code{err}:}{logical specifying if an error has occurred.
+    \item{\code{err}:}{logical scalar specifying if an error has occurred.
       Default is \code{FALSE}.}
   }
 }
@@ -80,7 +80,14 @@ getStages()
   \code{\linkS4class{DefaultProgressMonitor}}
 }
 \examples{
-## :TODO:
+showClass("SCProgressMonitor")
+niters <- 10
+scpm <- SuperCurve:::SCProgressMonitor("input")
+progressMarquee(scpm) <- "Read input files"
+for (i in seq.int(niters)) {
+    ## Perform portion of task
+    progressValue(scpm) <- i # Modify current value
+}
 }
 \keyword{classes}
 \keyword{methods}
