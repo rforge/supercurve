@@ -49,6 +49,7 @@ setReplaceMethod("progressStage",
         #progressMarquee(object) <- ""
         object@marquee <- ""
         object@label <- ""
+        object@elapsed <- elapsed(object)
         object
     })
 
@@ -73,6 +74,7 @@ setReplaceMethod("progressMarquee",
         object@marquee <- value
         #progressLabel(object) <- ""
         object@label <- ""
+        object@elapsed <- elapsed(object)
         object
     })
 
