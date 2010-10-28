@@ -535,6 +535,7 @@ RPPASet <- function(path,
                 ## :TODO: Need method to force R graphics system to update the
                 ## plot window on OS X, which otherwise doesn't display until
                 ## the computation ends (defeating its purpose).
+            }
         }
 
         progressValue(monitor) <- i
