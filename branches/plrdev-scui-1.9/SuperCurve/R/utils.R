@@ -101,6 +101,13 @@
 
 
 ##-----------------------------------------------------------------------------
+.isPackageInstalled <- function(pkgname) {
+    stopifnot(is.character(pkgname) && length(pkgname) == 1)
+    nzchar(system.file(package=pkgname))
+}
+
+
+##-----------------------------------------------------------------------------
 ## Specifies measures used for determining location on lysate array.
 .locationColnames <- function() {
     return(c("Main.Row",
@@ -119,6 +126,13 @@
 
     ## Begin processing
     main <- sprintf("%s:  %s", maintext, antibody)
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns logical value indicating whether running as a package.
+packaged <- function() {
+    return(getPackageName() != ".GlobalEnv")
 }
 
 
