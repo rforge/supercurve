@@ -230,7 +230,7 @@ read.microvigene <- function(conn) {
 
 ##-----------------------------------------------------------------------------
 ## Reads 'SuperSlide" single subgrid design MicroVigene text datafile
-read.superslide <- function(conn) {
+read.singlesubgrid <- function(conn) {
     ## Check arguments
     stopifnot(inherits(conn, "connection"))
 
@@ -238,9 +238,9 @@ read.superslide <- function(conn) {
 
     ## Do just what SuperCurve would have done by default
     mvdata.df <- read.microvigene(conn)
-    attr(mvdata.df, "software") <- "superslide"
+    attr(mvdata.df, "software") <- "singlesubgrid"
 
-    ## Logical dimensions of superslide
+    ## Logical dimensions of SuperSlide format
     nmainrow <- 4
     nmaincol <- 12
     nsubrow  <- 11
@@ -248,21 +248,21 @@ read.superslide <- function(conn) {
 
     nspot.mr <- nmaincol * nsubrow * nsubcol  # number of spots in main row
 
-    ## Ensure file is actually superslide single subgrid layout
-    dim.superslide <- as.integer(c(1,
-                                   1,
-                                   (nmainrow*nsubrow),
-                                   (nmaincol*nsubcol)))
+    ## Ensure file is actually SuperSlide single subgrid layout
+    dim.singlesubgrid <- as.integer(c(1,
+                                      1,
+                                      (nmainrow*nsubrow),
+                                      (nmaincol*nsubcol)))
     dim.mvdata.df <- c(max(mvdata.df$Main.Row),
                        max(mvdata.df$Main.Col),
                        max(mvdata.df$Sub.Row),
                        max(mvdata.df$Sub.Col))
-    if (!identical(dim.superslide, dim.mvdata.df)) {
+    if (!identical(dim.singlesubgrid, dim.mvdata.df)) {
         pathname <- summary(conn)$description
-        stop(sprintf("dim of file %s (%s) must match that of superslide (%s)",
+        stop(sprintf("dim of file %s (%s) does not match SuperSlide single subgrid (%s)",
                      dQuote(pathname),
-                     paste(dim.superslide, collapse="x"),
-                     paste(dim.mvdata.df, collapse="x")))
+                     paste(dim.mvdata.df, collapse="x"),
+                     paste(dim.singlesubgrid, collapse="x")))
     }
 
     ## Convert from single subgrid format
@@ -271,10 +271,9 @@ read.superslide <- function(conn) {
     mvdata.df$Sub.Row  <- rep(rep(1:nsubrow, each=nsubcol*nmaincol), nmainrow)
     mvdata.df$Sub.Col  <- rep(rep(1:nsubcol, nmaincol), nmainrow*nsubrow)
 
-    ## Reorder the rows so that so that the order look as if the
-    ## quantification was done for the first subgrid then the next subgrid
-    ## until the first main row is finished, and then the next main row,
-    ## and so on.
+    ## Reorder the rows so that the order look as if the quantification was
+    ## done for the first subgrid then the next subgrid until the first main
+    ## row is finished, and then the next main row, and so on.
     new.ind <- NULL
     for (i in 1:nmainrow) {
         tmpind <- ((i-1)*nspot.mr+1):(i*nspot.mr)
