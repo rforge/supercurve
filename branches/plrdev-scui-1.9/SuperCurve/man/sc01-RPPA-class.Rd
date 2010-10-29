@@ -69,7 +69,7 @@ is.RPPA(x)
   for in the global namespace, then within the package itself. The default
   value selects method \code{read.microvigene}, which this package provides
   to read \emph{MicroVigene} quantification files in text format. An additional
-  method, \code{read.superslide}, is provided to convert a single subgrid
+  method, \code{read.singlesubgrid}, is provided to convert a single subgrid
   physical layout (in MicroVigene format) into its actual logical one.
 }
 \section{Objects from the Class}{
@@ -125,7 +125,8 @@ is.RPPA(x)
 }
 \examples{
   \dontrun{
-rppa.ss <- RPPA("Cyclin D1(V)_GBL0009999.txt", software="superslide")
+## Converts file from single subgrid to its logical equivalent (4x12x11x11)
+rppa.ss <- RPPA("Cyclin D1(V)_GBL0009999.txt", software="singlesubgrid")
   }
 path <- system.file("rppaTumorData", package="SuperCurve")
 erk2 <- RPPA("ERK2.txt", path=path)
