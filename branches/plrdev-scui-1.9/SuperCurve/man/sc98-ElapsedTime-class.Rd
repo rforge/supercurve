@@ -6,9 +6,7 @@
 \docType{class}
 \title{Class "ElapsedTime"}
 \description{
-  The \code{ElapsedTime} class represents an attempt to abstract
-reporting of progress of a task. This class assumes that progress is reported
-via a progressbar and provides means to get/set values for such a widget.
+  The \code{ElapsedTime} class represents a means of reporting elapsed time.
 }
 \usage{
 ElapsedTime()
@@ -29,7 +27,8 @@ is.ElapsedTime(x)
 \section{Slots}{
   \describe{
     \item{\code{start}:}{numeric scalar specifying the elapsed time
-      for the currently running R process (taken from \code{proc.time}).}
+      for the currently running R process (taken from
+      \code{\link{proc.time}} when created).}
   }
 }
 \section{Methods}{
@@ -51,6 +50,9 @@ is.ElapsedTime(x)
 }
 \author{
   P. Roebuck \email{plroebuck@mdanderson.org}
+}
+\seealso{
+  \code{\link{difftime}}
 }
 \examples{
 showClass("ElapsedTime")
