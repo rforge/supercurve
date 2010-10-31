@@ -9,9 +9,6 @@
 
 \usepackage{hyperref}
 
-%\newcommand{\Rfunction}[1]{{\texttt{#1}}}
-%\newcommand{\Rpackage}[1]{{\textit{#1}}}
-
 \newcommand{\Rclass}[1]{{\textit{#1}}}
 \newcommand{\Rcode}[1]{{\texttt{#1}}}
 \newcommand{\Rfunarg}[1]{{\textit{#1}}}
@@ -181,7 +178,7 @@ These also allow us to illustrate how an \Rclass{RPPA} object can
 be constructed from a MicroVigene .txt file:
 <<getStarted02>>=
 filename <- "Akt.txt";
-directory <- system.file("rppaCellData", package="SuperCurve");
+directory <- system.file("extdata", "rppaCellData", package="SuperCurve");
 aktTake2 <- RPPA(file=filename, path=directory);
 class(aktTake2);
 isTRUE(all.equal(akt, aktTake2, check.attributes=FALSE));
@@ -240,7 +237,7 @@ read.user <- function(file) {
     return(df);
 }
 filename <- "Akt.txt";
-directory <- system.file("rppaCellData", package="SuperCurve");
+directory <- system.file("extdata", "rppaCellData", package="SuperCurve");
 aktTake3 <- RPPA(file=filename, path=directory, software="user");
 isTRUE(all.equal(akt, aktTake3, check.attributes=FALSE));
 @ 
@@ -369,7 +366,7 @@ construct an \Rclass{RPPADesign} object using a more low-level
 approach, such as reading the sample information (and possibly
 the dilution levels as well) from a separate file. 
 <<getStarted15>>=
-directory <- system.file("rppaCellData", package="SuperCurve");
+directory <- system.file("extdata", "rppaCellData", package="SuperCurve");
 filename <- "Akt.txt";
 aktTemp <- read.delim(file=file.path(directory, filename), skip=4);
 names(aktTemp)[5] <- "Sample";
