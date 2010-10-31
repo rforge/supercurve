@@ -13,10 +13,10 @@
 RPPASetSummary(rppaset)
 is.RPPASetSummary(x)
 \S4method{write.summary}{RPPASetSummary}(object,
-                                         path,
-                                         prefix="supercurve",
-                                         monitor=NULL,
-                                         \dots)
+              path,
+              prefix="supercurve",
+              monitor=NULL,
+              \dots)
 }
 \arguments{
   \item{object}{object of class \code{RPPASetSummary}}
@@ -87,14 +87,14 @@ fitparams <- RPPAFitParams(measure="Mean.Net",
                            ignoreNegative=FALSE,
                            warnLevel=-1,
                            verbose=FALSE)
-
 rppaset <- RPPASet(txtdir,
                    designparams,
                    fitparams)
 ## If you REALLY want to do this manually. It will be invoked
 ## automatically if you invoke write.summary(rppaset) instead...
 write.summary(summary(rppaset),
-              path=outdir)
+              path=outdir,
+              graphs=FALSE)
   }
 }
 \keyword{classes}

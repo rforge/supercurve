@@ -23,12 +23,12 @@ is.RPPASet(x)
 \S4method{summary}{RPPASet}(object,
                             \dots)
 \S4method{write.summary}{RPPASet}(object,
-                                  path,
-                                  prefix="supercurve",
-                                  graphs=TRUE,
-                                  tiffdir=NULL,
-                                  monitor=NULL,
-                                  \dots)
+              path,
+              prefix="supercurve",
+              graphs=TRUE,
+              tiffdir=NULL,
+              monitor=NULL,
+              \dots)
 }
 \arguments{
   \item{path}{character string specifying a directory. In the case of
