@@ -7,7 +7,8 @@ options(warn=1)
 library(SuperCurve)
 source("checkFuncs")
 
-path <- system.file("rppaCellData", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurve")
+path <- file.path(extdata.dir, "rppaCellData")
 
 ###########################
 ## tests of file

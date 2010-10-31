@@ -37,8 +37,8 @@ Loading required package: splines
 +     stop("cannot create per-session project directory")
 + }
 > 
-> 
-> path <- system.file("rppaTumorData", package="SuperCurve")
+> extdata.dir <- system.file("extdata", package="SuperCurve")
+> path <- file.path(extdata.dir, "rppaTumorData")
 > designparams <- RPPADesignParams(grouping="blockSample",
 +                                  center=TRUE,
 +                                  controls=list("neg con", "pos con"))

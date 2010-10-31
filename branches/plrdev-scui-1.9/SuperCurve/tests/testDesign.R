@@ -7,8 +7,10 @@ options(warn=1)
 library(SuperCurve)
 source("checkFuncs")
 
+extdata.dir <- system.file("extdata", package="SuperCurve")
+
 ## Get a valid RPPA object to get started
-path <- system.file("rppaTumorData", package="SuperCurve")
+path <- file.path(extdata.dir, "rppaTumorData")
 jnk <- RPPA("JNK.txt", path=path)
 
 ###########################
