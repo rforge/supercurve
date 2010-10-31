@@ -130,19 +130,21 @@
 
 
 ##-----------------------------------------------------------------------------
-## Returns logical value indicating whether running as a package.
+## Returns logical value indicating whether code is running as a package.
 packaged <- function() {
     return(getPackageName() != ".GlobalEnv")
 }
 
 
 ##-----------------------------------------------------------------------------
+## Get version of R for which the package was built
 .pkgRversion <- function(pkgname) {
     ## Check arguments
     stopifnot(is.character(pkgname) && length(pkgname) == 1)
 
     ## Begin processing
-    substring(packageDescription(pkgname)[["Built"]], 3, 5)
+    meta <- packageDescription(pkgname)
+    sub("\\.[[:digit:]];.*$", "", substring(meta$Built, 3))
 }
 
 
