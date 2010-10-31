@@ -1010,8 +1010,12 @@ createDesignParamsPanel <- function(parent) {
 
     ## Begin processing
     class.args <- formals(SuperCurve::RPPADesignParams)
-    class.args$software <- c(formals(SuperCurve::RPPA)$software,
-                             "superslide")
+    class.args$software <- local({
+                               readmethod.re <- "read\\."
+                               methods <- ls(pattern=readmethod.re,
+                                             env=getNamespace("SuperCurve"))
+                               sub(readmethod.re, "", methods)
+                           })
     txtdir <- tclvalue(getenv("txtdir.var"))
 
     ## Prepare possible input values
@@ -1021,18 +1025,23 @@ createDesignParamsPanel <- function(parent) {
                          values=eval(class.args$ordering))
     center.arg <- list(default=as.character(FALSE),
                        values=as.character(c(TRUE, FALSE)))
-    #software.arg <- list(default="microvigene",
-    #                     values=eval(class.args$software))
     software.arg <- local({
         rsrcClass <- "Software"
         rsrcName <- tolower(rsrcClass)
         uservalue <- tclvalue(optiondb_get(rsrcName=rsrcName,
                                            rsrcClass=rsrcClass))
-cat(sprintf("%s: [%s]", rsrcName, uservalue))
+        value <- as.character(uservalue)
+cat(sprintf("%s: [%s] -> [%s]", rsrcName, uservalue, value))
+
         values <- eval(class.args$software)
-        x.default <- match(uservalue, values, nomatch=1)
-cat(sprintf("\t(default): [%s]\n", values[x.default]))
-        list(default=values[x.default], values=values)
+        x.default <- match(formals(SuperCurve::RPPA)$software, values)
+        stopifnot(!is.na(x.default))
+
+        x.match <- match(value, values, nomatch=x.default)
+        default <- values[x.match]
+cat(sprintf("\t(default): [%s]\n", default))
+        list(default=as.character(default),
+             values=as.character(values))
     })
 
     ##-------------------------------------------------------------------------
@@ -1443,8 +1452,26 @@ createQCParamsPanel <- function(parent) {
     class.args <- pairlist(prefitqc=formals(SuperCurve::RPPASet)$doprefitqc)
 
     ## Prepare possible input values
-    prefitqc.arg <- list(default=as.character(eval(class.args$prefitqc)),
-                         values=as.character(c(TRUE, FALSE)))
+    prefitqc.arg <- local({
+        rsrcClass <- "PreFitQC"
+        rsrcName <- tolower(rsrcClass)
+        uservalue <- tclvalue(optiondb_get(rsrcName=rsrcName,
+                                           rsrcClass=rsrcClass))
+        value <- as.logical(uservalue)
+cat(sprintf("%s: [%s] -> [%s]", rsrcName, uservalue, value))
+
+        values <- c(TRUE, FALSE)
+        x.default <- match(eval(class.args$prefitqc), values)
+        stopifnot(!is.na(x.default))
+
+        x.match <- match(value, values, nomatch=x.default)
+        default <- values[x.match]
+cat(sprintf("\t(default): [%s]  final: [%s]\n", values[x.default], default))
+        list(default=as.character(default), 
+             values=as.character(values))
+    })
+
+
 
     ##-------------------------------------------------------------------------
     ## Weird but it won't handle 'tclvalue(getenv("grouping.var")) <- value'
@@ -2419,7 +2446,7 @@ supercurveGUI <- function() {
                          "*Progressbar.length"="200"))
 
         ## Handle app-defaults file(s), if any exist
-        loadAppDefaults(appdefaultsfile <- "supercurveGUI")
+        tkloadappdefaults(appdefaultsfile <- "supercurveGUI")
     })
 
     ## Create toplevel shell
