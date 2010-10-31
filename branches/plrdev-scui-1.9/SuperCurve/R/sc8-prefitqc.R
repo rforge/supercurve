@@ -245,7 +245,7 @@ DS5RPPAPreFitQC <- function(rppa,
 
 
 ##-----------------------------------------------------------------------------
-setMethod("qcprob", "RPPAPreFitQC",
+setMethod("qcprob", signature(object="RPPAPreFitQC"),
           function(object,
                    ...) {
     stop(sprintf("%s method must be implemented by any subclass of %s",
@@ -255,7 +255,7 @@ setMethod("qcprob", "RPPAPreFitQC",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("qcprob", "DS5RPPAPreFitQC",
+setMethod("qcprob", signature(object="DS5RPPAPreFitQC"),
           function(object,
                    ...) {
     ##-------------------------------------------------------------------------
@@ -291,7 +291,7 @@ setMethod("qcprob", "DS5RPPAPreFitQC",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("summary", "DS5RPPAPreFitQC",
+setMethod("summary", signature(object="DS5RPPAPreFitQC"),
           function(object,
                    ...) {
     cat(sprintf("An %s object", class(object)), "\n")

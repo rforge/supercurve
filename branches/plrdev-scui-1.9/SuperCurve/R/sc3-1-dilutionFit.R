@@ -54,7 +54,7 @@ is.RPPAFitParams <- function(x) {
 
 
 ##-----------------------------------------------------------------------------
-setMethod("summary", "RPPAFit",
+setMethod("summary", signature(object="RPPAFit"),
           function(object,
                    ...) {
     cat(sprintf("An %s object constructed via the function call:",
@@ -117,7 +117,7 @@ setMethod("image", signature(x="RPPAFit"),
 ## predicted intensities. Default for 'fitted' is to return the per-spot
 ## fitted 'Y' intensities, with an option to return the per-spot fitted
 ## 'X' concentrations.
-setMethod("fitted", "RPPAFit",
+setMethod("fitted", signature(object="RPPAFit"),
           function(object,
                    type=c("Y", "y", "X", "x"),
                    ...) {
@@ -151,7 +151,7 @@ setMethod("fitted", "RPPAFit",
 ## Note that the model fitting is a bit of a hybrid between the linear and
 ## logistic intensity scales, so it's not completely clear which residuals are
 ## most meaningful
-setMethod("residuals", "RPPAFit",
+setMethod("residuals", signature(object="RPPAFit"),
           function(object,
                    type=c("raw", "standardized", "r2"),
                    ...) {
@@ -176,7 +176,7 @@ setMethod("residuals", "RPPAFit",
 })
 
 
-setMethod("resid", "RPPAFit",
+setMethod("resid", signature(object="RPPAFit"),
           function(object,
                    type=c("raw", "standardized", "r2"),
                    ...) {
@@ -187,7 +187,7 @@ setMethod("resid", "RPPAFit",
 ##-----------------------------------------------------------------------------
 ## Histogram of the (raw) residuals, with an option to see the standardized
 ## or linear residuals
-setMethod("hist", "RPPAFit",
+setMethod("hist", signature(x="RPPAFit"),
           function(x,
                    type=c("Residuals", "StdRes", "ResidualsR2"),
                    xlab=NULL,

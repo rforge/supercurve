@@ -97,7 +97,7 @@ RPPASetSummary <- function(rppaset) {
 
 ##-----------------------------------------------------------------------------
 ## Provide a convenience function to save fit summary results as CSV/TSV files
-setMethod("write.summary", "RPPASetSummary",
+setMethod("write.summary", signature(object="RPPASetSummary"),
           function(object,
                    path,
                    prefix="supercurve",

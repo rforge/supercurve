@@ -104,7 +104,7 @@ setValidity("RPPASpatialParams", validSpatialParams)
 ## Returns a string representation of this instance. The content and format of
 ## the returned string may vary between versions. Returned string may be
 ## empty, but never null.
-setMethod("paramString", "RPPASpatialParams",
+setMethod("paramString", signature(object="RPPASpatialParams"),
           function(object,
                    slots=slotNames(object),
                    ...) {

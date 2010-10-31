@@ -231,7 +231,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
 ## Returns a string representation of this instance. The content and format of
 ## the returned string may vary between versions. Returned string may be
 ## empty, but never null.
-setMethod("paramString", "RPPADesignParams",
+setMethod("paramString", signature(object="RPPADesignParams"),
           function(object,
                    slots=slotNames(object),
                    ...) {
@@ -505,14 +505,14 @@ RPPADesign <- function(raw,
 
 
 ##-----------------------------------------------------------------------------
-setMethod("dim", "RPPADesign",
+setMethod("dim", signature(x="RPPADesign"),
           function(x) {
     .dimOfLayout(x@layout)
 })
 
 
 ##-----------------------------------------------------------------------------
-setMethod("summary", "RPPADesign",
+setMethod("summary", signature(object="RPPADesign"),
           function(object,
                    ...) {
     cat(sprintf("An %s object constructed via the function call:",
@@ -693,7 +693,7 @@ getSteps <- function(design) {
 
 
 ##-----------------------------------------------------------------------------
-setMethod("names", "RPPADesign",
+setMethod("names", signature(x="RPPADesign"),
           function(x) {
     isControl <- .controlVector(x)
     as.character(x@layout$Series[!isControl])

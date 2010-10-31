@@ -181,7 +181,7 @@ RPPAFitParams <- function(measure,
 ## Returns a string representation of this instance. The content and format of
 ## the returned string may vary between versions. Returned string may be
 ## empty, but never null.
-setMethod("paramString", "RPPAFitParams",
+setMethod("paramString", signature(object="RPPAFitParams"),
           function(object,
                    slots=slotNames(object),
                    ...) {
@@ -620,7 +620,7 @@ RPPAFitFromParams <- function(rppa,
 
 ##-----------------------------------------------------------------------------
 ## Extracts model coefficients from objects returned by modeling functions.
-setMethod("coef", "RPPAFit",
+setMethod("coef", signature(object="RPPAFit"),
           function(object,
                    ...) {
     callGeneric(object@model)

@@ -217,7 +217,7 @@ SuperCurveSettings <- function(txtdir,
 ## Returns a string representation of this instance. The content and format of
 ## the returned string may vary between versions. Returned string may be
 ## empty, but never null.
-setMethod("paramString", "SuperCurveSettings",
+setMethod("paramString", signature(object="SuperCurveSettings"),
           function(object,
                    designparams.slots,
                    fitparams.slots,

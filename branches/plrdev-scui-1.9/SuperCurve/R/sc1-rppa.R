@@ -90,14 +90,14 @@ RPPA <- function(file,
 
 
 ##-----------------------------------------------------------------------------
-setMethod("dim", signature="RPPA",
+setMethod("dim", signature(x="RPPA"),
           function(x) {
     .dimOfLayout(x@data)
 })
 
 
 ##-----------------------------------------------------------------------------
-setMethod("summary", "RPPA",
+setMethod("summary", signature(object="RPPA"),
           function(object,
                    ...) {
     cat(sprintf("An %s object loaded from file %s",

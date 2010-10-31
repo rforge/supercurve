@@ -157,7 +157,7 @@ is.RPPASet <- function(x) {
 
 ##-----------------------------------------------------------------------------
 ## See R FAQ (8.1 How should I write summary methods?)
-setMethod("summary", "RPPASet",
+setMethod("summary", signature(object="RPPASet"),
           function(object,
                    ...) {
     RPPASetSummary(object)
@@ -166,7 +166,7 @@ setMethod("summary", "RPPASet",
 
 ##-----------------------------------------------------------------------------
 ## Provide a convenience function to save fit results to disk
-setMethod("write.summary", "RPPASet",
+setMethod("write.summary", signature(object="RPPASet"),
           function(object,
                    path,
                    prefix="supercurve",
