@@ -102,7 +102,7 @@ DS5RPPAPreFitQC <- function(rppa,
     stopifnot(is.RPPA(rppa))
     stopifnot(is.RPPADesign(design))
     stopifnot(is.character(measures) && length(measures) == 2)
-    stopifnot(is.character(useAdjusted) && length(useAdjusted) == 1)
+    stopifnot(is.logical(useAdjusted) && length(useAdjusted) == 1)
 
 
     ##-------------------------------------------------------------------------
