@@ -76,6 +76,7 @@ getStages()
 }
 \seealso{
   \code{\linkS4class{BoundedRange}},
+  \code{\linkS4class{ElapsedTime}},
   \code{\linkS4class{ProgressMonitor}},
   \code{\linkS4class{DefaultProgressMonitor}}
 }

@@ -37,8 +37,8 @@ is.Directory(x)
   P. Roebuck \email{plroebuck@mdanderson.org}
 }
 \examples{
-  txtdir <- Directory(system.file("rppaTumorData", package="SuperCurve"))
-  txtdir.path <- as(txtdir, "character")
+  pkgdir <- Directory(system.file(package="SuperCurve"))
+  pkgdir.path <- as(pkgdir, "character")
 }
 \keyword{classes}
 \keyword{file}
