@@ -55,18 +55,16 @@ is.RPPAPreFitQC(x)
   P. Roebuck \email{plroebuck@mdanderson.org}
 }
 \examples{
-  \dontrun{
-parentdir <- file.path("/path/to/superslide/data")
-txtdir <- file.path(parentdir, "txt")
+extdatadir <- system.file("extdata", package="SuperCurve")
 
-rppa <- RPPA("slide.txt", path=txtdir)
-designfile <- file.path(parentdir, "slidedesign.tsv")
+txtdir <- file.path(extdatadir, "rppaSingleSubgridData")
+rppa <- RPPA("Foo.txt", path=txtdir, software="singlesubgrid")
+designfile <- file.path(txtdir, "slidedesign.tsv")
 design <- RPPADesign(rppa, designfile=designfile)
 rppa <- spatialAdjustment(rppa, design)
 fitqc <- RPPAPreFitQC(rppa, design)
 summary(fitqc)
-fitprob <- qcprob(fitqc)
-  }
+qcprob(fitqc)
 }
 \keyword{classes}
 

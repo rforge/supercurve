@@ -31,7 +31,7 @@ is.SuperCurveSettings(x)
     quantification files in text format}
   \item{imgdir}{character string specifying the directory containing
     \acronym{TIFF} image files associated with each of the aforementioned
-    quantification files}
+    quantification files, or \code{NULL}}
   \item{outdir}{character string specifying the directory where output
     from analysis should be stored. Must be writable.}
   \item{designparams}{object of class \code{RPPADesignParams}}
@@ -116,6 +116,9 @@ slotnames to display (for debuggging)}
 }
 \examples{
   \dontrun{
+extdatadir <- system.file("extdata", package="SuperCurve")
+
+txtdir <- file.path(extdatadir, "rppaTumorData")
 designparams <- RPPADesignParams(center=FALSE,
                                  controls=list("neg con", "pos con"),
                                  grouping="blockSample")
@@ -124,9 +127,8 @@ fitparams <- RPPAFitParams(ignoreNegative=FALSE,
                            method="nlrob",
                            model="loess",
                            warnLevel=-1)
-settings <- SuperCurveSettings(txtdir=system.file("rppaTumorData",
-                                                  package="SuperCurve"),
-                               imgdir=file.path("", "path", "to", "images"),
+settings <- SuperCurveSettings(txtdir=txtdir,
+                               imgdir=NULL,
                                outdir=tempdir(),
                                designparams=designparams,
                                fitparams=fitparams)

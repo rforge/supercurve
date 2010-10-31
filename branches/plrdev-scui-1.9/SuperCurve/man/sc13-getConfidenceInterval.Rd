@@ -48,9 +48,12 @@ getConfidenceInterval(result,
 }
 \examples{
   \dontrun{
-path <- system.file("rppaCellData", package="SuperCurve")
-akt <- RPPA("Akt.txt", path=path)
-design <- RPPADesign(akt, grouping="blockSample",
+extdatadir <- system.file("extdata", package="SuperCurve")
+
+txtdir <- file.path(extdatadir, "rppaCellData")
+akt <- RPPA("Akt.txt", path=txtdir)
+design <- RPPADesign(akt,
+                     grouping="blockSample",
                      controls=list("neg con", "pos con"))
 fit.nls <- RPPAFit(akt, design, "Mean.Net")
 ## N.B.: this takes a while!

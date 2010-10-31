@@ -96,10 +96,6 @@ spatialCorrection(rppa,
   P. Roebuck \email{plroebuck@mdanderson.org},
   E. Shannon Neeley \email{sneeley@stat.byu.edu}
 }
-\note{
-  This code may not yet work with slides containing more than one
-  positive control series. Currently untested.
-}
 \seealso{
   \code{\linkS4class{RPPASpatialParams}},
   \code{\link[stats]{quantile}},
@@ -108,18 +104,16 @@ spatialCorrection(rppa,
   \code{\link[mgcv]{choose.k}}
 }
 \examples{
-  \dontrun{
-## :TODO: Need to be able to run this with included data...
-path <- system.file("rppaTumorData", package="SuperCurve")
-rppa <- RPPA("ERK2.txt", path=path)
-designparams <- RPPADesignParams(grouping="blockSample",
-                                 designfile=file.path(path, "slidedesign.tsv"))
-design <- RPPADesignFromParams(rppa, designparams)
+extdatadir <- system.file("extdata", package="SuperCurve")
 
-rppa <- spatialCorrection(rppa,
-                          design,
-                          measure="Mean.Net")
-  }
+txtdir <- file.path(extdatadir, "rppaSingleSubgridData")
+designfile <- file.path(txtdir, "slidedesign.tsv")
+rppa <- RPPA("Waldo.txt", path=txtdir)
+designparams <- RPPADesignParams(grouping="blockSample",
+                                 designfile=designfile)
+design <- RPPADesignFromParams(rppa, designparams)
+rppa.adj <- spatialAdjustment(rppa, design)
+colnames(rppa.adj)
 }
 \keyword{smooth}
 

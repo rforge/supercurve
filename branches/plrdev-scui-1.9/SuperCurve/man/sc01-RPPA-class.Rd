@@ -124,12 +124,15 @@ is.RPPA(x)
   \code{\linkS4class{RPPADesign}}
 }
 \examples{
-  \dontrun{
+extdatadir <- system.file("extdata", package="SuperCurve")
+
 ## Converts file from single subgrid to its logical equivalent (4x12x11x11)
-rppa.ss <- RPPA("Cyclin D1(V)_GBL0009999.txt", software="singlesubgrid")
-  }
-path <- system.file("rppaTumorData", package="SuperCurve")
-erk2 <- RPPA("ERK2.txt", path=path)
+txtdir <- file.path(extdatadir, "rppaSingleSubgridData")
+waldo <- RPPA("Waldo.txt", path=txtdir, software="singlesubgrid")
+dim(waldo)
+
+txtdir <- file.path(extdatadir, "rppaTumorData")
+erk2 <- RPPA("ERK2.txt", path=txtdir)
 dim(erk2)
 summary(erk2)
 image(erk2)

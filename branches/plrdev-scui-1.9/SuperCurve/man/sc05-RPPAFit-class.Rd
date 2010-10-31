@@ -174,8 +174,10 @@
   \code{\link[graphics]{hist}}
 }
 \examples{
-path <- system.file("rppaTumorData", package="SuperCurve")
-erk2 <- RPPA("ERK2.txt", path=path)
+extdatadir <- system.file("extdata", package="SuperCurve")
+
+txtdir <- file.path(extdatadir, "rppaTumorData")
+erk2 <- RPPA("ERK2.txt", path=txtdir)
 design <- RPPADesign(erk2,
                      grouping="blockSample",
                      controls=list("neg con", "pos con"))
@@ -188,7 +190,7 @@ image(erk2.fit, measure="Residuals")
 plot(erk2.fit, type="cloud")
 coef(erk2.fit)
 
-jnk <- RPPA("JNK.txt", path=path)
+jnk <- RPPA("JNK.txt", path=txtdir)
 jnk.fit <- RPPAFit(jnk, design, "Mean.Net")
 hist(jnk.fit, type="StdRes")
 plot(jnk.fit, type="series")
