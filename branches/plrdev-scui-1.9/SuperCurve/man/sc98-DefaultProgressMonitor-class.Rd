@@ -68,6 +68,8 @@ DefaultProgressMonitor(label, value, minimum=0, maximum=100)
 }
 \section{Methods}{
   \describe{
+    \item{elapsed}{\code{signature(object = "DefaultProgressMonitor")}:
+      Returns elapsed time since creation of abstract progressbar.}
     \item{progressDone}{\code{signature(object = "DefaultProgressMonitor")}:
       Returns \code{TRUE} if task is complete; otherwise, \code{FALSE}.}
     \item{progressDone<-}{\code{signature(object = "DefaultProgressMonitor",
@@ -103,7 +105,9 @@ DefaultProgressMonitor(label, value, minimum=0, maximum=100)
   P. Roebuck \email{plroebuck@mdanderson.org}
 }
 \seealso{
+  \code{\link{difftime}},
   \code{\linkS4class{BoundedRange}},
+  \code{\linkS4class{ElapsedTime}},
   \code{\linkS4class{ProgressMonitor}}
 }
 \examples{
