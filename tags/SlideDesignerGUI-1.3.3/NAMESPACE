@@ -1,0 +1,8 @@
+###
+### NAMESPACE
+###
+
+## Public methods
+export(slidedesignerGUI)
+export(sdui)
+
