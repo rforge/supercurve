@@ -1,4 +1,4 @@
-			Dear Emacs, please make this -*-Text-*- mode!
+
 	**************************************************
 	*						 *
 	*	       1.3 SERIES NEWS			 *
@@ -6,7 +6,53 @@
 	**************************************************
 
 
-		CHANGES IN SUPERCURVE VERSION 1.3.5
+		CHANGES IN R VERSION 1.3.7
+
+
+NEW FEATURES
+
+    o	Pre-Fit QC class was virtualized so that additional
+	models could also be handled (in the future).
+
+    o	RPPASet() method is now tracks completion of all stages;
+	invoking write.summary() method now outputs an additional
+	TSV file that summarizes processing of each slide.
+
+    o	Elapsed time integrated into progress monitoring.
+
+    o	System requirement of ImageMagick binary checked on load,
+	providing a warning.
+
+    o	Raw data directories migrated under 'extdata' package
+	directory. The scripts that generate dataset objects from
+	the raw data migrated under 'util' package directory.
+
+
+DEPRECATED & DEFUNCT
+
+    o	The read.superslide() method was renamed read.singlesubgrid().
+
+
+
+		CHANGES IN R VERSION 1.3.6
+
+
+NEW FEATURES
+
+    o	Pre-Fit QC is now part of mainstream processing.
+
+    o	Reworked internals of read.microvigene() method to try
+	a backup approach if initial attempt to read datafile fails.
+	This proved successful in handling datafiles with CRCRLF
+	line endings on Un*x.
+
+    o	Added read.superslide() method which can convert the
+	RPPA Core Lab's single subgrid layout into its logical
+	dimensions (4x12x11x11).
+
+
+
+		CHANGES IN R VERSION 1.3.5
 
 
 NEW FEATURES
@@ -14,9 +60,11 @@ NEW FEATURES
     o	Spatial adjustment is now part of mainstream processing.
 	If not disabled, a slide design file (from SlideDesignerGUI)
 	is now mandatory for processing of RPPA datafiles.
+
     o	RPPASet() method is now far more tolerant of bad datafiles;
 	it continues processing if at all possible. As a consequence,
 	results may be incomplete and should be verified.
+
     o	Backend changes now provide a sort of abstract progress
 	monitoring. This capability will be heavily exploited by
 	its sibling package (SuperCurveGUI).
@@ -27,13 +75,16 @@ BUG FIXES
     o	RPPADesignFromParams() method "sorted" the rows of the 'layout'
 	slot when 'designfile' argument was given, which caused major
 	problems when it came time to perform curve fitting.
+
     o	spatialCorrection() method did not check that the requested
 	measure actually existed in the RPPA.
+
     o	Updated documentation in many places to account for the stricter
 	checking performed by new Rd processing code in R-2.10+.
 
 
-		CHANGES IN SUPERCURVE VERSION 1.3.4
+
+		CHANGES IN R VERSION 1.3.4
 
 
 NEW FEATURES
@@ -41,6 +92,7 @@ NEW FEATURES
     o	If TIFF image does not exist, a "missing slide" image is
 	substituted automatically when creating merged output from
 	an RPPASet.
+
     o	Converted the write.summary method into a generic method.
 
 
@@ -48,13 +100,15 @@ BUG FIXES
 
     o	Image directory was mistakenly made required when creating
 	settings files. Now it can also be NULL.
+
     o	Modified slot type for 'imgdir' slot of SuperCurveSettings
 	object to allow NULL. Also added 'antibodyfile' and 'software'
 	slots as these settings would be required for reproducibility
 	of output using more esoteric settings.
 
 
-		CHANGES IN SUPERCURVE VERSION 1.3.3
+
+		CHANGES IN R VERSION 1.3.3
 
 
 NEW FEATURES
@@ -64,7 +118,8 @@ NEW FEATURES
 	from possibly being used for malicious purposes.
 
 
-		CHANGES IN SUPERCURVE VERSION 1.3.2
+
+		CHANGES IN R VERSION 1.3.2
 
 
 NEW FEATURES
@@ -89,6 +144,7 @@ NEW FEATURES
 	graphic output is now titled, nominally with reference to
 	measure and antibody in main title, and filename in subtitle.
 
+
 BUG FIXES
 
     o	RPPASet() generator used regular expression to determine
@@ -96,7 +152,8 @@ BUG FIXES
 	with "txt" without being the file extension.
 
 
-		CHANGES IN SUPERCURVE VERSION 1.3.1
+
+		CHANGES IN R VERSION 1.3.1
 
 
 NEW FEATURES
@@ -120,6 +177,7 @@ NEW FEATURES
     o   Modified slot type for 'xform' slot of RPPAFitParams object
 	to allow NULL.
 
+
 BUG FIXES
 
     o	RPPA() generator now allows 'path' argument to be empty string.
@@ -131,7 +189,8 @@ BUG FIXES
 	now progress is reported while computations are in progress.
 
 
-		CHANGES IN SUPERCURVE VERSION 1.3.0
+
+		CHANGES IN R VERSION 1.3.0
 
 
 NEW FEATURES
@@ -161,6 +220,7 @@ NEW FEATURES
     o	Now checks the quantification data.frame from readQuantification()
 	method to verify expected columns.
 
+
 UTILITIES
 
     o	Updated scripts to create R objects from raw data provided
@@ -186,6 +246,8 @@ BUG FIXES
 	to verify the 'tiffdir' argument was a directory.
 
 
+
+
 	**************************************************
 	*						 *
 	*	       1.2 SERIES NEWS			 *
@@ -193,7 +255,7 @@ BUG FIXES
 	**************************************************
 
 
-		CHANGES IN SUPERCURVE VERSION 1.2.0
+		CHANGES IN R VERSION 1.2.0
 
 
 NEW FEATURES
@@ -208,8 +270,6 @@ NEW FEATURES
 	as its slot there changed from logical to numeric type.
 
 
-BUG FIXES
-
 
 
 	**************************************************
@@ -219,7 +279,7 @@ BUG FIXES
 	**************************************************
 
 
-		CHANGES IN SUPERCURVE VERSION 1.1.0
+		CHANGES IN R VERSION 1.1.0
 
 
 NEW FEATURES
@@ -273,6 +333,8 @@ BUG FIXES
 	information file.
 
 
+
+
 	**************************************************
 	*						 *
 	*	       1.0 SERIES NEWS			 *
@@ -280,10 +342,7 @@ BUG FIXES
 	**************************************************
 
 
-		CHANGES IN SUPERCURVE VERSION 1.0.1
-
-
-SIGNIFICANT USER-VISIBLE CHANGES
+		CHANGES IN R VERSION 1.0.1
 
 
 NEW FEATURES
@@ -308,10 +367,8 @@ BUG FIXES
 	compatibility.
 
 
-		CHANGES IN SUPERCURVE VERSION 1.0.0
 
-
-SIGNIFICANT USER-VISIBLE CHANGES
+		CHANGES IN R VERSION 1.0.0
 
 
 NEW FEATURES
@@ -355,6 +412,7 @@ BUG FIXES
 
     o	Checks that 'measure' argument to image(RPPA) method specifies
 	a valid column name from its 'data' slot.
+
 
 
 
