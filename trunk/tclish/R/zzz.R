@@ -17,15 +17,15 @@
             }
             packageDescription <- function(pkgname) {
                 fieldnames <- c("Title", "Version")
-                descfile <- file.path(libname, pkgname, "DESCRIPTION")
-                desc <- as.list(read.dcf(descfile, fieldnames))
-                names(desc) <- fieldnames
-                return(desc)
+                metafile <- file.path(libname, pkgname, "DESCRIPTION")
+                meta <- as.list(read.dcf(metafile, fieldnames))
+                names(meta) <- fieldnames
+                return(meta)
             }
 
-            desc <- packageDescription(pkgname)
+            meta <- packageDescription(pkgname)
             msg <- sprintf("%s, version %s",
-                           desc$Title, desc$Version)
+                           meta$Title, meta$Version)
             packageStartupMessage(msg)
             msg <- sprintf("Type library(help=%s) to see package documentation",
                            libraryPkgName(pkgname))
