@@ -17,6 +17,7 @@ export(showwarning)
 export(optiondb_add)
 export(optiondb_get)
 export(optiondb_readfile)
+export(tkloadappdefaults)
 
 # Widgets
 export(tkOptionMenu)
