@@ -1,0 +1,1091 @@
+
+R version 2.7.2 (2008-08-25)
+Copyright (C) 2008 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ###
+> ### TESTDESIGN.R
+> ###
+> 
+> 
+> options(warn=1)
+> library(SuperCurve)
+Loading required package: MASS
+Loading required package: cobs
+Loading required package: SparseM
+Package SparseM (0.78) loaded.  To cite, see citation("SparseM")
+Loading required package: quantreg
+Loading required package: splines
+> source("checkFuncs")
+> 
+> extdata.dir <- system.file("extdata", package="SuperCurve") 
+> 
+> ## Get a valid RPPA object to get started
+> path <- file.path(extdata.dir, "rppaTumorData")
+> jnk <- RPPA("JNK.txt", path=path)
+> 
+> ###########################
+> ## tests of grouping
+> 
+> checkException(RPPADesignParams(grouping="bogus"),
++                msg="invalid character value should fail")
+Error in match.arg(grouping) : 
+  'arg' should be one of "byRow", "byCol", "bySample", "blockSample"
+[1] TRUE
+> checkException(RPPADesignParams(grouping=1),
++                msg="invalid value should fail")
+Error in match.arg(grouping) : 'arg' must be NULL or a character vector
+[1] TRUE
+> 
+> ###########################
+> ## tests of ordering
+> 
+> checkException(RPPADesignParams(ordering="bogus"),
++                msg="invalid character value should fail")
+Error in match.arg(ordering) : 
+  'arg' should be one of "decreasing", "increasing"
+[1] TRUE
+> checkException(RPPADesignParams(ordering=1),
++                msg="invalid value should fail")
+Error in match.arg(ordering) : 'arg' must be NULL or a character vector
+[1] TRUE
+> 
+> ###########################
+> ## tests of controls
+> 
+> ## Specifying controls as character vector is valid (coerced internally)
+> dp <- RPPADesignParams(controls=c("neg con", "pos con"))
+> checkIdentical(dp@controls, list("neg con", "pos con"))
+[1] TRUE
+> 
+> ## Specifying controls indirectly
+> ## :TODO: We need a slide design for this dataset before test can be added...
+> #dp <- RPPADesignParams(designfile=file.path(path, "slidedesign.tsv"))
+> #checkIdentical(dp@controls, list("neg con", "pos con"))
+> 
+> ## This is for showing off the plot, where the controls dominate
+> dp <- RPPADesignParams(grouping="bySample")
+> dsn <- RPPADesignFromParams(jnk, dp)
+> plot(jnk, dsn)
+> 
+> ## Putting non-character elements into list should fail
+> checkException(RPPADesignParams(controls=list(TRUE)),
++                msg="logical scalar list component should fail")
+Error in RPPADesignParams(controls = list(TRUE)) : 
+  argument 'controls' components must be character
+[1] TRUE
+> checkException(RPPADesignParams(controls=list(pi)),
++                msg="numeric scalar list component should fail")
+Error in RPPADesignParams(controls = list(pi)) : 
+  argument 'controls' components must be character
+[1] TRUE
+> checkException(RPPADesignParams(controls=list(1:3)),
++                msg="integer vector list component should fail")
+Error in RPPADesignParams(controls = list(1:3)) : 
+  argument 'controls' components must be character
+[1] TRUE
+> checkException(RPPADesignParams(controls=list(list("foo", "bar"))),
++                msg="list as list component should fail")
+Error in RPPADesignParams(controls = list(list("foo", "bar"))) : 
+  argument 'controls' components must be character
+[1] TRUE
+> 
+> ## Using a vector as list component (instead of making a list) now illegal
+> checkException(RPPADesignParams(controls=list(c("neg con", "pos con", "blanks"))),
++                msg="character vector list component should fail")
+Error in RPPADesignParams(controls = list(c("neg con", "pos con", "blanks"))) : 
+  argument 'controls' components must be of length 1
+[1] TRUE
+> 
+> dp <- RPPADesignParams(grouping="bySample",
++                        controls=list("neg con", "pos con", "blanks"))
+> dsn <- RPPADesignFromParams(jnk, dp)
+> plot(jnk, dsn)
+> 
+> ###########################
+> ## tests of steps and series
+> 
+> ## :KRC: why does this work? which value does it think is being set?
+> ## :PLR: As its length is 1, the actual value passed is irrelevant; does the
+> ## same thing as if the default had been passed. Dumb but harmless.
+> dp <- RPPADesignParams(steps=13) # should probably give an error, but does not
+> dsn <- RPPADesignFromParams(jnk, dp)
+> 
+> ## Specifying series without steps should fail (length > 1)
+> checkException(RPPADesignParams(steps=1:3),
++                msg="both steps and series must be specified together")
+Error in RPPADesignParams(steps = 1:3) : 
+  arguments 'steps' and 'series' must both be specified if either is
+[1] TRUE
+> 
+> # This lets us pass in things of the wrong length, and we only
+> # discover it later.
+> dp <- RPPADesignParams(steps=1:3, series=factor(1:3))
+> checkException(RPPADesignFromParams(jnk, dp),
++                msg="lengths of steps/series must equal prod(dim(RPPA))")
+Error in RPPADesignFromParams(jnk, dp) : 
+  arguments 'steps' (3) and 'series' (3) must be of length 768
+[1] TRUE
+> 
+> # Why doesn't this crash?
+> dp <- RPPADesignParams(steps=1:768, series=factor(1:768))
+> dsn <- RPPADesignFromParams(jnk, dp)
+> image(dsn)
+> plot(jnk, dsn)
+> 
+> # Here we have 768 series each of step size 1. I bet this will break
+> # the fits later on...
+> dp <- RPPADesignParams(steps=rep(1, 768), series=factor(1:768))
+> dsn <- RPPADesignFromParams(jnk, dp)
+> image(dsn)
+> plot(jnk, dsn)
+> 
+> ###########################
+> ## tests of center
+> 
+> RPPADesignParams(center=1) # numeric center value silently converted to logical
+An object of class "RPPADesignParams"
+Slot "steps":
+[1] 0
+
+Slot "series":
+[1] 0
+Levels: 0
+
+Slot "grouping":
+[1] "byRow"
+
+Slot "ordering":
+[1] "decreasing"
+
+Slot "alias":
+list()
+
+Slot "center":
+[1] TRUE
+
+Slot "controls":
+list()
+
+> checkException(RPPADesignParams(center="x"),
++                msg="character value should fail")
+Error in RPPADesignParams(center = "x") : 
+  argument 'center' must be logical
+[1] TRUE
+> checkException(RPPADesignParams(center=c(TRUE, FALSE)),
++                msg="logical vector value should fail")
+Error in RPPADesignParams(center = c(TRUE, FALSE)) : 
+  argument 'center' must be of length 1
+[1] TRUE
+> 
+> ###########################
+> ## tests of alias
+> 
+> dp <- RPPADesignParams(alias=list(foo=1))
+> checkException(RPPADesignFromParams(jnk, dp),
++                msg="too few list components should fail")
+Error in RPPADesignFromParams(jnk, dp) : 
+  argument 'alias' must be of length 2 or greater
+[1] TRUE
+> 
+> dp <- RPPADesignParams(alias=list(foo=1, bar=2))
+> checkException(RPPADesignFromParams(jnk, dp),
++                msg="missing reqd list components should fail")
+Error in RPPADesignFromParams(jnk, dp) : 
+  argument 'alias' missing components: Alias, Sample
+[1] TRUE
+> 
+> ## :TODO: Lack an example of this in actual usage...
+> ## This passes existing checks here but would probably cause problems later...
+> dp <- RPPADesignParams(alias=list(Alias=NA, Sample=NA))
+> RPPADesignFromParams(jnk, dp)
+An object of class "RPPADesign"
+Slot "call":
+RPPADesignFromParams(raw = jnk, designparams = dp)
+
+Slot "layout":
+    Main.Row Main.Col Sub.Row Sub.Col    Sample Steps        Series
+1          1        1       1       1  sample 1     0  Series.1.1.1
+2          1        1       1       2  sample 1    -1  Series.1.1.1
+3          1        1       1       3  sample 1    -2  Series.1.1.1
+4          1        1       1       4  sample 1    -3  Series.1.1.1
+5          1        1       2       1  sample 1     0  Series.1.1.2
+6          1        1       2       2  sample 1    -1  Series.1.1.2
+7          1        1       2       3  sample 1    -2  Series.1.1.2
+8          1        1       2       4   neg con    -3  Series.1.1.2
+9          1        1       3       1  sample 2     0  Series.1.1.3
+10         1        1       3       2  sample 2    -1  Series.1.1.3
+11         1        1       3       3  sample 2    -2  Series.1.1.3
+12         1        1       3       4  sample 2    -3  Series.1.1.3
+13         1        1       4       1  sample 2     0  Series.1.1.4
+14         1        1       4       2  sample 2    -1  Series.1.1.4
+15         1        1       4       3  sample 2    -2  Series.1.1.4
+16         1        1       4       4   pos con    -3  Series.1.1.4
+17         1        2       1       1  sample 3     0  Series.1.2.1
+18         1        2       1       2  sample 3    -1  Series.1.2.1
+19         1        2       1       3  sample 3    -2  Series.1.2.1
+20         1        2       1       4  sample 3    -3  Series.1.2.1
+21         1        2       2       1  sample 3     0  Series.1.2.2
+22         1        2       2       2  sample 3    -1  Series.1.2.2
+23         1        2       2       3  sample 3    -2  Series.1.2.2
+24         1        2       2       4   neg con    -3  Series.1.2.2
+25         1        2       3       1  sample 4     0  Series.1.2.3
+26         1        2       3       2  sample 4    -1  Series.1.2.3
+27         1        2       3       3  sample 4    -2  Series.1.2.3
+28         1        2       3       4  sample 4    -3  Series.1.2.3
+29         1        2       4       1  sample 4     0  Series.1.2.4
+30         1        2       4       2  sample 4    -1  Series.1.2.4
+31         1        2       4       3  sample 4    -2  Series.1.2.4
+32         1        2       4       4   pos con    -3  Series.1.2.4
+33         1        3       1       1  sample 5     0  Series.1.3.1
+34         1        3       1       2  sample 5    -1  Series.1.3.1
+35         1        3       1       3  sample 5    -2  Series.1.3.1
+36         1        3       1       4  sample 5    -3  Series.1.3.1
+37         1        3       2       1  sample 5     0  Series.1.3.2
+38         1        3       2       2  sample 5    -1  Series.1.3.2
+39         1        3       2       3  sample 5    -2  Series.1.3.2
+40         1        3       2       4   neg con    -3  Series.1.3.2
+41         1        3       3       1  sample 6     0  Series.1.3.3
+42         1        3       3       2  sample 6    -1  Series.1.3.3
+43         1        3       3       3  sample 6    -2  Series.1.3.3
+44         1        3       3       4  sample 6    -3  Series.1.3.3
+45         1        3       4       1  sample 6     0  Series.1.3.4
+46         1        3       4       2  sample 6    -1  Series.1.3.4
+47         1        3       4       3  sample 6    -2  Series.1.3.4
+48         1        3       4       4   pos con    -3  Series.1.3.4
+49         1        4       1       1  sample 7     0  Series.1.4.1
+50         1        4       1       2  sample 7    -1  Series.1.4.1
+51         1        4       1       3  sample 7    -2  Series.1.4.1
+52         1        4       1       4  sample 7    -3  Series.1.4.1
+53         1        4       2       1  sample 7     0  Series.1.4.2
+54         1        4       2       2  sample 7    -1  Series.1.4.2
+55         1        4       2       3  sample 7    -2  Series.1.4.2
+56         1        4       2       4   neg con    -3  Series.1.4.2
+57         1        4       3       1  sample 8     0  Series.1.4.3
+58         1        4       3       2  sample 8    -1  Series.1.4.3
+59         1        4       3       3  sample 8    -2  Series.1.4.3
+60         1        4       3       4  sample 8    -3  Series.1.4.3
+61         1        4       4       1  sample 8     0  Series.1.4.4
+62         1        4       4       2  sample 8    -1  Series.1.4.4
+63         1        4       4       3  sample 8    -2  Series.1.4.4
+64         1        4       4       4   pos con    -3  Series.1.4.4
+65         1        5       1       1  sample 9     0  Series.1.5.1
+66         1        5       1       2  sample 9    -1  Series.1.5.1
+67         1        5       1       3  sample 9    -2  Series.1.5.1
+68         1        5       1       4  sample 9    -3  Series.1.5.1
+69         1        5       2       1  sample 9     0  Series.1.5.2
+70         1        5       2       2  sample 9    -1  Series.1.5.2
+71         1        5       2       3  sample 9    -2  Series.1.5.2
+72         1        5       2       4   neg con    -3  Series.1.5.2
+73         1        5       3       1 sample 10     0  Series.1.5.3
+74         1        5       3       2 sample 10    -1  Series.1.5.3
+75         1        5       3       3 sample 10    -2  Series.1.5.3
+76         1        5       3       4 sample 10    -3  Series.1.5.3
+77         1        5       4       1 sample 10     0  Series.1.5.4
+78         1        5       4       2 sample 10    -1  Series.1.5.4
+79         1        5       4       3 sample 10    -2  Series.1.5.4
+80         1        5       4       4   pos con    -3  Series.1.5.4
+81         1        6       1       1 sample 11     0  Series.1.6.1
+82         1        6       1       2 sample 11    -1  Series.1.6.1
+83         1        6       1       3 sample 11    -2  Series.1.6.1
+84         1        6       1       4 sample 11    -3  Series.1.6.1
+85         1        6       2       1 sample 11     0  Series.1.6.2
+86         1        6       2       2 sample 11    -1  Series.1.6.2
+87         1        6       2       3 sample 11    -2  Series.1.6.2
+88         1        6       2       4   neg con    -3  Series.1.6.2
+89         1        6       3       1 sample 12     0  Series.1.6.3
+90         1        6       3       2 sample 12    -1  Series.1.6.3
+91         1        6       3       3 sample 12    -2  Series.1.6.3
+92         1        6       3       4 sample 12    -3  Series.1.6.3
+93         1        6       4       1 sample 12     0  Series.1.6.4
+94         1        6       4       2 sample 12    -1  Series.1.6.4
+95         1        6       4       3 sample 12    -2  Series.1.6.4
+96         1        6       4       4   pos con    -3  Series.1.6.4
+97         1        7       1       1 sample 13     0  Series.1.7.1
+98         1        7       1       2 sample 13    -1  Series.1.7.1
+99         1        7       1       3 sample 13    -2  Series.1.7.1
+100        1        7       1       4 sample 13    -3  Series.1.7.1
+101        1        7       2       1 sample 13     0  Series.1.7.2
+102        1        7       2       2 sample 13    -1  Series.1.7.2
+103        1        7       2       3 sample 13    -2  Series.1.7.2
+104        1        7       2       4   neg con    -3  Series.1.7.2
+105        1        7       3       1 sample 14     0  Series.1.7.3
+106        1        7       3       2 sample 14    -1  Series.1.7.3
+107        1        7       3       3 sample 14    -2  Series.1.7.3
+108        1        7       3       4 sample 14    -3  Series.1.7.3
+109        1        7       4       1 sample 14     0  Series.1.7.4
+110        1        7       4       2 sample 14    -1  Series.1.7.4
+111        1        7       4       3 sample 14    -2  Series.1.7.4
+112        1        7       4       4   pos con    -3  Series.1.7.4
+113        1        8       1       1 sample 15     0  Series.1.8.1
+114        1        8       1       2 sample 15    -1  Series.1.8.1
+115        1        8       1       3 sample 15    -2  Series.1.8.1
+116        1        8       1       4 sample 15    -3  Series.1.8.1
+117        1        8       2       1 sample 15     0  Series.1.8.2
+118        1        8       2       2 sample 15    -1  Series.1.8.2
+119        1        8       2       3 sample 15    -2  Series.1.8.2
+120        1        8       2       4   neg con    -3  Series.1.8.2
+121        1        8       3       1 sample 16     0  Series.1.8.3
+122        1        8       3       2 sample 16    -1  Series.1.8.3
+123        1        8       3       3 sample 16    -2  Series.1.8.3
+124        1        8       3       4 sample 16    -3  Series.1.8.3
+125        1        8       4       1 sample 16     0  Series.1.8.4
+126        1        8       4       2 sample 16    -1  Series.1.8.4
+127        1        8       4       3 sample 16    -2  Series.1.8.4
+128        1        8       4       4   pos con    -3  Series.1.8.4
+129        1        9       1       1 sample 17     0  Series.1.9.1
+130        1        9       1       2 sample 17    -1  Series.1.9.1
+131        1        9       1       3 sample 17    -2  Series.1.9.1
+132        1        9       1       4 sample 17    -3  Series.1.9.1
+133        1        9       2       1 sample 17     0  Series.1.9.2
+134        1        9       2       2 sample 17    -1  Series.1.9.2
+135        1        9       2       3 sample 17    -2  Series.1.9.2
+136        1        9       2       4   neg con    -3  Series.1.9.2
+137        1        9       3       1 sample 18     0  Series.1.9.3
+138        1        9       3       2 sample 18    -1  Series.1.9.3
+139        1        9       3       3 sample 18    -2  Series.1.9.3
+140        1        9       3       4 sample 18    -3  Series.1.9.3
+141        1        9       4       1 sample 18     0  Series.1.9.4
+142        1        9       4       2 sample 18    -1  Series.1.9.4
+143        1        9       4       3 sample 18    -2  Series.1.9.4
+144        1        9       4       4   pos con    -3  Series.1.9.4
+145        1       10       1       1 sample 19     0 Series.1.10.1
+146        1       10       1       2 sample 19    -1 Series.1.10.1
+147        1       10       1       3 sample 19    -2 Series.1.10.1
+148        1       10       1       4 sample 19    -3 Series.1.10.1
+149        1       10       2       1 sample 19     0 Series.1.10.2
+150        1       10       2       2 sample 19    -1 Series.1.10.2
+151        1       10       2       3 sample 19    -2 Series.1.10.2
+152        1       10       2       4   neg con    -3 Series.1.10.2
+153        1       10       3       1 sample 20     0 Series.1.10.3
+154        1       10       3       2 sample 20    -1 Series.1.10.3
+155        1       10       3       3 sample 20    -2 Series.1.10.3
+156        1       10       3       4 sample 20    -3 Series.1.10.3
+157        1       10       4       1 sample 20     0 Series.1.10.4
+158        1       10       4       2 sample 20    -1 Series.1.10.4
+159        1       10       4       3 sample 20    -2 Series.1.10.4
+160        1       10       4       4   pos con    -3 Series.1.10.4
+161        1       11       1       1 sample 21     0 Series.1.11.1
+162        1       11       1       2 sample 21    -1 Series.1.11.1
+163        1       11       1       3 sample 21    -2 Series.1.11.1
+164        1       11       1       4 sample 21    -3 Series.1.11.1
+165        1       11       2       1 sample 21     0 Series.1.11.2
+166        1       11       2       2 sample 21    -1 Series.1.11.2
+167        1       11       2       3 sample 21    -2 Series.1.11.2
+168        1       11       2       4   neg con    -3 Series.1.11.2
+169        1       11       3       1 sample 22     0 Series.1.11.3
+170        1       11       3       2 sample 22    -1 Series.1.11.3
+171        1       11       3       3 sample 22    -2 Series.1.11.3
+172        1       11       3       4 sample 22    -3 Series.1.11.3
+173        1       11       4       1 sample 22     0 Series.1.11.4
+174        1       11       4       2 sample 22    -1 Series.1.11.4
+175        1       11       4       3 sample 22    -2 Series.1.11.4
+176        1       11       4       4   pos con    -3 Series.1.11.4
+177        1       12       1       1 sample 23     0 Series.1.12.1
+178        1       12       1       2 sample 23    -1 Series.1.12.1
+179        1       12       1       3 sample 23    -2 Series.1.12.1
+180        1       12       1       4 sample 23    -3 Series.1.12.1
+181        1       12       2       1 sample 23     0 Series.1.12.2
+182        1       12       2       2 sample 23    -1 Series.1.12.2
+183        1       12       2       3 sample 23    -2 Series.1.12.2
+184        1       12       2       4   neg con    -3 Series.1.12.2
+185        1       12       3       1 sample 24     0 Series.1.12.3
+186        1       12       3       2 sample 24    -1 Series.1.12.3
+187        1       12       3       3 sample 24    -2 Series.1.12.3
+188        1       12       3       4 sample 24    -3 Series.1.12.3
+189        1       12       4       1 sample 24     0 Series.1.12.4
+190        1       12       4       2 sample 24    -1 Series.1.12.4
+191        1       12       4       3 sample 24    -2 Series.1.12.4
+192        1       12       4       4   pos con    -3 Series.1.12.4
+193        2        1       1       1 sample 25     0  Series.2.1.1
+194        2        1       1       2 sample 25    -1  Series.2.1.1
+195        2        1       1       3 sample 25    -2  Series.2.1.1
+196        2        1       1       4 sample 25    -3  Series.2.1.1
+197        2        1       2       1 sample 25     0  Series.2.1.2
+198        2        1       2       2 sample 25    -1  Series.2.1.2
+199        2        1       2       3 sample 25    -2  Series.2.1.2
+200        2        1       2       4   neg con    -3  Series.2.1.2
+201        2        1       3       1 sample 26     0  Series.2.1.3
+202        2        1       3       2 sample 26    -1  Series.2.1.3
+203        2        1       3       3 sample 26    -2  Series.2.1.3
+204        2        1       3       4 sample 26    -3  Series.2.1.3
+205        2        1       4       1 sample 26     0  Series.2.1.4
+206        2        1       4       2 sample 26    -1  Series.2.1.4
+207        2        1       4       3 sample 26    -2  Series.2.1.4
+208        2        1       4       4   pos con    -3  Series.2.1.4
+209        2        2       1       1 sample 27     0  Series.2.2.1
+210        2        2       1       2 sample 27    -1  Series.2.2.1
+211        2        2       1       3 sample 27    -2  Series.2.2.1
+212        2        2       1       4 sample 27    -3  Series.2.2.1
+213        2        2       2       1 sample 27     0  Series.2.2.2
+214        2        2       2       2 sample 27    -1  Series.2.2.2
+215        2        2       2       3 sample 27    -2  Series.2.2.2
+216        2        2       2       4   neg con    -3  Series.2.2.2
+217        2        2       3       1 sample 28     0  Series.2.2.3
+218        2        2       3       2 sample 28    -1  Series.2.2.3
+219        2        2       3       3 sample 28    -2  Series.2.2.3
+220        2        2       3       4 sample 28    -3  Series.2.2.3
+221        2        2       4       1 sample 28     0  Series.2.2.4
+222        2        2       4       2 sample 28    -1  Series.2.2.4
+223        2        2       4       3 sample 28    -2  Series.2.2.4
+224        2        2       4       4   pos con    -3  Series.2.2.4
+225        2        3       1       1 sample 29     0  Series.2.3.1
+226        2        3       1       2 sample 29    -1  Series.2.3.1
+227        2        3       1       3 sample 29    -2  Series.2.3.1
+228        2        3       1       4 sample 29    -3  Series.2.3.1
+229        2        3       2       1 sample 29     0  Series.2.3.2
+230        2        3       2       2 sample 29    -1  Series.2.3.2
+231        2        3       2       3 sample 29    -2  Series.2.3.2
+232        2        3       2       4   neg con    -3  Series.2.3.2
+233        2        3       3       1 sample 30     0  Series.2.3.3
+234        2        3       3       2 sample 30    -1  Series.2.3.3
+235        2        3       3       3 sample 30    -2  Series.2.3.3
+236        2        3       3       4 sample 30    -3  Series.2.3.3
+237        2        3       4       1 sample 30     0  Series.2.3.4
+238        2        3       4       2 sample 30    -1  Series.2.3.4
+239        2        3       4       3 sample 30    -2  Series.2.3.4
+240        2        3       4       4   pos con    -3  Series.2.3.4
+241        2        4       1       1 sample 31     0  Series.2.4.1
+242        2        4       1       2 sample 31    -1  Series.2.4.1
+243        2        4       1       3 sample 31    -2  Series.2.4.1
+244        2        4       1       4 sample 31    -3  Series.2.4.1
+245        2        4       2       1 sample 31     0  Series.2.4.2
+246        2        4       2       2 sample 31    -1  Series.2.4.2
+247        2        4       2       3 sample 31    -2  Series.2.4.2
+248        2        4       2       4   neg con    -3  Series.2.4.2
+249        2        4       3       1 sample 32     0  Series.2.4.3
+250        2        4       3       2 sample 32    -1  Series.2.4.3
+251        2        4       3       3 sample 32    -2  Series.2.4.3
+252        2        4       3       4 sample 32    -3  Series.2.4.3
+253        2        4       4       1 sample 32     0  Series.2.4.4
+254        2        4       4       2 sample 32    -1  Series.2.4.4
+255        2        4       4       3 sample 32    -2  Series.2.4.4
+256        2        4       4       4   pos con    -3  Series.2.4.4
+257        2        5       1       1 sample 33     0  Series.2.5.1
+258        2        5       1       2 sample 33    -1  Series.2.5.1
+259        2        5       1       3 sample 33    -2  Series.2.5.1
+260        2        5       1       4 sample 33    -3  Series.2.5.1
+261        2        5       2       1 sample 33     0  Series.2.5.2
+262        2        5       2       2 sample 33    -1  Series.2.5.2
+263        2        5       2       3 sample 33    -2  Series.2.5.2
+264        2        5       2       4   neg con    -3  Series.2.5.2
+265        2        5       3       1 sample 34     0  Series.2.5.3
+266        2        5       3       2 sample 34    -1  Series.2.5.3
+267        2        5       3       3 sample 34    -2  Series.2.5.3
+268        2        5       3       4 sample 34    -3  Series.2.5.3
+269        2        5       4       1 sample 34     0  Series.2.5.4
+270        2        5       4       2 sample 34    -1  Series.2.5.4
+271        2        5       4       3 sample 34    -2  Series.2.5.4
+272        2        5       4       4   pos con    -3  Series.2.5.4
+273        2        6       1       1 sample 35     0  Series.2.6.1
+274        2        6       1       2 sample 35    -1  Series.2.6.1
+275        2        6       1       3 sample 35    -2  Series.2.6.1
+276        2        6       1       4 sample 35    -3  Series.2.6.1
+277        2        6       2       1 sample 35     0  Series.2.6.2
+278        2        6       2       2 sample 35    -1  Series.2.6.2
+279        2        6       2       3 sample 35    -2  Series.2.6.2
+280        2        6       2       4   neg con    -3  Series.2.6.2
+281        2        6       3       1 sample 36     0  Series.2.6.3
+282        2        6       3       2 sample 36    -1  Series.2.6.3
+283        2        6       3       3 sample 36    -2  Series.2.6.3
+284        2        6       3       4 sample 36    -3  Series.2.6.3
+285        2        6       4       1 sample 36     0  Series.2.6.4
+286        2        6       4       2 sample 36    -1  Series.2.6.4
+287        2        6       4       3 sample 36    -2  Series.2.6.4
+288        2        6       4       4   pos con    -3  Series.2.6.4
+289        2        7       1       1 sample 37     0  Series.2.7.1
+290        2        7       1       2 sample 37    -1  Series.2.7.1
+291        2        7       1       3 sample 37    -2  Series.2.7.1
+292        2        7       1       4 sample 37    -3  Series.2.7.1
+293        2        7       2       1 sample 37     0  Series.2.7.2
+294        2        7       2       2 sample 37    -1  Series.2.7.2
+295        2        7       2       3 sample 37    -2  Series.2.7.2
+296        2        7       2       4   neg con    -3  Series.2.7.2
+297        2        7       3       1 sample 38     0  Series.2.7.3
+298        2        7       3       2 sample 38    -1  Series.2.7.3
+299        2        7       3       3 sample 38    -2  Series.2.7.3
+300        2        7       3       4 sample 38    -3  Series.2.7.3
+301        2        7       4       1 sample 38     0  Series.2.7.4
+302        2        7       4       2 sample 38    -1  Series.2.7.4
+303        2        7       4       3 sample 38    -2  Series.2.7.4
+304        2        7       4       4   pos con    -3  Series.2.7.4
+305        2        8       1       1 sample 39     0  Series.2.8.1
+306        2        8       1       2 sample 39    -1  Series.2.8.1
+307        2        8       1       3 sample 39    -2  Series.2.8.1
+308        2        8       1       4 sample 39    -3  Series.2.8.1
+309        2        8       2       1 sample 39     0  Series.2.8.2
+310        2        8       2       2 sample 39    -1  Series.2.8.2
+311        2        8       2       3 sample 39    -2  Series.2.8.2
+312        2        8       2       4   neg con    -3  Series.2.8.2
+313        2        8       3       1 sample 40     0  Series.2.8.3
+314        2        8       3       2 sample 40    -1  Series.2.8.3
+315        2        8       3       3 sample 40    -2  Series.2.8.3
+316        2        8       3       4 sample 40    -3  Series.2.8.3
+317        2        8       4       1 sample 40     0  Series.2.8.4
+318        2        8       4       2 sample 40    -1  Series.2.8.4
+319        2        8       4       3 sample 40    -2  Series.2.8.4
+320        2        8       4       4   pos con    -3  Series.2.8.4
+321        2        9       1       1 sample 41     0  Series.2.9.1
+322        2        9       1       2 sample 41    -1  Series.2.9.1
+323        2        9       1       3 sample 41    -2  Series.2.9.1
+324        2        9       1       4 sample 41    -3  Series.2.9.1
+325        2        9       2       1 sample 41     0  Series.2.9.2
+326        2        9       2       2 sample 41    -1  Series.2.9.2
+327        2        9       2       3 sample 41    -2  Series.2.9.2
+328        2        9       2       4   neg con    -3  Series.2.9.2
+329        2        9       3       1 sample 42     0  Series.2.9.3
+330        2        9       3       2 sample 42    -1  Series.2.9.3
+331        2        9       3       3 sample 42    -2  Series.2.9.3
+332        2        9       3       4 sample 42    -3  Series.2.9.3
+333        2        9       4       1 sample 42     0  Series.2.9.4
+334        2        9       4       2 sample 42    -1  Series.2.9.4
+335        2        9       4       3 sample 42    -2  Series.2.9.4
+336        2        9       4       4   pos con    -3  Series.2.9.4
+337        2       10       1       1 sample 43     0 Series.2.10.1
+338        2       10       1       2 sample 43    -1 Series.2.10.1
+339        2       10       1       3 sample 43    -2 Series.2.10.1
+340        2       10       1       4 sample 43    -3 Series.2.10.1
+341        2       10       2       1 sample 43     0 Series.2.10.2
+342        2       10       2       2 sample 43    -1 Series.2.10.2
+343        2       10       2       3 sample 43    -2 Series.2.10.2
+344        2       10       2       4   neg con    -3 Series.2.10.2
+345        2       10       3       1 sample 44     0 Series.2.10.3
+346        2       10       3       2 sample 44    -1 Series.2.10.3
+347        2       10       3       3 sample 44    -2 Series.2.10.3
+348        2       10       3       4 sample 44    -3 Series.2.10.3
+349        2       10       4       1 sample 44     0 Series.2.10.4
+350        2       10       4       2 sample 44    -1 Series.2.10.4
+351        2       10       4       3 sample 44    -2 Series.2.10.4
+352        2       10       4       4   pos con    -3 Series.2.10.4
+353        2       11       1       1 sample 45     0 Series.2.11.1
+354        2       11       1       2 sample 45    -1 Series.2.11.1
+355        2       11       1       3 sample 45    -2 Series.2.11.1
+356        2       11       1       4 sample 45    -3 Series.2.11.1
+357        2       11       2       1 sample 45     0 Series.2.11.2
+358        2       11       2       2 sample 45    -1 Series.2.11.2
+359        2       11       2       3 sample 45    -2 Series.2.11.2
+360        2       11       2       4   neg con    -3 Series.2.11.2
+361        2       11       3       1 sample 46     0 Series.2.11.3
+362        2       11       3       2 sample 46    -1 Series.2.11.3
+363        2       11       3       3 sample 46    -2 Series.2.11.3
+364        2       11       3       4 sample 46    -3 Series.2.11.3
+365        2       11       4       1 sample 46     0 Series.2.11.4
+366        2       11       4       2 sample 46    -1 Series.2.11.4
+367        2       11       4       3 sample 46    -2 Series.2.11.4
+368        2       11       4       4   pos con    -3 Series.2.11.4
+369        2       12       1       1 sample 47     0 Series.2.12.1
+370        2       12       1       2 sample 47    -1 Series.2.12.1
+371        2       12       1       3 sample 47    -2 Series.2.12.1
+372        2       12       1       4 sample 47    -3 Series.2.12.1
+373        2       12       2       1 sample 47     0 Series.2.12.2
+374        2       12       2       2 sample 47    -1 Series.2.12.2
+375        2       12       2       3 sample 47    -2 Series.2.12.2
+376        2       12       2       4   neg con    -3 Series.2.12.2
+377        2       12       3       1 sample 48     0 Series.2.12.3
+378        2       12       3       2 sample 48    -1 Series.2.12.3
+379        2       12       3       3 sample 48    -2 Series.2.12.3
+380        2       12       3       4 sample 48    -3 Series.2.12.3
+381        2       12       4       1 sample 48     0 Series.2.12.4
+382        2       12       4       2 sample 48    -1 Series.2.12.4
+383        2       12       4       3 sample 48    -2 Series.2.12.4
+384        2       12       4       4   pos con    -3 Series.2.12.4
+385        3        1       1       1 sample 49     0  Series.3.1.1
+386        3        1       1       2 sample 49    -1  Series.3.1.1
+387        3        1       1       3 sample 49    -2  Series.3.1.1
+388        3        1       1       4 sample 49    -3  Series.3.1.1
+389        3        1       2       1 sample 49     0  Series.3.1.2
+390        3        1       2       2 sample 49    -1  Series.3.1.2
+391        3        1       2       3 sample 49    -2  Series.3.1.2
+392        3        1       2       4   neg con    -3  Series.3.1.2
+393        3        1       3       1 sample 50     0  Series.3.1.3
+394        3        1       3       2 sample 50    -1  Series.3.1.3
+395        3        1       3       3 sample 50    -2  Series.3.1.3
+396        3        1       3       4 sample 50    -3  Series.3.1.3
+397        3        1       4       1 sample 50     0  Series.3.1.4
+398        3        1       4       2 sample 50    -1  Series.3.1.4
+399        3        1       4       3 sample 50    -2  Series.3.1.4
+400        3        1       4       4   pos con    -3  Series.3.1.4
+401        3        2       1       1 sample 51     0  Series.3.2.1
+402        3        2       1       2 sample 51    -1  Series.3.2.1
+403        3        2       1       3 sample 51    -2  Series.3.2.1
+404        3        2       1       4 sample 51    -3  Series.3.2.1
+405        3        2       2       1 sample 51     0  Series.3.2.2
+406        3        2       2       2 sample 51    -1  Series.3.2.2
+407        3        2       2       3 sample 51    -2  Series.3.2.2
+408        3        2       2       4   neg con    -3  Series.3.2.2
+409        3        2       3       1 sample 52     0  Series.3.2.3
+410        3        2       3       2 sample 52    -1  Series.3.2.3
+411        3        2       3       3 sample 52    -2  Series.3.2.3
+412        3        2       3       4 sample 52    -3  Series.3.2.3
+413        3        2       4       1 sample 52     0  Series.3.2.4
+414        3        2       4       2 sample 52    -1  Series.3.2.4
+415        3        2       4       3 sample 52    -2  Series.3.2.4
+416        3        2       4       4   pos con    -3  Series.3.2.4
+417        3        3       1       1 sample 53     0  Series.3.3.1
+418        3        3       1       2 sample 53    -1  Series.3.3.1
+419        3        3       1       3 sample 53    -2  Series.3.3.1
+420        3        3       1       4 sample 53    -3  Series.3.3.1
+421        3        3       2       1 sample 53     0  Series.3.3.2
+422        3        3       2       2 sample 53    -1  Series.3.3.2
+423        3        3       2       3 sample 53    -2  Series.3.3.2
+424        3        3       2       4   neg con    -3  Series.3.3.2
+425        3        3       3       1 sample 54     0  Series.3.3.3
+426        3        3       3       2 sample 54    -1  Series.3.3.3
+427        3        3       3       3 sample 54    -2  Series.3.3.3
+428        3        3       3       4 sample 54    -3  Series.3.3.3
+429        3        3       4       1 sample 54     0  Series.3.3.4
+430        3        3       4       2 sample 54    -1  Series.3.3.4
+431        3        3       4       3 sample 54    -2  Series.3.3.4
+432        3        3       4       4   pos con    -3  Series.3.3.4
+433        3        4       1       1 sample 55     0  Series.3.4.1
+434        3        4       1       2 sample 55    -1  Series.3.4.1
+435        3        4       1       3 sample 55    -2  Series.3.4.1
+436        3        4       1       4 sample 55    -3  Series.3.4.1
+437        3        4       2       1 sample 55     0  Series.3.4.2
+438        3        4       2       2 sample 55    -1  Series.3.4.2
+439        3        4       2       3 sample 55    -2  Series.3.4.2
+440        3        4       2       4   neg con    -3  Series.3.4.2
+441        3        4       3       1 sample 56     0  Series.3.4.3
+442        3        4       3       2 sample 56    -1  Series.3.4.3
+443        3        4       3       3 sample 56    -2  Series.3.4.3
+444        3        4       3       4 sample 56    -3  Series.3.4.3
+445        3        4       4       1 sample 56     0  Series.3.4.4
+446        3        4       4       2 sample 56    -1  Series.3.4.4
+447        3        4       4       3 sample 56    -2  Series.3.4.4
+448        3        4       4       4   pos con    -3  Series.3.4.4
+449        3        5       1       1 sample 57     0  Series.3.5.1
+450        3        5       1       2 sample 57    -1  Series.3.5.1
+451        3        5       1       3 sample 57    -2  Series.3.5.1
+452        3        5       1       4 sample 57    -3  Series.3.5.1
+453        3        5       2       1 sample 57     0  Series.3.5.2
+454        3        5       2       2 sample 57    -1  Series.3.5.2
+455        3        5       2       3 sample 57    -2  Series.3.5.2
+456        3        5       2       4   neg con    -3  Series.3.5.2
+457        3        5       3       1 sample 58     0  Series.3.5.3
+458        3        5       3       2 sample 58    -1  Series.3.5.3
+459        3        5       3       3 sample 58    -2  Series.3.5.3
+460        3        5       3       4 sample 58    -3  Series.3.5.3
+461        3        5       4       1 sample 58     0  Series.3.5.4
+462        3        5       4       2 sample 58    -1  Series.3.5.4
+463        3        5       4       3 sample 58    -2  Series.3.5.4
+464        3        5       4       4   pos con    -3  Series.3.5.4
+465        3        6       1       1 sample 59     0  Series.3.6.1
+466        3        6       1       2 sample 59    -1  Series.3.6.1
+467        3        6       1       3 sample 59    -2  Series.3.6.1
+468        3        6       1       4 sample 59    -3  Series.3.6.1
+469        3        6       2       1 sample 59     0  Series.3.6.2
+470        3        6       2       2 sample 59    -1  Series.3.6.2
+471        3        6       2       3 sample 59    -2  Series.3.6.2
+472        3        6       2       4   neg con    -3  Series.3.6.2
+473        3        6       3       1 sample 60     0  Series.3.6.3
+474        3        6       3       2 sample 60    -1  Series.3.6.3
+475        3        6       3       3 sample 60    -2  Series.3.6.3
+476        3        6       3       4 sample 60    -3  Series.3.6.3
+477        3        6       4       1 sample 60     0  Series.3.6.4
+478        3        6       4       2 sample 60    -1  Series.3.6.4
+479        3        6       4       3 sample 60    -2  Series.3.6.4
+480        3        6       4       4   pos con    -3  Series.3.6.4
+481        3        7       1       1 sample 61     0  Series.3.7.1
+482        3        7       1       2 sample 61    -1  Series.3.7.1
+483        3        7       1       3 sample 61    -2  Series.3.7.1
+484        3        7       1       4 sample 61    -3  Series.3.7.1
+485        3        7       2       1 sample 61     0  Series.3.7.2
+486        3        7       2       2 sample 61    -1  Series.3.7.2
+487        3        7       2       3 sample 61    -2  Series.3.7.2
+488        3        7       2       4   neg con    -3  Series.3.7.2
+489        3        7       3       1 sample 62     0  Series.3.7.3
+490        3        7       3       2 sample 62    -1  Series.3.7.3
+491        3        7       3       3 sample 62    -2  Series.3.7.3
+492        3        7       3       4 sample 62    -3  Series.3.7.3
+493        3        7       4       1 sample 62     0  Series.3.7.4
+494        3        7       4       2 sample 62    -1  Series.3.7.4
+495        3        7       4       3 sample 62    -2  Series.3.7.4
+496        3        7       4       4   pos con    -3  Series.3.7.4
+497        3        8       1       1 sample 63     0  Series.3.8.1
+498        3        8       1       2 sample 63    -1  Series.3.8.1
+499        3        8       1       3 sample 63    -2  Series.3.8.1
+500        3        8       1       4 sample 63    -3  Series.3.8.1
+501        3        8       2       1 sample 63     0  Series.3.8.2
+502        3        8       2       2 sample 63    -1  Series.3.8.2
+503        3        8       2       3 sample 63    -2  Series.3.8.2
+504        3        8       2       4   neg con    -3  Series.3.8.2
+505        3        8       3       1 sample 64     0  Series.3.8.3
+506        3        8       3       2 sample 64    -1  Series.3.8.3
+507        3        8       3       3 sample 64    -2  Series.3.8.3
+508        3        8       3       4 sample 64    -3  Series.3.8.3
+509        3        8       4       1 sample 64     0  Series.3.8.4
+510        3        8       4       2 sample 64    -1  Series.3.8.4
+511        3        8       4       3 sample 64    -2  Series.3.8.4
+512        3        8       4       4   pos con    -3  Series.3.8.4
+513        3        9       1       1 sample 65     0  Series.3.9.1
+514        3        9       1       2 sample 65    -1  Series.3.9.1
+515        3        9       1       3 sample 65    -2  Series.3.9.1
+516        3        9       1       4 sample 65    -3  Series.3.9.1
+517        3        9       2       1 sample 65     0  Series.3.9.2
+518        3        9       2       2 sample 65    -1  Series.3.9.2
+519        3        9       2       3 sample 65    -2  Series.3.9.2
+520        3        9       2       4   neg con    -3  Series.3.9.2
+521        3        9       3       1 sample 66     0  Series.3.9.3
+522        3        9       3       2 sample 66    -1  Series.3.9.3
+523        3        9       3       3 sample 66    -2  Series.3.9.3
+524        3        9       3       4 sample 66    -3  Series.3.9.3
+525        3        9       4       1 sample 66     0  Series.3.9.4
+526        3        9       4       2 sample 66    -1  Series.3.9.4
+527        3        9       4       3 sample 66    -2  Series.3.9.4
+528        3        9       4       4   pos con    -3  Series.3.9.4
+529        3       10       1       1 sample 67     0 Series.3.10.1
+530        3       10       1       2 sample 67    -1 Series.3.10.1
+531        3       10       1       3 sample 67    -2 Series.3.10.1
+532        3       10       1       4 sample 67    -3 Series.3.10.1
+533        3       10       2       1 sample 67     0 Series.3.10.2
+534        3       10       2       2 sample 67    -1 Series.3.10.2
+535        3       10       2       3 sample 67    -2 Series.3.10.2
+536        3       10       2       4   neg con    -3 Series.3.10.2
+537        3       10       3       1 sample 68     0 Series.3.10.3
+538        3       10       3       2 sample 68    -1 Series.3.10.3
+539        3       10       3       3 sample 68    -2 Series.3.10.3
+540        3       10       3       4 sample 68    -3 Series.3.10.3
+541        3       10       4       1 sample 68     0 Series.3.10.4
+542        3       10       4       2 sample 68    -1 Series.3.10.4
+543        3       10       4       3 sample 68    -2 Series.3.10.4
+544        3       10       4       4   pos con    -3 Series.3.10.4
+545        3       11       1       1 sample 69     0 Series.3.11.1
+546        3       11       1       2 sample 69    -1 Series.3.11.1
+547        3       11       1       3 sample 69    -2 Series.3.11.1
+548        3       11       1       4 sample 69    -3 Series.3.11.1
+549        3       11       2       1 sample 69     0 Series.3.11.2
+550        3       11       2       2 sample 69    -1 Series.3.11.2
+551        3       11       2       3 sample 69    -2 Series.3.11.2
+552        3       11       2       4   neg con    -3 Series.3.11.2
+553        3       11       3       1 sample 70     0 Series.3.11.3
+554        3       11       3       2 sample 70    -1 Series.3.11.3
+555        3       11       3       3 sample 70    -2 Series.3.11.3
+556        3       11       3       4 sample 70    -3 Series.3.11.3
+557        3       11       4       1 sample 70     0 Series.3.11.4
+558        3       11       4       2 sample 70    -1 Series.3.11.4
+559        3       11       4       3 sample 70    -2 Series.3.11.4
+560        3       11       4       4   pos con    -3 Series.3.11.4
+561        3       12       1       1 sample 71     0 Series.3.12.1
+562        3       12       1       2 sample 71    -1 Series.3.12.1
+563        3       12       1       3 sample 71    -2 Series.3.12.1
+564        3       12       1       4 sample 71    -3 Series.3.12.1
+565        3       12       2       1 sample 71     0 Series.3.12.2
+566        3       12       2       2 sample 71    -1 Series.3.12.2
+567        3       12       2       3 sample 71    -2 Series.3.12.2
+568        3       12       2       4   neg con    -3 Series.3.12.2
+569        3       12       3       1 sample 72     0 Series.3.12.3
+570        3       12       3       2 sample 72    -1 Series.3.12.3
+571        3       12       3       3 sample 72    -2 Series.3.12.3
+572        3       12       3       4 sample 72    -3 Series.3.12.3
+573        3       12       4       1 sample 72     0 Series.3.12.4
+574        3       12       4       2 sample 72    -1 Series.3.12.4
+575        3       12       4       3 sample 72    -2 Series.3.12.4
+576        3       12       4       4   pos con    -3 Series.3.12.4
+577        4        1       1       1 sample 73     0  Series.4.1.1
+578        4        1       1       2 sample 73    -1  Series.4.1.1
+579        4        1       1       3 sample 73    -2  Series.4.1.1
+580        4        1       1       4 sample 73    -3  Series.4.1.1
+581        4        1       2       1 sample 73     0  Series.4.1.2
+582        4        1       2       2 sample 73    -1  Series.4.1.2
+583        4        1       2       3 sample 73    -2  Series.4.1.2
+584        4        1       2       4   neg con    -3  Series.4.1.2
+585        4        1       3       1 sample 74     0  Series.4.1.3
+586        4        1       3       2 sample 74    -1  Series.4.1.3
+587        4        1       3       3 sample 74    -2  Series.4.1.3
+588        4        1       3       4 sample 74    -3  Series.4.1.3
+589        4        1       4       1 sample 74     0  Series.4.1.4
+590        4        1       4       2 sample 74    -1  Series.4.1.4
+591        4        1       4       3 sample 74    -2  Series.4.1.4
+592        4        1       4       4   pos con    -3  Series.4.1.4
+593        4        2       1       1 sample 75     0  Series.4.2.1
+594        4        2       1       2 sample 75    -1  Series.4.2.1
+595        4        2       1       3 sample 75    -2  Series.4.2.1
+596        4        2       1       4 sample 75    -3  Series.4.2.1
+597        4        2       2       1 sample 75     0  Series.4.2.2
+598        4        2       2       2 sample 75    -1  Series.4.2.2
+599        4        2       2       3 sample 75    -2  Series.4.2.2
+600        4        2       2       4   neg con    -3  Series.4.2.2
+601        4        2       3       1 sample 76     0  Series.4.2.3
+602        4        2       3       2 sample 76    -1  Series.4.2.3
+603        4        2       3       3 sample 76    -2  Series.4.2.3
+604        4        2       3       4 sample 76    -3  Series.4.2.3
+605        4        2       4       1 sample 76     0  Series.4.2.4
+606        4        2       4       2 sample 76    -1  Series.4.2.4
+607        4        2       4       3 sample 76    -2  Series.4.2.4
+608        4        2       4       4   pos con    -3  Series.4.2.4
+609        4        3       1       1 sample 77     0  Series.4.3.1
+610        4        3       1       2 sample 77    -1  Series.4.3.1
+611        4        3       1       3 sample 77    -2  Series.4.3.1
+612        4        3       1       4 sample 77    -3  Series.4.3.1
+613        4        3       2       1 sample 77     0  Series.4.3.2
+614        4        3       2       2 sample 77    -1  Series.4.3.2
+615        4        3       2       3 sample 77    -2  Series.4.3.2
+616        4        3       2       4   neg con    -3  Series.4.3.2
+617        4        3       3       1 sample 78     0  Series.4.3.3
+618        4        3       3       2 sample 78    -1  Series.4.3.3
+619        4        3       3       3 sample 78    -2  Series.4.3.3
+620        4        3       3       4 sample 78    -3  Series.4.3.3
+621        4        3       4       1 sample 78     0  Series.4.3.4
+622        4        3       4       2 sample 78    -1  Series.4.3.4
+623        4        3       4       3 sample 78    -2  Series.4.3.4
+624        4        3       4       4   pos con    -3  Series.4.3.4
+625        4        4       1       1 sample 79     0  Series.4.4.1
+626        4        4       1       2 sample 79    -1  Series.4.4.1
+627        4        4       1       3 sample 79    -2  Series.4.4.1
+628        4        4       1       4 sample 79    -3  Series.4.4.1
+629        4        4       2       1 sample 79     0  Series.4.4.2
+630        4        4       2       2 sample 79    -1  Series.4.4.2
+631        4        4       2       3 sample 79    -2  Series.4.4.2
+632        4        4       2       4   neg con    -3  Series.4.4.2
+633        4        4       3       1 sample 80     0  Series.4.4.3
+634        4        4       3       2 sample 80    -1  Series.4.4.3
+635        4        4       3       3 sample 80    -2  Series.4.4.3
+636        4        4       3       4 sample 80    -3  Series.4.4.3
+637        4        4       4       1 sample 80     0  Series.4.4.4
+638        4        4       4       2 sample 80    -1  Series.4.4.4
+639        4        4       4       3 sample 80    -2  Series.4.4.4
+640        4        4       4       4   pos con    -3  Series.4.4.4
+641        4        5       1       1 sample 81     0  Series.4.5.1
+642        4        5       1       2 sample 81    -1  Series.4.5.1
+643        4        5       1       3 sample 81    -2  Series.4.5.1
+644        4        5       1       4 sample 81    -3  Series.4.5.1
+645        4        5       2       1 sample 81     0  Series.4.5.2
+646        4        5       2       2 sample 81    -1  Series.4.5.2
+647        4        5       2       3 sample 81    -2  Series.4.5.2
+648        4        5       2       4   neg con    -3  Series.4.5.2
+649        4        5       3       1 sample 82     0  Series.4.5.3
+650        4        5       3       2 sample 82    -1  Series.4.5.3
+651        4        5       3       3 sample 82    -2  Series.4.5.3
+652        4        5       3       4 sample 82    -3  Series.4.5.3
+653        4        5       4       1 sample 82     0  Series.4.5.4
+654        4        5       4       2 sample 82    -1  Series.4.5.4
+655        4        5       4       3 sample 82    -2  Series.4.5.4
+656        4        5       4       4   pos con    -3  Series.4.5.4
+657        4        6       1       1 sample 83     0  Series.4.6.1
+658        4        6       1       2 sample 83    -1  Series.4.6.1
+659        4        6       1       3 sample 83    -2  Series.4.6.1
+660        4        6       1       4 sample 83    -3  Series.4.6.1
+661        4        6       2       1 sample 83     0  Series.4.6.2
+662        4        6       2       2 sample 83    -1  Series.4.6.2
+663        4        6       2       3 sample 83    -2  Series.4.6.2
+664        4        6       2       4   neg con    -3  Series.4.6.2
+665        4        6       3       1 sample 84     0  Series.4.6.3
+666        4        6       3       2 sample 84    -1  Series.4.6.3
+667        4        6       3       3 sample 84    -2  Series.4.6.3
+668        4        6       3       4 sample 84    -3  Series.4.6.3
+669        4        6       4       1 sample 84     0  Series.4.6.4
+670        4        6       4       2 sample 84    -1  Series.4.6.4
+671        4        6       4       3 sample 84    -2  Series.4.6.4
+672        4        6       4       4   pos con    -3  Series.4.6.4
+673        4        7       1       1 sample 85     0  Series.4.7.1
+674        4        7       1       2 sample 85    -1  Series.4.7.1
+675        4        7       1       3 sample 85    -2  Series.4.7.1
+676        4        7       1       4 sample 85    -3  Series.4.7.1
+677        4        7       2       1 sample 85     0  Series.4.7.2
+678        4        7       2       2 sample 85    -1  Series.4.7.2
+679        4        7       2       3 sample 85    -2  Series.4.7.2
+680        4        7       2       4   neg con    -3  Series.4.7.2
+681        4        7       3       1 sample 86     0  Series.4.7.3
+682        4        7       3       2 sample 86    -1  Series.4.7.3
+683        4        7       3       3 sample 86    -2  Series.4.7.3
+684        4        7       3       4 sample 86    -3  Series.4.7.3
+685        4        7       4       1 sample 86     0  Series.4.7.4
+686        4        7       4       2 sample 86    -1  Series.4.7.4
+687        4        7       4       3 sample 86    -2  Series.4.7.4
+688        4        7       4       4   pos con    -3  Series.4.7.4
+689        4        8       1       1 sample 87     0  Series.4.8.1
+690        4        8       1       2 sample 87    -1  Series.4.8.1
+691        4        8       1       3 sample 87    -2  Series.4.8.1
+692        4        8       1       4 sample 87    -3  Series.4.8.1
+693        4        8       2       1 sample 87     0  Series.4.8.2
+694        4        8       2       2 sample 87    -1  Series.4.8.2
+695        4        8       2       3 sample 87    -2  Series.4.8.2
+696        4        8       2       4   neg con    -3  Series.4.8.2
+697        4        8       3       1 sample 88     0  Series.4.8.3
+698        4        8       3       2 sample 88    -1  Series.4.8.3
+699        4        8       3       3 sample 88    -2  Series.4.8.3
+700        4        8       3       4 sample 88    -3  Series.4.8.3
+701        4        8       4       1 sample 88     0  Series.4.8.4
+702        4        8       4       2 sample 88    -1  Series.4.8.4
+703        4        8       4       3 sample 88    -2  Series.4.8.4
+704        4        8       4       4   pos con    -3  Series.4.8.4
+705        4        9       1       1 sample 89     0  Series.4.9.1
+706        4        9       1       2 sample 89    -1  Series.4.9.1
+707        4        9       1       3 sample 89    -2  Series.4.9.1
+708        4        9       1       4 sample 89    -3  Series.4.9.1
+709        4        9       2       1 sample 89     0  Series.4.9.2
+710        4        9       2       2 sample 89    -1  Series.4.9.2
+711        4        9       2       3 sample 89    -2  Series.4.9.2
+712        4        9       2       4   neg con    -3  Series.4.9.2
+713        4        9       3       1 sample 90     0  Series.4.9.3
+714        4        9       3       2 sample 90    -1  Series.4.9.3
+715        4        9       3       3 sample 90    -2  Series.4.9.3
+716        4        9       3       4 sample 90    -3  Series.4.9.3
+717        4        9       4       1 sample 90     0  Series.4.9.4
+718        4        9       4       2 sample 90    -1  Series.4.9.4
+719        4        9       4       3 sample 90    -2  Series.4.9.4
+720        4        9       4       4   pos con    -3  Series.4.9.4
+721        4       10       1       1 sample 91     0 Series.4.10.1
+722        4       10       1       2 sample 91    -1 Series.4.10.1
+723        4       10       1       3 sample 91    -2 Series.4.10.1
+724        4       10       1       4 sample 91    -3 Series.4.10.1
+725        4       10       2       1 sample 91     0 Series.4.10.2
+726        4       10       2       2 sample 91    -1 Series.4.10.2
+727        4       10       2       3 sample 91    -2 Series.4.10.2
+728        4       10       2       4   neg con    -3 Series.4.10.2
+729        4       10       3       1 sample 92     0 Series.4.10.3
+730        4       10       3       2 sample 92    -1 Series.4.10.3
+731        4       10       3       3 sample 92    -2 Series.4.10.3
+732        4       10       3       4 sample 92    -3 Series.4.10.3
+733        4       10       4       1 sample 92     0 Series.4.10.4
+734        4       10       4       2 sample 92    -1 Series.4.10.4
+735        4       10       4       3 sample 92    -2 Series.4.10.4
+736        4       10       4       4   pos con    -3 Series.4.10.4
+737        4       11       1       1 sample 93     0 Series.4.11.1
+738        4       11       1       2 sample 93    -1 Series.4.11.1
+739        4       11       1       3 sample 93    -2 Series.4.11.1
+740        4       11       1       4 sample 93    -3 Series.4.11.1
+741        4       11       2       1 sample 93     0 Series.4.11.2
+742        4       11       2       2 sample 93    -1 Series.4.11.2
+743        4       11       2       3 sample 93    -2 Series.4.11.2
+744        4       11       2       4   neg con    -3 Series.4.11.2
+745        4       11       3       1 sample 94     0 Series.4.11.3
+746        4       11       3       2 sample 94    -1 Series.4.11.3
+747        4       11       3       3 sample 94    -2 Series.4.11.3
+748        4       11       3       4 sample 94    -3 Series.4.11.3
+749        4       11       4       1 sample 94     0 Series.4.11.4
+750        4       11       4       2 sample 94    -1 Series.4.11.4
+751        4       11       4       3 sample 94    -2 Series.4.11.4
+752        4       11       4       4   pos con    -3 Series.4.11.4
+753        4       12       1       1 sample 95     0 Series.4.12.1
+754        4       12       1       2 sample 95    -1 Series.4.12.1
+755        4       12       1       3 sample 95    -2 Series.4.12.1
+756        4       12       1       4 sample 95    -3 Series.4.12.1
+757        4       12       2       1 sample 95     0 Series.4.12.2
+758        4       12       2       2 sample 95    -1 Series.4.12.2
+759        4       12       2       3 sample 95    -2 Series.4.12.2
+760        4       12       2       4   neg con    -3 Series.4.12.2
+761        4       12       3       1 sample 96     0 Series.4.12.3
+762        4       12       3       2 sample 96    -1 Series.4.12.3
+763        4       12       3       3 sample 96    -2 Series.4.12.3
+764        4       12       3       4 sample 96    -3 Series.4.12.3
+765        4       12       4       1 sample 96     0 Series.4.12.4
+766        4       12       4       2 sample 96    -1 Series.4.12.4
+767        4       12       4       3 sample 96    -2 Series.4.12.4
+768        4       12       4       4   pos con    -3 Series.4.12.4
+
+Slot "alias":
+$Alias
+[1] NA
+
+$Sample
+[1] NA
+
+
+Slot "sampleMap":
+ Series.1.1.1  Series.1.1.2  Series.1.1.3  Series.1.1.4 Series.1.10.1 
+   "sample 1"    "sample 1"    "sample 2"    "sample 2"   "sample 19" 
+Series.1.10.2 Series.1.10.3 Series.1.10.4 Series.1.11.1 Series.1.11.2 
+  "sample 19"   "sample 20"   "sample 20"   "sample 21"   "sample 21" 
+Series.1.11.3 Series.1.11.4 Series.1.12.1 Series.1.12.2 Series.1.12.3 
+  "sample 22"   "sample 22"   "sample 23"   "sample 23"   "sample 24" 
+Series.1.12.4  Series.1.2.1  Series.1.2.2  Series.1.2.3  Series.1.2.4 
+  "sample 24"    "sample 3"    "sample 3"    "sample 4"    "sample 4" 
+ Series.1.3.1  Series.1.3.2  Series.1.3.3  Series.1.3.4  Series.1.4.1 
+   "sample 5"    "sample 5"    "sample 6"    "sample 6"    "sample 7" 
+ Series.1.4.2  Series.1.4.3  Series.1.4.4  Series.1.5.1  Series.1.5.2 
+   "sample 7"    "sample 8"    "sample 8"    "sample 9"    "sample 9" 
+ Series.1.5.3  Series.1.5.4  Series.1.6.1  Series.1.6.2  Series.1.6.3 
+  "sample 10"   "sample 10"   "sample 11"   "sample 11"   "sample 12" 
+ Series.1.6.4  Series.1.7.1  Series.1.7.2  Series.1.7.3  Series.1.7.4 
+  "sample 12"   "sample 13"   "sample 13"   "sample 14"   "sample 14" 
+ Series.1.8.1  Series.1.8.2  Series.1.8.3  Series.1.8.4  Series.1.9.1 
+  "sample 15"   "sample 15"   "sample 16"   "sample 16"   "sample 17" 
+ Series.1.9.2  Series.1.9.3  Series.1.9.4  Series.2.1.1  Series.2.1.2 
+  "sample 17"   "sample 18"   "sample 18"   "sample 25"   "sample 25" 
+ Series.2.1.3  Series.2.1.4 Series.2.10.1 Series.2.10.2 Series.2.10.3 
+  "sample 26"   "sample 26"   "sample 43"   "sample 43"   "sample 44" 
+Series.2.10.4 Series.2.11.1 Series.2.11.2 Series.2.11.3 Series.2.11.4 
+  "sample 44"   "sample 45"   "sample 45"   "sample 46"   "sample 46" 
+Series.2.12.1 Series.2.12.2 Series.2.12.3 Series.2.12.4  Series.2.2.1 
+  "sample 47"   "sample 47"   "sample 48"   "sample 48"   "sample 27" 
+ Series.2.2.2  Series.2.2.3  Series.2.2.4  Series.2.3.1  Series.2.3.2 
+  "sample 27"   "sample 28"   "sample 28"   "sample 29"   "sample 29" 
+ Series.2.3.3  Series.2.3.4  Series.2.4.1  Series.2.4.2  Series.2.4.3 
+  "sample 30"   "sample 30"   "sample 31"   "sample 31"   "sample 32" 
+ Series.2.4.4  Series.2.5.1  Series.2.5.2  Series.2.5.3  Series.2.5.4 
+  "sample 32"   "sample 33"   "sample 33"   "sample 34"   "sample 34" 
+ Series.2.6.1  Series.2.6.2  Series.2.6.3  Series.2.6.4  Series.2.7.1 
+  "sample 35"   "sample 35"   "sample 36"   "sample 36"   "sample 37" 
+ Series.2.7.2  Series.2.7.3  Series.2.7.4  Series.2.8.1  Series.2.8.2 
+  "sample 37"   "sample 38"   "sample 38"   "sample 39"   "sample 39" 
+ Series.2.8.3  Series.2.8.4  Series.2.9.1  Series.2.9.2  Series.2.9.3 
+  "sample 40"   "sample 40"   "sample 41"   "sample 41"   "sample 42" 
+ Series.2.9.4  Series.3.1.1  Series.3.1.2  Series.3.1.3  Series.3.1.4 
+  "sample 42"   "sample 49"   "sample 49"   "sample 50"   "sample 50" 
+Series.3.10.1 Series.3.10.2 Series.3.10.3 Series.3.10.4 Series.3.11.1 
+  "sample 67"   "sample 67"   "sample 68"   "sample 68"   "sample 69" 
+Series.3.11.2 Series.3.11.3 Series.3.11.4 Series.3.12.1 Series.3.12.2 
+  "sample 69"   "sample 70"   "sample 70"   "sample 71"   "sample 71" 
+Series.3.12.3 Series.3.12.4  Series.3.2.1  Series.3.2.2  Series.3.2.3 
+  "sample 72"   "sample 72"   "sample 51"   "sample 51"   "sample 52" 
+ Series.3.2.4  Series.3.3.1  Series.3.3.2  Series.3.3.3  Series.3.3.4 
+  "sample 52"   "sample 53"   "sample 53"   "sample 54"   "sample 54" 
+ Series.3.4.1  Series.3.4.2  Series.3.4.3  Series.3.4.4  Series.3.5.1 
+  "sample 55"   "sample 55"   "sample 56"   "sample 56"   "sample 57" 
+ Series.3.5.2  Series.3.5.3  Series.3.5.4  Series.3.6.1  Series.3.6.2 
+  "sample 57"   "sample 58"   "sample 58"   "sample 59"   "sample 59" 
+ Series.3.6.3  Series.3.6.4  Series.3.7.1  Series.3.7.2  Series.3.7.3 
+  "sample 60"   "sample 60"   "sample 61"   "sample 61"   "sample 62" 
+ Series.3.7.4  Series.3.8.1  Series.3.8.2  Series.3.8.3  Series.3.8.4 
+  "sample 62"   "sample 63"   "sample 63"   "sample 64"   "sample 64" 
+ Series.3.9.1  Series.3.9.2  Series.3.9.3  Series.3.9.4  Series.4.1.1 
+  "sample 65"   "sample 65"   "sample 66"   "sample 66"   "sample 73" 
+ Series.4.1.2  Series.4.1.3  Series.4.1.4 Series.4.10.1 Series.4.10.2 
+  "sample 73"   "sample 74"   "sample 74"   "sample 91"   "sample 91" 
+Series.4.10.3 Series.4.10.4 Series.4.11.1 Series.4.11.2 Series.4.11.3 
+  "sample 92"   "sample 92"   "sample 93"   "sample 93"   "sample 94" 
+Series.4.11.4 Series.4.12.1 Series.4.12.2 Series.4.12.3 Series.4.12.4 
+  "sample 94"   "sample 95"   "sample 95"   "sample 96"   "sample 96" 
+ Series.4.2.1  Series.4.2.2  Series.4.2.3  Series.4.2.4  Series.4.3.1 
+  "sample 75"   "sample 75"   "sample 76"   "sample 76"   "sample 77" 
+ Series.4.3.2  Series.4.3.3  Series.4.3.4  Series.4.4.1  Series.4.4.2 
+  "sample 77"   "sample 78"   "sample 78"   "sample 79"   "sample 79" 
+ Series.4.4.3  Series.4.4.4  Series.4.5.1  Series.4.5.2  Series.4.5.3 
+  "sample 80"   "sample 80"   "sample 81"   "sample 81"   "sample 82" 
+ Series.4.5.4  Series.4.6.1  Series.4.6.2  Series.4.6.3  Series.4.6.4 
+  "sample 82"   "sample 83"   "sample 83"   "sample 84"   "sample 84" 
+ Series.4.7.1  Series.4.7.2  Series.4.7.3  Series.4.7.4  Series.4.8.1 
+  "sample 85"   "sample 85"   "sample 86"   "sample 86"   "sample 87" 
+ Series.4.8.2  Series.4.8.3  Series.4.8.4  Series.4.9.1  Series.4.9.2 
+  "sample 87"   "sample 88"   "sample 88"   "sample 89"   "sample 89" 
+ Series.4.9.3  Series.4.9.4 
+  "sample 90"   "sample 90" 
+
+Slot "controls":
+list()
+
+> 
+> 
+> 
+> ###########################
+> ## test of plot. main extra argument is "measure"
+> 
+> checkException(plot(jnk, dsn, measure="bogus"),
++                msg="invalid value - nonexistent colname")
+Error in .local(x, y, ...) : invalid measure 'bogus'
+[1] TRUE
+> 
+> 
