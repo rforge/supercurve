@@ -97,7 +97,7 @@ foo.obj <- optiondb_get(rsrcName="foo", rsrcClass="Foo")
 foo <- as.character(tclvalue(foo.obj))  # bar
 
 ## Read an application-defaults file containing resources
-optiondb_readfile("/path/to/app-defaults/myapp.rdb")
+optiondb_readfile("/path/to/app-defaults/myapp.ad")
   }
 }
 \keyword{IO}
