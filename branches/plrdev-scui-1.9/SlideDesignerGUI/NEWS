@@ -6,10 +6,17 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.3.3
+
+
+NEW FEATURES
+
+    o	Loading Tk resource database from application default
+	files now handled by tkloadappdefaults() method rather
+	than by code added to package in last revision.
+
+
 		CHANGES IN R VERSION 1.3.2
-
-
-SIGNIFICANT USER-VISIBLE CHANGES
 
 
 NEW FEATURES
@@ -23,9 +30,6 @@ NEW FEATURES
 		CHANGES IN R VERSION 1.3.1
 
 
-SIGNIFICANT USER-VISIBLE CHANGES
-
-
 NEW FEATURES
 
     o	Adds checkbox that saves output as though one large grid.
@@ -34,9 +38,6 @@ NEW FEATURES
 
 
 		CHANGES IN R VERSION 1.3.0
-
-
-SIGNIFICANT USER-VISIBLE CHANGES
 
 
 NEW FEATURES
@@ -56,13 +57,11 @@ NEW FEATURES
 		CHANGES IN R VERSION 1.2.0
 
 
-SIGNIFICANT USER-VISIBLE CHANGES
-
-
 NEW FEATURES
 
     o	SubRow and SubCol default values changed to match those
 	currently being used by Core Labs for slide design.
+
 
 
 	**************************************************
@@ -73,9 +72,6 @@ NEW FEATURES
 
 
 		CHANGES IN R VERSION 1.1.0
-
-
-SIGNIFICANT USER-VISIBLE CHANGES
 
 
 NEW FEATURES
@@ -92,6 +88,7 @@ NEW FEATURES
     o	SubRow and SubCol default values changed to match those
 	currently being used by Core Labs for slide design.
 
+
 BUG FIXES
 
     o	Initial display of subgrid could exceed screen dimensions
@@ -101,6 +98,7 @@ BUG FIXES
     o	Removed extra column when viewing subgrid in table after
 	assembly. The column was not actually part of the subgrid
 	itself, but added by the R method that displayed the table.
+
 
 
 	**************************************************
@@ -113,19 +111,14 @@ BUG FIXES
 		CHANGES IN R VERSION 1.0.1
 
 
-SIGNIFICANT USER-VISIBLE CHANGES
-
-
 BUG FIXES
 
     o	Changed first four column names of TSV file to match those
 	expected by SuperCurve package.
 
 
+
 		CHANGES IN R VERSION 1.0.0
-
-
-SIGNIFICANT USER-VISIBLE CHANGES
 
 
 NEW FEATURES
