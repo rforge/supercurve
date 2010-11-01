@@ -1,0 +1,22 @@
+###
+### NAMESPACE
+###
+
+## Imported methods
+import(methods)
+importClassesFrom(SuperCurve, BoundedRange)
+importClassesFrom(SuperCurve, ProgressMonitor, DefaultProgressMonitor)
+importClassesFrom(SuperCurve, SCProgressMonitor)
+importMethodsFrom(SuperCurve, progressDone, "progressDone<-")
+importMethodsFrom(SuperCurve, progressError, "progressError<-")
+importMethodsFrom(SuperCurve, progressLabel, "progressLabel<-")
+importMethodsFrom(SuperCurve, progressMarquee, "progressMarquee<-")
+importMethodsFrom(SuperCurve, progressMaximum, "progressMaximum<-")
+importMethodsFrom(SuperCurve, progressMinimum, "progressMinimum<-")
+importMethodsFrom(SuperCurve, progressStage, "progressStage<-")
+importMethodsFrom(SuperCurve, progressValue, "progressValue<-")
+
+## Public functions
+export(supercurveGUI)
+export(scui)
+
