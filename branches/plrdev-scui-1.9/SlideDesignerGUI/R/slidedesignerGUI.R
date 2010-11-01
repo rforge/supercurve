@@ -3027,7 +3027,7 @@ slidedesignerGUI <- function() {
                          "*SpotFrame.Button.background"=unmarked))
 
         ## Handle app-defaults file(s), if any exist
-        loadAppDefaults(appdefaultsfile <- "slideDesignerGUI")
+        tkloadappdefaults(appdefaultsfile <- "slideDesignerGUI")
     })
 
     ## Create toplevel shell and pair of frames as its children
