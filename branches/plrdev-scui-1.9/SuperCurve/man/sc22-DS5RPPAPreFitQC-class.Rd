@@ -56,7 +56,10 @@
       data frame.}
   }
 }
-\references{KRC}
+\references{
+  Ju Z. "A Robust Classifier for the Quality Control of Reverse Phase Protein
+  Arrays." (unpublished).
+}
 \author{
   P. Roebuck \email{plroebuck@mdanderson.org}
 }
