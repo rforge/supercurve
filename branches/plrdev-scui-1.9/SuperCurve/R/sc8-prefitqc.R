@@ -24,7 +24,7 @@ setClass("DS5RPPAPreFitQC",
 ##-----------------------------------------------------------------------------
 ## Returns TRUE if class of argument is subclass of RPPAPreFitQC.
 is.RPPAPreFitQC <- function(x) {
-    extends(x, "RPPAPreFitQC")
+    extends(class(x), "RPPAPreFitQC")
 }
 
 
