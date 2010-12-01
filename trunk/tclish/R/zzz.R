@@ -40,5 +40,12 @@
     ## In case namespace is loaded (via import) by package that doesn't depend
     ## on tcltk
     require(tcltk)
+
+    ## Load the Tcl/Tk options database using package defaults
+    appdefaultsfile <- system.file("app-defaults", sprintf("%s.ad", pkgname),
+                                   package=pkgname)
+    optiondb_readfile(appdefaultsfile,
+                      "widgetDefault",
+                      verbose <- getOption("verbose"))
 }
 

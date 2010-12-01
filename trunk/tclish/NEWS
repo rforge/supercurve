@@ -7,6 +7,15 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 0.8.1
+
+
+BUG FIXES
+
+    o	Loading of Tk option database with package-required values
+	was not occurring on Windows.
+
+
 		CHANGES IN R VERSION 0.8.0
 
 
