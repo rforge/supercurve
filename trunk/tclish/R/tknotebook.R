@@ -166,6 +166,8 @@ notebook_page <- function(notebook,
 ## Tcl resource database
 ##
 
-optiondb_add("*Notebook.borderWidth", 2, "widgetDefault")
-optiondb_add("*Notebook.relief", "sunken", "widgetDefault")
+if (getPackageName() == ".GlobalEnv") {
+    optiondb_add("*Notebook.borderWidth", 2, "widgetDefault")
+    optiondb_add("*Notebook.relief", "sunken", "widgetDefault")
+}
 

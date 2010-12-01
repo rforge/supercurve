@@ -135,8 +135,10 @@ progressbar_updatebarcolor <- function(progressbar,
 ## Tcl resource database
 ##
 
-optiondb_add("*Progressbar.borderWidth", 2, "widgetDefault")
-optiondb_add("*Progressbar.relief", "sunken", "widgetDefault")
-optiondb_add("*Progressbar.length", 200, "widgetDefault")
-optiondb_add("*Progressbar.color", "gray", "widgetDefault")
+if (getPackageName() == ".GlobalEnv") {
+    optiondb_add("*Progressbar.borderWidth", 2, "widgetDefault")
+    optiondb_add("*Progressbar.relief", "sunken", "widgetDefault")
+    optiondb_add("*Progressbar.length", 200, "widgetDefault")
+    optiondb_add("*Progressbar.color", "gray", "widgetDefault")
+}
 
