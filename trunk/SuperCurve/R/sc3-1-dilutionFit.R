@@ -5,53 +5,56 @@
 
 ##=============================================================================
 setClass("RPPAFit",
-         representation=list(call="call",              # function call used to create the model
-                             rppa="RPPA",              # required parameter
-                             design="RPPADesign",      # required parameter
-                             measure="character",      # required parameter
-                             method="character",       # optional parameter
-                             trimset="numeric",        # list(lo.intensity, hi.intensity, lo.conc, hi.conc, level)
-                             model="FitClass",         # curve model
-                             concentrations="numeric", # main output
-                             lower="numeric",          # confidence interval
-                             upper="numeric",          # confidence interval
-                             conf.width="numeric",     # width of confidence interval
-                             intensities="numeric",    # intensities related to series concentrations
-                             ss.ratio="numeric",
-                             warn="character",
-                             version="character"))
+         representation(call="call",              ## function invocation
+                        rppa="RPPA",              ## required parameter
+                        design="RPPADesign",      ## required parameter
+                        measure="character",      ## required parameter
+                        method="character",       ## optional parameter
+                        trimset="numeric",        ## list(lo.intensity, hi.intensity, lo.conc, hi.conc, level)
+                        model="FitClass",         ## curve model
+                        concentrations="numeric", ## main output
+                        lower="numeric",          ## confidence interval
+                        upper="numeric",          ## confidence interval
+                        conf.width="numeric",     ## width of confidence interval
+                        intensities="numeric",    ## intensities related to series concentrations
+                        ss.ratio="numeric",
+                        warn="character",
+                        version="character"))
 
 
 ##=============================================================================
-setClassUnion("OptionalFunction", c("function", "NULL"))
+if (is.null(getClassDef("OptionalFunction", package="methods"))) {
+    ## Defined by 'methods' package in R-2.11.x
+    setClassUnion("OptionalFunction", c("function", "NULL"))
+}
 setClass("RPPAFitParams",
-         representation=list(measure="character",
-                             xform="OptionalFunction",
-                             method="character",
-                             ci="logical",
-                             ignoreNegative="logical",
-                             trace="logical",
-                             verbose="logical",
-                             veryVerbose="logical",
-                             warnLevel="numeric",
-                             trim="numeric",
-                             model="character"))
+         representation(measure="character",
+                        xform="OptionalFunction",
+                        method="character",
+                        ci="logical",
+                        ignoreNegative="logical",
+                        trace="logical",
+                        verbose="logical",
+                        veryVerbose="logical",
+                        warnLevel="numeric",
+                        trim="numeric",
+                        model="character"))
 
 
 ##-----------------------------------------------------------------------------
 is.RPPAFit <- function(x) {
-    inherits(x, "RPPAFit")
+    is(x, "RPPAFit")
 }
 
 
 ##-----------------------------------------------------------------------------
 is.RPPAFitParams <- function(x) {
-    inherits(x, "RPPAFitParams")
+    is(x, "RPPAFitParams")
 }
 
 
 ##-----------------------------------------------------------------------------
-setMethod("summary", "RPPAFit",
+setMethod("summary", signature(object="RPPAFit"),
           function(object,
                    ...) {
     cat(sprintf("An %s object constructed via the function call:",
@@ -88,9 +91,9 @@ setMethod("image", signature(x="RPPAFit"),
     ## Begin processing
     rppa <- x@rppa
     rppa@data[[measure]] <- switch(EXPR=measure,
-                                   Residuals=resid(x),
-                                   StdRes=resid(x, "standardized"),
-                                   ResidualsR2=resid(x, "r2"),
+                                   Residuals=residuals(x),
+                                   StdRes=residuals(x, "standardized"),
+                                   ResidualsR2=residuals(x, "r2"),
                                    X=fitted(x, "X"),
                                    Y=fitted(x, "Y"),
                                    stop(sprintf("unrecognized measure %s",
@@ -114,7 +117,7 @@ setMethod("image", signature(x="RPPAFit"),
 ## predicted intensities. Default for 'fitted' is to return the per-spot
 ## fitted 'Y' intensities, with an option to return the per-spot fitted
 ## 'X' concentrations.
-setMethod("fitted", "RPPAFit",
+setMethod("fitted", signature(object="RPPAFit"),
           function(object,
                    type=c("Y", "y", "X", "x"),
                    ...) {
@@ -148,7 +151,7 @@ setMethod("fitted", "RPPAFit",
 ## Note that the model fitting is a bit of a hybrid between the linear and
 ## logistic intensity scales, so it's not completely clear which residuals are
 ## most meaningful
-setMethod("residuals", "RPPAFit",
+setMethod("residuals", signature(object="RPPAFit"),
           function(object,
                    type=c("raw", "standardized", "r2"),
                    ...) {
@@ -173,17 +176,18 @@ setMethod("residuals", "RPPAFit",
 })
 
 
-setMethod("resid", "RPPAFit",
+setMethod("resid", signature(object="RPPAFit"),
           function(object,
+                   type=c("raw", "standardized", "r2"),
                    ...) {
-    residuals(object, ...)
+    residuals(object, type=type, ...)
 })
 
 
 ##-----------------------------------------------------------------------------
 ## Histogram of the (raw) residuals, with an option to see the standardized
 ## or linear residuals
-setMethod("hist", "RPPAFit",
+setMethod("hist", signature(x="RPPAFit"),
           function(x,
                    type=c("Residuals", "StdRes", "ResidualsR2"),
                    xlab=NULL,
@@ -204,7 +208,7 @@ setMethod("hist", "RPPAFit",
 
     translate <- c("raw", "standardized", "r2")
     names(translate) <- c("Residuals", "StdRes", "ResidualsR2")
-    res <- resid(x, type=translate[type])
+    res <- residuals(x, type=translate[type])
     hist(res,
          main=main,
          sub=paste("File:", x@rppa@file),
@@ -368,7 +372,7 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
     } else if (type == "resid") {
         ## Show a plot of the residuals vs. estimated concentration
         ## to check for heteroscedasticity
-        r <- resid(x)
+        r <- residuals(x)
 
         ## Fit a model of abs(residual) vs. estimated concentration
         ## to do a rough check for increasing heteroscedasticity
@@ -401,7 +405,8 @@ setMethod("plot", signature(x="RPPAFit", y="missing"),
 ##-----------------------------------------------------------------------------
 getConfidenceInterval <- function(result,
                                   alpha=0.10,
-                                  nSim=50) {
+                                  nSim=50,
+                                  progmethod=NULL) {
     ## Check arguments
     if (!is.RPPAFit(result)) {
         stop(sprintf("argument %s must be object of class %s",
@@ -424,6 +429,16 @@ getConfidenceInterval <- function(result,
                      sQuote("nSim")))
     }
 
+    if (!is.null(progmethod)) {
+        if (!is.function(progmethod)) {
+            stop(sprintf("argument %s must be function, if specified",
+                         sQuote("progmethod")))
+        }
+    } else {
+        ## Create a placeholder function
+        progmethod <- function(phase) {}
+    }
+
     nSim <- as.integer(nSim)
 
     ## Begin processing
@@ -431,19 +446,22 @@ getConfidenceInterval <- function(result,
     silent <- TRUE
     series <- seriesNames(result@design)
     steps <- getSteps(result@design)
-    res <- resid(result)         # actual residuals on the intensity scale
+    res <- residuals(result)     # actual residuals on the intensity scale
     yval <- fitted(result, "Y")  # best fit of the intensities
     xval <- fitted(result, "X")  # best fit concentrations on the log2 scale
 
     ## We assume the residuals vary smoothly with concentration or intensity
     ## so, we use loess to fit the absolute residuals as a function of the
     ## fitted concentration
+    progmethod("ci fit resid")
     lo <- loess(ares ~ xval, data.frame(ares=abs(res), xval=xval))
 
     ## We assume the residuals locally satisfy R ~ N(0, sigma).
     ## Then the expected value of |R| is sigma*sqrt(2/pi), so:
     sigma <- sqrt(pi / 2) * fitted(lo)
 
+    series.len <- length(series)
+    i.this <- as.integer(1)
     for (this in series) {
         items <- result@design@layout$Series == this
         xhat <- xval[items]
@@ -453,9 +471,14 @@ getConfidenceInterval <- function(result,
         for (j in seq_len(nSim)) {
             ## Sample the residuals
             resid.boot <- rnorm(sum(items), 0, sigma[items])
-            ## Add resid.boot to y_hat;  refit;
+            ## Add resid.boot to y_hat
             ysim <- yhat + resid.boot
-
+            ## Refit
+            progmethod(sprintf("ci refit series (%d/%d) sample (%d/%d)",
+                               i.this,
+                               series.len,
+                               j,
+                               nSim))
             fs <- fitSeries(result@model,
                             diln=steps[items],
                             intensity=ysim,
@@ -467,6 +490,8 @@ getConfidenceInterval <- function(result,
         }
         result@lower[this] <- quantile(sim, probs=alpha/2, na.rm=TRUE)
         result@upper[this] <- quantile(sim, probs=1 - alpha/2, na.rm=TRUE)
+
+        i.this <- as.integer(i.this + 1)
     }
     result@conf.width <- 1-alpha
 

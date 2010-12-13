@@ -5,50 +5,37 @@
 
 ##=============================================================================
 setClass("RPPADesign",
-         representation=list(call="call",
-                             layout="data.frame",
-                             alias="list",
-                             sampleMap="character",
-                             controls="list"))
+         representation(call="call",
+                        layout="data.frame",
+                        alias="list",
+                        sampleMap="character",
+                        controls="list"))
 
 
 ##=============================================================================
 setClassUnion("OptionalFilename", c("character", "NULL"))
 setClassUnion("OptionalList", c("list", "NULL"))
 setClass("RPPADesignParams",
-         representation=list(steps="numeric",
-                             series="factor",
-                             grouping="character",
-                             ordering="character",
-                             center="logical",
-                             controls="OptionalList",
-                             alias="OptionalList",
-                             aliasfile="OptionalFilename",
-                             designfile="OptionalFilename"))
+         representation(steps="numeric",
+                        series="factor",
+                        grouping="character",
+                        ordering="character",
+                        center="logical",
+                        controls="OptionalList",
+                        alias="OptionalList",
+                        aliasfile="OptionalFilename",
+                        designfile="OptionalFilename"))
 
 
 ##-----------------------------------------------------------------------------
 ## Invoked by validObject() method.
 validRPPADesign <- function(object) {
 
-    cat("validating", class(object), "object", "\n")
+    #cat("validating", class(object), "object", "\n")
     msg <- NULL
 
-    reqdMeasures = c("Main.Row",
-                     "Main.Col",
-                     "Sub.Row",
-                     "Sub.Col",
-                     "Sample")
-    nreqdMeasures <- length(reqdMeasures) + 1
-
-    #:KRC: waste of time. Next check alrady includes this, and gives
-    # the user better information.
-    ## Ensure minimum number of columns
-    if (!(ncol(object@layout) >= nreqdMeasures)) {
-        msg <- c(msg, "not enough columns in layout")
-    }
-
     ## Ensure required columns
+    reqdMeasures <- c(.locationColnames(), "Sample")
     found <- reqdMeasures %in% colnames(object@layout)
     if (!all(found)) {
         missingColumns <- reqdMeasures[!found]
@@ -70,16 +57,14 @@ setValidity("RPPADesign", validRPPADesign)
 
 
 ##-----------------------------------------------------------------------------
-#:KRC: Why not just acll inherits in the code whwere it is needed? If you want
-# to obfuscate the code, wrap an eval around a base64 decode.
 is.RPPADesign <- function(x) {
-    inherits(x, "RPPADesign")
+    is(x, "RPPADesign")
 }
 
 
 ##-----------------------------------------------------------------------------
 is.RPPADesignParams <- function(x) {
-    inherits(x, "RPPADesignParams")
+    is(x, "RPPADesignParams")
 }
 
 
@@ -98,7 +83,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
                              aliasfile=NULL,
                              designfile=NULL,
                              path=".") {
-  #:KRC:  Since you have defined a validity fuinction, why are you
+  #:KRC:  Since you have defined a validity function, why are you
   # replicating the error checking?
     ## Check arguments
     if (!is.numeric(steps)) {
@@ -139,7 +124,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
         }
     }
 
-    # try(as.logical())
+    ## Convert numeric argument to logical counterpart
     if (is.numeric(center)) {
         center <- as.logical(center)
     }
@@ -246,7 +231,7 @@ RPPADesignParams <- function(steps=rep(0, 1),
 ## Returns a string representation of this instance. The content and format of
 ## the returned string may vary between versions. Returned string may be
 ## empty, but never null.
-setMethod("paramString", "RPPADesignParams",
+setMethod("paramString", signature(object="RPPADesignParams"),
           function(object,
                    slots=slotNames(object),
                    ...) {
@@ -254,7 +239,7 @@ setMethod("paramString", "RPPADesignParams",
     stopifnot(is.character(slots) && length(slots) >= 1)
 
     ## :TODO: Implementation currently ignores the 'slots' argument
-    ## and returns string containing parameters from various slots.
+    ## and returns string containing parameters from various slots
     ## as though:
     ##     slotsToDisplay <- c("grouping", "ordering", "center",
     ##                         "controls", "aliasfile", "designfile")
@@ -303,11 +288,8 @@ RPPADesignFromParams <- function(raw,
     ## Begin processing
     call <- match.call()
 
-    raw.df <- data.frame(raw[, c("Main.Row",
-                                 "Main.Col",
-                                 "Sub.Row",
-                                 "Sub.Col",
-                                 "Sample")])
+    reqdMeasures <- c(.locationColnames(), "Sample")
+    raw.df <- data.frame(raw[, reqdMeasures])
     if (all(c(length(steps), length(series)) == 1)) {
         steps <- rep(NA, nrow(raw))
         series <- rep(NA, nrow(raw))
@@ -428,7 +410,7 @@ RPPADesignFromParams <- function(raw,
                 }
 
                 ## Attempt to merge columns from slide design file
-                raw.df <- merge(raw.df, design.df)
+                raw.df <- .mergeDataWithLayout(raw.df, design.df)
 
                 ## Provide control names from slide design information
                 ctrlnames <- as.character(with(raw.df,
@@ -470,11 +452,7 @@ RPPADesignFromParams <- function(raw,
     ## Validate alias
     {
         reqdNames <- c("Alias", "Sample")
-        if (!(length(alias) >= length(reqdNames))) {
-            stop(sprintf("slot %s must be of length %d or greater",
-                         sQuote("alias"),
-                         length(reqdNames)))
-        } else if (!(all(reqdNames %in% names(alias)))) {
+        if (!(all(reqdNames %in% names(alias)))) {
             missingNames <- reqdNames[!reqdNames %in% names(alias)]
             stop(sprintf(ngettext(length(missingNames),
                                   "slot %s missing component: %s",
@@ -527,14 +505,14 @@ RPPADesign <- function(raw,
 
 
 ##-----------------------------------------------------------------------------
-setMethod("dim", "RPPADesign",
+setMethod("dim", signature(x="RPPADesign"),
           function(x) {
     .dimOfLayout(x@layout)
 })
 
 
 ##-----------------------------------------------------------------------------
-setMethod("summary", "RPPADesign",
+setMethod("summary", signature(object="RPPADesign"),
           function(object,
                    ...) {
     cat(sprintf("An %s object constructed via the function call:",
@@ -607,8 +585,6 @@ setMethod("image", signature(x="RPPADesign"),
     invisible(geo.steps)
 })
 
-## :NOTE: default "measure" in various routines is inconsistent.
-## plot(RPPA,Design) here uses "Mean.Total", while image(RPPA) uses "Mean.Net"
 
 ##-----------------------------------------------------------------------------
 ## Plot the series in an RPPA under a given design layout to see if the series
@@ -617,7 +593,7 @@ setMethod("image", signature(x="RPPADesign"),
 setMethod("plot", signature(x="RPPA", y="RPPADesign"),
           function(x,
                    y,
-                   measure="Mean.Total",
+                   measure="Mean.Net",
                    main="",
                    ...) {
     ## Check arguments
@@ -717,7 +693,7 @@ getSteps <- function(design) {
 
 
 ##-----------------------------------------------------------------------------
-setMethod("names", "RPPADesign",
+setMethod("names", signature(x="RPPADesign"),
           function(x) {
     isControl <- .controlVector(x)
     as.character(x@layout$Series[!isControl])

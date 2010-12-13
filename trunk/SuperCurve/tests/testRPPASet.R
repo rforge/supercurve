@@ -16,21 +16,22 @@ if (!dir.create(persessionprojdir)) {
     stop("cannot create per-session project directory")
 }
 
-
-path <- system.file("rppaTumorData", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurve")
+path <- file.path(extdata.dir, "rppaTumorData")
+designfile <- file.path(path, "slidedesign.tsv")
 designparams <- RPPADesignParams(grouping="blockSample",
                                  center=TRUE,
-                                 controls=list("neg con", "pos con"))
+                                 designfile=designfile)
 fitparams <- RPPAFitParams(measure="Mean.Net",
                            model="logistic",
                            method="nlrob",
                            ignoreNegative=FALSE,
                            warnLevel=-1)
 
-fitset <- RPPASet(path,
-                  designparams,
-                  fitparams,
-                  antibodyfile="proteinAssay.tsv")
+rppaset <- RPPASet(path,
+                   designparams,
+                   fitparams,
+                   antibodyfile="proteinAssay.tsv")
 
 ###########################
 ## tests of path
@@ -97,7 +98,6 @@ checkException(RPPASet(path=path,
                        antibodyfile=nosuchfile),
                msg="nonexistent file should fail")
 
-## :NOTE: Could stand a better error message than provided...
 checkException(RPPASet(path=path,
                        designparams,
                        fitparams,
@@ -162,25 +162,25 @@ checkException(write.summary(designparams,
 ###########################
 ## tests of summary path
 
-checkException(write.summary(fitset,
+checkException(write.summary(rppaset,
                              path=nosuchdir),
                msg="nonexistent output directory should fail")
 
 readonlydir <- file.path(persessionprojdir, "readonly")
 dir.create(readonlydir, mode="0555")
-checkException(write.summary(fitset,
+checkException(write.summary(rppaset,
                              path=readonlydir),
                msg="readonly output directory should fail")
 
 ###########################
 ## tests of summary prefix
 
-checkException(write.summary(fitset,
+checkException(write.summary(rppaset,
                              path=outdir,
                              prefix=5),
                msg="invalid value should fail")
 
-checkException(write.summary(fitset,
+checkException(write.summary(rppaset,
                              path=outdir,
                              prefix=c("a", "b")),
                msg="character vector should fail")
@@ -188,12 +188,12 @@ checkException(write.summary(fitset,
 ###########################
 ## tests of summary graphs
 
-checkException(write.summary(fitset,
+checkException(write.summary(rppaset,
                              path=outdir,
                              graphs="yellow"),
                msg="invalid value should fail")
 
-checkException(write.summary(fitset,
+checkException(write.summary(rppaset,
                              path=outdir,
                              graphs=c(FALSE, TRUE)),
                msg="logical vector should fail")
@@ -202,26 +202,26 @@ checkException(write.summary(fitset,
 ###########################
 ## tests of summary tiffdir
 
-checkException(write.summary(fitset,
+checkException(write.summary(rppaset,
                              path=outdir,
                              graphs=1,
                              tiffdir=pi),
                msg="invalid value should fail")
 
 # :NOTE: numeric "graphs" value silently converted to logical
-checkException(write.summary(fitset,
+checkException(write.summary(rppaset,
                              path=outdir,
                              graphs=1,
                              tiffdir=c("results1", "results2")),
                msg="character vector should fail")
 
-checkException(write.summary(fitset,
+checkException(write.summary(rppaset,
                              path=outdir,
                              graphs=TRUE,
                              tiffdir=nosuchdir),
                msg="nonexistent directory should fail")
 
-checkException(write.summary(fitset,
+checkException(write.summary(rppaset,
                              path=outdir,
                              graphs=TRUE,
                              tiffdir=filenotdir),
@@ -245,16 +245,18 @@ checkException(write.summary(fitset,
 switch(.Platform$OS.type,
        unix={
            # Willing to try test if 'convert' executable is not in /usr/bin
-           binary <- system("which convert", intern=TRUE)
-           if (!length(grep("/usr/bin", binary, fixed=TRUE))) {
+           binary <- "convert"
+           binarydir <- dirname(Sys.which(binary))
+           usrbindir <- file.path("", "usr", "bin")
+           if (!grepl(binarydir, sprintf("^%s", usrbindir), fixed=TRUE)) {
 
                ##--------------------------------------------------------------
                simulateMissingConvertBinary <- function() {
                    savePATH <- Sys.getenv("PATH")
                    on.exit(Sys.setenv("PATH"=savePATH))
-                   Sys.setenv("PATH"="/usr/bin")
+                   Sys.setenv("PATH"=usrbindir)
 
-                   tryCatch(write.summary(fitset,
+                   tryCatch(write.summary(rppaset,
                                           path=outdir,
                                           graphs=TRUE,
                                           tiffdir=emptydir),
@@ -270,7 +272,9 @@ switch(.Platform$OS.type,
            } else {
                cat("skipped ImageMagick test",
                    "-",
-                   "'convert' binary in /usr/bin",
+                   sQuote(binary),
+                   "binary in",
+                   dQuote(usrbindir),
                    "\n")
            }
        },
@@ -280,7 +284,7 @@ switch(.Platform$OS.type,
 
 
 ## test one that should work...
-write.summary(fitset,
+write.summary(rppaset,
               path=outdir,
               prefix="testing",
               graphs=FALSE)

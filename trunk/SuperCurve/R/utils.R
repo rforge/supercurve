@@ -101,6 +101,13 @@
 
 
 ##-----------------------------------------------------------------------------
+.isPackageInstalled <- function(pkgname) {
+    stopifnot(is.character(pkgname) && length(pkgname) == 1)
+    nzchar(system.file(package=pkgname))
+}
+
+
+##-----------------------------------------------------------------------------
 ## Specifies measures used for determining location on lysate array.
 .locationColnames <- function() {
     return(c("Main.Row",
@@ -123,12 +130,21 @@
 
 
 ##-----------------------------------------------------------------------------
+## Returns logical value indicating whether code is running as a package.
+packaged <- function() {
+    return(getPackageName() != ".GlobalEnv")
+}
+
+
+##-----------------------------------------------------------------------------
+## Get version of R for which the package was built
 .pkgRversion <- function(pkgname) {
     ## Check arguments
     stopifnot(is.character(pkgname) && length(pkgname) == 1)
 
     ## Begin processing
-    substring(packageDescription(pkgname)[["Built"]], 3, 5)
+    meta <- packageDescription(pkgname)
+    sub("\\.[[:digit:]];.*$", "", substring(meta$Built, 3))
 }
 
 
@@ -144,6 +160,7 @@
 .portableFilename <- function(filename) {
     ## Check arguments
     stopifnot(is.character(filename) && length(filename) == 1)
+    stopifnot(nzchar(filename))
 
     ## Begin processing
 
@@ -214,6 +231,44 @@ dir.writable <- function(path) {
 
     ## Begin processing
     file.access(path, mode=2) == 0
+}
+
+
+##-----------------------------------------------------------------------------
+## Specifies names of possible stages as set by process monitoring code. If a
+## new capability is added to the package, so should an associated stage.
+getStages <- function() {
+    ## :NOTE: SuperCurveGUI::setStages() uses these EXACT list names...
+    stagesList <- list(input    = "Data Input",
+                       spatial  = "Spatial Adj",
+                       prefitqc = "Pre-Fit QC",
+                       fit      = "Curve Fitting",
+                       graph    = "Graphing")
+    stages <- as.character(stagesList)
+    names(stages) <- names(stagesList)
+
+    return(stages)
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns data.frame containing RPPA data merged with design layout.
+.mergeDataWithLayout <- function(rppadata, layout) {
+    ## Check arguments
+    if (is.RPPA(rppadata)) {
+        rppadata <- rppadata@data
+    }
+    if (is.RPPADesign(layout)) {
+        layout <- layout@layout
+    }
+    stopifnot(is.data.frame(rppadata))
+    stopifnot(is.data.frame(layout))
+
+    ## Begin processing
+    #merge.by <- c(.locationColnames(), "Sample")
+    #merged.df <- merge(rppadata, layout, by=merge.by)
+    merged.df <- merge(rppadata, layout, sort=FALSE)
+    merged.df[do.call(order, merged.df), ]
 }
 
 

@@ -17,15 +17,15 @@
             }
             packageDescription <- function(pkgname) {
                 fieldnames <- c("Title", "Version")
-                descfile <- file.path(libname, pkgname, "DESCRIPTION")
-                desc <- as.list(read.dcf(descfile, fieldnames))
-                names(desc) <- fieldnames
-                return(desc)
+                metafile <- file.path(libname, pkgname, "DESCRIPTION")
+                meta <- as.list(read.dcf(metafile, fieldnames))
+                names(meta) <- fieldnames
+                return(meta)
             }
 
-            desc <- packageDescription(pkgname)
+            meta <- packageDescription(pkgname)
             msg <- sprintf("%s, version %s",
-                           desc$Title, desc$Version)
+                           meta$Title, meta$Version)
             packageStartupMessage(msg)
             msg <- sprintf("Type library(help=%s) to see package documentation",
                            libraryPkgName(pkgname))
@@ -40,5 +40,24 @@
     ## In case namespace is loaded (via import) by package that doesn't depend
     ## on S4 methods and used in a session with non-default set of packages
     require(methods)
+
+    ## Preflight check use of ImageMagick 'convert' binary
+    preflightCheck <- function() {
+        command <- "convert --version"
+        output <- switch(EXPR=.Platform$OS.type,
+                         unix=system(command,
+                                     intern=TRUE,
+                                     ignore.stderr=TRUE),
+                         windows=shell(command,
+                                       intern=TRUE,
+                                       ignore.stderr=TRUE),
+                         "")
+        grepl("ImageMagick", output[1], fixed=TRUE)
+    }
+
+    if (!preflightCheck()) {
+        warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH",
+                        sQuote("convert")))
+    }
 }
 

@@ -11,12 +11,14 @@ if (NET) {
   type <- "total"
 }
 
+extdata.dir <- system.file("extdata", package="SuperCurve")
+
 ######################################################################
 # tumor data with 3 antibodies
 
 tABG <- matrix(NA, 3, 3)
 dimnames(tABG) <- list(c('ERK2', 'GSK3', 'JNK'), c('alpha', 'beta', 'gamma'))
-path <- system.file("rppaTumorData", package="SuperCurve")
+path <- file.path(extdata.dir, "rppaTumorData")
 erk2 <- RPPA("ERK2.txt", path=path)
 tDesign <- RPPADesign(erk2, grouping="blockSample",
                       center=TRUE, controls=list("neg con", "pos con"))
@@ -46,14 +48,14 @@ write.table(tValues, paste("fittedValues-tumor", type, "krc.tsv", sep="-"),
             row.names=TRUE, col.names=NA, sep="\t", quote=FALSE)
 
 
-##OPTIONAL: save(erk2, jnk, gsk3, tDesign, file="rppaTumor.Rda")
+##OPTIONAL: save(erk2, jnk, gsk3, tDesign, file="rppaTumor.RData")
 
 ######################################################################
 # 40 cell lines with 3 antibodies
 
 ABG <- matrix(NA, 3, 3)
 dimnames(ABG) <- list(c('AKT', 'ERK2', 'CTNNB1'), c('alpha', 'beta', 'gamma'))
-path40 <- system.file("rppaCellData", package="SuperCurve")
+path40 <- file.path(extdata.dir, "rppaCellData")
 akt <- RPPA("AKT.txt", path=path40)
 # The design here does not follow any of our standard shorthands, since it has
 # interleaved 8-step dilution replicates contained in a single 4x4 subgrid
@@ -104,7 +106,7 @@ rep40 <- rbind(summary(divergence), paste("Correl.:", format(core, digits=4)))
 write.table(rep40, paste("replicates-40", type, "krc.tsv", sep="-"),
             row.names=TRUE, col.names=NA, sep="\t", quote=FALSE)
 
-save(c.erk2, akt, ctnnb1, design40, file="rppaCell.Rda")
+save(c.erk2, akt, ctnnb1, design40, file="rppaCell.RData")
 
 ##################
 if(FALSE){
@@ -192,3 +194,4 @@ for (i in 1:length(x)) {
   lines(c(l[i], u[i]), rep(y[i], 2), col='red')
 }
 }#fi
+

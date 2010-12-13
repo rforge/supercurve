@@ -17,7 +17,9 @@ local({
 
         ## Begin processing
         assign(varname <- make.names(xform(antibody)),
-               RPPA(filename, path=datadir, antibody=antibody),
+               RPPA(filename,
+                    path=datadir,
+                    antibody=antibody),
                envir=environment(makeRPPAs))
 
         return(varname)
@@ -28,8 +30,9 @@ local({
     ## 40 cell lines with 3 antibodies
     ##
 
-    instdata.dir <- system.file("rppaCellData", package="SuperCurve")
-    proteinassayfile <- file.path(instdata.dir, "proteinAssay.tsv")
+    extdata.dir <- system.file("extdata", package="SuperCurve")
+    rawdata.dir <- file.path(extdata.dir, "rppaCellData")
+    proteinassayfile <- file.path(rawdata.dir, "proteinAssay.tsv")
     proteinassay.df <- read.delim(proteinassayfile)
 
     rppas <- apply(proteinassay.df,
@@ -46,7 +49,7 @@ local({
                                      tolower(varname)
                                  })
                    },
-                   instdata.dir)
+                   rawdata.dir)
 
     ## The design here does not follow any of our standard shorthands,
     ## since it has interleaved 8-step dilution replicates contained
@@ -65,7 +68,7 @@ local({
                       series=series))
 
     ## Update package data directory
-    filename <- paste(sub("Data$", "", basename(instdata.dir)), "rda", sep=".")
+    filename <- sprintf("%s.RData", sub("Data$", "", basename(rawdata.dir)))
     dataset <- file.path(system.file("data", package="SuperCurve"), filename)
     save(list=c(rppas, design), file=dataset)
 })

@@ -17,7 +17,9 @@ local({
 
         ## Begin processing
         assign(varname <- make.names(xform(antibody)),
-               RPPA(filename, path=datadir, antibody=antibody),
+               RPPA(filename,
+                    path=datadir,
+                    antibody=antibody),
                envir=environment(makeRPPAs))
 
         return(varname)
@@ -28,8 +30,9 @@ local({
     ## Triple data with 5 antibodies
     ##
 
-    instdata.dir <- system.file("rppaTripleData", package="SuperCurve")
-    proteinassayfile <- file.path(instdata.dir, "proteinAssay.tsv")
+    extdata.dir <- system.file("extdata", package="SuperCurve")
+    rawdata.dir <- file.path(extdata.dir, "rppaTripleData")
+    proteinassayfile <- file.path(rawdata.dir, "proteinAssay.tsv")
     proteinassay.df <- read.delim(proteinassayfile)
 
     rppas <- apply(proteinassay.df,
@@ -39,7 +42,7 @@ local({
                                  proteinassay["Filename"],
                                  datadir)
                    },
-                   instdata.dir)
+                   rawdata.dir)
 
     layoutinfofile <- "layoutInfo.tsv"
     ## :TBD: Sample column in layout info file doesn't match those in quantification files 
@@ -51,10 +54,10 @@ local({
                       controls=list("Buffer",
                                     "Blank"),
                       aliasfile=layoutinfofile,
-                      path=instdata.dir))
+                      path=rawdata.dir))
 
     ## Update package data directory
-    filename <- paste(sub("Data$", "", basename(instdata.dir)), "rda", sep=".")
+    filename <- sprintf("%s.RData", sub("Data$", "", basename(rawdata.dir)))
     dataset <- file.path(system.file("data", package="SuperCurve"), filename)
     save(list=c(rppas, design), file=dataset)
 })

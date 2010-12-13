@@ -3,9 +3,9 @@
 \alias{RPPAFitParams}
 \alias{RPPAFitFromParams}
 \alias{RPPAFit}
-\alias{paramString,RPPAFitParams-method}
 \alias{is.RPPAFit}
 \alias{is.RPPAFitParams}
+\alias{paramString,RPPAFitParams-method}
 \docType{class}
 \title{Fitting Dilution Curves to Protein Lysate Arrays with Class "RPPAFitParams"}
 \description{
@@ -45,11 +45,12 @@ RPPAFitParams(measure,
 
 RPPAFitFromParams(rppa,
                   design,
-                  fitparams)
+                  fitparams,
+                  progmethod=NULL)
 
 is.RPPAFit(x)
 is.RPPAFitParams(x)
-\S4method{paramString}{RPPAFitParams}(object, ...)
+\S4method{paramString}{RPPAFitParams}(object, slots, \dots)
 }
 \arguments{
   \item{rppa}{object of class \code{\link{RPPA}} containing the raw data
@@ -58,6 +59,7 @@ is.RPPAFitParams(x)
     of the array}
   \item{fitparams}{object of the class \code{RPPAFitParams}, bundling
     together the following arguments.}
+  \item{progmethod}{optional function that can be used to report progress.}
   \item{measure}{character string identifying the column of the raw RPPA data
     that should be used to fit to the model.}
   \item{model}{character string specifying the model for the response curve
@@ -105,6 +107,8 @@ is.RPPAFitParams(x)
     the values returned.}
   \item{object}{object of class \code{RPPAFitParams}}
   \item{x}{object of class \code{RPPAFit} (or \code{RPPAFitParams})}
+  \item{slots}{strings specifying \code{RPPAFitParams} slotnames to display
+    (for debuggging)}
   \item{\dots}{extra arguments for generic routines.}
 }
 \details{
@@ -151,11 +155,11 @@ is.RPPAFitParams(x)
     \item{\code{measure}:}{character; see arguments above}
     \item{\code{xform}:}{function or NULL; see arguments above}
     \item{\code{method}:}{character; see arguments above}
-    \item{\code{ci}:}{logical; see arguments above}
-    \item{\code{ignoreNegative}:}{logical; see arguments above}
-    \item{\code{trace}:}{logical; see arguments above}
-    \item{\code{verbose}:}{logical; see arguments above}
-    \item{\code{veryVerbose}:}{logical; see arguments above}
+    \item{\code{ci}:}{logical scalar; see arguments above}
+    \item{\code{ignoreNegative}:}{logical scalar; see arguments above}
+    \item{\code{trace}:}{logical scalar; see arguments above}
+    \item{\code{verbose}:}{logical scalar; see arguments above}
+    \item{\code{veryVerbose}:}{logical scalar; see arguments above}
     \item{\code{warnLevel}:}{numeric; see arguments above}
     \item{\code{trim}:}{numeric; see arguments above}
     \item{\code{model}:}{character; see arguments above}
@@ -199,8 +203,10 @@ is.RPPAFitParams(x)
   \code{\link{RPPADesign}}
 }
 \examples{
-path <- system.file("rppaTumorData", package="SuperCurve")
-erk2 <- RPPA("ERK2.txt", path=path)
+extdatadir <- system.file("extdata", package="SuperCurve")
+
+txtdir <- file.path(extdatadir, "rppaTumorData")
+erk2 <- RPPA("ERK2.txt", path=txtdir)
 design <- RPPADesign(erk2,
                      grouping="blockSample",
                      controls=list("neg con", "pos con"))
@@ -208,8 +214,9 @@ fit.nls <- RPPAFit(erk2, design, "Mean.Net")
 summary(fit.nls)
 coef(fit.nls)
 }
+\keyword{classes}
 \keyword{models}
-\keyword{regression}
 \keyword{nonlinear}
+\keyword{regression}
 \keyword{robust}
 

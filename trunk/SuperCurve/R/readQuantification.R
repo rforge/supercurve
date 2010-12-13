@@ -37,14 +37,14 @@
 ##-----------------------------------------------------------------------------
 ## Reads quantification datafiles and returns data frame containing
 ## the desired information
-readQuantification <- function(file, software) {
+readQuantification <- function(conn, software) {
     ## Check arguments
-    if (!inherits(file, "connection")) {
+    if (!inherits(conn, "connection")) {
         stop(sprintf("argument %s must be connection",
-                     sQuote("file")))
-    } else if (!isOpen(file, "r")) {
+                     sQuote("conn")))
+    } else if (!isOpen(conn, "r")) {
         stop(sprintf("connection %s not open for read",
-                     dQuote(summary(file)$description)))
+                     dQuote(summary(conn)$description)))
     }
 
     if (!is.character(software)) {
@@ -69,11 +69,11 @@ readQuantification <- function(file, software) {
 
     readMethod <- .getReadMethod(software)
     quant.df <- if (is.function(readMethod)) {
-                    readMethod(file)
+                    readMethod(conn)
                 }
 
     if (is.null(quant.df)) {
-        pathname <- summary(file)$description
+        pathname <- summary(conn)$description
         stop(sprintf("cannot import data from file %s",
                      dQuote(pathname)))
     }
@@ -83,14 +83,6 @@ readQuantification <- function(file, software) {
                       "Sub.Row",
                       "Sub.Col",
                       "Sample")
-
-    ## Ensure minimum number of columns
-    #:KRC: Why is this useful? You are going to enumerate either the
-    # or missing columns in the next step?
-    nreqdColumns <- length(reqdColnames) + 1
-    if (!(ncol(quant.df) >= nreqdColumns)) {
-        stop("not enough columns in quantification datafile")
-    }
 
     ## Ensure required columns exist
     found <- reqdColnames %in% colnames(quant.df)
@@ -122,32 +114,68 @@ readQuantification <- function(file, software) {
 
 ##-----------------------------------------------------------------------------
 ## Reads MicroVigene text datafile
-read.microvigene <- function(file) {
+read.microvigene <- function(conn) {
     ## Check arguments
-    stopifnot(inherits(file, "connection"))
+    stopifnot(inherits(conn, "connection"))
 
+    ##-------------------------------------------------------------------------
     isMicroVigene <- function(pathname) {
         line <- readLines(pathname, n=1)
         isTRUE(grep("MicroVigene", line, fixed=TRUE) == 1)
     }
 
+
+    ##-------------------------------------------------------------------------
     getMicroVigeneVersion <- function(pathname) {
         line <- readLines(pathname, n=1, ok=FALSE)
         mv.version <- as.numeric(strsplit(line, "[:blank:]")[[1]][3])
     }
 
+
+    ##-------------------------------------------------------------------------
     getTimestamp <- function(pathname) {
         line <- readLines(pathname, n=3, ok=FALSE)[3]
         timestamp <- as.POSIXct(line, format="%m/%d/%Y %I:%M:%S %p")
     }
 
+
+    ##-------------------------------------------------------------------------
     getNumHeaderLines <- function(mv.version) {
         ## Vendor introduced extra header line in later versions of file format
         numHeaderLines <- if (mv.version < 2900) 4 else 5
     }
 
+
+    ##-------------------------------------------------------------------------
+    ## Some quantification files from the labs contain CRCRLF at the end
+    ## of each line, which messes up read.table() method on non-Windows OS.
+    ## Returns the non-blank content lines if the column headers are found;
+    ## otherwise, an empty string.
+    extractContent <- function(conn) {
+        firstcol <- "Main Row"
+        firstcol.nchar <- nchar(firstcol)
+
+        nmaxlines <- 15   # Column headers must be within first 15 lines
+        for (lineno in seq_len(nmaxlines)) {
+            ## Is this the line with column headers?
+            line <- readLines(conn, n=1)
+            if (firstcol == substr(line, 1, firstcol.nchar)) {
+                ## Put it back
+                pushBack(line, conn)
+                ## Read everything
+                content <- readLines(conn)
+                blanklines.tf <- nchar(content) == 0
+                ## Filter out blank lines
+                return(content[!blanklines.tf])
+            }
+        }
+
+        return("")
+    }
+
+
     ## Begin processing
-    pathname <- summary(file)$description
+    pathname <- summary(conn)$description
 
     ## Check if this is really a MicroVigene datafile
     if (!isMicroVigene(pathname)) {
@@ -157,10 +185,29 @@ read.microvigene <- function(file) {
 
     ## Read data from file
     mvvers <- getMicroVigeneVersion(pathname)
-    mvdata.df <- read.delim(file,
-                            quote="",
-                            row.names=NULL,
-                            skip=getNumHeaderLines(mvvers))
+    mvdata.df <- tryCatch(read.delim(conn,
+                                     quote="",
+                                     row.names=NULL,
+                                     skip=getNumHeaderLines(mvvers)),
+                          error=function(e) {
+                              badformat <- "more columns than column names"
+                              if (conditionMessage(e) == badformat) {
+                                  message('retrying using alternative read...')
+                                  content <- extractContent(conn)
+                                  tconn <- textConnection(content, "r")
+                                  on.exit(close(tconn))
+                                  df <- try(read.delim(tconn,
+                                                       quote="",
+                                                       row.names=NULL))
+                                  if (!inherits(df, "try-error")) {
+                                      df
+                                  } else {
+                                      stop(e)    # retry failed
+                                  }
+                              } else {
+                                  stop(e)        # cannot recover
+                              }
+                          })
 
     ## Eliminate spurious column caused by too many tab characters
     if ("X" %in% colnames(mvdata.df)) {
@@ -176,6 +223,68 @@ read.microvigene <- function(file) {
     attr(mvdata.df, "software")  <- "microvigene"
     attr(mvdata.df, "version")   <- mvvers
     attr(mvdata.df, "timestamp") <- getTimestamp(pathname)
+
+    return(mvdata.df)
+}
+
+
+##-----------------------------------------------------------------------------
+## Reads 'SuperSlide" single subgrid design MicroVigene text datafile
+read.singlesubgrid <- function(conn) {
+    ## Check arguments
+    stopifnot(inherits(conn, "connection"))
+
+    ## Begin processing
+
+    ## Do just what SuperCurve would have done by default
+    mvdata.df <- read.microvigene(conn)
+    attr(mvdata.df, "software") <- "singlesubgrid"
+
+    ## Logical dimensions of SuperSlide format
+    nmainrow <- 4
+    nmaincol <- 12
+    nsubrow  <- 11
+    nsubcol  <- 11
+
+    nspot.mr <- nmaincol * nsubrow * nsubcol  # number of spots in main row
+
+    ## Ensure file is actually SuperSlide single subgrid layout
+    dim.singlesubgrid <- as.integer(c(1,
+                                      1,
+                                      (nmainrow*nsubrow),
+                                      (nmaincol*nsubcol)))
+    dim.mvdata.df <- c(max(mvdata.df$Main.Row),
+                       max(mvdata.df$Main.Col),
+                       max(mvdata.df$Sub.Row),
+                       max(mvdata.df$Sub.Col))
+    if (!identical(dim.singlesubgrid, dim.mvdata.df)) {
+        pathname <- summary(conn)$description
+        stop(sprintf("dim of file %s (%s) does not match SuperSlide single subgrid (%s)",
+                     dQuote(pathname),
+                     paste(dim.mvdata.df, collapse="x"),
+                     paste(dim.singlesubgrid, collapse="x")))
+    }
+
+    ## Convert from single subgrid format
+    mvdata.df$Main.Row <- rep(1:nmainrow, each=nspot.mr)
+    mvdata.df$Main.Col <- rep(rep(1:nmaincol, each=nsubcol), nmainrow*nsubrow)
+    mvdata.df$Sub.Row  <- rep(rep(1:nsubrow, each=nsubcol*nmaincol), nmainrow)
+    mvdata.df$Sub.Col  <- rep(rep(1:nsubcol, nmaincol), nmainrow*nsubrow)
+
+    ## Reorder the rows so that the order look as if the quantification was
+    ## done for the first subgrid then the next subgrid until the first main
+    ## row is finished, and then the next main row, and so on.
+    new.ind <- NULL
+    for (i in 1:nmainrow) {
+        tmpind <- ((i-1)*nspot.mr+1):(i*nspot.mr)
+        tmpind <- matrix(tmpind, byrow=TRUE, nrow=nsubrow)
+        tmpind2 <- NULL
+        for (j in 1:nmaincol) {
+            tmpind2 <- c(tmpind2, as.vector(t(tmpind[, ((j-1)*11+1):(j*11)])))
+        }
+        new.ind <- c(new.ind, tmpind2)
+    }
+    mvdata.df <- mvdata.df[new.ind, ]
 
     return(mvdata.df)
 }

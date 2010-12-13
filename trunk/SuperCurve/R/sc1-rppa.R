@@ -5,16 +5,14 @@
 
 ##=============================================================================
 setClass("RPPA",
-         representation=list(data="data.frame",
-                             file="character",
-                             antibody="character"))
+         representation(data="data.frame",
+                        file="character",
+                        antibody="character"))
 
 
 ##-----------------------------------------------------------------------------
-#:KRC: Why do we need all these "is" functions when using 'inherits"
-# directly gives better local documentation of behavior.
 is.RPPA <- function(x) {
-    inherits(x, "RPPA")
+    is(x, "RPPA")
 }
 
 
@@ -75,8 +73,9 @@ RPPA <- function(file,
         }
     } else {
         ## Use filename without extension as default value
-        txt.re <- "\\.[Tt][Xx][Tt]$"
-        antibody <- sub(txt.re, "", filename)
+        txt.re <- "\\.[tT][xX][tT]$"
+        basename <- sub(txt.re, "", filename)
+        antibody <- sub("[[:space:]]+$", "", basename)
     }
 
     ## Read quantification file
@@ -91,14 +90,14 @@ RPPA <- function(file,
 
 
 ##-----------------------------------------------------------------------------
-setMethod("dim", signature="RPPA",
+setMethod("dim", signature(x="RPPA"),
           function(x) {
     .dimOfLayout(x@data)
 })
 
 
 ##-----------------------------------------------------------------------------
-setMethod("summary", "RPPA",
+setMethod("summary", signature(object="RPPA"),
           function(object,
                    ...) {
     cat(sprintf("An %s object loaded from file %s",
@@ -203,7 +202,7 @@ setMethod("image", signature(x="RPPA"),
 
     image(seq_len(mx),
           seq_len(my),
-          geo,
+          z=geo,
           col=col,
           main=main,
           sub=paste("File:", x@file),

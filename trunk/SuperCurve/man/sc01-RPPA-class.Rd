@@ -1,10 +1,10 @@
 \name{RPPA-class}
 \alias{RPPA-class}
 \alias{RPPA}
+\alias{is.RPPA}
 \alias{dim,RPPA-method}
 \alias{image,RPPA-method}
 \alias{summary,RPPA-method}
-\alias{is.RPPA}
 \docType{class}
 \title{Class "RPPA"}
 \description{
@@ -15,7 +15,7 @@
 RPPA(file, path=".", antibody=NULL, software="microvigene")
 is.RPPA(x)
 \S4method{dim}{RPPA}(x)
-\S4method{image}{RPPA}(x, measure="Mean.Net", main=measure,
+\S4method{image}{RPPA}(x, measure="Mean.Net", main,
     colorbar=FALSE, col=terrain.colors(256), \dots)
 \S4method{summary}{RPPA}(object, \dots)
 }
@@ -68,7 +68,9 @@ is.RPPA(x)
   return a data frame containing the file's data. The method will be searched
   for in the global namespace, then within the package itself. The default
   value selects method \code{read.microvigene}, which this package provides
-  to read \emph{MicroVigene} quantification files in text format.
+  to read \emph{MicroVigene} quantification files in text format. An additional
+  method, \code{read.singlesubgrid}, is provided to convert a single subgrid
+  physical layout (in MicroVigene format) into its actual logical one.
 }
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to
@@ -122,15 +124,23 @@ is.RPPA(x)
   \code{\linkS4class{RPPADesign}}
 }
 \examples{
-path <- system.file("rppaTumorData", package="SuperCurve")
-erk2 <- RPPA("ERK2.txt", path=path)
+extdatadir <- system.file("extdata", package="SuperCurve")
+
+## Converts file from single subgrid to its logical equivalent (4x12x11x11)
+txtdir <- file.path(extdatadir, "rppaSingleSubgridData")
+waldo <- RPPA("Waldo.txt", path=txtdir, software="singlesubgrid")
+dim(waldo)
+
+txtdir <- file.path(extdatadir, "rppaTumorData")
+erk2 <- RPPA("ERK2.txt", path=txtdir)
 dim(erk2)
 summary(erk2)
 image(erk2)
 image(erk2, colorbar=TRUE)
 image(erk2, "Vol.Bkg", main="Background Estimates", colorbar=TRUE)
 }
-\keyword{hplot}
 \keyword{color}
+\keyword{classes}
 \keyword{file}
+\keyword{hplot}
 

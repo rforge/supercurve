@@ -30,7 +30,8 @@ Loading required package: quantreg
 Loading required package: splines
 > source("checkFuncs")
 > 
-> path <- system.file("rppaCellData", package="SuperCurve")
+> extdata.dir <- system.file("extdata", package="SuperCurve")
+> path <- file.path(extdata.dir, "rppaCellData")
 > 
 > checkException(RPPA("nosuch.tsv"),
 +                msg="nonexistent file should fail")

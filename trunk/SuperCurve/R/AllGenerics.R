@@ -43,6 +43,12 @@ if (!isGeneric("plot")) {
                function(x, y, ...) standardGeneric("plot"))
 }
 
+## defined for: RPPAPreFitQC, DS5RPPAPreFitQC
+if (!isGeneric("qcprob")) {
+    setGeneric("qcprob",
+               function(object, ...) standardGeneric("qcprob"))
+}
+
 ## defined for: RPPAFit
 if (!isGeneric("resid")) {
     setGeneric("resid",
@@ -55,7 +61,8 @@ if (!isGeneric("residuals")) {
                function(object, ...) standardGeneric("residuals"))
 }
 
-## defined for: RPPA, RPPADesign, RPPAFit, RPPASet, RPPASetSummary
+## defined for: RPPA, RPPADesign, RPPAFit, RPPASet, RPPASetSummary,
+##              DS5RPPAPreFitQC
 if (!isGeneric("summary")) {
     setGeneric("summary",
                function(object, ...) standardGeneric("summary"))

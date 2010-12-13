@@ -16,9 +16,11 @@ library(SuperCurve)
 library(robustbase)
 library(boot)
 
+extdata.dir <- system.file("extdata", package="SuperCurve")
+
 ######################################
 ## load the data from the 40 cell lines
-home <- system.file("rppaCellData", package="SuperCurve")
+home <- file.path(extdata.dir, "rppaCellData")
 
 ## first locate the list of assays
 ## the name 'proteins' is required

@@ -36,10 +36,12 @@ Loading required package: SparseM
 Package SparseM (0.78) loaded.  To cite, see citation("SparseM")
 Loading required package: quantreg
 Loading required package: splines
+>
+> extdata.dir <- system.file("extdata", package="SuperCurve")
 > 
 > ######################################
 > # load the tumor data
-> home <- system.file("rppaTumorData", package="SuperCurve")
+> home <- file.path(extdata.dir, "rppaTumorData")
 > 
 > # first locate the list of assays
 > # the name 'proteins' is required

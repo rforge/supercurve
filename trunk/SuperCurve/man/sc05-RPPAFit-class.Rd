@@ -22,9 +22,10 @@
 \S4method{fitted}{RPPAFit}(object, type=c("Y", "y", "X", "x"), \dots)
 \S4method{hist}{RPPAFit}(x, type=c("Residuals", "StdRes", "ResidualsR2"),
   xlab=NULL, main=NULL, \dots)
-\S4method{image}{RPPAFit}(x, measure=c("Residuals", "ResidualsR2", "StdRes", "X", "Y"), \dots)
-\S4method{plot}{RPPAFit,missing}(x, y, type=c("cloud", "series", "individual"),
-  xlab="Log Concentration", ylab="Intensity", colors=NULL, \dots)
+\S4method{image}{RPPAFit}(x, measure=c("Residuals", "ResidualsR2", "StdRes", "X", "Y"),
+  main, \dots)
+\S4method{plot}{RPPAFit,missing}(x, y, type=c("cloud", "series", "individual", "steps", "resid"),
+  col=NULL, main, xform=NULL, xlab="Log Concentration", ylab="Intensity", \dots)
 \S4method{resid}{RPPAFit}(object, type=c("raw", "standardized", "r2"),
   \dots)
 \S4method{residuals}{RPPAFit}(object, type=c("raw", "standardized", "r2"),
@@ -40,8 +41,10 @@
   \item{xlab}{graphics parameter specifying how the x-axis should be labeled}
   \item{ylab}{graphics parameter specifying how the y-axis should be labeled}
   \item{main}{character string specifying title for the plot}
+  \item{xform}{function to transform the raw data associated with the
+    \code{measure} for the plot. If \code{NULL}, no transformation occurs.}
   \item{y}{not used}
-  \item{colors}{graphics parameter, used only if \code{type='series'},
+  \item{col}{graphics parameter, used only if \code{type='series'},
     to color the lines connecting different dilution series.
     Eight default colors are used if the argument is \code{NULL}.}
   \item{\dots}{extra arguments for generic or plotting routines}
@@ -171,29 +174,30 @@
   \code{\link[graphics]{hist}}
 }
 \examples{
-path <- system.file("rppaTumorData", package="SuperCurve")
-erk2 <- RPPA("ERK2.txt", path=path)
+extdatadir <- system.file("extdata", package="SuperCurve")
+
+txtdir <- file.path(extdatadir, "rppaTumorData")
+erk2 <- RPPA("ERK2.txt", path=txtdir)
 design <- RPPADesign(erk2,
                      grouping="blockSample",
                      controls=list("neg con", "pos con"))
-fit.nls <- RPPAFit(erk2, design, "Mean.Net")
+erk2.fit <- RPPAFit(erk2, design, "Mean.Net")
 showMethods('image')
-class(fit.nls)
+class(erk2.fit)
 
-image(fit.nls)
-image(fit.nls, measure="Residuals")
-plot(fit.nls, type="cloud")
+image(erk2.fit)
+image(erk2.fit, measure="Residuals")
+plot(erk2.fit, type="cloud")
+coef(erk2.fit)
 
-## :TBD: Why recreate exact same fit as above?
-fit.q <- RPPAFit(erk2, design, "Mean.Net")
-hist(fit.q, type="StdRes")
-plot(fit.q, type="series")
-
-coef(fit.nls)
-coef(fit.q)
-
-plot(fitted(fit.q), resid(fit.q))
+jnk <- RPPA("JNK.txt", path=txtdir)
+jnk.fit <- RPPAFit(jnk, design, "Mean.Net")
+hist(jnk.fit, type="StdRes")
+plot(jnk.fit, type="series")
+coef(jnk.fit)
+plot(fitted(jnk.fit), resid(jnk.fit))
 }
+\keyword{classes}
 \keyword{regression}
 \keyword{robust}
 

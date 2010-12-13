@@ -9,23 +9,23 @@ setClass("FitClass",
 
 ##=============================================================================
 setClass("LogisticFitClass",
-         representation("FitClass",
-                        coefficients="numeric"),
+         contains="FitClass",
+         representation(coefficients="numeric"),
          prototype=prototype(coefficients=c(alpha=0, beta=0, gamma=0)))
 
 ##=============================================================================
 setOldClass("cobs")
 setClass("CobsFitClass",
-         representation("FitClass",
-                        model="cobs",
+         contains="FitClass",
+         representation(model="cobs",
                         lambda="numeric"),
          prototype=prototype(lambda=0))
 
 ##=============================================================================
 setOldClass("loess")
 setClass("LoessFitClass",
-         representation("FitClass",
-                        model="loess"))
+         contains="FitClass",
+         representation(model="loess"))
 
 
 ##-----------------------------------------------------------------------------
@@ -50,7 +50,7 @@ is.FitClass <- function(x) {
 ## Outputs
 ## est.conc = estimated concentration for dilution = 0
 ##
-setMethod("fitSeries", "FitClass",
+setMethod("fitSeries", signature(object="FitClass"),
           function(object,
                    diln,
                    intensity,
@@ -68,7 +68,7 @@ setMethod("fitSeries", "FitClass",
 ##-----------------------------------------------------------------------------
 ## Use the conc and intensity series for an entire slide to
 ## fit a curve for the slide of intensity = f(conc)
-setMethod("fitSlide", "FitClass",
+setMethod("fitSlide", signature(object="FitClass"),
           function(object,
                    conc,
                    intensity,
@@ -81,7 +81,7 @@ setMethod("fitSlide", "FitClass",
 
 ##-----------------------------------------------------------------------------
 ## Returns concentration and intensity cutoffs for the model
-setMethod("trimConc", "FitClass",
+setMethod("trimConc", signature(object="FitClass"),
           function(object,
                    conc,
                    intensity,
@@ -97,7 +97,7 @@ setMethod("trimConc", "FitClass",
 ##-----------------------------------------------------------------------------
 ## Extracts model coefficients from objects returned by modeling functions.
 ## N.B.: Should be overridden by classes that have coefficients!
-setMethod("coef", "FitClass",
+setMethod("coef", signature(object="FitClass"),
           function(object,
                    ...) {
     NULL
@@ -182,7 +182,7 @@ setMethod("coef", "FitClass",
                },
                silent=silent)
 
-    if (is(tmp, "try-error")) {
+    if (inherits(tmp, "try-error")) {
         warn <- "unavoidable nls/rlm error"
         ## :TBD: Should 'est.conc' be set to something different on error?
         resids <- 0
@@ -294,7 +294,7 @@ setMethod("coef", "FitClass",
 ##
 
 ##-----------------------------------------------------------------------------
-setMethod("fitSlide", "LoessFitClass",
+setMethod("fitSlide", signature(object="LoessFitClass"),
           function(object,
                    conc,
                    intensity,
@@ -308,7 +308,7 @@ setMethod("fitSlide", "LoessFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitted", "LoessFitClass",
+setMethod("fitted", signature(object="LoessFitClass"),
           function(object,
                    conc,
                    ...) {
@@ -329,7 +329,7 @@ setMethod("fitted", "LoessFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitSeries", "LoessFitClass",
+setMethod("fitSeries", signature(object="LoessFitClass"),
           function(object,
                    diln,
                    intensity,
@@ -344,7 +344,7 @@ setMethod("fitSeries", "LoessFitClass",
 
 ##-----------------------------------------------------------------------------
 ## Trim level default based on trying various cutoff levels on multiple slides.
-setMethod("trimConc", "LoessFitClass",
+setMethod("trimConc", signature(object="LoessFitClass"),
           function(object,
                    conc,
                    intensity,
@@ -360,7 +360,7 @@ setMethod("trimConc", "LoessFitClass",
 ##
 
 ##-----------------------------------------------------------------------------
-setMethod("fitSlide", "CobsFitClass",
+setMethod("fitSlide", signature(object="CobsFitClass"),
           function(object,
                    conc,
                    intensity,
@@ -416,7 +416,7 @@ setMethod("fitSlide", "CobsFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitted", "CobsFitClass",
+setMethod("fitted", signature(object="CobsFitClass"),
           function(object,
                    conc,
                    ...) {
@@ -473,7 +473,7 @@ setMethod("fitted", "CobsFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitSeries", "CobsFitClass",
+setMethod("fitSeries", signature(object="CobsFitClass"),
           function(object,
                    diln,
                    intensity,
@@ -488,7 +488,7 @@ setMethod("fitSeries", "CobsFitClass",
 
 ##-----------------------------------------------------------------------------
 ## Trim level default based on trying various cutoff levels on multiple slides.
-setMethod("trimConc", "CobsFitClass",
+setMethod("trimConc", signature(object="CobsFitClass"),
           function(object,
                    conc,
                    intensity,
@@ -528,7 +528,7 @@ setMethod("trimConc", "CobsFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitSlide", "LogisticFitClass",
+setMethod("fitSlide", signature(object="LogisticFitClass"),
           function(object,
                    conc,
                    intensity,
@@ -548,7 +548,7 @@ setMethod("fitSlide", "LogisticFitClass",
                                     gamma=cf$gamma),
                          control=nls.control(maxiter=100),
                          na.action="na.omit"))
-    if (is(nls.model, "try-error")) {
+    if (inherits(nls.model, "try-error")) {
         warning("unable to perform first pass overall slide fit. trying quantiles.")
         ## Crude (but robust) way to get alpha and beta
         cf <- .coef.quantile.est(intensity)
@@ -567,7 +567,7 @@ setMethod("fitSlide", "LogisticFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitted", "LogisticFitClass",
+setMethod("fitted", signature(object="LogisticFitClass"),
           function(object,
                    conc,
                    ...) {
@@ -577,7 +577,7 @@ setMethod("fitted", "LogisticFitClass",
 
 
 ##-----------------------------------------------------------------------------
-setMethod("fitSeries", "LogisticFitClass",
+setMethod("fitSeries", signature(object="LogisticFitClass"),
           function(object,
                    diln,
                    intensity,
@@ -592,7 +592,7 @@ setMethod("fitSeries", "LogisticFitClass",
 
 ##-----------------------------------------------------------------------------
 ## Trim level default based on trying various cutoff levels on multiple slides.
-setMethod("trimConc", "LogisticFitClass",
+setMethod("trimConc", signature(object="LogisticFitClass"),
           function(object,
                    conc,
                    intensity,
@@ -656,7 +656,7 @@ setMethod("trimConc", "LogisticFitClass",
 
 ##-----------------------------------------------------------------------------
 ## Extracts model coefficients from LogisticFitClass.
-setMethod("coef", "LogisticFitClass",
+setMethod("coef", signature(object="LogisticFitClass"),
           function(object,
                    ...) {
     object@coefficients

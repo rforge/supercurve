@@ -1,5 +1,7 @@
 \name{spatialCorrection}
 \alias{spatialCorrection}
+\alias{spatialAdjustment}
+\alias{spatialAdjustmentFromParams}
 \title{Spatial Correction}
 \description{
   This function estimates a smoothed surface from positive control spots on
@@ -8,6 +10,15 @@
   It is used before \code{RPPAFit}, one slide at a time.
 }
 \usage{
+spatialAdjustmentFromParams(rppa,
+                            design,
+                            spatialparams)
+spatialAdjustment(rppa,
+                  design,
+                  cutoff=0.8,
+                  k=100,
+                  gamma=0.1,
+                  plotSurface=FALSE)
 spatialCorrection(rppa,
                   design,
                   measure=c("Mean.Net", "Mean.Total"),
@@ -19,13 +30,15 @@ spatialCorrection(rppa,
 \arguments{
   \item{rppa}{object of class \code{RPPA}}
   \item{design}{object of class \code{RPPADesign}}
+  \item{spatialparams}{object of class \code{RPPASpatialParams} containing
+    parameters used to perform spatial adjustment}
   \item{measure}{character string specifying fit measure to smooth}
   \item{cutoff}{numeric scalar used to identify the background cutoff
     with value in range [0..1]}
   \item{k}{numeric scalar used as smoothing model argument.}
   \item{gamma}{numeric scalar used as model parameter with value in
    range [0..2]}
-  \item{plotSurface}{logical scalar specifying whether to plot surfaces}
+  \item{plotSurface}{logical scalar. If \code{TRUE}, plot surfaces.}
 }
 \details{
   The observed spot intensities are assumed to be a combination of true
@@ -71,39 +84,36 @@ spatialCorrection(rppa,
 }
 \value{
   Returns modified \code{rppa} with an additional measurement column
-  named \code{Spatial.Adj}.
+  named after the \code{measure} with an \code{Adj.} prefix. For example,
+  if the measure was \code{Mean.Net}, the name of the adjusted column
+  would be \code{Adj.Mean.Net}.
 }
 \references{
-  % TBD reference Shannon's paper here.
-  "Spatial Corrections for Reverse Phase Protein Arrays" (in progress).
+  Neeley ES. "Spatial Corrections for Reverse Phase Protein Arrays"
+  (in progress).
 }
 \author{
   P. Roebuck \email{plroebuck@mdanderson.org},
   E. Shannon Neeley \email{sneeley@stat.byu.edu}
 }
-\note{
-  This code may not yet work with slides containing more than one
-  positive control series. Currently untested.
-}
 \seealso{
+  \code{\linkS4class{RPPASpatialParams}},
   \code{\link[stats]{quantile}},
   \code{\link[mgcv]{gam}},
   \code{\link[mgcv]{s}},
   \code{\link[mgcv]{choose.k}}
 }
 \examples{
-  \dontrun{
-## :TODO: Need to be able to run this with included data...
-path <- system.file("rppaTumorData", package="SuperCurve")
-erk2 <- RPPA("ERK2.txt", path=path)
-designparams <- RPPADesignParams(grouping="blockSample",
-                                 controls=list("neg con", "pos con"))
-design <- RPPADesignFromParams(erk2, designparams)
+extdatadir <- system.file("extdata", package="SuperCurve")
 
-erk2.sc <- spatialCorrection(rppa,
-                             design,
-                             measure="Mean.Net")
-  }
+txtdir <- file.path(extdatadir, "rppaSingleSubgridData")
+designfile <- file.path(txtdir, "slidedesign.tsv")
+rppa <- RPPA("Waldo.txt", path=txtdir, software="singlesubgrid")
+designparams <- RPPADesignParams(grouping="blockSample",
+                                 designfile=designfile)
+design <- RPPADesignFromParams(rppa, designparams)
+rppa.adj <- spatialAdjustment(rppa, design)
+colnames(rppa.adj)
 }
 \keyword{smooth}
 

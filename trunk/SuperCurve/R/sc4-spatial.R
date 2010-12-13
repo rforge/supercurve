@@ -3,6 +3,128 @@
 ###
 
 
+##=============================================================================
+setClass("RPPASpatialParams",
+         representation(cutoff="numeric",
+                        k="numeric",
+                        gamma="numeric",
+                        plotSurface="logical"))
+
+
+##-----------------------------------------------------------------------------
+is.RPPASpatialParams <- function(x) {
+    is(x, "RPPASpatialParams")
+}
+
+
+##-----------------------------------------------------------------------------
+RPPASpatialParams <- function(cutoff=0.8,
+                              k=100,
+                              gamma=0.1,
+                              plotSurface=FALSE) {
+    ## Check arguments
+    stopifnot(is.numeric(cutoff) && length(cutoff) == 1)
+    stopifnot(is.numeric(k) && length(k) == 1)
+    stopifnot(is.numeric(gamma) && length(gamma) == 1)
+    stopifnot(is.logical(plotSurface) && length(plotSurface) == 1)
+
+    ## Create new class
+    new("RPPASpatialParams",
+        cutoff=cutoff,
+        k=k,
+        gamma=gamma,
+        plotSurface=plotSurface)
+}
+
+
+##-----------------------------------------------------------------------------
+## Invoked by validObject() method.
+validSpatialParams <- function(object) {
+
+    #cat("validating", class(object), "object", "\n")
+    msg <- NULL
+
+    ## Validate cutoff slot
+    {
+        cutoff <- object@cutoff
+        min.cutoff <- 0
+        max.cutoff <- 1
+
+        if (!(cutoff >= min.cutoff && cutoff <= max.cutoff)) {
+            msg <- c(msg, sprintf("cutoff must be in interval [%d, %d]",
+                                  min.cutoff, max.cutoff))
+        }
+    }
+
+    ## Validate k slot
+    {
+        k <- object@k                   # [passed directly to mgcv::s()]
+        min.k <- 2.0
+
+        ## Ensure k value acceptable [passed directly to mgcv::s()] 
+        if (!(is.finite(k))) {
+            msg <- c(msg, "k must be finite")
+        } else if (!(k >= min.k)) {
+            msg <- c(msg, sprintf("k must be greater than or equal %d",
+                                  min.k))
+        }
+    }
+
+    ## Validate gamma slot
+    {
+        gamma <- object@gamma           # [passed directly to mgcv::gam()]
+        min.gamma <- 0
+        max.gamma <- 2
+
+        if (!(is.finite(gamma))) {
+            msg <- c(msg, "gamma must be finite")
+        } else if (!(gamma >= min.gamma && gamma <= max.gamma)) {
+            msg <- c(msg, sprintf("gamma must be in interval [%d, %d]",
+                                  min.gamma, max.gamma))
+        }
+    }
+
+    ## Validate plotSurface slot
+    if (!is.logical(object@plotSurface)) {
+        msg <- c(msg, "plotSurface must be logical")
+    }
+
+    ## Pass or fail?
+    if (is.null(msg)) {
+        TRUE
+    } else {
+        msg
+    }
+}
+
+setValidity("RPPASpatialParams", validSpatialParams)
+
+
+##-----------------------------------------------------------------------------
+## Returns a string representation of this instance. The content and format of
+## the returned string may vary between versions. Returned string may be
+## empty, but never null.
+setMethod("paramString", signature(object="RPPASpatialParams"),
+          function(object,
+                   slots=slotNames(object),
+                   ...) {
+    ## Check arguments
+    stopifnot(is.character(slots) && length(slots) >= 1)
+
+    ## :TODO: Implementation currently ignores the 'slots' argument
+    ## and returns string containing parameters from various slots.
+    ## as though:
+    ##     slotsToDisplay <- c("cutoff", "k", "gamma", "plotSurface")
+    ##     paramString(sp, slotsToDisplay)
+    ##
+    paste(paste("cutoff:", object@cutoff), "\n",
+          paste("k:", object@k), "\n",
+          paste("gamma:", object@gamma), "\n",
+          paste("plotSurface:", object@plotSurface), "\n",
+          sep="")
+})
+
+
 ##-----------------------------------------------------------------------------
 ## Computes the background cutoff of a slide.
 .computeBackgroundCutoff <- function(mydata,
@@ -55,11 +177,6 @@ spatialCorrection <- function(rppa,
     if (!is.RPPA(rppa)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppa"), "RPPA"))
-    } else if ("Spatial.Adj" %in% colnames(rppa@data)) {
-        ## Don't allow doing this again as the merge will screw up...
-        warning(sprintf("argument %s has already been spatially corrected",
-                        sQuote("rppa")))
-        return(rppa)
     }
 
     if (!is.RPPADesign(design)) {
@@ -94,6 +211,18 @@ spatialCorrection <- function(rppa,
     }
 
     measure <- match.arg(measure)
+    if (!(measure %in% colnames(rppa@data))) {
+        stop(sprintf("argument %s missing column for measure %s",
+                     sQuote("rppa"), sQuote(measure)))
+    }
+
+    adjMeasure <- paste("Adj", measure, sep=".")
+    if (adjMeasure %in% colnames(rppa@data)) {
+        ## Don't allow doing this again as the merge will screw up...
+        warning(sprintf("argument %s has already been spatially corrected for measure %s",
+                        sQuote("rppa"), sQuote(measure)))
+        return(rppa)
+    }
 
     if (!is.numeric(cutoff)) {
         stop(sprintf("argument %s must be numeric",
@@ -142,7 +271,7 @@ spatialCorrection <- function(rppa,
     if (!require(mgcv)) {
         stop(sprintf("%s package required for fitting the GAM in the %s method",
                      sQuote("mgcv"),
-                     sQuote("spatialNorm")))
+                     sQuote("spatialCorrection")))
     }
 
     ## Set up the row and column variables
@@ -154,8 +283,7 @@ spatialCorrection <- function(rppa,
     pd <- data.frame(Row=mydata$Row, Col=mydata$Col)
 
     ## Borrow SpotType and Dilution information from design
-    layout <- design@layout
-    mydata <- merge(mydata, layout, by=c(.locationColnames(), "Sample"))
+    mydata <- .mergeDataWithLayout(mydata, design)
 
     ## Compute background cutoff
     bgCut <- .computeBackgroundCutoff(mydata, measure, cutoff)
@@ -205,15 +333,17 @@ spatialCorrection <- function(rppa,
 
     ## Plot the different surfaces
     if (plotSurface) {
+        imageRPPA <- getMethod("image", class(rppa))
         temprppa <- rppa
         par(ask=TRUE)
         for (surface in surfaces) {
+            main <- .mkPlotTitle(measure,
+                                 sprintf("%s [%s]", rppa@antibody, surface))
             temprppa@data[, surface] <- eval(as.name(surface))
-            image(temprppa,
-                  colorbar=TRUE,
-                  measure=surface,
-                  xlab="",
-                  ylab="")
+            imageRPPA(temprppa,
+                      colorbar=TRUE,
+                      measure=surface,
+                      main=main)
         }
         par(ask=FALSE)
     }
@@ -371,8 +501,74 @@ spatialCorrection <- function(rppa,
                       as.numeric(scaleBySurface(x, surfaces[1]))
                   }
 
-    rppa@data$Spatial.Adj <- adjustment
+    rppa@data[[adjMeasure]] <- adjustment
 
     return(rppa)
+}
+
+
+##-----------------------------------------------------------------------------
+spatialAdjustment <- function(rppa,
+                              design,
+                              cutoff=0.8,
+                              k=100,
+                              gamma=0.1,
+                              plotSurface=FALSE) {
+    ## Check arguments
+    if (!is.RPPA(rppa)) {
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("rppa"), "RPPA"))
+    }
+
+    ## Begin processing
+    measures <- eval(formals(spatialCorrection)$measure)
+    tf.measures <- measures %in% colnames(rppa@data)
+
+    if (all(!tf.measures)) {
+        message("cannot perform spatial adjustment")
+        stop(sprintf("argument %s missing all measure columns: %s",
+                     sQuote("rppa"), paste(measures, collapse=", ")))
+    }
+
+    for (i in seq_along(measures)) {
+        measure <- measures[i]
+
+        if (tf.measures[i]) {
+            rppa <- spatialCorrection(rppa,
+                                      design,
+                                      measure=measure,
+                                      cutoff=cutoff,
+                                      k=k,
+                                      gamma=gamma,
+                                      plotSurface=plotSurface)
+        } else {
+            message(sprintf("cannot perform spatial adjustment for measure %s",
+                            sQuote(measure)))
+            warning(sprintf("argument %s missing measure column: %s",
+                            sQuote("rppa"), measure))
+        }
+    }
+
+    return(rppa)
+}
+
+
+##-----------------------------------------------------------------------------
+spatialAdjustmentFromParams <- function(rppa,
+                                        design,
+                                        spatialparams) {
+    ## Check arguments
+    if (!is.RPPASpatialParams(spatialparams)) {
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("spatialparams"), "RPPASpatialParams"))
+    }
+
+    ## Begin processing
+    spatialAdjustment(rppa,
+                      design,
+                      cutoff=spatialparams@cutoff,
+                      k=spatialparams@k,
+                      gamma=spatialparams@gamma,
+                      plotSurface=spatialparams@plotSurface)
 }
 

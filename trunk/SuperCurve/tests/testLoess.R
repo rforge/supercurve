@@ -15,9 +15,11 @@ options(warn=1)
 library(SuperCurve)
 library(robustbase)
 
+extdata.dir <- system.file("extdata", package="SuperCurve")
+
 ######################################
 ## load the tumor data
-home <- system.file("rppaTripleData", package="SuperCurve")
+home <- file.path(extdata.dir, "rppaTripleData")
 
 ## first locate the list of assays
 ## the name 'proteins' is required

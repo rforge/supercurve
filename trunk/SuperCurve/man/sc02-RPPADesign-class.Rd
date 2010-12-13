@@ -4,16 +4,16 @@
 \alias{RPPADesign}
 \alias{RPPADesignFromParams}
 \alias{RPPADesignParams}
+\alias{getSteps}
+\alias{is.RPPADesign}
+\alias{is.RPPADesignParams}
+\alias{seriesNames}
 \alias{dim,RPPADesign-method}
 \alias{image,RPPADesign-method}
 \alias{names,RPPADesign-method}
 \alias{paramString,RPPADesignParams-method}
 \alias{plot,RPPA,RPPADesign-method}
 \alias{summary,RPPADesign-method}
-\alias{getSteps}
-\alias{is.RPPADesign}
-\alias{is.RPPADesignParams}
-\alias{seriesNames}
 \docType{class}
 \title{Class "RPPADesign" and Class "RPPADesignParams"}
 \description{
@@ -53,10 +53,10 @@ is.RPPADesign(x)
 is.RPPADesignParams(x)
 seriesNames(design)
 \S4method{dim}{RPPADesign}(x)
-\S4method{image}{RPPADesign}(x, \dots)
+\S4method{image}{RPPADesign}(x, main, \dots)
 \S4method{names}{RPPADesign}(x)
-\S4method{paramString}{RPPADesignParams}(object, ...)
-\S4method{plot}{RPPA,RPPADesign}(x, y, ...)
+\S4method{paramString}{RPPADesignParams}(object, slots, \dots)
+\S4method{plot}{RPPA,RPPADesign}(x, y, measure, main, \dots)
 \S4method{summary}{RPPADesign}(object, \dots)
 }
 \arguments{
@@ -90,8 +90,8 @@ seriesNames(design)
     biologically relevant descriptors to the dilution series with the
     following required named components:
     \tabular{ll}{
-      \code{Alias}  \tab TBD description \cr
-      \code{Sample} \tab TBD description \cr
+      \code{Alias}  \tab Label to use in lieu of sample name \cr
+      \code{Sample} \tab Sample name to match \cr
     }}
   \item{aliasfile}{optional character string specifying filename. Data
     would be read by \code{read.delim} and expected format is as described
@@ -112,6 +112,10 @@ seriesNames(design)
   \item{object}{object of class \code{RPPADesign} (or \code{RPPADesignParams}
     in \code{paramString} method)}
   \item{design}{object of class \code{RPPADesign}}
+  \item{slots}{strings specifying \code{RPPADesignParams} slotnames to display
+    (for debuggging)}
+  \item{main}{overall title for plot}
+  \item{measure}{character string specifying measure to plot}
   \item{\dots}{extra arguments for generic or plotting routines.}
 }
 \details{
@@ -251,8 +255,10 @@ seriesNames(design)
   \code{\linkS4class{RPPA}}
 }
 \examples{
-path <- system.file("rppaTumorData", package="SuperCurve")
-erk2 <- RPPA("ERK2.txt", path=path)
+extdatadir <- system.file("extdata", package="SuperCurve")
+
+txtdir <- file.path(extdatadir, "rppaTumorData")
+erk2 <- RPPA("ERK2.txt", path=txtdir)
 design <- RPPADesign(erk2, grouping="blockSample", center=TRUE)
 dim(design)
 image(design)
@@ -266,8 +272,8 @@ summary(design)
 
 plot(erk2, design)
 
-path <- system.file("rppaCellData", package="SuperCurve")
-akt <- RPPA("Akt.txt", path=path)
+txtdir <- file.path(extdatadir, "rppaCellData")
+akt <- RPPA("Akt.txt", path=txtdir)
 ## Uses duplicate 8-step dilution series within 4x4 subgrids.
 ## They are interleaved, with top two identical rows containing the first
 ## 4 steps and the bottom two identical rows containing the last 4 steps.
@@ -281,5 +287,6 @@ dim(design40)
 image(design40)
 summary(design40)
 }
+\keyword{classes}
 \keyword{regression}
 

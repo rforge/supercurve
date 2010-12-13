@@ -63,8 +63,9 @@ is.FitClass(x)
 \author{
   P. Roebuck \email{plroebuck@mdanderson.org}
 }
+\keyword{classes}
 \keyword{models}
-\keyword{regression}
 \keyword{nonlinear}
+\keyword{regression}
 \keyword{robust}
 

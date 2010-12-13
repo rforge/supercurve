@@ -181,7 +181,7 @@ RPPAFitParams <- function(measure,
 ## Returns a string representation of this instance. The content and format of
 ## the returned string may vary between versions. Returned string may be
 ## empty, but never null.
-setMethod("paramString", "RPPAFitParams",
+setMethod("paramString", signature(object="RPPAFitParams"),
           function(object,
                    slots=slotNames(object),
                    ...) {
@@ -380,7 +380,8 @@ registerModel <- function(key,
 ##-----------------------------------------------------------------------------
 RPPAFitFromParams <- function(rppa,
                               design,
-                              fitparams) {
+                              fitparams,
+                              progmethod=NULL) {
     ## Check arguments
     if (!is.RPPA(rppa)) {
         stop(sprintf("argument %s must be object of class %s",
@@ -395,6 +396,16 @@ RPPAFitFromParams <- function(rppa,
     if (!is.RPPAFitParams(fitparams)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("fitparams"), "RPPAFitParams"))
+    }
+
+    if (!is.null(progmethod)) {
+        if (!is.function(progmethod)) {
+            stop(sprintf("argument %s must be function, if specified",
+                         sQuote("progmethod")))
+        }
+    } else {
+        ## Create a placeholder function
+        progmethod <- function(phase) {}
     }
 
     ## :WORKAROUND: codetools (via R CMD check) complains unnecessarily about
@@ -448,6 +459,7 @@ RPPAFitFromParams <- function(rppa,
     silent <- warnLevel < 0
 
     ## Perform the first pass to initialize the estimates
+    progmethod("firstpass")
     first <- .firstPass(intensity, design, ignoreNegative)
     passer    <- first$passer
     gamma.est <- first$gamma
@@ -471,29 +483,40 @@ RPPAFitFromParams <- function(rppa,
 
     ## Do a two pass estimation, first using rough conc. estimates,
     ## then using better ones
+    steps <- getSteps(design)
+    series <- seriesNames(design)
     for (pass in seq_len(2)) {
+        pass.name <- if (pass == 1) "coarse" else "fine"
         xval <- if (pass == 1) {
-                    getSteps(design) + passer[names(design)]
+                    steps + passer[names(design)]
                 } else {
-                    getSteps(design) + pass2[names(design)]
+                    steps + pass2[names(design)]
                 }
 
         ## Fit a response curve for the slide of the form yval = f(xval)
-        fc <- fitSlide(fc, conc=xval, intensity=yval, method=method)
+        progmethod(sprintf("%s fit slide", pass.name))
+        fc <- fitSlide(fc,
+                       conc=xval,
+                       intensity=yval,
+                       method=method)
 
         ## Conditional on the response curve fit for the slide
         ## Perform a separate fit of EC50 values for each dilution series.
-        steps <- getSteps(design)
-        series <- seriesNames(design)
         pass2 <- rep(NA, length(series))
-
         names(pass2) <- series
+
         ss.ratio <- pass2
         warn2  <- rep("", length(series))
         names(warn2) <- series
+        series.len <- length(series)
+        i.this <- as.integer(1)
         for (this in series) {
             items <- names(design) == this
 
+            progmethod(sprintf("%s fit series (%d/%d)",
+                               pass.name,
+                               i.this,
+                               series.len))
             fs <- fitSeries(fc,
                             diln=steps[items],
                             intensity=yval[items],
@@ -503,12 +526,15 @@ RPPAFitFromParams <- function(rppa,
                             trace=trace)
             pass2[this] <- fs$est.conc
             warn2[this] <- fs$warn
+            ## Compute R^2 as sum(r[i]^2) / sum((y[i]-mean(y))^2),
+            ## the fraction of variance explained for this series
             resids <- fs$resids
-            ## Compute R^2 as sum(r[i]^2) / sum((y[i]-mean(y))^2) = fraction of
-            ## variance explained for this series
-            ratio <- 1 - (sum(resids*resids) /
-                            (var(yval[items])*(length(yval[items])-1)))
-            ss.ratio[this] <- ratio
+            sse <- sum(resids*resids)
+            sst <- var(yval[items]) * (length(yval[items])-1)
+            rsquared <- 1 - sse/sst
+            ss.ratio[this] <- rsquared
+
+            i.this <- i.this + as.integer(1)
         }
 
         if (verbose) {
@@ -547,6 +573,7 @@ RPPAFitFromParams <- function(rppa,
             flush.console()
         }
 
+        progmethod("trim")
         tc <- trimConc(fc,
                        conc=fitted(result, "X"),
                        intensity=intensity,
@@ -583,7 +610,8 @@ RPPAFitFromParams <- function(rppa,
             cat("Computing confidence intervals...", "\n")
             flush.console()
         }
-        result <- getConfidenceInterval(result)
+        result <- getConfidenceInterval(result,
+                                        progmethod=progmethod)
     }
 
     result
@@ -592,7 +620,7 @@ RPPAFitFromParams <- function(rppa,
 
 ##-----------------------------------------------------------------------------
 ## Extracts model coefficients from objects returned by modeling functions.
-setMethod("coef", "RPPAFit",
+setMethod("coef", signature(object="RPPAFit"),
           function(object,
                    ...) {
     callGeneric(object@model)
