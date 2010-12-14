@@ -3,6 +3,7 @@
 ###
 
 require(tcltk) || stop("tcltk support is missing")
+library(tclish)
 
 tclpackage.require("Tcl", "8.4")               # Requires Tcl 8.4 or later
 
@@ -1573,6 +1574,7 @@ posCtrlSeriesHighStepCB <- function() {
     ## Verify series is completely specified before adding any more.
     proceed <- function() {
         .appDebugStr("**checking**")
+
         currpc <- getenv("currpc")
         pcseries <- getenv("pcseries")
 
@@ -1926,9 +1928,10 @@ finalStepCB <- function() {
                                      justify="left",
                                      text=labelstring),
            pady="8m")
+    labelstring <- "Convert to single main row/col layout"
     tkpack(layout.checkbox <- tkcheckbutton(command.area,
                                             justify="left",
-                                            text="Convert to single main row/col layout",
+                                            text=labelstring,
                                             variable=getenv("idiot.layout")),
            pady="8m")
 
@@ -2515,7 +2518,7 @@ createGrid <- function(subgrid.df) {
                    ans
                })
     }
-    
+
     ## Determine subgrid maximums
     max.subgridnum.sample  <- max(getSubgridNum(subgrid.df, "Sample"))
     max.subgridnum.posctrl <- max(getSubgridNum(subgrid.df, "PosCtrl"))
@@ -2562,7 +2565,7 @@ createGrid <- function(subgrid.df) {
                                         tmp.df$GridNum)
             tmp.df$SubgridNum <- NULL  # Remove afterwards
             tmp.df$GridNum    <- NULL  # Remove afterwards
-            
+
             ## Update grid offsets
             off.sample  <- as.integer(off.sample  + max.subgridnum.sample)
             off.posctrl <- as.integer(off.posctrl + max.subgridnum.posctrl)
@@ -2982,8 +2985,21 @@ appExit <- function() {
 ##-----------------------------------------------------------------------------
 ## This is the only user-visible function in the file. You call this
 ## function to start the application.
-slideDesignerGUI <- function() {
+slidedesignerGUI <- function() {
+    ## Set WM_CLIENT_MACHINE property on root window
+    tkwm.client('.', tclinfo.hostname())
+
+    ## Create named font for later use
+    availableFonts <- unlist(strsplit(tclvalue(tkfont.names()), " "))
     bannerFont <- "banner"
+    if (!(bannerFont %in% availableFonts)) {
+        #.appDebugStr(sprintf("creating %s font", sQuote(bannerFont)))
+        tkfont.create(bannerFont,
+                      family="helvetica",
+                      size=18,
+                      weight="bold")
+        on.exit(tkfont.delete(bannerFont))
+    }
 
     ## Add entries to Tk option database
     local({
@@ -3009,22 +3025,10 @@ slideDesignerGUI <- function() {
                          "*Entry.selectBackground"="yellow",
                          "*Entry.selectForeground"="black",
                          "*SpotFrame.Button.background"=unmarked))
-    })
 
-    ## Create named font for later use
-    if (!(bannerFont %in% unlist(strsplit(tclvalue(tkfont.names()), " ")))) {
-        .appDebugStr(sprintf("creating %s font", sQuote(bannerFont)))
-        tkfont.create(bannerFont,
-                      family="helvetica",
-                      size=18,
-                      weight="bold")
-        on.exit({
-            .appDebugStr(sprintf("destroying %s font", sQuote(bannerFont)))
-            tkfont.delete(bannerFont)
-        })
-    } else {
-        .appDebugStr(sprintf("%s font already exists", sQuote(bannerFont)))
-    }
+        ## Handle app-defaults file(s), if any exist
+        tkloadappdefaults(appdefaultsfile <- "slideDesignerGUI")
+    })
 
     ## Create toplevel shell and pair of frames as its children
     toplevel <- tktoplevel()
@@ -3250,5 +3254,5 @@ slideDesignerGUI <- function() {
     tkwait.window(toplevel)
 }
 
-sdui <- slideDesignerGUI
+sdui <- slidedesignerGUI
 

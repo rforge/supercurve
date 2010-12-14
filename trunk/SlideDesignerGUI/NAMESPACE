@@ -3,6 +3,6 @@
 ###
 
 ## Public methods
-export(slideDesignerGUI)
+export(slidedesignerGUI)
 export(sdui)
 
