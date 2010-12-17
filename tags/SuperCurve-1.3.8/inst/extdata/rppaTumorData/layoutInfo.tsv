@@ -1,0 +1,99 @@
+Alias	Sample
+231-igf	sample 43
+231-nc	sample 19
+3CP7	sample 42
+468-egf	sample 39
+468-nc	sample 15
+a-v-0m	sample 49
+a-v-12h	sample 55
+a-v-1h	sample 61
+a-v-24h	sample 59
+a-v-30m	sample 57
+a-v-3h	sample 65
+a-v-5m	sample 53
+a-v-9h	sample 51
+a-w-0m	sample 25
+a-w-12h	sample 31
+a-w-1h	sample 37
+a-w-24h	sample 35
+a-w-30m	sample 33
+a-w-3h	sample 41
+a-w-5m	sample 29
+a-w-6h	sample 45
+a-w-9h	sample 27
+BxPC3 1:4	sample 92
+con-0m	sample 1
+con-12h	sample 7
+con-1h	sample 13
+con-24h	sample 11
+con-30m	sample 9
+con-3h	sample 17
+con-5m	sample 5
+con-6h	sample 21
+con-9h	sample 3
+CP1 1:10	sample 63
+CP1 1:100	sample 85
+CP1 1:40	sample 77
+CP2 1:10	sample 36
+CP2 1:100	sample 67
+CP2 1:40	sample 71
+CP3 1:10	sample 90
+CP3 1:100	sample 40
+CP3 1:40	sample 86
+CP3-D 1:1	sample 16
+CP3-D 1:40	sample 34
+CS1 1:10	sample 91
+CS1 1:100	sample 20
+CS1 1:40	sample 32
+CS2 1:10	sample 70
+CS2 1:100	sample 10
+CS2 1:40	sample 64
+CS3 1:10	sample 84
+CS3 1:100	sample 88
+CS3 1:40	sample 74
+CS3-D 1:10	sample 22
+CS3-D 1:5	sample 44
+HDPE	sample 79
+jur-fas	sample 47
+jur-nc	sample 23
+NP1 1:10	sample 58
+NP1 1:100	sample 68
+NP1 1:40	sample 52
+NP1-D 1:10	sample 69
+NP1-D 1:10	sample 93
+NP1-D 1:5	sample 18
+NP2 1:10	sample 54
+NP2 1:100	sample 2
+NP2 1:40	sample 56
+NP3 1:10	sample 50
+NP3 1:100	sample 72
+NP3 1:40	sample 66
+NS1 1:10	sample 38
+NS1 1:100	sample 95
+NS1 1:40	sample 87
+NS1-D 1:10	sample 89
+NS1-D 1:5	sample 4
+NS2 1:10	sample 83
+NS2 1:100	sample 46
+NS2 1:40	sample 28
+NS3 1:10	sample 73
+NS3 1:100	sample 26
+NS3 1:40	sample 81
+PJ1 1:1	sample 75
+PJ1 1:5	sample 30
+PJ2 1:1	sample 8
+PJ2 1:5	sample 12
+PJ3 1:10	sample 96
+PJ3 1:40	sample 24
+PJ3 1:5	sample 80
+Prot A/G	sample 48
+PS1 1:10	sample 62
+PS1 1:100	sample 6
+PS1 1:40	sample 14
+PS2 1:10	sample 60
+PS2 1:100	sample 76
+PS2 1:40	sample 94
+PS3 1:10	sample 78
+PS3 1:100	sample 82
+pos con	neg con
+neg con	pos con
