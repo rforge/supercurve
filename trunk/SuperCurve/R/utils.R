@@ -229,8 +229,35 @@ dir.writable <- function(path) {
     ## Check arguments
     stopifnot(is.character(path) && length(path) == 1)
 
+    ##-------------------------------------------------------------------------
+    ## Had issues with file.access() reporting no write access on directories
+    ## served from our network servers (Likewise-enabled) mounted by PCs.
+    ## Returns TRUE if throwaway file can be created; otherwise, FALSE.
+    canwrite <- function(path) {
+        tryCatch({
+                fn <- tempfile("sctest", path)
+                fh <- suppressWarnings(file(fn, open="w"))
+
+                TRUE
+            },
+            error = function(ex) {
+                FALSE
+            },
+            finally = {
+                if (exists("fh")) {
+                    if (isOpen(fh)) {
+                        close(fh)
+                    }
+                    rm(fh)
+                    file.remove(fn)
+                }
+            })
+    }
+
+
     ## Begin processing
-    file.access(path, mode=2) == 0
+    file.info(path)$isdir &&
+    ((file.access(path, mode=2) == 0) || canwrite(path))
 }
 
 
