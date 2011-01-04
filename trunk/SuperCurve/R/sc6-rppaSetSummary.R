@@ -79,7 +79,7 @@ RPPASetSummary <- function(rppaset) {
     prefitqcs.tf <- rppaset@completed[, 'prefitqc']
     probs <- if (!all(is.na(prefitqcs.tf))) {
                  prefitqcs <- rppaset@prefitqcs[prefitqcs.tf]
-                 names(prefitqcs) <- names(prefitqcs.tf[prefitqcs.tf])
+                 names(prefitqcs) <- names(prefitqcs[prefitqcs.tf])
                  sapply(prefitqcs, qcprob)
              } else {
                  as.numeric(NaN)
