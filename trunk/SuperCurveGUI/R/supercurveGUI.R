@@ -303,7 +303,7 @@ dir.exists <- function(path) {
 .chooseSettingsFile <- function(initialdir) {
     .chooseFile("Select SuperCurve settings datafile",
                 initialdir,
-                defaultextension=".rda",
+                defaultextension=".RData",
                 "{{R Data Files} {.rda .RData}} {{All files} * }")
 }
 
@@ -2113,7 +2113,7 @@ performAnalysis <- function(settings) {
     outputdir <- as(settings@outdir, "character")
     fnamebase <- "sc-settings"
     rda.pathname <- file.path(outputdir,
-                              paste(fnamebase, "rda", sep="."))
+                              paste(fnamebase, "RData", sep="."))
     txt.pathname <- file.path(outputdir,
                               paste(fnamebase, "txt", sep="."))
     if (file.exists(rda.pathname) ||
