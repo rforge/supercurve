@@ -1912,7 +1912,7 @@ monitorAnalysis <- function(dialog,
         interrupt=function(cond) {
             message("\tin interrupt clause of tryCatch()")
             condmsg <- conditionMessage(cond)
-            message(condmsg)            ## so it shows up in the logfile
+            message(sprintf("<<<INTR>>>  %s", condmsg))
             progressError(monitor) <- TRUE
 
             showwarning(title="Processing Interrupted", message=condmsg)
@@ -1921,19 +1921,12 @@ monitorAnalysis <- function(dialog,
             message("\tin error clause of tryCatch()")
 
             condmsg <- conditionMessage(cond)
-            message(condmsg)            ## so it shows up in the logfile
-            dumpto <- formals(dump.frames)$dumpto
-            dump.pathname <- file.path(outputdir, sprintf("%s.RData", dumpto))
-            dump.frames()
-            save(dumpto, dump.pathname)
+            message(sprintf("<<<ERROR>>>  %s", condmsg))
 
-            ## Add stacktrace too?
-            {
-                message("stacktrace:")
-                n <- length(last.dump)
-                calls <- names(last.dump)
-                message(paste("  ", 1:n, ": ", calls))
-            }
+            ## Attempt to save some possibility of post-mortem tracing
+            dump.pathname <- file.path(outputdir, "sc-dump.RData")
+            dump.frames()
+            save(get(formals(dump.frames)$dumpto), dump.pathname)
 
             progressError(monitor) <- TRUE
 
