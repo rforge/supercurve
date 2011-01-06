@@ -1884,10 +1884,8 @@ monitorAnalysis <- function(dialog,
     tclupdate()
 
     ## Log session output
-    logfilename <- local({
-                       outdir <- as(settings@outdir, "character")
-                       file.path(outdir, "session.log")
-                   })
+    outputdir <- as(settings@outdir, "character")
+    logfilename <- file.path(outputdir, "session.log")
     sessionlog <- file(logfilename, open="w")
     on.exit(close(sessionlog))
 
@@ -1913,18 +1911,34 @@ monitorAnalysis <- function(dialog,
         },
         interrupt=function(cond) {
             message("\tin interrupt clause of tryCatch()")
+            condmsg <- conditionMessage(cond)
+            message(condmsg)            ## so it shows up in the logfile
             progressError(monitor) <- TRUE
 
-            showwarning(title="Processing Interrupted",
-                        message=conditionMessage(cond))
+            showwarning(title="Processing Interrupted", message=condmsg)
         },
         error=function(cond) {
             message("\tin error clause of tryCatch()")
+
+            condmsg <- conditionMessage(cond)
+            message(condmsg)            ## so it shows up in the logfile
+            dumpto <- formals(dump.frames)$dumpto
+            dump.pathname <- file.path(outputdir, sprintf("%s.RData", dumpto))
+            dump.frames()
+            save(dumpto, dump.pathname)
+
+            ## Add stacktrace too?
+            {
+                message("stacktrace:")
+                n <- length(last.dump)
+                calls <- names(last.dump)
+                message(paste("  ", 1:n, ": ", calls))
+            }
+
             progressError(monitor) <- TRUE
 
-            showerror(title="Processing Error",
-                      message=conditionMessage(cond))
-            setenv("errmsg", conditionMessage(cond))
+            showerror(title="Processing Error", message=condmsg)
+            setenv("errmsg", condmsg)
         },
         finally={
             message("\tin finally clause of tryCatch()")
