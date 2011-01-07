@@ -1920,13 +1920,20 @@ monitorAnalysis <- function(dialog,
         error=function(cond) {
             message("\tin error clause of tryCatch()")
 
+            message("###stacktrace###")
+            dump.frames()
+            invisible(sapply(names(last.dump),
+                             function(acall) {
+                                 message(paste("   ", acall))
+                             },
+                             USE.NAMES=FALSE))
             condmsg <- conditionMessage(cond)
             message(sprintf("<<<ERROR>>>  %s", condmsg))
 
+            ## :NOTE: This causes problems closing the sink()'s below
             ## Attempt to save some possibility of post-mortem tracing
-            dump.pathname <- file.path(outputdir, "sc-dump.RData")
-            dump.frames()
-            save(get(formals(dump.frames)$dumpto), dump.pathname)
+            #dump.pathname <- file.path(outputdir, "sc-dump.RData")
+            #save(get(formals(dump.frames)$dumpto), dump.pathname)
 
             progressError(monitor) <- TRUE
 
@@ -2055,12 +2062,13 @@ displayProgressDialog <- function(dialog,
                message("[dialog mapped]")
                monitorAnalysis(dialog, monitor, settings)
            })
-    tkbind(progressbar,
-           "<Unmap>",
-           function() {
-               message("[dialog unmapped]")
-               monitor@widget <- NULL
-           })
+    ## Disabled as progress bar is usually unmanaged before dialog dismissal
+    #tkbind(progressbar,
+    #       "<Unmap>",
+    #       function() {
+    #           message("[dialog unmapped]")
+    #           monitor@widget <- NULL
+    #       })
 
     ## Resize dialog to something more appropriate
     ## :PLR: Why is it so big to begin with?
