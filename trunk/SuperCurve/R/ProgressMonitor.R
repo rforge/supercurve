@@ -25,7 +25,9 @@ setClass("DefaultProgressMonitor",
                         err="logical",              ## has error occurred?
                         done="logical",             ## completed yet?
                         etime="ElapsedTime",        ## elapsed time object
-                        elapsed="difftime"))        ## elapsed time (secs)
+                        elapsed="difftime"),        ## elapsed time (secs)
+         prototype(err=FALSE,
+                   done=FALSE))
 
 
 ##-----------------------------------------------------------------------------
