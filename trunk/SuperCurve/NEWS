@@ -13,6 +13,9 @@ BUG FIXES
 
     o	Fixed bug dealing with generating Pre-Fit QC summary file.
 
+    o	Fixed bug causing SuperCurveGUI to report failure after
+	completing SuperCurve processing.
+
 
 
 		CHANGES IN R VERSION 1.3.8
