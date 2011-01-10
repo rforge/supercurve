@@ -454,13 +454,6 @@ updateMeasuresOptionMenu <- function() {
            },
            popupmenu=measure.popup)
 
-#    for (measure in measures) {
-#        tkinsert(measure.popup, "end",
-#                 "radiobutton",
-#                 label=measure,
-#                 variable=getenv("measure.var"))
-#    }
-
     if (!(curr.value %in% measures)) {
         new.value <- measures[1]
         tclvalue(measure.var) <- new.value
@@ -1595,12 +1588,10 @@ createSettingsFromUserInput <- function() {
     sp$plotSurface <- as.logical(sp$plotSurface)
 
 message(sprintf("spatial:  %s (%s)", spatial, class(spatial)))
-    #spatial <- as.logical(as.integer(spatial))
     spatial <- as.logical(spatial)
 message(sprintf("spatial:  %s (%s)", spatial, class(spatial)))
 
 message(sprintf("prefitqc:  %s (%s)", prefitqc, class(prefitqc)))
-    #prefitqc <- as.logical(as.integer(prefitqc))
     prefitqc <- as.logical(prefitqc)
 message(sprintf("prefitqc:  %s (%s)", prefitqc, class(prefitqc)))
 
@@ -1713,8 +1704,6 @@ displayAsCompleted <- function(radiobutton) {
                          tclvalue(tkcget(radiobutton, '-value'))))
     stopifnot(tclvalue(tkwinfo.class(radiobutton)) == "Radiobutton")
 
-#tkflash(radiobutton)
-
     tkconfigure(radiobutton,
                 selectcolor="",
                 state="disabled")
@@ -1730,8 +1719,6 @@ displayAsInProgress <- function(radiobutton) {
                          .Tk.ID(radiobutton),
                          tclvalue(tkcget(radiobutton, '-value'))))
     stopifnot(tclvalue(tkwinfo.class(radiobutton)) == "Radiobutton")
-
-#tkflash(radiobutton)
 
     stageFont <- "stagead"    ## Must be same as in supercurveGUI()
     foreground <- tclvalue(tkcget(radiobutton, "-foreground"))
@@ -1803,25 +1790,6 @@ createProgressDialog <- function(parent,
            },
            radiobox=stages.frame)
 
-#    for (i in seq_along(stages)) {
-#        stage <- stages[i]
-#        stopifnot(!is.null(names(stage)))
-#        ## :TODO: Convert 'value' to use key (aka, names(stage)) instead
-#        radiobutton <- tkradiobutton(stages.frame,
-#                                     anchor="w",
-#                                     state="disabled",
-#                                     text=stage,
-#                                     value=stage)
-#        message(sprintf("%s [%d] - %s", stage, i, .Tk.ID(radiobutton)))
-#        cmd <- substitute(function() displayAsInProgress(widget),
-#                          list(widget=radiobutton))
-#        tkconfigure(radiobutton,
-#                    command=eval(cmd))
-#        tkpack(radiobutton,
-#               side="top",
-#               fill="x")
-#    }
-
     ## Create frame for progress bar and marquee/detail labels
     details.frame <- tkframe(command.area,
                              background="white",
@@ -1877,11 +1845,36 @@ monitorAnalysis <- function(dialog,
                             monitor,
                             settings) {
     message("monitorAnalysis() entry")
+
+    ## Check arguments
     stopifnot(is.tkwin(dialog))
     stopifnot(is.SCProgressMonitor(monitor))
 
-    ## Do update before processing starts
-    tclupdate()
+    ##-------------------------------------------------------------------------
+    ## Returns string summarizing fit processing
+    fitsummary <- function(summaryfile) {
+        completed.df <- read.delim(summaryfile)
+        fitted <- completed.df[, "fit"]
+        nslides <- length(fitted)
+        nfitted <- length(fitted[fitted])
+        if (nfitted == 0) {
+            return("Processing completed but no slides were fitted.")
+        }
+
+        if (nfitted == nslides) {
+            ngettext(nslides,
+                     "Fitted single slide.",
+                     sprintf("Fitted all %d slides.", nslides))
+        } else {
+            sprintf("Fitted %d of %d slides. See summary file for details.",
+                    nfitted,
+                    nslides)
+        }
+    }
+
+
+    ## Begin processing
+    tclupdate()    # Do update before processing starts
 
     ## Log session output
     outputdir <- as(settings@outdir, "character")
@@ -1905,9 +1898,18 @@ monitorAnalysis <- function(dialog,
 
             ## Perform analysis
             SuperCurve:::fitCurveAndSummarizeFromSettings(settings, monitor)
-            ## :TBD: Move 'Summary' stage into SCUI's progressDone() method?
+
+            ## Update interface to show processing complete
             progressStage(monitor) <- "Summary"
             progressDone(monitor) <- TRUE
+            tryCatch({
+                    ## Update label with summary of fits, if possible
+                    summaryfilename <- "supercurve_summary.tsv"
+                    summarypathname <- file.path(outputdir, summaryfilename)
+                    if (file.exists(summarypathname)) {
+                        progressLabel(monitor) <- fitsummary(summarypathname)
+                    }
+                })
         },
         interrupt=function(cond) {
             message("\tin interrupt clause of tryCatch()")
@@ -1930,11 +1932,6 @@ monitorAnalysis <- function(dialog,
             condmsg <- conditionMessage(cond)
             message(sprintf("<<<ERROR>>>  %s", condmsg))
 
-            ## :NOTE: This causes problems closing the sink()'s below
-            ## Attempt to save some possibility of post-mortem tracing
-            #dump.pathname <- file.path(outputdir, "sc-dump.RData")
-            #save(get(formals(dump.frames)$dumpto), dump.pathname)
-
             progressError(monitor) <- TRUE
 
             showerror(title="Processing Error", message=condmsg)
@@ -1942,7 +1939,8 @@ monitorAnalysis <- function(dialog,
         },
         finally={
             message("\tin finally clause of tryCatch()")
-            message("elapsed time: ")   ## :NOTDONE:
+            et <- elapsed(monitor@etime)
+            message(sprintf("elapsed time: %.3f %s", et, units(et)))
 cat("monitor@stage.var:", tclvalue(monitor@stage.var), "\n")
 cat("monitor@marquee.var:", tclvalue(monitor@marquee.var), "\n")
 cat("monitor@label.var:", tclvalue(monitor@label.var), "\n")
@@ -2051,24 +2049,25 @@ displayProgressDialog <- function(dialog,
                       tkdestroy(dialog)
                   })
 
-    ## Get canvas from progress dialog
+    ## Bind to single dialog item (bind to dialog itself applies to all widgets)
     progressbar <- .getProgressBarFromDialog(dialog)
     stopifnot(is.tkwin(progressbar))
-
-    ## Bind to single dialog item (bind to dialog itself applies to all widgets)
     tkbind(progressbar,
            "<Map>",
            function() {
                message("[dialog mapped]")
                monitorAnalysis(dialog, monitor, settings)
            })
-    ## Disabled as progress bar is usually unmanaged before dialog dismissal
-    #tkbind(progressbar,
-    #       "<Unmap>",
-    #       function() {
-    #           message("[dialog unmapped]")
-    #           monitor@widget <- NULL
-    #       })
+
+    ## Use marquee as progress bar is often unmanaged before dialog dismissal
+    marquee.label <- .getMarqueeLabelFromDialog(dialog)
+    stopifnot(is.tkwin(marquee.label))
+    tkbind(marquee.label,
+           "<Unmap>",
+           function() {
+               message("[dialog unmapped]")
+               monitor@widget <- NULL
+           })
 
     ## Resize dialog to something more appropriate
     ## :PLR: Why is it so big to begin with?
@@ -2081,6 +2080,22 @@ displayProgressDialog <- function(dialog,
     tkfocus(dialog)
 
     invisible(NULL)
+}
+
+
+##-----------------------------------------------------------------------------
+.getDetailLabelFromDialog <- function(dialog) {
+    userdata <- get("userdata", envir=dialog$env)
+    stopifnot(is.list(userdata))
+    detail.label <- userdata$Detail
+}
+
+
+##-----------------------------------------------------------------------------
+.getMarqueeLabelFromDialog <- function(dialog) {
+    userdata <- get("userdata", envir=dialog$env)
+    stopifnot(is.list(userdata))
+    marquee.label <- userdata$Marquee
 }
 
 
@@ -2169,8 +2184,6 @@ performAnalysis <- function(settings) {
         radiobox <- userdata$RadioBox
         marquee.label <- userdata$Marquee
         detail.label <- userdata$Detail
-cat('detail.label:', '\n')
-str(detail.label)
 
         ## Glue progress monitor values to dialog widgets
         sapply(.getRadioButtons(radiobox),
@@ -2395,7 +2408,7 @@ appExit <- function() {
 ## here. This method was used by the 'affy' class in Bioconductor to allow for
 ## the easy plug-in of new methods. Specifically, we previously worked out a
 ## model that had three basic processing steps:
-##  [1] SpotLevel Corrections (which might just be local background correction
+##  [1] SpotLevel Corrections (which might just be local background correction)
 ##      but might now involve Shannon's nested surface fits to the diluted
 ##      positive controls.
 ##  [2] Curve fitting, which now has at least three possible models. At
