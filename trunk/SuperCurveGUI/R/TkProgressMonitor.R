@@ -222,15 +222,10 @@ setReplaceMethod("progressDone",
             if (!progressError(object)) {
                 progressMarquee(object) <- "SUCCESS"
                 progressLabel(object) <- "Processing completed successfully!"
-
-                ## :TODO: No support for 'incomplete' state as processing
-                ## can now finish but be missing results from bad slides
-
+                ## :NOTE: SuperCurveGUI should overwrite the label with
+                ## number of fitted slides upon return...
             } else {
                 progressMarquee(object) <- "FAILED"
-                ## :TODO: Can we save/retrieve geterrmessage() instead?
-                #progressLabel(object) <- getenv("errmsg")
-                #progressLabel(object) <- geterrmessage()
                 progressLabel(object) <- "See session logfile for details..."
             }
         }
