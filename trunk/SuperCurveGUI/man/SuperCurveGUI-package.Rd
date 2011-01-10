@@ -10,7 +10,7 @@
     Package: \tab SuperCurveGUI\cr
     Type: \tab Package\cr
     Version: \tab 1.9.5\cr
-    Date: \tab 2011-01-04\cr
+    Date: \tab 2011-01-09\cr
     License: \tab See LICENSE for license information\cr
   }
 
