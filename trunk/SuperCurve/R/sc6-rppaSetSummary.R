@@ -71,7 +71,7 @@ RPPASetSummary <- function(rppaset) {
     ##     row       - sample correction
     ##     residuals - polished concentrations
     ##
-    pol <- medpolish(conc.raw, trace.iter=FALSE)
+    pol <- medpolish(conc.raw, trace.iter=FALSE, na.rm=TRUE)
     conc.medpol <- cbind(pol$row, pol$residuals)
     colnames(conc.medpol)[1] <- "Correction"
 
