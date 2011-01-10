@@ -16,6 +16,9 @@ BUG FIXES
     o	Fixed bug causing SuperCurveGUI to report failure after
 	completing SuperCurve processing.
 
+    o	Added check for valid design after reading slides to ensure
+	at least one RPPA object was created in RPPASet() generator.
+
 
 
 		CHANGES IN R VERSION 1.3.8
