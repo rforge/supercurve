@@ -19,6 +19,10 @@ BUG FIXES
     o	Added check for valid design after reading slides to ensure
 	at least one RPPA object was created in RPPASet() generator.
 
+    o	Fixed (longstanding) bug dealing with slides with extremely
+	weak signal. Median polish processing blows up if NA values
+	are present in RPPASetSummary() generator, which prevents
+	text output files from being written.
 
 
 		CHANGES IN R VERSION 1.3.8
