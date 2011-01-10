@@ -541,6 +541,11 @@ RPPASet <- function(path,
         progressValue(monitor) <- i
     }
 
+    ## This will trigger if no RPPAs exist.
+    if (!is.RPPADesign(design)) {
+        stop("no slides can be processed")
+    }
+
     ##-------------------------------------------------------------------------
     ## Determines if spatial adjustment processing is warranted
     shouldPerformSpatialAdj <- function(spatialparams, fitparams) {
