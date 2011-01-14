@@ -9,8 +9,8 @@
   \tabular{ll}{
     Package: \tab tclish\cr
     Type: \tab Package\cr
-    Version: \tab 0.8.1\cr
-    Date: \tab 2010-12-01\cr
+    Version: \tab 0.8.2\cr
+    Date: \tab 2011-01-14\cr
     License: \tab See LICENSE for license information\cr
   }
 

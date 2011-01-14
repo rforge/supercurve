@@ -7,6 +7,15 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 0.8.2
+
+
+NEW FEATURES
+
+    o	Added tkimage.delete() method (it missing from tcltk).
+
+
+
 		CHANGES IN R VERSION 0.8.1
 
 
