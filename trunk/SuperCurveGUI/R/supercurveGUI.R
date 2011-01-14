@@ -855,10 +855,15 @@ createPathnamesPanel <- function(parent) {
 
     dir.entry.width <- as.integer(50)
     file.entry.width <- as.integer(40)
+    required <- "requiredImage"    ## Must be same as in supercurveGUI()
 
     ## Quantification directory
+    txtdir.label <- tklabel(parent,
+                            compound="right",
+                            image=required,
+                            text="Quantification Directory")
     txtdir.frame <- tklabelframe(parent,
-                                 text="Quantification Directory")
+                                 labelwidget=txtdir.label)
     {
         txtdir.entry <- tkentry(txtdir.frame,
                                 textvariable=getenv("txtdir.var"),
@@ -919,8 +924,12 @@ createPathnamesPanel <- function(parent) {
     }
 
     ## Create input section for 'designfile' argument
+    designfile.label <- tklabel(parent,
+                                compound="right",
+                                image=required,
+                                text="Slide Design File")
     designfile.frame <- tklabelframe(filearea.frame,
-                                     text="Slide Design File")
+                                     labelwidget=designfile.label)
     {
         designfile.entry <- tkentry(designfile.frame,
                                     textvariable=getenv("designfile.var"),
@@ -957,8 +966,12 @@ createPathnamesPanel <- function(parent) {
     }
 
     ## Output directory
+    outdir.label <- tklabel(parent,
+                            compound="right",
+                            image=required,
+                            text="Output Directory")
     outdir.frame <- tklabelframe(parent,
-                                 text="Output Directory")
+                                 labelwidget=outdir.label)
     {
         outdir.entry <- tkentry(outdir.frame,
                                 textvariable=getenv("outdir.var"),
@@ -2451,6 +2464,21 @@ supercurveGUI <- function() {
                       size=12,
                       weight="normal")
         on.exit(tkfont.delete(prestageFont))
+    }
+
+    ## Create images for later use
+    existingImages <- unlist(strsplit(tclvalue(tkimage.names()), " "))
+
+    ## When Tcl creates an image, it uses the name to create a new command.
+    ## Ensure that image name doesn't accidentally overwrite existing ones.
+    required <- "requiredImage"
+    if (!(required %in% existingImages)) {
+        #cat(sprintf("creating %s image", sQuote(requiredImage)), "\n")
+        tkimage.create("photo",
+                       required,
+                       file=system.file("images", "required.gif",
+                                        package="SuperCurveGUI"))
+        on.exit(tkimage.delete(required))
     }
 
     ## Add entries to Tk option database
