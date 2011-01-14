@@ -82,8 +82,10 @@ tclinfo.hostname <- function(...) {
 
 ##-----------------------------------------------------------------------------
 ## Alternative version of tclRequire() that allows version checking.
-tclpackage.require <- function (package, version="", warn=TRUE) {
-    a <- if (version == "") {
+tclpackage.require <- function(package,
+                               version="",
+                               warn=TRUE) {
+    a <- if (!nzchar(version)) {
              try(tcl("package", "require", package), silent=TRUE)
          } else {
              try(tcl("package", "require", package, version), silent=TRUE)
@@ -111,7 +113,7 @@ tclupdate <- function(...) {
 ## Create menu widgets treated specially by different platforms.
 ## Provided access to special Apple system menu (platform-specific).
 tkapplemenu <- function(parent,
-                         ...) {
+                        ...) {
     .tkspecialmenu(parent, special="apple", ...)
 }
 
@@ -120,15 +122,22 @@ tkapplemenu <- function(parent,
 ## Create menu widgets treated specially by different platforms.
 ## Provided access to special help menu (platform-specific).
 tkhelpmenu <- function(parent,
-                        ...) {
+                       ...) {
     .tkspecialmenu(parent, special="help", ...)
+}
+
+
+##-----------------------------------------------------------------------------
+## Delete image.
+tkimage.delete <- function(...) {
+    tcl("image", "delete", ...)
 }
 
 
 ##-----------------------------------------------------------------------------
 ## Create labelframe widget.
 tklabelframe <- function(parent,
-                          ...) {
+                         ...) {
     stopifnot(is.tkwin(parent))
 
     tkwidget(parent, "labelframe", ...)
@@ -153,7 +162,7 @@ tkOptionMenu <- function(parent,
 ##-----------------------------------------------------------------------------
 ## Create simulated separator widget since none is explicitly provided by Tk.
 tkSeparator <- function(parent,
-                         ...) {
+                        ...) {
     stopifnot(is.tkwin(parent))
 
     tkframe(parent,
@@ -167,7 +176,7 @@ tkSeparator <- function(parent,
 ##-----------------------------------------------------------------------------
 ## Create spinner widget.
 tkspinbox <- function(parent,
-                          ...) {
+                      ...) {
     stopifnot(is.tkwin(parent))
 
     tkwidget(parent, "spinbox", ...)
@@ -178,7 +187,7 @@ tkspinbox <- function(parent,
 ## Create menu widgets treated specially by different platforms.
 ## Provided access to special Windows system menu (platform-specific).
 tksystemmenu <- function(parent,
-                          ...) {
+                         ...) {
     .tkspecialmenu(parent, special="system", ...)
 }
 
