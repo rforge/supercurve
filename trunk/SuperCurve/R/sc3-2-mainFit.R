@@ -509,14 +509,22 @@ RPPAFitFromParams <- function(rppa,
         warn2  <- rep("", length(series))
         names(warn2) <- series
         series.len <- length(series)
+        percent.incr <- 0.05
+        percent.done <- as.integer(0)
         i.this <- as.integer(1)
+
+        progmethod(sprintf("%s fit series", pass.name))
         for (this in series) {
             items <- names(design) == this
 
-            progmethod(sprintf("%s fit series (%d/%d)",
-                               pass.name,
-                               i.this,
-                               series.len))
+            ## Report as percentage increments rather than iterations (speed)
+            percent.this <- as.integer((i.this / series.len) * 100)
+            if ((percent.done + percent.incr) < percent.this) {
+                percent.done <- percent.this
+                progmethod(sprintf("%s fit series (%d%%)",
+                                   pass.name,
+                                   percent.done))
+            }
             fs <- fitSeries(fc,
                             diln=steps[items],
                             intensity=yval[items],
@@ -536,6 +544,7 @@ RPPAFitFromParams <- function(rppa,
 
             i.this <- i.this + as.integer(1)
         }
+        progmethod(sprintf("%s fit series complete", pass.name))
 
         if (verbose) {
             cat("Finished estimating EC50 values. Coefficients:", "\n")
