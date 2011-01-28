@@ -40,7 +40,12 @@
 \section{Extends}{
   Class \code{\linkS4class{FitClass}}, directly.
 }
-\references{KRC}
+\references{
+  Hu J, He X, Baggerly KA, Coombes KR, Hennessy BT, Mills GB.\cr
+  "Non-parametric Quantification of Protein Lysate Arrays"\cr
+  Bioinformatics (2007) 23(15): 1986-1994.\cr
+  \url{http://bioinformatics.oxfordjournals.org/content/23/15/1986}
+}
 \author{
   P. Roebuck \email{plroebuck@mdanderson.org}
 }
