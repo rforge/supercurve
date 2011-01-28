@@ -198,7 +198,7 @@ registerNormalizationMethod <- function(key,
 ##               names of the antibodies to be used must be supplied as
 ##               a named argument to this method.
 ##      vs     - variable slope normalization. Here the sample median
-##               is used along with a multiplicate gamma.
+##               is used along with a multiplicative gamma.
 ##
 
 ## :KRC: Should be called something different; there are "normalize"
