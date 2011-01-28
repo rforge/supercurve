@@ -12,7 +12,7 @@
 
 NEW FEATURES
 
-    o	Added tkimage.delete() method (it missing from tcltk).
+    o	Added tkimage.delete() method (missing from tcltk).
 
 
 
