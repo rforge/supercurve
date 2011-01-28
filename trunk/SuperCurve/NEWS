@@ -6,6 +6,22 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.3.10
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o	Significant speedup performing fit processing when using
+	SuperCurveGUI. Reporting slide fit progress was way too
+	expensive.
+
+
+BUG FIXES
+
+    o	Modified RPPAFit() to report progress on 5% increments
+	during fit series processing.
+
+
 		CHANGES IN R VERSION 1.3.9
 
 
