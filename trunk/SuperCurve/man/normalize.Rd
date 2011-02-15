@@ -26,11 +26,11 @@ normalize(concs,
     vs     \tab variable slope normalization\cr
   }
 
-  Specifying \dquote{median} as the \code{method} argument causes the row
-  median to be subtracted from each sample. Specifying \dquote{house} causes
+  Specifying \dQuote{median} as the \code{method} argument causes the row
+  median to be subtracted from each sample. Specifying \dQuote{house} causes
   the median of one or more housekeeping antibodies to be used. The names of
   the antibodies to be used must be supplied as a named argument to this
-  method. Specifying \dquote{vs} causes the sample median to be used along
+  method. Specifying \dQuote{vs} causes the sample median to be used along
   with a multiplicative gamma (see reference below).
 }
 \value{
