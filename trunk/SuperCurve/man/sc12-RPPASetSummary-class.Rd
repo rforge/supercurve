@@ -42,6 +42,8 @@ is.RPPASetSummary(x)
     \item{\code{probs}:}{numeric vector of goodness of fit probabilities}
     \item{\code{completed}:}{logical matrix specifying stage completion
       for each slide}
+    \item{\code{version}:}{character string containing the version of this
+      package used to construct the object}
   }
 }
 \section{Methods}{
@@ -63,6 +65,10 @@ is.RPPASetSummary(x)
 
   The \code{is.RPPASetSummary} method returns \code{TRUE} if its
   argument is an object of class \code{RPPASetSummary}.
+}
+\note{
+  The three \acronym{CSV} files may be reordered (to match that of the original
+  input) when written to disk.
 }
 \references{KRC}
 \author{

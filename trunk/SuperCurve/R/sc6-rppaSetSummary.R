@@ -5,11 +5,12 @@
 
 ##=============================================================================
 setClass("RPPASetSummary",
-         representation(raw="matrix",
-                        ss="matrix",
-                        medpol="matrix",
-                        probs="numeric",
-                        completed="matrix"))
+         representation(raw="matrix",                ## raw concentrations
+                        ss="matrix",                 ## sum squares ratio
+                        medpol="matrix",             ## polished concentrations
+                        probs="numeric",             ## probability good slide
+                        completed="matrix",          ## what worked/failed
+                        version="character"))        ## package version
 
 
 ##-----------------------------------------------------------------------------
@@ -75,6 +76,21 @@ RPPASetSummary <- function(rppaset) {
     conc.medpol <- cbind(pol$row, pol$residuals)
     colnames(conc.medpol)[1] <- "Correction"
 
+    ## Magically delicious hack to allow reorder on write
+    rppafits.tf <- rppaset@completed[, "fit"]
+    rppa <- rppaset@rppas[rppafits.tf][[1]]
+    stopifnot(is.RPPA(rppa))
+    software <- SuperCurve:::software(rppa)
+    if (!is.null(software) && software == "singlesubgrid") {
+        layout <- design@layout
+        firstsample.tf <- layout$SpotType == "Sample" & !duplicated(layout$Sample)
+        locations <- as.integer(rownames(rppa@data)[firstsample.tf])
+
+        attr(conc.raw,    "locations") <- locations
+        attr(conc.ss,     "locations") <- locations
+        attr(conc.medpol, "locations") <- locations
+    }
+
     ## Generate probabilities (goodness) for each processed slide (if any)
     prefitqcs.tf <- rppaset@completed[, 'prefitqc']
     probs <- if (!all(is.na(prefitqcs.tf))) {
@@ -91,7 +107,8 @@ RPPASetSummary <- function(rppaset) {
         ss=conc.ss,
         medpol=conc.medpol,
         probs=probs,
-        completed=rppaset@completed)
+        completed=rppaset@completed,
+        version=packageDescription("SuperCurve", fields="Version"))
 }
 
 
@@ -136,19 +153,44 @@ setMethod("write.summary", signature(object="RPPASetSummary"),
                      sQuote("prefix")))
     }
 
+
+    ##-------------------------------------------------------------------------
+    ## Allows concentrations to be written back in different order.
+    get_concs_ordered_for_write <- function(object, slotname) {
+        stopifnot(is.RPPASetSummary(object))
+        stopifnot(is.character(slotname) && length(slotname) == 1)
+
+        if (!(slotname %in% slotNames(object))) {
+            stop(sprintf("invalid slotname %s",
+                         sQuote(slotname)))
+        }
+
+        concs <- slot(object, slotname)
+        locations <- attr(concs, "locations", exact=TRUE)
+        if (!is.null(locations)) {
+            concs[order(locations), ]
+        } else {
+            concs
+        }
+    }
+
+
     ## Begin processing
 
     ## Write file for raw concentrations
     filename <- sprintf("%s_conc_raw.csv", prefix)
-    write.csv(object@raw, file=file.path(path, .portableFilename(filename)))
+    conc.raw <- get_concs_ordered_for_write(object, "raw")
+    write.csv(conc.raw, file=file.path(path, .portableFilename(filename)))
 
     ## Write file for R^2 statistics
     filename <- sprintf("%s_ss_ratio.csv", prefix)
-    write.csv(object@ss, file=file.path(path, .portableFilename(filename)))
+    conc.ss <- get_concs_ordered_for_write(object, "ss")
+    write.csv(conc.ss, file=file.path(path, .portableFilename(filename)))
 
     ## Write file for polished concentration
     filename <- sprintf("%s_conc_med_polish.csv", prefix)
-    write.csv(object@medpol, file=file.path(path, .portableFilename(filename)))
+    conc.medpol <- get_concs_ordered_for_write(object, "medpol")
+    write.csv(conc.medpol, file=file.path(path, .portableFilename(filename)))
 
     ## If QC processing was performed...
     if (!(length(object@probs) == 1 && is.na(object@probs))) {
