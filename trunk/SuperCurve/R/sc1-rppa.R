@@ -142,7 +142,7 @@ setMethod("image", signature(x="RPPA"),
                      sQuote("main")))
     }
 
-    # the whole thing shuold just use "try(as.logical())" and, if it
+    # the whole thing should just use "try(as.logical())" and, if it
     # works, live with the result....
     if (is.numeric(colorbar)) {
         colorbar <- as.logical(colorbar)
@@ -225,4 +225,13 @@ setMethod("image", signature(x="RPPA"),
     abline(v=(0.5 + seq(0, mx, length=1+dim.rppa["Main.Col"])))
     invisible(x)
 })
+
+
+##-----------------------------------------------------------------------------
+## Retrieve the value for 'software' used to create this object.
+software <- function(rppa) {
+    stopifnot(is.RPPA(rppa))
+
+    attr(rppa@data, "software", exact=TRUE)
+}
 
