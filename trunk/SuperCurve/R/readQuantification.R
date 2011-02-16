@@ -265,6 +265,12 @@ read.singlesubgrid <- function(conn) {
                      paste(dim.singlesubgrid, collapse="x")))
     }
 
+    ## Save original location order back
+    for (colname in .locationColnames()) {
+        orig.colname <- sprintf("%s.Real", colname)    ## same as SlideDesigner
+        mvdata.df[[orig.colname]] <- mvdata.df[[colname]]
+    }
+
     ## Convert from single subgrid format
     mvdata.df$Main.Row <- rep(1:nmainrow, each=nspot.mr)
     mvdata.df$Main.Col <- rep(rep(1:nmaincol, each=nsubcol), nmainrow*nsubrow)
