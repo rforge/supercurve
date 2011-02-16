@@ -16,6 +16,13 @@ SIGNIFICANT USER-VISIBLE CHANGES
 	expensive.
 
 
+NEW FEATURES
+
+    o	Use of 'software' option to RPPASet() method with the value
+	"singlesubgrid" now reorders the summary CSV files for
+	concentrations so that the order of both match.
+
+
 BUG FIXES
 
     o	Modified RPPAFit() to report progress on 5% increments
