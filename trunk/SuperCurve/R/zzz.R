@@ -41,6 +41,7 @@
     ## on S4 methods and used in a session with non-default set of packages
     require(methods)
 
+    ##-------------------------------------------------------------------------
     ## Preflight check use of ImageMagick 'convert' binary
     preflightCheck <- function() {
         command <- "convert --version"
@@ -59,6 +60,7 @@
                 FALSE
             })
     }
+
 
     if (!preflightCheck()) {
         warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH",
