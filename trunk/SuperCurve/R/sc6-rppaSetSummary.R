@@ -10,6 +10,8 @@ setClass("RPPASetSummary",
                         medpol="matrix",             ## polished concentrations
                         probs="numeric",             ## probability good slide
                         completed="matrix",          ## what worked/failed
+                        design="RPPADesign",         ## design for all slides
+                        software="character",        ## what processed slides
                         version="character"))        ## package version
 
 
