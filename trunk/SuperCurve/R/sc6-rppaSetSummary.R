@@ -92,7 +92,7 @@ RPPASetSummary <- function(rppaset) {
     }
 
     ## Generate probabilities (goodness) for each processed slide (if any)
-    prefitqcs.tf <- rppaset@completed[, 'prefitqc']
+    prefitqcs.tf <- rppaset@completed[, "prefitqc"]
     probs <- if (!all(is.na(prefitqcs.tf))) {
                  prefitqcs <- rppaset@prefitqcs[prefitqcs.tf]
                  names(prefitqcs) <- names(prefitqcs[prefitqcs.tf])
@@ -108,6 +108,8 @@ RPPASetSummary <- function(rppaset) {
         medpol=conc.medpol,
         probs=probs,
         completed=rppaset@completed,
+        design=rppaset@design,
+        software=software,
         version=packageDescription("SuperCurve", fields="Version"))
 }
 

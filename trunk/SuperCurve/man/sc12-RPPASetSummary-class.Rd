@@ -42,6 +42,10 @@ is.RPPASetSummary(x)
     \item{\code{probs}:}{numeric vector of goodness of fit probabilities}
     \item{\code{completed}:}{logical matrix specifying stage completion
       for each slide}
+    \item{\code{design}:}{object of class \code{RPPADesign}, common to all
+      the slides}
+    \item{\code{software}:}{character string specifying the software used
+      to generate the quantification files}
     \item{\code{version}:}{character string containing the version of this
       package used to construct the object}
   }
