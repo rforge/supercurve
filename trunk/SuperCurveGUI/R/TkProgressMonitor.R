@@ -44,24 +44,23 @@ setReplaceMethod("progressStage",
     function(object,
              ...,
              value) {
-message('progressStage<-(TkProgressMonitor, character)')
-        ## Get SuperCurve object to do whatever it was supposed to do
+    message('progressStage<-(TkProgressMonitor, character)')
+        ## Perform superclass processing...
         object <- callNextMethod()
         ## Update widget-tracked variables
         tclvalue(object@stage.var)   <- progressStage(object)
         #progressMarquee(object)      <- ""
         tclvalue(object@marquee.var) <- ""
         tclvalue(object@label.var)   <- ""
-str(object)
-        ## Update 'stage' radiobox objects appropriately
+    str(object)
+        ## Update progress dialog 'stage' radiobox objects appropriately
         if (!is.null(dialog <- object@widget)) {
             tryCatch({
                 radiobox <- .getRadioBoxFromDialog(dialog)
                 children <- .getRadioButtons(radiobox)
-cat("radiobox$ID:", radiobox$ID, "\n")
-cat("value=", value, '\n')
-cat("children:", children, "\n")
-#browser()
+    #cat("radiobox$ID:", radiobox$ID, "\n")
+    #cat("value=", value, '\n')
+    #cat("children:", children, "\n")
                 stages <- getenv("stages")
                 x.value <- pmatch(value, stages)
 
@@ -72,7 +71,7 @@ cat("children:", children, "\n")
                                } else {
                                    NULL
                                }
-message(sprintf("******** %s ********", value))
+    message(sprintf("******** %s ********", value))
                 sapply(c(currStageID, newStageID),
                        function(buttonID) {
                            if (nzchar(buttonID)) {
@@ -88,14 +87,12 @@ message(sprintf("******** %s ********", value))
                        })
 
                 tclupdate()
-#browser(text="Tricky Updater?", expr=FALSE)
             },
             error=function(e) {
                 e
             })
         }
 
-message('leave progressStage<-(TkProgressMonitor, character)')
         object
     })
 
@@ -106,15 +103,14 @@ setReplaceMethod("progressMarquee",
     function(object,
              ...,
              value) {
-message('enter progressMarquee<-(TkProgressMonitor, character)')
-        ## Get SuperCurve object to do whatever it was supposed to do
+    message('enter progressMarquee<-(TkProgressMonitor, character)')
+        ## Perform superclass processing...
         object <- callNextMethod()
         ## Update widget-tracked variables
         tclvalue(object@marquee.var) <- progressMarquee(object)
         #progressLabel(object)        <- ""
         tclvalue(object@label.var)   <- ""
-str(object)
-message('leave progressMarquee<-(TkProgressMonitor)')
+    str(object)
         object
     })
 
@@ -125,15 +121,13 @@ setReplaceMethod("progressLabel",
     function(object,
              ...,
              value) {
-message('enter progressLabel<-(TkProgressMonitor, character)')
-        ## Get SuperCurve object to do whatever it was supposed to do
+    message('enter progressLabel<-(TkProgressMonitor, character)')
+        ## Perform superclass processing...
         object <- callNextMethod()
         ## Update widget-tracked variables
         tclvalue(object@label.var) <- progressLabel(object)
         tclupdate()
-        #tclafter(2000, tclupdate)
-str(object)
-message('leave progressLabel<-(TkProgressMonitor)')
+    str(object)
         object
     })
 
@@ -144,24 +138,24 @@ setReplaceMethod("progressValue",
     function(object,
              ...,
              value) {
-        message("progressValue<-(TkProgressMonitor, numeric)")
-        ## Get SuperCurve object to do whatever it was supposed to do
+    message("progressValue<-(TkProgressMonitor, numeric)")
+        ## Perform superclass processing...
         object <- callNextMethod()
 
-str(object)
+    str(object)
         ## Update progressbar with updated values
         if (!is.null(dialog <- object@widget)) {
             tryCatch({
                 progressbar <- .getProgressBarFromDialog(dialog)
-cat("progressbar$ID:", progressbar$ID, "\n")
-            ## :BUG: Doesn't seem to work...
-            #varExists <- as.logical(tclvalue(tclinfo.exists(progressbar)))
+    #cat("progressbar$ID:", progressbar$ID, "\n")
+                ## :BUG: Doesn't seem to work...
+                #varExists <- as.logical(tclvalue(tclinfo.exists(progressbar)))
 
-cat("value=", value, '\n')
+    cat("value=", value, '\n')
                 maximum <- progressMaximum(object)
-cat("maximum=", maximum, '\n')
+    cat("maximum=", maximum, '\n')
                 percent <- as.integer((value / maximum) * 100)
-cat("percent=", percent, '\n')
+    cat("percent=", percent, '\n')
                 progressbar_value(progressbar, percent)
             },
             error=function(e) {
@@ -180,8 +174,8 @@ setReplaceMethod("progressError",
     function(object,
              ...,
              value) {
-        message("progressError<-(TkProgressMonitor, logical)")
-        ## Get SuperCurve object to do whatever it was supposed to do
+    message("progressError<-(TkProgressMonitor, logical)")
+        ## Perform superclass processing...
         object <- callNextMethod()
 
         ## :TEMPORARY: Make sure user knows an error occurred...
@@ -210,8 +204,8 @@ setReplaceMethod("progressDone",
     function(object,
              ...,
              value) {
-        message("progressDone<-(TkProgressMonitor, logical)")
-        ## Get SuperCurve object to do whatever it was supposed to do
+    message("progressDone<-(TkProgressMonitor, logical)")
+        ## Perform superclass processing...
         object <- callNextMethod()
 
         ## :TEMPORARY: Make sure user knows the processing is now complete
