@@ -540,7 +540,7 @@ setMethod("summary", signature(object="RPPADesign"),
     cat("\n")
     print(dim(object))
     cat("\n")
-    unneededColnames <- c(.locationColnames(), "Sample")
+    unneededColnames <- c(.locationColnames(), "Sample", "SubgridAlias")
     summarizable <- !colnames(object@layout) %in% unneededColnames
     print(summary(object@layout[summarizable]))
 })
