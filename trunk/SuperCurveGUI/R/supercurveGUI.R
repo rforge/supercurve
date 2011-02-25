@@ -1430,7 +1430,7 @@ cat(sprintf("%s: [%s] -> [%s]", rsrcName, uservalue, value))
         x.match <- match(value, values, nomatch=x.default)
         default <- values[x.match]
 cat(sprintf("\t(default): [%s]  final: [%s]\n", values[x.default], default))
-        list(default=as.character(default), 
+        list(default=as.character(default),
              values=as.character(values))
     })
 
@@ -1989,7 +1989,7 @@ displayProgressDialog <- function(dialog,
         ## doesn't seem to get updated for quite some time, unless the dialog
         ## gets resized. Since we REALLY want to be able to see details during
         ## processing, set a timer to resize the dialog by one pixel.
-        tclafter(1000, wmGeometryHack)
+        tclafter(500, wmGeometryHack)
     }
 
 
@@ -2356,10 +2356,21 @@ appExit <- function() {
     terminate <- function() {
         .appEntryStr("terminate")
 
+        tclupdate("idletasks")
+
         ## Unmap toplevel
         tkwm.withdraw(toplevel <- getenv("toplevel"))
 
-        tclupdate("idletasks")
+        ## Arrange for server resource cleanup
+        for (font in getenv("fonts")) {
+            on.exit(tkfont.delete(font))
+        }
+
+        for (image in getenv("images")) {
+            on.exit(tkimage.delete(image))
+        }
+
+        ## Destroy toplevel
         tkdestroy(toplevel)
     }
 
@@ -2415,7 +2426,6 @@ supercurveGUI <- function() {
                       family="helvetica",
                       size=16,
                       weight="bold")
-        on.exit(tkfont.delete(bannerFont))
     }
 
     stageFont <- "stagead"
@@ -2425,7 +2435,6 @@ supercurveGUI <- function() {
                       family="helvetica",
                       size=12,
                       weight="bold")
-        on.exit(tkfont.delete(stageFont))
     }
 
     prestageFont <- "stagebc"
@@ -2435,7 +2444,6 @@ supercurveGUI <- function() {
                       family="helvetica",
                       size=12,
                       weight="normal")
-        on.exit(tkfont.delete(prestageFont))
     }
 
     ## Create images for later use
@@ -2450,7 +2458,6 @@ supercurveGUI <- function() {
                        required,
                        file=system.file("images", "required.gif",
                                         package="SuperCurveGUI"))
-        on.exit(tkimage.delete(required))
     }
 
     ## Add entries to Tk option database
@@ -2484,6 +2491,7 @@ supercurveGUI <- function() {
     ## Initialize "global" variables
     initGlobals(list(
                      aliasfile.var=tclVar(""),
+                     analyze.button=NULL,
                      antibodyfile.var=tclVar(""),
                      center.var=tclVar(""),
                      ci.var=tclVar(""),
@@ -2491,9 +2499,11 @@ supercurveGUI <- function() {
                      designfile.var=tclVar(""),
                      dirty=FALSE,
                      errmsg=NULL,
+                     fonts=c(bannerFont, stageFont, prestageFont),
                      gamma.var=tclVar(""),
                      grouping.var=tclVar(""),
                      ignoreNegative.var=tclVar(""),
+                     images=c(required),
                      imgdir.var=tclVar(""),
                      initialdir=.getDefaultDirectory(),
                      k.var=tclVar(""),
@@ -2565,6 +2575,7 @@ supercurveGUI <- function() {
     analyze.button <- tkbutton(action.area,
                                command=analyzeCB,
                                text="Analyze")
+    setenv("analyze.button", analyze.button)
 
     tkpack(analyze.button,
            pady="3m")
