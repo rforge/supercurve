@@ -2276,6 +2276,17 @@ buildMenus <- function(parent) {
         }
 
 
+        ##---------------------------------------------------------------------
+        ## Display user guide in web browser window.
+        userguideCB <- function() {
+            ## :TEMPORARY: Placeholder until user guide written...
+            userguide.url <- "http://odin.mdacc.tmc.edu/~plroebuck/supercurve/UserGuide.html"
+
+            ## Ask web browser to display the URL
+            browseURL(URLencode(userguide.url))
+        }
+
+
         ##-----------------------------------------------------------------
         ## Display about dialog.
         aboutCB <- function() {
@@ -2304,9 +2315,18 @@ buildMenus <- function(parent) {
             }
 
 
+            ##-----------------------------------------------------------------
+            ## Returns Tk windowing system string.
+            getTkWindowingSystemLabelstring <- function() {
+                windowing.system <- tclvalue(tktk.windowingsystem())
+                paste("Windowing System:", windowing.system)
+            }
+
+
             about <- paste(app.name <- "SuperCurveGUI",
                            getAppVersionLabelstring(),
                            getTclTkVersionLabelstring(),
+                           getTkWindowingSystemLabelstring(),
                            sep="\n")
             showinfo(message=about,
                      parent=getenv("toplevel"),
@@ -2319,6 +2339,10 @@ buildMenus <- function(parent) {
               "command",
               label="Overview",
               command=overviewCB)
+        tkadd(help.menu,
+              "command",
+              label="User Guide",
+              command=userguideCB)
         tkadd(help.menu,
               "command",
               label="About SuperCurveGUI",
