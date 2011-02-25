@@ -509,21 +509,23 @@ RPPAFitFromParams <- function(rppa,
         warn2  <- rep("", length(series))
         names(warn2) <- series
         series.len <- length(series)
-        percent.incr <- 0.05
-        percent.done <- as.integer(0)
+        report.incr <- as.integer(5)
         i.this <- as.integer(1)
 
         progmethod(sprintf("%s fit series", pass.name))
         for (this in series) {
             items <- names(design) == this
 
-            ## Report as percentage increments rather than iterations (speed)
+            ## Report in 5 percent increments rather than iterations (speed)
             percent.this <- as.integer((i.this / series.len) * 100)
-            if ((percent.done + percent.incr) < percent.this) {
-                percent.done <- percent.this
-                progmethod(sprintf("%s fit series (%d%%)",
-                                   pass.name,
-                                   percent.done))
+            if (!(percent.this %% report.incr)) {
+                ## Skip 0 and 100 when reporting
+                if (percent.this %% as.integer(100)) {
+                    ## Notify progress update
+                    progmethod(sprintf("%s fit series (%d%%)",
+                                       pass.name,
+                                       percent.this))
+                }
             }
             fs <- fitSeries(fc,
                             diln=steps[items],
