@@ -1726,13 +1726,13 @@ createProgressDialog <- function(parent,
            fill="x",
            padx="2m",
            pady="2m")
-    #tkpack(separator    <- tkSeparator(progress.frame),
-    #       fill="x",
-    #       pady="3m")
-    #tkpack(action.area  <- actionArea(progress.frame),
-    #       fill="x",
-    #       padx="2m",
-    #       pady="2m")
+    tkpack(separator    <- tkSeparator(progress.frame),
+           fill="x",
+           pady="3m")
+    tkpack(action.area  <- actionArea(progress.frame),
+           fill="x",
+           padx="2m",
+           pady="2m")
 
     ## Create command area
     stages.frame <- tkframe(command.area,
@@ -1795,18 +1795,36 @@ createProgressDialog <- function(parent,
            pady=10)
 
     ## Create action area
-    #button <- tkbutton(action.area,
-    #                   text="Cancel")
-    #tkpack(button)
+    close.button <- tkbutton(action.area,
+                             command=function() {
+                                 closeDialog(dialog)
+                             },
+                             text="Close")
+    tkpack(close.button)
 
     ## Save userdata
     userdata <- list(RadioBox=stages.frame,
                      Marquee=marquee.label,
                      Detail=detail.label,
-                     ProgressBar=progressbar)
+                     ProgressBar=progressbar,
+                     CloseButton=close.button)
     assign("userdata", userdata, env=dialog$env)
 
     return(dialog)
+}
+
+
+##-----------------------------------------------------------------------------
+closeDialog <- function(dialog) {
+    message("closeDialog() entry")
+
+    ## Check arguments
+    stopifnot(is.tkwin(dialog))
+
+    ## Begin processing
+    tkwm.withdraw(dialog)
+    tclupdate()
+    tkdestroy(dialog)
 }
 
 
@@ -1935,6 +1953,16 @@ cat("monitor@label.var:", tclvalue(monitor@label.var), "\n")
             ## (Re)enable analyze button (toplevel)
             tkconfigure(getenv("analyze.button"),
                         state="normal")
+
+            ## Restore dialog button back to its original purpose
+            message("\t\treconfiguring button from cancel to close")
+            closeButton <- .getCloseButtonFromDialog(dialog)
+            tkconfigure(closeButton,
+                        command=function() {
+                            closeDialog(dialog)
+                        },
+                        relief="raised",
+                        text="Close")
         })
 
     ## End diversions (LIFO)
@@ -2035,19 +2063,43 @@ displayProgressDialog <- function(dialog,
                   "WM_DELETE_WINDOW",
                   function() {
                       message("[WM close: progress dialog]")
-                      tkwm.withdraw(dialog)
-                      tclupdate()
-                      tkdestroy(dialog)
+                      ## Invoke button as its callback is dynamic
+                      close.button <- .getCloseButtonFromDialog(dialog)
+                      tkinvoke(close.button)
                   })
 
-    ## Bind to single dialog item (bind to dialog itself applies to all widgets)
+    ## Bind to event tag used to begin analysis
+    startAnalysis.bindtag <- "StartAnalysis"
+    tkbind(startAnalysis.bindtag,
+           "<Map>",
+           function() {
+               ## Initiate analysis
+               tclafter.idle(function() {
+                   ## Analyze the data...
+                   monitorAnalysis(dialog, monitor, settings)
+               })
+           })
+
+    ## Grab progress bar from dialog
     progressbar <- .getProgressBarFromDialog(dialog)
     stopifnot(is.tkwin(progressbar))
+
+    ## Prepend new event tag to progress bar event-handler bindtags
+    orig.bindtags <- getBindtags(progressbar)
+    initprog.bindtags <- c(startAnalysis.bindtag, orig.bindtags)
+    tkbindtags(progressbar, paste(initprog.bindtags, collapse=' '))
+
+    ## Bind to single dialog item (bind to dialog itself applies to all widgets)
     tkbind(progressbar,
            "<Map>",
            function() {
                message("[dialog mapped]")
-               monitorAnalysis(dialog, monitor, settings)
+
+               ## Once analysis initiated, remove tag (so it only occurs once)
+               bindtags <- getBindtags(progressbar)
+               if (startAnalysis.bindtag %in% bindtags) {
+                   tkbindtags(progressbar, paste(orig.bindtags, collapse=' '))
+               }
            })
 
     ## Use marquee as progress bar is often unmanaged before dialog dismissal
@@ -2057,7 +2109,6 @@ displayProgressDialog <- function(dialog,
            "<Unmap>",
            function() {
                message("[dialog unmapped]")
-               monitor@widget <- NULL
            })
 
     ## Resize dialog to something more appropriate
@@ -2071,6 +2122,14 @@ displayProgressDialog <- function(dialog,
     tkfocus(dialog)
 
     invisible(NULL)
+}
+
+
+##-----------------------------------------------------------------------------
+.getCloseButtonFromDialog <- function(dialog) {
+    userdata <- get("userdata", envir=dialog$env)
+    stopifnot(is.list(userdata))
+    close.button <- userdata$CloseButton
 }
 
 
@@ -2159,13 +2218,54 @@ performAnalysis <- function(settings) {
     setStages(settings)
     progressDialog <- createProgressDialog(getenv("toplevel"),
                                            getenv("stages"))
+
+    ## Create SuperCurve progress monitor
     monitor <- TkProgressMonitor(progressDialog)
+
+    ##-------------------------------------------------------------------------
+    cancelCB <- function(cancelButton) {
+        stopifnot(is.tkwin(cancelButton))
+        stopifnot(tclvalue(tkwinfo.class(cancelButton)) == "Button")
+
+        ## Display with "pressed in" visual
+        tkconfigure(cancelButton,
+                    relief="sunken")
+
+        ## Confirm user selections
+        question <- paste("Are you sure you want to terminate processing?",
+                          "All work thus far will be lost...",
+                          sep="\n\n")
+        if (!askyesno(default="yes",
+                      message=question,
+                      title="Confirm")) {
+            cat("**user canceled abort**", "\n")
+
+            ## Restore normal visual
+            tkconfigure(cancelButton,
+                        relief="raised")
+            return(NULL)
+        }
+
+        ## Launch RPG
+        progressAbort(monitor) <- TRUE
+        stopifnot(!progressContinue(monitor))
+
+        ##
+        ## No way to verify abort from here... the monitor object really
+        ## should be based on an environment; just looking at original
+        ## object here, SuperCurve has its own copy.
+        ## Hope it works...
+        ##
+    }
+
+
     userdata <- get("userdata", envir=progressDialog$env)
     stopifnot(is.list(userdata))
     {
         radiobox <- userdata$RadioBox
         marquee.label <- userdata$Marquee
         detail.label <- userdata$Detail
+        close.button <- userdata$CloseButton
 
         ## Glue progress monitor values to dialog widgets
         sapply(.getRadioButtons(radiobox),
@@ -2179,7 +2279,26 @@ performAnalysis <- function(settings) {
                     textvariable=monitor@marquee.var)
         tkconfigure(detail.label,
                     textvariable=monitor@label.var)
+        ## Solitary button performs double duty...
+        tkconfigure(close.button,
+                    command=function() {
+                        cancelCB(close.button)
+                    },
+                    text="Cancel")
     }
+
+    ## Bind to event tag used to deiconify and raise dialog
+    modalDialog.bindtag <- "ModalDialog"
+    tkbind(modalDialog.bindtag,
+           "<ButtonPress>",
+           function() {
+               tkwm.deiconify(progressDialog)
+               tkraise(progressDialog)
+           })
+
+    ## Prepend new event tag to dialog event-handler bindtags
+    modal.bindtags <- c(modalDialog.bindtag, getBindtags(progressDialog))
+    tkbindtags(progressDialog, paste(modal.bindtags, collapse=' '))
 
     ## Display progress dialog
     displayProgressDialog(progressDialog, monitor, settings)
