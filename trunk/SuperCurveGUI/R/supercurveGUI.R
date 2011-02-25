@@ -1858,10 +1858,22 @@ monitorAnalysis <- function(dialog,
     ## Start...
     show(settings)
     tryCatch({
+            ## Disable analyze button (toplevel) - one analysis at a time
+            tkconfigure(getenv("analyze.button"),
+                        state="disabled")
+
+            ## Display busy cursor on toplevel
+            tkconfigure(getenv("toplevel"),
+                        cursor="watch")
+
             ## Load prerequisite packages before starting analysis
+            progressMarquee(monitor) <- "Loading packages needed for analysis"
+            tclupdate()
             packages <- SuperCurve:::getPrerequisitePackages(settings)
             sapply(packages,
                    function(pkgname) {
+                       progressLabel(monitor) <- pkgname
+                       tclupdate()
                        ## Nonstandard evaluation done by invoked method
                        do.call("library", list(package=pkgname))
                    })
@@ -1882,6 +1894,7 @@ monitorAnalysis <- function(dialog,
                 })
         },
         interrupt=function(cond) {
+            ## Despite my efforts, I have never triggered this...
             message("\tin interrupt clause of tryCatch()")
             condmsg <- conditionMessage(cond)
             message(sprintf("<<<INTR>>>  %s", condmsg))
@@ -1914,6 +1927,14 @@ monitorAnalysis <- function(dialog,
 cat("monitor@stage.var:", tclvalue(monitor@stage.var), "\n")
 cat("monitor@marquee.var:", tclvalue(monitor@marquee.var), "\n")
 cat("monitor@label.var:", tclvalue(monitor@label.var), "\n")
+
+            ## Restore standard cursor on toplevel
+            tkconfigure(getenv("toplevel"),
+                        cursor="")
+
+            ## (Re)enable analyze button (toplevel)
+            tkconfigure(getenv("analyze.button"),
+                        state="normal")
         })
 
     ## End diversions (LIFO)
