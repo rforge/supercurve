@@ -18,7 +18,18 @@ setClass("TkProgressMonitor",
          representation(widget="OptionalWidget",      ## dialog or NULL
                         stage.var="tclVar",           ## stage label tclvalue
                         marquee.var="tclVar",         ## marquee label tclvalue
-                        label.var="tclVar"))          ## progbar label tclvalue
+                        label.var="tclVar",           ## progbar label tclvalue
+                        abort.var="tclVar"),          ## cancel sim tclvalue
+         prototype(stage.var=tclVar(""),
+                   marquee.var=tclVar(""),
+                   label.var=tclVar(""),
+                   abort.var=tclVar("FALSE")))        ## internal only
+
+
+##-----------------------------------------------------------------------------
+is.TkProgressMonitor <- function(x) {
+    extends(class(x), "TkProgressMonitor")
+}
 
 
 ##-----------------------------------------------------------------------------
@@ -30,7 +41,8 @@ TkProgressMonitor <- function(widget) {
         widget=widget,
         stage.var=tclVar(""),
         marquee.var=tclVar(""),
-        label.var=tclVar(""))
+        label.var=tclVar(""),
+        abort.var=tclVar("FALSE"))
 }
 
 
@@ -122,6 +134,10 @@ setReplaceMethod("progressLabel",
              ...,
              value) {
     message('enter progressLabel<-(TkProgressMonitor, character)')
+
+        ## Check user abort here due to frequency this routine is called
+        .checkUserAbort(object)
+
         ## Perform superclass processing...
         object <- callNextMethod()
         ## Update widget-tracked variables
@@ -226,4 +242,75 @@ setReplaceMethod("progressDone",
 
         object
     })
+
+
+##
+## Internal
+##
+
+##-----------------------------------------------------------------------------
+## Returns TRUE under normal conditions.
+setMethod("progressContinue",
+    signature(object="TkProgressMonitor"),
+    function(object) {
+        message('progressContinue(TkProgressMonitor)')
+        !as.logical(as.character(tclvalue(object@abort.var)))
+    })
+
+
+## During processing, this essentially activates the kill switch.
+## :NOTE: Value set here currently checked by .checkUserAbort() method
+## (currently invoked by progressLabel() method, which is invoked often).
+## If value is TRUE, .abortProcessing() method will be invoked in order to
+## terminate SuperCurve processing.
+
+##-----------------------------------------------------------------------------
+setReplaceMethod("progressAbort",
+    signature(object="TkProgressMonitor", value="logical"),
+    function(object,
+             ...,
+             value) {
+        message("*****")
+        message("*****")
+        message("*****")
+        message("progressAbort<-(TkProgressMonitor, logical)")
+        stopifnot(length(value) == 1)
+        tclvalue(object@abort.var) <- as.character(value)
+        object
+    })
+
+
+##-----------------------------------------------------------------------------
+.abortProcessing <- function() {
+    cease <- structure(list(message="user canceled processing",
+                            call=NULL,
+                            class=c("cease",
+                                    "error",
+                                    "condition")))
+    ## Signaling condition has no effect
+    ## :TBD: b/c no cease handlers in SC package?
+    #signalCondition(cease)
+    ## But stop() works...
+    stop(cease)
+    ## NOTREACHED
+}
+
+
+##-----------------------------------------------------------------------------
+.checkUserAbort <- function(monitor) {
+    ## Check arguments
+    stopifnot(is.TkProgressMonitor(monitor))
+
+    ## Begin processing
+    if (!progressContinue(monitor)) {
+        tclvalue(monitor@marquee.var) <- "Aborted processing..."
+        tclupdate()
+        ## Flush any current warnings first...
+        warnings()
+
+        message("\tinitiating processing abort")
+        .abortProcessing()
+        ## NOTREACHED
+    }
+}
 
