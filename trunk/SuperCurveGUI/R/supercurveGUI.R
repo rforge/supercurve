@@ -2013,7 +2013,7 @@ displayProgressDialog <- function(dialog,
     tkwm.protocol(dialog,
                   "WM_DELETE_WINDOW",
                   function() {
-                      message("[WM close requested on dialog]")
+                      message("[WM close: progress dialog]")
                       tkwm.withdraw(dialog)
                       tclupdate()
                       tkdestroy(dialog)
@@ -2133,15 +2133,6 @@ performAnalysis <- function(settings) {
                  rda.pathname,
                  txt.pathname)
     tclupdate()
-    addTaskCallback(function() {
-                        cntr <- 0
-                        function(expr, value, ok, visible) {
-                            cntr <<- cntr + 1
-                            cat("Count", cntr, "\n")
-                            tclupdate("idletasks")
-                            TRUE
-                        }
-                    })
 
     ## Configure progress dialog
     setStages(settings)
@@ -2588,8 +2579,13 @@ supercurveGUI <- function() {
     tkconfigure(toplevel,
                 menu=menubar)
 
-    ## Map window manager's close button to exit function
-    tkwm.protocol(toplevel, "WM_DELETE_WINDOW", appExit)
+    ## Handle WM close button
+    tkwm.protocol(toplevel,
+                  "WM_DELETE_WINDOW",
+                  function() {
+                      message("[WM close: toplevel]")
+                      appExit()
+                  })
 
     ## Give R some time to process its event loop
     tclafter.idle(idleTask)
