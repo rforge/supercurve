@@ -114,6 +114,15 @@ is.RPPASet <- function(x) {
 
 
 ##-----------------------------------------------------------------------------
+## Examine system() return code to determine if execution of the shell failed.
+.execShellFailed <- if (getRversion() <= "2.12") {
+                        function(rc) { rc == 32512 }
+                    } else {
+                        function(rc) { rc == 127 }
+                    }
+
+
+##-----------------------------------------------------------------------------
 ## Merge output graphs with source tiff file, save it as JPG file
 .mergeGraphsAndImage <- function(antibody,
                                  prefix,
@@ -297,10 +306,11 @@ setMethod("write.summary", signature(object="RPPASet"),
                                            prefix,
                                            path,
                                            imgfile)
-                if (rc == 32512) {
+                if (.execShellFailed(rc)) {
                     warning(sprintf("ImageMagick executable %s not installed or unavailable via PATH",
-                                    sQuote("convert")))
-                    message("some output files may be missing")
+                                    sQuote("convert")),
+                            call.=FALSE)
+                    message("===> unable to create merged image files...")
                     flush.console()
                     break
                 }
