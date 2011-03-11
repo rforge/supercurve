@@ -71,18 +71,33 @@ is.RPPASet <- function(x) {
 
         main <- .mkPlotTitle(rppafit@measure, antibody)
 
+        ##
         ## First pair of plots
-        try(plot(rppafit,
-                 main=main,
-                 xform=fitxform,
-                 xlim=c(-15, 15)))
+        ##
 
-        ## Mark R^2 = 0.4 and below as red.
+        ## Plot sigmoid curve graph
+        tryCatch(plot(rppafit,
+                      main=main,
+                      xform=fitxform,
+                      xlim=c(-15, 15)),
+                 error=function(e) {
+                     message(sprintf("cannot plot sigmoid curve for %s",
+                                     antibody))
+                     warning(conditionMsg(e), immediate.=TRUE)
+                 })
+
+        ## Image of RSS
+        ## Mark R^2 <= 0.4 as red.
         imageRPPAFit <- getMethod("image", class(rppafit))
-        imageRPPAFit(rppafit,
-                     col=RYG,
-                     measure="ResidualsR2",
-                     zlim=c(0.4, 1))
+        tryCatch(imageRPPAFit(rppafit,
+                              col=RYG,
+                              measure="ResidualsR2",
+                              zlim=c(0.4, 1)),
+                 error=function(e) {
+                     message(sprintf("cannot produce RSS image for %s",
+                                     antibody))
+                     warning(conditionMsg(e), immediate.=TRUE)
+                 })
 
         filename <- sprintf("%s_%s_1.png", prefix, antibody)
         dev.copy(png,
@@ -91,17 +106,33 @@ is.RPPASet <- function(x) {
                  height=640)
         dev.off()
 
+        ##
         ## Second pair of plots
-        try(plot(rppafit,
-                 main=main,
-                 type="resid",
-                 xform=fitxform,
-                 xlim=c(-15, 15)))
-        try(plot(rppafit,
-                 main=main,
-                 type="steps",
-                 xform=fitxform,
-                 xlim=c(-15, 15)))
+        ##
+
+        ## Plot residuals graph
+        tryCatch(plot(rppafit,
+                      main=main,
+                      type="resid",
+                      xform=fitxform,
+                      xlim=c(-15, 15)),
+                 error=function(e) {
+                     message(sprintf("cannot plot residuals for %s",
+                                     antibody))
+                     warning(conditionMsg(e), immediate.=TRUE)
+                 })
+
+        ## Plot steps graph
+        tryCatch(plot(rppafit,
+                      main=main,
+                      type="steps",
+                      xform=fitxform,
+                      xlim=c(-15, 15)),
+                 error=function(e) {
+                     message(sprintf("cannot plot steps for %s",
+                                     antibody))
+                     warning(conditionMsg(e), immediate.=TRUE)
+                 })
 
         filename <- sprintf("%s_%s_2.png", prefix, antibody)
         dev.copy(png,
