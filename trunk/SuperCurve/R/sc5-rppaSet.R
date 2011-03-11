@@ -83,7 +83,7 @@ is.RPPASet <- function(x) {
                  error=function(e) {
                      message(sprintf("cannot plot sigmoid curve for %s",
                                      antibody))
-                     warning(conditionMsg(e), immediate.=TRUE)
+                     warning(conditionMessage(e), immediate.=TRUE)
                  })
 
         ## Image of RSS
@@ -96,7 +96,7 @@ is.RPPASet <- function(x) {
                  error=function(e) {
                      message(sprintf("cannot produce RSS image for %s",
                                      antibody))
-                     warning(conditionMsg(e), immediate.=TRUE)
+                     warning(conditionMessage(e), immediate.=TRUE)
                  })
 
         filename <- sprintf("%s_%s_1.png", prefix, antibody)
@@ -119,7 +119,7 @@ is.RPPASet <- function(x) {
                  error=function(e) {
                      message(sprintf("cannot plot residuals for %s",
                                      antibody))
-                     warning(conditionMsg(e), immediate.=TRUE)
+                     warning(conditionMessage(e), immediate.=TRUE)
                  })
 
         ## Plot steps graph
@@ -131,7 +131,7 @@ is.RPPASet <- function(x) {
                  error=function(e) {
                      message(sprintf("cannot plot steps for %s",
                                      antibody))
-                     warning(conditionMsg(e), immediate.=TRUE)
+                     warning(conditionMessage(e), immediate.=TRUE)
                  })
 
         filename <- sprintf("%s_%s_2.png", prefix, antibody)
