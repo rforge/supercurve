@@ -6,6 +6,18 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.3.11
+
+
+BUG FIXES
+
+    o	Patch return of match.call() for RPPASet() invocation to
+	always substitute generic 'monitor' argument.
+
+    o	Added additional reporting in case of errors when generating
+	fit graphs (in response to issue reported by Doris).
+
+
 		CHANGES IN R VERSION 1.3.10
 
 
