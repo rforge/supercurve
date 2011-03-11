@@ -493,7 +493,12 @@ RPPASet <- function(path,
     }
 
     ## Begin processing
+
+    ## Record the call made to this method, but replace 'monitor'.
+    ## Allows 'sc-rppaset.RData' to be rerun without needing GUI components
+    ## if initially created using scui() method from 'SuperCurveGUI' package.
     call <- match.call()
+    call$monitor <- quote(SCProgressMonitor())
 
     ## Get filenames of slides to process
     progressStage(monitor) <- "Data Input"
