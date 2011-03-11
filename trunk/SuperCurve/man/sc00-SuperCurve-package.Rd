@@ -15,8 +15,8 @@
 %  \tabular{ll}{
 %    Package: \tab SuperCurve\cr
 %    Type: \tab Package\cr
-%    Version: \tab 1.3.10\cr
-%    Date: \tab 2011-02-25\cr
+%    Version: \tab 1.3.11\cr
+%    Date: \tab 2011-03-11\cr
 %    License: \tab See LICENSE for license information\cr
 %  }
 
