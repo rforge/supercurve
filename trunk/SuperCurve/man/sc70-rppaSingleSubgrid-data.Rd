@@ -20,13 +20,13 @@
   with most concentrated on top/bottom and most diluted near the middle;
   the middle is a negative control (typically blank).
 
-  When these slide images were quantified using Microvigene, the whole
+  When these slide images were quantified using MicroVigene, the whole
   slide was treated as a single subgrid (1x1x44x132) to save time (by not
   having to perform alignment on 48 individual subgrids).
 
   The data set also contains a description of the design of the
   reverse-phase protein array used in a set of experiments to measure
-  protein levels. The associated Microvigene datafiles were converted back
+  protein levels. The associated MicroVigene datafiles were converted back
   into their logical format (4x12x11x11) when read to facilitate downstream
   processing.
 }

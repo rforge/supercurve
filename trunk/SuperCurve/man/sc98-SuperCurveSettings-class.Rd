@@ -38,7 +38,7 @@ is.SuperCurveSettings(x)
   \item{fitparams}{object of class \code{RPPAFitParams}}
   \item{spatialparams}{object of class \code{RPPASpatialParams}, or \code{NULL}}
   \item{doprefitqc}{logical scalar. If \code{TRUE}, perform pre-fit quality control.}
-  \item{antibodyfile}{character string specifying filename cantaining mapping
+  \item{antibodyfile}{character string specifying filename containing mapping
     from quantification files to antibodies, or NULL}
   \item{software}{character string specifying the software used to generate
     the quantification files (see section \sQuote{Details} of
@@ -77,7 +77,7 @@ slotnames to display (for debuggging)}
       specifying the parameters that control spatial adjustment}
     \item{\code{doprefitqc}:}{logical scalar specifying whether to perform
       pre-fit quality control}
-    \item{antibodyfile}{character string specifying filename cantaining mapping
+    \item{antibodyfile}{character string specifying filename containing mapping
       from quantification files to antibodies, or NULL}
     \item{software}{character string specifying the software used to generate
       the quantification files, or NULL}

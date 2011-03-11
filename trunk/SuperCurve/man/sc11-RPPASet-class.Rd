@@ -45,7 +45,7 @@ is.RPPASet(x)
   \item{doprefitqc}{logical scalar. If \code{TRUE}, perform pre-fit quality
     control.}
   \item{monitor}{object of (sub)class \code{ProgressMonitor}}
-  \item{antibodyfile}{character string specifying filename cantaining mapping
+  \item{antibodyfile}{character string specifying filename containing mapping
     from quantification files to antibodies}
   \item{software}{character string specifying the software used to generate
     the quantification file (see section \sQuote{Details} of
