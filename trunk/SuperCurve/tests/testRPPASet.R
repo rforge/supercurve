@@ -9,6 +9,15 @@ library(robustbase)
 library(boot)
 source("checkFuncs")
 
+
+## Attempt to make comparisons easier
+sys_tempdir <- file.path("", "tmp")
+if (file.exists(sys_tempdir) &&
+    file.info(sys_tempdir)$isdir &&
+    file.access(sys_tempdir, 2) == 0) {
+    Sys.setenv(TMPDIR=sys_tempdir)
+}
+
 ## create project directory in per-session temporary directory
 ## Cannot successfully test without this...
 persessionprojdir <- file.path(tempdir(), "supercurve")
