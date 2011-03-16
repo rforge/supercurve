@@ -40,9 +40,6 @@ is.RPPASet <- function(x) {
     saved.par <- par(no.readonly=TRUE)
     on.exit(par(saved.par))
 
-    par(bg="white",
-        mfrow=c(2, 1))
-
     ## Use red/yellow/green palette for residual plots.
     ## From RColorBrewer palette RdYlGn
     RYG <- c("#A50026",
@@ -74,6 +71,8 @@ is.RPPASet <- function(x) {
         ##
         ## First pair of plots
         ##
+        par(bg="white",
+            mfrow=c(2, 1))
 
         ## Plot sigmoid curve graph
         tryCatch(plot(rppafit,
@@ -109,6 +108,8 @@ is.RPPASet <- function(x) {
         ##
         ## Second pair of plots
         ##
+        par(bg="white",
+            mfrow=c(2, 1))
 
         ## Plot residuals graph
         tryCatch(plot(rppafit,
