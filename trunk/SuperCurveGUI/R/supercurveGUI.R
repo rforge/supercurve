@@ -465,7 +465,7 @@ loadSettingsWithRestarts <- function(pathname) {
             ## Verify file contents in private environment
             local({
                 load(pathname)
-                ## XDR datafiles created by our application will contain a
+                ## XDR datafiles created by this package will contain a
                 ## variable named 'settings'.
                 stopifnot(exists("settings"))
                 stopifnot(SuperCurve:::is.SuperCurveSettings(settings))
@@ -567,15 +567,15 @@ reloadInterface <- function(settings) {
                   k          <- as.character(settings@spatialparams@k)
                   plotSurface<- as.character(settings@spatialparams@plotSurface)
               } else {
-                  class.args <- formals(SuperCurve:::spatialCorrection)
+                  formal.args <- formals(SuperCurve:::spatialCorrection)
 
                   spatial    <- as.character(FALSE)
-                  cutoff     <- as.character(eval(class.args$cutoff))
-                  k          <- as.character(eval(class.args$k))
-                  gamma      <- as.character(eval(class.args$gamma))
-                  plotSurface<- as.character(eval(class.args$plotSurface))
+                  cutoff     <- as.character(eval(formal.args$cutoff))
+                  k          <- as.character(eval(formal.args$k))
+                  gamma      <- as.character(eval(formal.args$gamma))
+                  plotSurface<- as.character(eval(formal.args$plotSurface))
 
-                  rm(class.args)
+                  rm(formal.args)
               }
         },
         envir=loadenv)
@@ -812,6 +812,7 @@ createPathnamesPanel <- function(parent) {
 
     dir.entry.width <- as.integer(50)
     file.entry.width <- as.integer(40)
+    ellipsis <- "..."
     required <- "requiredImage"    ## Must be same as in supercurveGUI()
 
     ## Quantification directory
@@ -828,7 +829,7 @@ createPathnamesPanel <- function(parent) {
 
         txtdir.button <- tkbutton(txtdir.frame,
                                   command=chooseQuantificationDirectoryCB,
-                                  text="...")
+                                  text=ellipsis)
         tkgrid(txtdir.entry,
                txtdir.button)
         tkgrid.configure(txtdir.entry,
@@ -852,7 +853,7 @@ createPathnamesPanel <- function(parent) {
 
         antibodyfile.button <- tkbutton(antibodyfile.frame,
                                         command=chooseAntibodyFileCB,
-                                        text="...")
+                                        text=ellipsis)
         tkgrid(antibodyfile.entry,
                antibodyfile.button)
         tkgrid.configure(antibodyfile.entry,
@@ -871,7 +872,7 @@ createPathnamesPanel <- function(parent) {
 
         aliasfile.button <- tkbutton(aliasfile.frame,
                                      command=chooseAliasFileCB,
-                                     text="...")
+                                     text=ellipsis)
         tkgrid(aliasfile.entry,
                aliasfile.button)
         tkgrid.configure(aliasfile.entry,
@@ -894,7 +895,7 @@ createPathnamesPanel <- function(parent) {
 
         designfile.button <- tkbutton(designfile.frame,
                                       command=chooseDesignFileCB,
-                                      text="...")
+                                      text=ellipsis)
         tkgrid(designfile.entry,
                designfile.button)
         tkgrid.configure(designfile.entry,
@@ -913,7 +914,7 @@ createPathnamesPanel <- function(parent) {
 
         imgdir.button <- tkbutton(imgdir.frame,
                                   command=chooseImageDirectoryCB,
-                                  text="...")
+                                  text=ellipsis)
         tkgrid(imgdir.entry,
                imgdir.button)
         tkgrid.configure(imgdir.entry,
@@ -936,7 +937,7 @@ createPathnamesPanel <- function(parent) {
 
         outdir.button <- tkbutton(outdir.frame,
                                   command=chooseOutputDirectoryCB,
-                                  text="...")
+                                  text=ellipsis)
         tkgrid(outdir.entry,
                outdir.button)
         tkgrid.configure(outdir.entry,
@@ -972,20 +973,20 @@ createDesignParamsPanel <- function(parent) {
     stopifnot(is.tkwin(parent))
 
     ## Begin processing
-    class.args <- formals(SuperCurve::RPPADesignParams)
-    class.args$software <- local({
-                               readmethod.re <- "read\\."
-                               methods <- ls(pattern=readmethod.re,
-                                             env=getNamespace("SuperCurve"))
-                               sub(readmethod.re, "", methods)
-                           })
+    formal.args <- formals(SuperCurve::RPPADesignParams)
+    formal.args$software <- local({
+                                readmethod.re <- "read\\."
+                                methods <- ls(pattern=readmethod.re,
+                                              env=getNamespace("SuperCurve"))
+                                sub(readmethod.re, "", methods)
+                            })
     txtdir <- tclvalue(getenv("txtdir.var"))
 
     ## Prepare possible input values
     grouping.arg <- list(default="bySample",
-                         values=eval(class.args$grouping))
+                         values=eval(formal.args$grouping))
     ordering.arg <- list(default="decreasing",
-                         values=eval(class.args$ordering))
+                         values=eval(formal.args$ordering))
     center.arg <- list(default=as.character(FALSE),
                        values=as.character(c(TRUE, FALSE)))
     software.arg <- local({
@@ -996,13 +997,14 @@ createDesignParamsPanel <- function(parent) {
         value <- as.character(uservalue)
 cat(sprintf("%s: [%s] -> [%s]", rsrcName, uservalue, value))
 
-        values <- eval(class.args$software)
+        values <- eval(formal.args$software)
         x.default <- match(formals(SuperCurve::RPPA)$software, values)
         stopifnot(!is.na(x.default))
+cat(sprintf("\tdefault: [%s]", values[x.default]))
 
         x.match <- match(value, values, nomatch=x.default)
         default <- values[x.match]
-cat(sprintf("\t(default): [%s]\n", default))
+cat(sprintf("\tfinal: [%s]\n", default))
         list(default=as.character(default),
              values=as.character(values))
     })
@@ -1145,7 +1147,7 @@ createFitParamsPanel <- function(parent) {
 
 
     ## Begin processing
-    class.args <- formals(SuperCurve::RPPAFitParams)
+    formal.args <- formals(SuperCurve::RPPAFitParams)
 
     ## Prepare possible input values
     {
@@ -1153,11 +1155,47 @@ createFitParamsPanel <- function(parent) {
         measure.arg <- list(default="Mean.Net",
                             values=getIntensityMeasures(txtdir))
     }
-    model.arg <- list(default="loess",
-                      values=SuperCurve::getRegisteredModelKeys())
-    method.arg <- list(default="nlrob",
-                       values=eval(class.args$method))
-    trim.arg <- list(default=eval(class.args$trim))
+
+    model.arg <- local({
+        rsrcClass <- "FitModel"
+        rsrcName <- tolower(rsrcClass)
+        uservalue <- tclvalue(optiondb_get(rsrcName=rsrcName,
+                                           rsrcClass=rsrcClass))
+        value <- as.character(uservalue)
+cat(sprintf("%s: [%s] -> [%s]", rsrcName, uservalue, value))
+
+        values <- SuperCurve::getRegisteredModelKeys()
+        x.default <- match(formal.args$model, values)
+        stopifnot(!is.na(x.default))
+cat(sprintf("\tdefault: [%s]", values[x.default]))
+
+        x.match <- match(value, values, nomatch=x.default)
+        default <- values[x.match]
+cat(sprintf("\tfinal: [%s]\n", default))
+        list(default=as.character(default),
+             values=as.character(values))
+    })
+
+    method.arg <- local({
+        rsrcClass <- "FitMethod"
+        rsrcName <- tolower(rsrcClass)
+        uservalue <- tclvalue(optiondb_get(rsrcName=rsrcName,
+                                           rsrcClass=rsrcClass))
+        value <- as.character(uservalue)
+cat(sprintf("%s: [%s] -> [%s]", rsrcName, uservalue, value))
+
+        values <- eval(formal.args$method)
+        x.default <- 1
+cat(sprintf("\tdefault: [%s]", values[x.default]))
+
+        x.match <- match(value, values, nomatch=x.default)
+        default <- values[x.match]
+cat(sprintf("\tfinal: [%s]\n", default))
+        list(default=as.character(default),
+             values=as.character(values))
+    })
+
+    trim.arg <- list(default=eval(formal.args$trim))
     ci.arg <- list(default=as.character(FALSE),
                    values=as.character(c(TRUE, FALSE)))
     ignoreNegative.arg <- list(default=as.character(FALSE),
@@ -1286,15 +1324,15 @@ createSpatialAdjPanel <- function(parent) {
     stopifnot(is.tkwin(parent))
 
     ## Begin processing
-    class.args <- formals(SuperCurve:::spatialCorrection)
+    formal.args <- formals(SuperCurve:::spatialCorrection)
     measure <- tclvalue(getenv("measure.var"))
 
     ## Prepare possible input values
     spatial.arg <- list(default=as.character(TRUE),
                         values=as.character(c(TRUE, FALSE)))
-    cutoff.arg <- list(default=eval(class.args$cutoff))
-    k.arg <- list(default=eval(class.args$k))
-    gamma.arg <- list(default=eval(class.args$gamma))
+    cutoff.arg <- list(default=eval(formal.args$cutoff))
+    k.arg <- list(default=eval(formal.args$k))
+    gamma.arg <- list(default=eval(formal.args$gamma))
     plotSurface.arg <- list(default=as.character(FALSE),
                             values=as.character(c(TRUE, FALSE)))
 
@@ -1351,7 +1389,8 @@ createSpatialAdjPanel <- function(parent) {
         k.label <- tklabel(spatial.frame,
                            text="k:")
         k.entry <- tkentry(spatial.frame,
-                           textvariable=getenv("k.var"))
+                           textvariable=getenv("k.var"),
+                           width=as.integer(12))
 
         ## Create input section for 'gamma' argument
         gamma.spinbox.incr <- as.numeric(0.05)
@@ -1412,7 +1451,7 @@ createQCParamsPanel <- function(parent) {
     stopifnot(is.tkwin(parent))
 
     ## Begin processing
-    class.args <- pairlist(prefitqc=formals(SuperCurve::RPPASet)$doprefitqc)
+    formal.args <- pairlist(prefitqc=formals(SuperCurve::RPPASet)$doprefitqc)
 
     ## Prepare possible input values
     prefitqc.arg <- local({
@@ -1424,12 +1463,13 @@ createQCParamsPanel <- function(parent) {
 cat(sprintf("%s: [%s] -> [%s]", rsrcName, uservalue, value))
 
         values <- c(TRUE, FALSE)
-        x.default <- match(eval(class.args$prefitqc), values)
+        x.default <- match(eval(formal.args$prefitqc), values)
         stopifnot(!is.na(x.default))
+cat(sprintf("\tdefault: [%s]", values[x.default]))
 
         x.match <- match(value, values, nomatch=x.default)
         default <- values[x.match]
-cat(sprintf("\t(default): [%s]  final: [%s]\n", values[x.default], default))
+cat(sprintf("\tfinal: [%s]\n", default))
         list(default=as.character(default),
              values=as.character(values))
     })
@@ -2235,7 +2275,7 @@ performAnalysis <- function(settings) {
         question <- paste("Are you sure you want to terminate processing?",
                           "All work thus far will be lost...",
                           sep="\n\n")
-        if (!askyesno(default="yes",
+        if (!askyesno(default="no",
                       message=question,
                       title="Confirm")) {
             cat("**user canceled abort**", "\n")
@@ -2603,7 +2643,15 @@ supercurveGUI <- function() {
     ## Add entries to Tk option database
     local({
         ## Add "fake" resource values into options database
-        initOptions(list("*software"="microvigene"))
+        software  <- formals(RPPASet)$software
+        prefitqc  <- as.character(formals(RPPASet)$doprefitqc)
+        fitmethod <- eval(formals(RPPAFitParams)$method)[1]
+        fitmodel  <- formals(RPPAFitParams)$model
+
+        initOptions(list("*software"=software,
+                         "*prefitqc"=prefitqc,
+                         "*fitmethod"=fitmethod,
+                         "*fitmodel"=fitmodel))
 
         ## Add widget resource values into options database
         initOptions(list("*BannerFrame.Label.font"=bannerFont,
