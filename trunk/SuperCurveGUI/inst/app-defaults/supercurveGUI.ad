@@ -1,0 +1,11 @@
+!------------------------------------------------------------------------------
+!
+! App-defaults file for SuperCurveGUI.
+!
+!------------------------------------------------------------------------------
+
+*software:  singlesubgrid
+*fitmodel:  cobs
+*fitmethod: nls
+*prefitqc:  true
+
