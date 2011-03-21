@@ -1052,9 +1052,11 @@ cat(sprintf("\tfinal: [%s]\n", default))
         ## Create input section for 'center' argument
         center.label <- tklabel(design.frame,
                                 text="Center?:")
-        center.optmenu <- createOptionMenu(design.frame,
-                                           getenv("center.var"),
-                                           center.arg$values)
+        center.checkbox <- tkcheckbutton(design.frame,
+                                         offvalue="FALSE",
+                                         onvalue="TRUE",
+                                         text="",
+                                         variable=getenv("center.var"))
 
         ## Manage widgets
         tkgrid(grouping.label,
@@ -1062,7 +1064,7 @@ cat(sprintf("\tfinal: [%s]\n", default))
         tkgrid(ordering.label,
                ordering.optmenu)
         tkgrid(center.label,
-               center.optmenu)
+               center.checkbox)
 
         tkgrid.configure(grouping.label,
                          ordering.label,
@@ -1070,7 +1072,7 @@ cat(sprintf("\tfinal: [%s]\n", default))
                          sticky="e")
         tkgrid.configure(grouping.optmenu,
                          ordering.optmenu,
-                         center.optmenu,
+                         center.checkbox,
                          sticky="w")
     }
 
@@ -1268,16 +1270,20 @@ cat(sprintf("\tfinal: [%s]\n", default))
         ## Create input section for 'ci' argument
         ci.label <- tklabel(fit.frame,
                             text="Confidence Interval?:")
-        ci.optmenu <- createOptionMenu(fit.frame,
-                                       getenv("ci.var"),
-                                       ci.arg$values)
+        ci.checkbox <- tkcheckbutton(fit.frame,
+                                     offvalue="FALSE",
+                                     onvalue="TRUE",
+                                     text="",
+                                     variable=getenv("ci.var"))
 
         ## Create input section for 'ignoreNegative' argument
         ignoreNegative.label <- tklabel(fit.frame,
                                         text="Ignore Negative?:")
-        ignoreNegative.optmenu <- createOptionMenu(fit.frame,
-                                                   getenv("ignoreNegative.var"),
-                                                   ignoreNegative.arg$values)
+        ignoreNegative.checkbox <- tkcheckbutton(fit.frame,
+                                                 offvalue="FALSE",
+                                                 onvalue="TRUE",
+                                                 text="",
+                                         variable=getenv("ignoreNegative.var"))
 
         ## Manage widgets
         tkgrid(measure.label,
@@ -1289,9 +1295,9 @@ cat(sprintf("\tfinal: [%s]\n", default))
         tkgrid(trim.label,
                trim.spinbox)
         tkgrid(ci.label,
-               ci.optmenu)
+               ci.checkbox)
         tkgrid(ignoreNegative.label,
-               ignoreNegative.optmenu)
+               ignoreNegative.checkbox)
 
         tkgrid.configure(measure.label,
                          model.label,
@@ -1305,8 +1311,8 @@ cat(sprintf("\tfinal: [%s]\n", default))
                          model.optmenu,
                          method.optmenu,
                          trim.spinbox,
-                         ci.optmenu,
-                         ignoreNegative.optmenu,
+                         ci.checkbox,
+                         ignoreNegative.checkbox,
                          padx=c("0", "10m"),
                          sticky="w")
     }
@@ -1412,9 +1418,11 @@ createSpatialAdjPanel <- function(parent) {
         ## Create input section for 'plotSurface' argument
         plotSurface.label <- tklabel(spatial.frame,
                                      text="Plot Surface?:")
-        plotSurface.optmenu <- createOptionMenu(spatial.frame,
-                                                getenv("plotSurface.var"),
-                                                plotSurface.arg$values)
+        plotSurface.checkbox <- tkcheckbutton(spatial.frame,
+                                              offvalue="FALSE",
+                                              onvalue="TRUE",
+                                              text="",
+                                             variable=getenv("plotSurface.var"))
 
         ## Manage widgets
         tkgrid(cutoff.label,
@@ -1424,7 +1432,7 @@ createSpatialAdjPanel <- function(parent) {
         tkgrid(gamma.label,
                gamma.spinbox)
         tkgrid(plotSurface.label,
-               plotSurface.optmenu)
+               plotSurface.checkbox)
 
         tkgrid.configure(cutoff.label,
                          k.label,
@@ -1434,7 +1442,7 @@ createSpatialAdjPanel <- function(parent) {
         tkgrid.configure(cutoff.spinbox,
                          k.entry,
                          gamma.spinbox,
-                         plotSurface.optmenu,
+                         plotSurface.checkbox,
                          sticky="w")
     }
 
@@ -1496,17 +1504,19 @@ cat(sprintf("\tfinal: [%s]\n", default))
         ## Create input section for 'prefitqc' argument
         prefitqc.label <- tklabel(prefitqc.frame,
                                   text="Perform QC?:")
-        prefitqc.optmenu <- createOptionMenu(prefitqc.frame,
-                                             getenv("prefitqc.var"),
-                                             prefitqc.arg$values)
+        prefitqc.checkbox <- tkcheckbutton(prefitqc.frame,
+                                           offvalue="FALSE",
+                                           onvalue="TRUE",
+                                           text="",
+                                           variable=getenv("prefitqc.var"))
 
         ## Manage widgets
         tkgrid(prefitqc.label,
-               prefitqc.optmenu)
+               prefitqc.checkbox)
 
         tkgrid.configure(prefitqc.label,
                          sticky="e")
-        tkgrid.configure(prefitqc.optmenu,
+        tkgrid.configure(prefitqc.checkbox,
                          sticky="w")
     }
 
