@@ -6,6 +6,16 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.3.12
+
+
+BUG FIXES
+
+    o	Now resets par() to display two plots per window prior to any
+	new fit graph rendering attempts (PNG generation) for each slide.
+	This should correct issue reported by Doris.
+
+
 		CHANGES IN R VERSION 1.3.11
 
 
