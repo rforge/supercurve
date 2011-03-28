@@ -37,7 +37,7 @@ is.SuperCurveSettings(x)
   \item{designparams}{object of class \code{RPPADesignParams}}
   \item{fitparams}{object of class \code{RPPAFitParams}}
   \item{spatialparams}{object of class \code{RPPASpatialParams}, or \code{NULL}}
-  \item{doprefitqc}{logical scalar. If \code{TRUE}, perform pre-fit quality control.}
+  \item{doprefitqc}{logical scalar. If \code{TRUE}, performs pre-fit quality control.}
   \item{antibodyfile}{character string specifying filename containing mapping
     from quantification files to antibodies, or NULL}
   \item{software}{character string specifying the software used to generate

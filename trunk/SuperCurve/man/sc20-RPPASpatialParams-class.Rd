@@ -24,7 +24,7 @@ is.RPPASpatialParams(x)
     Default is \code{100}.}
   \item{gamma}{numeric scalar used as model parameter with value in
     closed interval [0..2]. Default is \code{0.1}.}
-  \item{plotSurface}{logical scalar. If \code{TRUE}, plot surfaces.
+  \item{plotSurface}{logical scalar. If \code{TRUE}, plots surfaces.
     Default is \code{FALSE}.}
   \item{object}{object of class \code{RPPASpatialParams}}
   \item{x}{object of class \code{RPPASpatialParams}}

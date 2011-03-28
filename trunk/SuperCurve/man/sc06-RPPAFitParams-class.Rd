@@ -90,15 +90,15 @@ is.RPPAFitParams(x)
     If \code{TRUE}, the trim level defaults to \code{2}, which was originally
     the hardcoded value; otherwise, raw concentrations are returned without
     trimming.}
-  \item{ci}{logical scalar. If \code{TRUE}, compute 90\% confidence intervals
+  \item{ci}{logical scalar. If \code{TRUE}, computes 90\% confidence intervals
     on the concentration estimates.}
-  \item{ignoreNegative}{logical scalar. If \code{TRUE}, convert negative values
+  \item{ignoreNegative}{logical scalar. If \code{TRUE}, converts negative values
     to \code{NA} before fitting the model.}
   \item{trace}{logical scalar passed to \link[stats]{nls} in the \code{method}
     portion of the routine}
-  \item{verbose}{logical scalar. If \code{TRUE}, print updates while fitting
+  \item{verbose}{logical scalar. If \code{TRUE}, prints updates while fitting
     the data}
-  \item{veryVerbose}{logical scalar. If \code{TRUE}, print voluminous updates
+  \item{veryVerbose}{logical scalar. If \code{TRUE}, prints voluminous updates
     as each individual dilution series is fitted}
   \item{warnLevel}{integer scalar used to set the \code{warn} option before
     calling \code{method}. Since this is wrapped in a \code{try} function, it
