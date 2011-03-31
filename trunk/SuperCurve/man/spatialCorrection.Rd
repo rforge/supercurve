@@ -89,8 +89,8 @@ spatialCorrection(rppa,
   would be \code{Adj.Mean.Net}.
 }
 \references{
-  Neeley ES.\cr
-  "Spatial Corrections for Reverse Phase Protein Arrays"\cr
+  Neeley ES, Baggerly KA, Kornblau SM.\cr
+  "Surface Adjustment of Reverse Phase Protein Arrays Using Positive Control Spots"\cr
   (in progress)
 }
 \author{
