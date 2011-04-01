@@ -4,6 +4,9 @@
 
 
 options(warn=1)
+options(show.nls.convergence=TRUE)
+Sys.setlocale("LC_COLLATE", "C")   # turn off locale-specific sorting, usually
+
 library(SuperCurve)
 library(robustbase)
 library(boot)
@@ -55,15 +58,20 @@ checkException(registerModel("bogus", 5),
 checkException(registerModel("bogus", "numeric"),
                msg="invalid classname - superclass not FitClass")
 
-fp <- RPPAFitParams("Mean.Net", model="logistic", method="nlrob")
-summary(fp)
-fit <- RPPAFitFromParams(jnk, dsn, fp)
-
-fp <- RPPAFitParams("Mean.Net", model="logistic", method="nls")
-summary(fp)
-fit <- RPPAFitFromParams(jnk, dsn, fp)
-
-fp <- RPPAFitParams("Mean.Net", model="logistic", method="nlrq")
-summary(fp)
-fit <- RPPAFitFromParams(jnk, dsn, fp)
+## Generate matrix[models, methods] of fits
+fitmodels <- SuperCurve:::getRegisteredModelKeys()
+fitmethods <- eval(formals(RPPAFitParams)$method)
+fits <- sapply(fitmethods,
+               function(fitmethod) {
+                   sapply(fitmodels,
+                          function(fitmodel, fitmethod) {
+                              message(sprintf("*** model: %s, method: %s",
+                                              fitmodel, fitmethod))
+                              fp <- RPPAFitParams("Mean.Net",
+                                                  model=fitmodel,
+                                                  method=fitmethod)
+                              RPPAFitFromParams(jnk, dsn, fp)
+                          },
+                          fitmethod=fitmethod)
+               })
 
