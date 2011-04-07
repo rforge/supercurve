@@ -19,6 +19,10 @@ NEW FEATURES
     o	Settings from previous run can now be trivially
 	reloaded, possibly tweaked, and rerun.
 
+    o	Progress is monitored such that user can tell what
+	stage the SuperCurve processing is currently at
+	and what slide is being handled.
+
 
 	**************************************************
 	*						 *
