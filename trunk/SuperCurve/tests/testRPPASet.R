@@ -175,13 +175,17 @@ checkException(write.summary(rppaset,
                              path=nosuchdir),
                msg="nonexistent output directory should fail")
 
-# KRC: This check is a pain-in-the-*** and does not do anything
-# on Windows.  It should be removed.
-#readonlydir <- file.path(persessionprojdir, "readonly")
-#dir.create(readonlydir, mode="0555")
-#checkException(write.summary(rppaset,
-#                             path=readonlydir),
-#               msg="readonly output directory should fail")
+switch(.Platform$OS.type,
+       unix={
+           readonlydir <- file.path(persessionprojdir, "readonly")
+           dir.create(readonlydir, mode="0555")
+           checkException(write.summary(rppaset,
+                                        path=readonlydir),
+                          msg="readonly output directory should fail")
+       },
+       windows={
+           cat("skipped readonly output directory test (not implemented)", "\n")
+       })
 
 ###########################
 ## tests of summary prefix
