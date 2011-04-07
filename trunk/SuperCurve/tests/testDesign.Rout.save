@@ -1,7 +1,8 @@
 
-R version 2.7.2 (2008-08-25)
-Copyright (C) 2008 The R Foundation for Statistical Computing
+R version 2.12.2 Patched (2011-03-13 r54781)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -25,12 +26,21 @@ Type 'q()' to quit R.
 Loading required package: MASS
 Loading required package: cobs
 Loading required package: SparseM
-Package SparseM (0.78) loaded.  To cite, see citation("SparseM")
+Package SparseM (0.86) loaded.
+	   To cite, see citation("SparseM")
+
+
+Attaching package: 'SparseM'
+
+The following object(s) are masked from 'package:base':
+
+    backsolve
+
 Loading required package: quantreg
 Loading required package: splines
 > source("checkFuncs")
 > 
-> extdata.dir <- system.file("extdata", package="SuperCurve") 
+> extdata.dir <- system.file("extdata", package="SuperCurve")
 > 
 > ## Get a valid RPPA object to get started
 > path <- file.path(extdata.dir, "rppaTumorData")
@@ -70,10 +80,14 @@ Error in match.arg(ordering) : 'arg' must be NULL or a character vector
 > checkIdentical(dp@controls, list("neg con", "pos con"))
 [1] TRUE
 > 
-> ## Specifying controls indirectly
-> ## :TODO: We need a slide design for this dataset before test can be added...
-> #dp <- RPPADesignParams(designfile=file.path(path, "slidedesign.tsv"))
-> #checkIdentical(dp@controls, list("neg con", "pos con"))
+> ## Specifying controls indirectly via slide design file
+> slidedesignfile="slidedesign.tsv"
+> dp <- RPPADesignParams(designfile=slidedesignfile, path=path)
+> checkIdentical(dp@designfile, file.path(path, slidedesignfile))
+[1] TRUE
+> dsn <- RPPADesignFromParams(jnk, dp)
+> checkIdentical(dsn@controls, list("neg con", "pos con"))
+[1] TRUE
 > 
 > ## This is for showing off the plot, where the controls dominate
 > dp <- RPPADesignParams(grouping="bySample")
@@ -170,14 +184,20 @@ Slot "grouping":
 Slot "ordering":
 [1] "decreasing"
 
-Slot "alias":
-list()
-
 Slot "center":
 [1] TRUE
 
 Slot "controls":
-list()
+NULL
+
+Slot "alias":
+NULL
+
+Slot "aliasfile":
+NULL
+
+Slot "designfile":
+NULL
 
 > checkException(RPPADesignParams(center="x"),
 +                msg="character value should fail")
@@ -197,14 +217,14 @@ Error in RPPADesignParams(center = c(TRUE, FALSE)) :
 > checkException(RPPADesignFromParams(jnk, dp),
 +                msg="too few list components should fail")
 Error in RPPADesignFromParams(jnk, dp) : 
-  argument 'alias' must be of length 2 or greater
+  slot 'alias' missing components: Alias, Sample
 [1] TRUE
 > 
 > dp <- RPPADesignParams(alias=list(foo=1, bar=2))
 > checkException(RPPADesignFromParams(jnk, dp),
 +                msg="missing reqd list components should fail")
 Error in RPPADesignFromParams(jnk, dp) : 
-  argument 'alias' missing components: Alias, Sample
+  slot 'alias' missing components: Alias, Sample
 [1] TRUE
 > 
 > ## :TODO: Lack an example of this in actual usage...
