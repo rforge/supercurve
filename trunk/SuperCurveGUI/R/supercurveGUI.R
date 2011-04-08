@@ -2460,8 +2460,7 @@ buildMenus <- function(parent) {
         ##---------------------------------------------------------------------
         ## Display user guide in web browser window.
         userguideCB <- function() {
-            ## :TEMPORARY: Placeholder until user guide written...
-            userguide.url <- "http://odin.mdacc.tmc.edu/~plroebuck/supercurve/UserGuide.html"
+            userguide.url <- "http://bioinformatics.mdanderson.org/Software/supercurve/UserGuide.html"
 
             ## Ask web browser to display the URL
             browseURL(URLencode(userguide.url))
