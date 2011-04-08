@@ -1928,11 +1928,11 @@ finalStepCB <- function() {
                                      justify="left",
                                      text=labelstring),
            pady="8m")
-    labelstring <- "Convert to single main row/col layout"
+    labelstring <- "Convert to single subgrid layout"
     tkpack(layout.checkbox <- tkcheckbutton(command.area,
                                             justify="left",
                                             text=labelstring,
-                                            variable=getenv("idiot.layout")),
+                                            variable=getenv("singlesubgrid.layout")),
            pady="8m")
 
     ## Create action area
@@ -2619,11 +2619,11 @@ writeGridToFile <- function(grid.df, pathname) {
 ##-----------------------------------------------------------------------------
 ## Converts from true layout to bastardized one used by labs for certain
 ## datasets.
-truth2idiot <- function(grid.df) {
-    .appEntryStr("truth2idiot")
+truth2singlesubgrid <- function(grid.df) {
+    .appEntryStr("truth2singlesubgrid")
     stopifnot(is.data.frame(grid.df))
 
-    ## Re-arrange the row order into 'idiot' order
+    ## Re-arrange the row order into 'singlesubgrid' order
     orig.ord <- seq_len(nrow(grid.df))    # 1..5808
     n.mr <- max(grid.df$Main.Row)    # 4
     n.mc <- max(grid.df$Main.Col)    # 12
@@ -2644,25 +2644,25 @@ truth2idiot <- function(grid.df) {
         }
         new.ord <- rbind(new.ord, mr)
     }
-    idiot.ord <- as.vector(t(new.ord))
+    singlesubgrid.ord <- as.vector(t(new.ord))
 
-    ## Idiot design layout
-    idiot.df <- grid.df[idiot.ord, ]
+    ## Single subgrid design layout
+    singlesubgrid.df <- grid.df[singlesubgrid.ord, ]
     location.colnames <- 1:4
-    truth.loc.df <- idiot.df[, location.colnames]
+    truth.loc.df <- singlesubgrid.df[, location.colnames]
     names(truth.loc.df) <- c("Main.Row.Real",
                              "Main.Col.Real",
                              "Sub.Row.Real",
                              "Sub.Col.Real")
-    sr.idiot <- rep(seq_len(n.mr * n.sr), each=(n.mc * n.sc))
-    sc.idiot <- rep(seq_len(n.mc * n.sc), (n.mr * n.sr))
-    idiot.df$Main.Row <- as.integer(1)
-    idiot.df$Main.Col <- as.integer(1)
-    idiot.df$Sub.Row  <- as.integer(sr.idiot)
-    idiot.df$Sub.Col  <- as.integer(sc.idiot)
+    sr.singlesubgrid <- rep(seq_len(n.mr * n.sr), each=(n.mc * n.sc))
+    sc.singlesubgrid <- rep(seq_len(n.mc * n.sc), (n.mr * n.sr))
+    singlesubgrid.df$Main.Row <- as.integer(1)
+    singlesubgrid.df$Main.Col <- as.integer(1)
+    singlesubgrid.df$Sub.Row  <- as.integer(sr.singlesubgrid)
+    singlesubgrid.df$Sub.Col  <- as.integer(sc.singlesubgrid)
 
     ## Append actual location columns before returning data frame
-    return(cbind(idiot.df, truth.loc.df))
+    return(cbind(singlesubgrid.df, truth.loc.df))
 }
 
 
@@ -2672,9 +2672,18 @@ saveGrid <- function(subgrid.df) {
     .appEntryStr("saveGrid")
     stopifnot(is.data.frame(subgrid.df))
 
+    value <- tclvalue(getenv("singlesubgrid.layout"))
+    layoutAsSingleSubgrid <- as.logical(as.integer(value))
+
+    defaultname <- if (!layoutAsSingleSubgrid) {
+                       "slidedesign.tsv"
+                   } else {
+                       "slidedesign-singlesubgrid.tsv"
+                   }
+
     pathname <- tclvalue(tkgetSaveFile(title="Save Grid",
                                        defaultextension=".tsv",
-                                       initialfile="slidedesign.tsv",
+                                       initialfile=defaultname,
                                        parent=getenv("toplevel")))
     if (!nzchar(pathname)) {
         ## User canceled the save dialog
@@ -2682,10 +2691,8 @@ saveGrid <- function(subgrid.df) {
     }
 
     grid.df <- createGrid(subgrid.df)
-
-    idiot.layout <- as.integer(tclvalue(getenv("idiot.layout")))
-    if (as.logical(idiot.layout)) {
-        grid.df <- truth2idiot(grid.df)
+    if (layoutAsSingleSubgrid) {
+        grid.df <- truth2singlesubgrid(grid.df)
     }
 
     return(writeGridToFile(grid.df, pathname))
@@ -2885,14 +2892,27 @@ buildMenus <- function(parent) {
 
 
         ##---------------------------------------------------------------------
+        ## Display user guide in web browser window.
+        userguideCB <- function() {
+            ## :TODO: Update URL to point to SlideDesignerGUI user guide
+            userguide.url <- "http://bioinformatics.mdanderson.org/Software/supercurve/"
+
+            ## Ask web browser to display the URL
+            browseURL(userguide.url)
+        }
+
+
+        ##---------------------------------------------------------------------
         ## Display about dialog.
         aboutCB <- function() {
 
             ##-----------------------------------------------------------------
             ## Returns application version string.
             getAppVersionLabelstring <- function(default="NA") {
+                ## Check arguments
                 stopifnot(is.character(default) && length(default) == 1)
 
+                ## Begin processing
                 pkgname <- getPackageName()
                 if (pkgname == ".GlobalEnv") {
                     paste("Version:", default, "(unpackaged)")
@@ -2934,6 +2954,11 @@ buildMenus <- function(parent) {
               "command",
               label="Overview",
               command=overviewCB)
+## :TODO: Disabled until user guide written...
+##        tkadd(help.menu,
+##              "command",
+##              label="User Guide",
+##              command=userguideCB)
         tkadd(help.menu,
               "command",
               label="About SlideDesignerGUI",
@@ -2957,10 +2982,17 @@ appExit <- function() {
     terminate <- function() {
         .appEntryStr("terminate")
 
+        tclupdate("idletasks")
+
         ## Unmap toplevel
         tkwm.withdraw(toplevel <- getenv("toplevel"))
 
-        tclupdate("idletasks")
+        ## Arrange for server resource cleanup
+        for (font in getenv("fonts")) {
+            on.exit(tkfont.delete(font))
+        }
+
+        ## Destroy toplevel
         tkdestroy(toplevel)
     }
 
@@ -2998,7 +3030,6 @@ slidedesignerGUI <- function() {
                       family="helvetica",
                       size=18,
                       weight="bold")
-        on.exit(tkfont.delete(bannerFont))
     }
 
     ## Add entries to Tk option database
@@ -3049,7 +3080,7 @@ slidedesignerGUI <- function() {
                      dilution.nseries.row=tclVar("1"),
                      dilution.steprate=tclVar("2"),
                      dirty=FALSE,
-                     idiot.layout=tclVar("0"),
+                     fonts=c(bannerFont),
                      labelstring="Press one of the buttons below.",
                      left.frame=left.frame,
                      nmainrow=tclVar("4"),
@@ -3059,6 +3090,7 @@ slidedesignerGUI <- function() {
                      pcseries=list(),
                      pcseriesgrid=matrix(as.numeric(0), nrow=1, ncol=1),
                      right.frame=right.frame,
+                     singlesubgrid.layout=tclVar("0"),
                      subgrid.df=NULL,
                      state="initial",
                      subgrid.frame=tklabel(toplevel),      # placeholder
@@ -3244,8 +3276,13 @@ slidedesignerGUI <- function() {
     ## Process once mapped so window sizes are known...
     tclafter.idle(wmMinSize)
 
-    ## Map window manager's close button to exit function
-    tkwm.protocol(toplevel, "WM_DELETE_WINDOW", appExit)
+    ## Handle WM close button
+    tkwm.protocol(toplevel,
+                  "WM_DELETE_WINDOW",
+                  function() {
+                      message("[WM close: toplevel]")
+                      appExit()
+                  })
 
     ## Give R some time to process its event loop
     tclafter.idle(idleTask)
