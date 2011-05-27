@@ -39,6 +39,7 @@ is.RPPASet <- function(x) {
     ## Begin processing
     saved.par <- par(no.readonly=TRUE)
     on.exit(par(saved.par))
+    fitdev <- dev.cur()
 
     ## Use red/yellow/green palette for residual plots.
     ## From RColorBrewer palette RdYlGn
@@ -104,6 +105,7 @@ is.RPPASet <- function(x) {
                  width=640,
                  height=640)
         dev.off()
+        dev.set(fitdev)
 
         ##
         ## Second pair of plots
@@ -141,6 +143,7 @@ is.RPPASet <- function(x) {
                  width=640,
                  height=640)
         dev.off()
+        dev.set(fitdev)
     }
 }
 
