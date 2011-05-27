@@ -200,6 +200,52 @@ is.RPPASet <- function(x) {
 
 
 ##-----------------------------------------------------------------------------
+.plotProbabilityOfGoodSlide <- function(qcprobs,
+                                        good.cutoff=0.8) {
+    stopifnot(is.numeric(qcprobs)     && length(qcprobs) >= 1)
+    stopifnot(is.numeric(good.cutoff) && length(good.cutoff) == 1)
+    stopifnot(.isProbability(qcprobs))
+    stopifnot(.isProbability(good.cutoff))
+
+    nslides <- length(qcprobs)
+    rating <- rep("poor", len=nslides)
+    rating[which(qcprobs >= good.cutoff)] <- "good"
+
+    rating.fac <- ordered(rating, levels=c("poor", "good"))
+    col.qcprobs <- c("red", "green")
+    stopifnot(nlevels(rating.fac) == length(col.qcprobs))
+
+    plot(qcprobs,
+         las=1,
+         main="Predicted Slide Quality",
+         sub=sprintf("#Good = %d, #Poor = %d",
+                     ngood <- sum(rating == "good"),
+                     npoor <- nslides - ngood),
+         type='n',
+         yaxt='n',
+         ylab="Probability of Good Slide",
+         ylim=0:1)
+    mtext(side=3, paste("cutoff =", good.cutoff))
+    axis(2, at=seq(0, 1, by=0.1), las=1)
+    rect(xleft=1,
+         ybottom=c(0, good.cutoff),
+         xright=nslides,
+         ytop=c(good.cutoff, 1),
+         col=c('lightpink', 'lightgreen'),
+         border=NA)
+    text(x=nslides/2,
+         y=c(good.cutoff/2, 1-((1-good.cutoff)/2)),
+         labels=toupper(levels(rating.fac)),
+         cex=2)
+    abline(h=good.cutoff)
+    points(qcprobs,
+           bg=col.qcprobs[rating.fac],
+           col='black',
+           pch=21)
+}
+
+
+##-----------------------------------------------------------------------------
 ## See R FAQ (8.1 How should I write summary methods?)
 setMethod("summary", signature(object="RPPASet"),
           function(object,
@@ -496,6 +542,7 @@ RPPASet <- function(path,
         txtfiles[!settingsfile.tf]
     }
 
+
     ## Begin processing
 
     ## Record the call made to this method, but replace 'monitor'.
@@ -696,6 +743,18 @@ RPPASet <- function(path,
             }
             progressValue(monitor) <- i
         }
+
+        ## Plot 'goodness of slide' values
+        dev.new(title="Predicted Slide Quality Plot")
+        tryCatch({
+                     qcprobs <- sapply(prefitqcs, qcprob)
+                     qcprobs[is.na(qcprobs)] <- 0
+                     .plotProbabilityOfGoodSlide(qcprobs)
+                 },
+                 error=function(e) {
+                     message("cannot plot slide quality probabilities")
+                     warning(conditionMessage(e), immediate.=TRUE)
+                 })
     } else {
         prefitqc.tf <- rep(NA, length(prefitqc.tf))
     }
