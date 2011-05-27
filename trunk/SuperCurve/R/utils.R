@@ -101,6 +101,12 @@
 
 
 ##-----------------------------------------------------------------------------
+.isProbability <- function(x) {
+    isTRUE(is.numeric(x) && (x >= 0 && x <= 1))
+}
+
+
+##-----------------------------------------------------------------------------
 .isPackageInstalled <- function(pkgname) {
     stopifnot(is.character(pkgname) && length(pkgname) == 1)
     nzchar(system.file(package=pkgname))
