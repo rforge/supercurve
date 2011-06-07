@@ -6,13 +6,27 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 2.0.1
+
+
+NEW FEATURES
+
+    o	Each analysis performed will be logged in its own logfile.
+
+
+BUG FIXES
+
+    o	Workaround for issue where occasionally tabs would be missing
+	from the user interface.
+
+    o	Fixed minor issue with console diversions not shutting down
+	after each analysis.
+
+
 		CHANGES IN R VERSION 2.0.0
 
 
 SIGNIFICANT USER-VISIBLE CHANGES
-
-
-NEW FEATURES
 
     o	Completely redesigned tabbed user interface.
 
