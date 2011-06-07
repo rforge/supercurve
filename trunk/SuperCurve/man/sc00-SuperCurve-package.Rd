@@ -6,19 +6,13 @@
   A package for analyzing reverse phase protein lysate arrays (RPPA).
 }
 \details{
-  %% This is absolutely unmaintainable, and it is computed
-  %% automatically for installed packages and displayed correctly
-  %% either by
-  %%    help(package="SuperCurve")
-  %% or by
-  %%    library(help="SuperCurve")
-%  \tabular{ll}{
-%    Package: \tab SuperCurve\cr
-%    Type: \tab Package\cr
-%    Version: \tab 1.4.0\cr
-%    Date: \tab 2011-04-01\cr
-%    License: \tab See LICENSE for license information\cr
-%  }
+  \tabular{ll}{
+    Package: \tab SuperCurve\cr
+    Type: \tab Package\cr
+    Version: \tab 1.4.1\cr
+    Date: \tab 2011-05-26\cr
+    License: \tab See LICENSE for license information\cr
+  }
 
   For a complete list of functions, use \code{library(help="SuperCurve")}.
   For a high-level summary of the changes for each revision, use
