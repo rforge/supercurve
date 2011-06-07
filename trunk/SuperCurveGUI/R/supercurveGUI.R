@@ -1896,13 +1896,13 @@ monitorAnalysis <- function(dialog,
         nslides <- length(fitted)
         nfitted <- length(fitted[fitted])
         if (nfitted == 0) {
-            return("Processing completed but no slides were fitted.")
-        }
-
-        if (nfitted == nslides) {
-            ngettext(nslides,
-                     "Fitted single slide.",
-                     sprintf("Fitted all %d slides.", nslides))
+            "Processing completed but no slides were fitted."
+        } else if (nfitted == nslides) {
+            ## Approximate ngettext() with three input values
+            switch(EXPR=as.character(nslides),
+                   "1" = "Fitted single slide.",
+                   "2" = "Fitted both slides.",
+                   sprintf("Fitted all %d slides.", nslides))
         } else {
             sprintf("Fitted %d of %d slides. See summary file for details.",
                     nfitted,
