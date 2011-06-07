@@ -3,6 +3,26 @@
 \encoding{UTF-8}
 
 % Production release
+\section{CHANGES IN VERSION 2.0.1}{
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Each analysis performed will be logged in its own logfile.
+    }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+      \item Workaround for issue where occasionally tabs would be missing
+        from the user interface.
+    }
+    \itemize{
+      \item Fixed minor issue with console diversions not shutting down
+        after each analysis.
+    }
+  }
+}
+
+% Production release
 \section{CHANGES IN VERSION 2.0.0}{
   \subsection{SIGNIFICANT USER-VISIBLE CHANGES}{
     \itemize{
