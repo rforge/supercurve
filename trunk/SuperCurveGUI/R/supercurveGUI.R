@@ -2051,7 +2051,7 @@ displayProgressDialog <- function(dialog,
         cat("dialog reqwidth:", dialog.reqwidth, "\n")
         cat("dialog reqheight:", dialog.reqheight, "\n")
 
-        dialog.width <- as.integer(toplevel.reqwidth) * 2
+        dialog.width <- as.integer(toplevel.reqwidth) * as.integer(2)
         dialog.height <- as.integer(dialog.reqheight)
 
         ## Update geometry
@@ -2352,15 +2352,6 @@ performAnalysis <- function(settings) {
 
     ## Display progress dialog
     displayProgressDialog(progressDialog, monitor, settings)
-}
-
-
-##-----------------------------------------------------------------------------
-## Idle task that simply reschedules itself. Although it may seem pointless, it
-## gives R a constant sliver of time (w/o user interaction) for its event loop.
-idleTask <- function() {
-    tclupdate()
-    tclafter(2000, idleTask)
 }
 
 
@@ -2757,6 +2748,19 @@ supercurveGUI <- function() {
     ##-------------------------------------------------------------------------
     ##
     analyzeCB <- function() {
+
+        ##---------------------------------------------------------------------
+        ## Give R some time to process its event loop
+        idleTask <- function() {
+            tclupdate()
+            if (reschedule) {
+                tclafter(2000, idleTask)
+            }
+        }
+
+        reschedule <- TRUE
+        tclafter.idle(idleTask)
+
         Try({
             ## Create settings class from inputs
             settings <- createSettingsFromUserInput()
@@ -2766,6 +2770,8 @@ supercurveGUI <- function() {
             ## Perform analysis
             performAnalysis(settings)
         })
+
+        reschedule <- FALSE
     }
 
     ## Create action area
@@ -2794,9 +2800,6 @@ supercurveGUI <- function() {
                       message("[WM close: toplevel]")
                       appExit()
                   })
-
-    ## Give R some time to process its event loop
-    tclafter.idle(idleTask)
 }
 
 scui <- supercurveGUI
