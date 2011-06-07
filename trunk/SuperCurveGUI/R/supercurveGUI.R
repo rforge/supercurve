@@ -1916,12 +1916,18 @@ monitorAnalysis <- function(dialog,
 
     ## Log session output
     outputdir <- as(settings@outdir, "character")
-    logfilename <- file.path(outputdir, "session.log")
-    sessionlog <- file(logfilename, open="w")
-    on.exit(close(sessionlog))
-
+    fnamebase <- strftime(Sys.time(), "session-%Y%m%dT%H%M")   # ISO-8601
+    log.pathname <- file.path(outputdir,
+                              paste(fnamebase, "log", sep="."))
+    sessionlog <- file(log.pathname, open="w")
     sink(sessionlog, type="output")
     sink(sessionlog, type="message")
+    on.exit({
+        ## End diversions (LIFO)
+        sink(type="message")
+        sink(type="output")
+    })
+    on.exit(close(sessionlog), add=TRUE)
 
     ## Start...
     show(settings)
@@ -2014,10 +2020,6 @@ cat("monitor@label.var:", tclvalue(monitor@label.var), "\n")
                         relief="raised",
                         text="Close")
         })
-
-    ## End diversions (LIFO)
-    sink(type="message")
-    sink(type="output")
 }
 
 
