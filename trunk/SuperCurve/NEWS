@@ -6,6 +6,21 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.4.1
+
+
+NEW FEATURES
+
+    o	Added QC plot displaying slide quality probabilities to
+	standard processing.
+
+
+BUG FIXES
+
+    o	Corrected minor issue when plotting where current device
+	was not being set correctly during fit graph generation.
+
+
 		CHANGES IN R VERSION 1.4.0
 
 
