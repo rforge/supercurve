@@ -2742,6 +2742,18 @@ supercurveGUI <- function() {
     createQCParamsPanel(qcparamspage)
     tclupdate()
 
+    ## :BUG: all background tasks are not being processed by tcltk package.
+    ## Contact Peter Dalgaard about this problem!
+    ## :WORKAROUND: Perform manual refresh if background task still exists
+    ## to ensure all tabs are displayed on GUI.
+    {
+        userdata <- get("userdata", envir=tabnotebook$env)
+        if (nzchar(userdata$Pending)) {
+            message(sprintf("\t@@performing manual refresh (workaround)"))
+            tclish:::.tabnotebook_refresh(tabnotebook)
+        }
+    }
+
     ## :KRC: Post-processing steps (truncation, normalization) should be added.
     ## Again, this needs to be data-driven.
 
