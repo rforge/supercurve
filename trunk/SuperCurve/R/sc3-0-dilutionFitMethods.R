@@ -80,6 +80,17 @@ setMethod("fitSlide", signature(object="FitClass"),
 
 
 ##-----------------------------------------------------------------------------
+setMethod("fitted", signature(object="FitClass"),
+          function(object,
+                   conc,
+                   ...) {
+    stop(sprintf("%s method must be implemented by any subclass of %s",
+                 sQuote("fitted"),
+                 sQuote("FitClass")))
+})
+
+
+##-----------------------------------------------------------------------------
 ## Returns concentration and intensity cutoffs for the model
 setMethod("trimConc", signature(object="FitClass"),
           function(object,
