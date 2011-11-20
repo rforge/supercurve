@@ -37,9 +37,6 @@
 
 ##-----------------------------------------------------------------------------
 .onLoad <- function(libname, pkgname) {
-    ## In case namespace is loaded (via import) by package that doesn't depend
-    ## on S4 methods and used in a session with non-default set of packages
-    require(methods)
 
     ##-------------------------------------------------------------------------
     ## Preflight check use of ImageMagick 'convert' binary
