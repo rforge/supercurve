@@ -7,6 +7,15 @@
 	**************************************************
 
 
+                CHANGES IN R VERSION 0.8.3
+
+
+BUG FIXES
+
+    o   Updated .onLoad() method to remove corner-case package
+        loading patch (for R-2-14 compatibility).
+
+
 		CHANGES IN R VERSION 0.8.2
 
 
