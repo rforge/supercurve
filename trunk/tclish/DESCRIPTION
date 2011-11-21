@@ -1,6 +1,6 @@
 Package: tclish
-Version: 0.8.2
-Date: 2011/01/28
+Version: 0.8.3
+Date: 2011/11/20
 Title: Tcl/Tk Utilities Package
 Author: P. Roebuck
 Maintainer: P. Roebuck <plroebuck@mdanderson.org>
