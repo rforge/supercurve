@@ -17,6 +17,11 @@ elapsed(object, \dots)
   \item{object}{an object for which an elapsed time is desired}
   \item{\dots}{additional arguments affecting the elapsed time produced}
 }
+\value{
+  The form of the value returned by \code{elapsed} depends on the
+  class of its argument. See the documentation of the particular methods
+  for details of what is produced by that method.
+}
 \author{
   P. Roebuck \email{plroebuck@mdanderson.org}
 }
