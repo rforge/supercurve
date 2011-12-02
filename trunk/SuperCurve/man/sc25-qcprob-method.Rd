@@ -5,10 +5,22 @@
 \docType{methods}
 \title{Method "qcprob"}
 \description{
-  Returns a numeric scalar representing the probability of a good slide.
+  \code{qcprob} is a generic function used to produce a QC probability
+  based on the input object. The method invokes particular
+  \code{\link{methods}} which depend on the \code{\link{class}} of the
+  first argument.
+}
+\usage{
+qcprob(object, \dots)
+}
+\arguments{
+  \item{object}{an object for which a QC probability is desired}
+  \item{\dots}{additional arguments affecting the QC probability produced}
 }
 \value{
-  The \code{qcprob} method returns a numeric scalar.
+  The form of the value returned by \code{qcprob} depends on the
+  class of its argument. See the documentation of the particular methods
+  for details of what is produced by that method.
 }
 \author{
   P. Roebuck \email{plroebuck@mdanderson.org}
