@@ -5,9 +5,24 @@
 \docType{methods}
 \title{Method "paramString"}
 \description{
-  Returns a string representation of an object's slots.
+  \code{paramString} is a generic function used to produce a string
+  representation of an object's slots. The method invokes particular
+  \code{\link{methods}} which depend on the \code{\link{class}} of the
+  first argument.
+}
+\usage{
+paramString(object, \dots)
+}
+\arguments{
+  \item{object}{an object for which a string representation is desired}
+  \item{\dots}{additional arguments affecting the string representation
+    produced}
 }
 \value{
+  The form of the value returned by \code{paramString} depends on the
+  class of its argument. See the documentation of the particular methods
+  for details of what is produced by that method.\cr
+
   The \code{paramString} method returns a character vector, possibly
   empty but never \code{NULL}.
 }
