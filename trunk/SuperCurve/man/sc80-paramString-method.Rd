@@ -11,7 +11,7 @@
   first argument.
 }
 \usage{
-paramString(object, \dots)
+\S4method{paramString}{ANY}(object, \dots)
 }
 \arguments{
   \item{object}{an object for which a string representation is desired}
@@ -21,8 +21,8 @@ paramString(object, \dots)
 \value{
   The form of the value returned by \code{paramString} depends on the
   class of its argument. See the documentation of the particular methods
-  for details of what is produced by that method.\cr
-
+  for details of what is produced by that method.
+  \cr
   The \code{paramString} method returns a character vector, possibly
   empty but never \code{NULL}.
 }

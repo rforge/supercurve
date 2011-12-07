@@ -5,16 +5,24 @@
 \docType{methods}
 \title{Method "write.summary"}
 \description{
-  This method could be thought of as a \code{summary} method that writes
-  to disk, saving the summary information in an external format.
+  \code{write.summary} is a generic function used like a \code{summary} method
+  that writes to disk, saving summary information from the object in an
+  external format. The method invokes particular \code{\link{methods}} which
+  depend on the \code{\link{class}} of the first argument.
 }
 \usage{
-write.summary(object,
-              \dots)
+\S4method{write.summary}{ANY}(object, \dots)
 }
 \arguments{
-  \item{object}{object of implementing class}
-  \item{\dots}{extra arguments for generic or plotting routines}
+  \item{object}{an object for which saving summary information externally is
+    desired}
+  \item{\dots}{additional arguments affecting the summary information
+    produced}
+}
+\note{
+  Exactly what is written to disk by \code{write.summary} depends on the
+  class of its argument. See the documentation of the particular methods
+  for details of what is written by that method.
 }
 \author{
   P. Roebuck \email{plroebuck@mdanderson.org}

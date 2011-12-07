@@ -11,7 +11,7 @@
   first argument.
 }
 \usage{
-elapsed(object, \dots)
+\S4method{elapsed}{ANY}(object, \dots)
 }
 \arguments{
   \item{object}{an object for which an elapsed time is desired}
