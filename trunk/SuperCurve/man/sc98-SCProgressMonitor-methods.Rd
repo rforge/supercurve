@@ -14,8 +14,16 @@
 \docType{methods}
 \title{Methods for Manipulating SuperCurve Progess Models}
 \description{
-  These methods provide accessors and mutators for SuperCurve-specific
-  additions of Progress-related subclasses.
+  These are generic functions used as accessors and mutators for
+  SuperCurve-specific additions for objects of Progress-related subclasses.
+
+  \describe{
+    \item{\code{progressMarquee}:}{determines marquee "applied" to the task.}
+    \item{\code{progressStage}:}{determines current stage of the task.}
+  }
+
+  The method invokes particular \code{\link{methods}}
+  which depend on the \code{\link{class}} of the first argument.
 }
 \usage{
 \S4method{progressMarquee}{ANY}(object)
@@ -26,11 +34,16 @@
 \arguments{
   \item{object}{object of (sub)class \code{SCProgressMonitor}}
   \item{value}{new value to apply}
-  \item{\dots}{extra arguments for generic routines}
+  \item{\dots}{additional arguments affecting the updated values}
 }
 \details{
   All functions are generic: you must write methods to handle specific classes
   of objects.
+}
+\value{
+  The form of the value returned by these methods depends on the
+  class of its argument. See the documentation of the particular methods
+  for details of what is produced by that method.
 }
 \author{
   P. Roebuck \email{plroebuck@mdanderson.org}

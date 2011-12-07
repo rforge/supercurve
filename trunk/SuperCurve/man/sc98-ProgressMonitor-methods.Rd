@@ -38,7 +38,25 @@
 \docType{methods}
 \title{Methods for Manipulating Progess Models}
 \description{
-  These methods provide accessors and mutators for Progress-related classes.
+  These are generic functions used as accessors and mutators for objects of
+  Progress-related classes.
+
+  \describe{
+    \item{\code{progressDone}:}{determines whether the task has been
+      completed.}
+    \item{\code{progressError}:}{determines whether an error occurred
+      attempting to complete the task.}
+    \item{\code{progressLabel}:}{determines label "applied" to the task.}
+    \item{\code{progressMinimum}:}{determines value associated with
+      initiating the task.}
+    \item{\code{progressMaximum}:}{determines value associated with
+      completing the task.}
+    \item{\code{progressMaximum}:}{determines value associated with
+      percentage of the task completed.}
+  }
+
+  The method invokes particular \code{\link{methods}}
+  which depend on the \code{\link{class}} of the first argument.
 }
 \usage{
 \S4method{progressDone}{ANY}(object)
@@ -57,10 +75,16 @@
 \arguments{
   \item{object}{object of (sub)class \code{ProgressMonitor}}
   \item{value}{new value to apply}
-  \item{\dots}{extra arguments for generic routines}
+  \item{\dots}{additional arguments affecting the updated values}
 }
 \details{
-  All functions are generic: you must write methods to handle specific classes  of objects.
+  All functions are generic: you must write methods to handle specific classes
+  of objects.
+}
+\value{
+  The form of the value returned by these methods depends on the
+  class of its argument. See the documentation of the particular methods
+  for details of what is produced by that method.
 }
 \author{
   P. Roebuck \email{plroebuck@mdanderson.org}
