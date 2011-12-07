@@ -51,7 +51,8 @@
 }
 \section{Methods}{
   \describe{
-    \item{qcprob(object, \dots)}{Calculates the probability of good slide.}
+    \item{qcprob(object, \dots)}{Calculates the probability of good slide,
+      returned as numeric scalar.}
     \item{summary(object, \dots)}{Prints a summary of the underlying
       data frame.}
   }
