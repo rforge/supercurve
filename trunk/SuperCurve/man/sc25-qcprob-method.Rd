@@ -5,13 +5,13 @@
 \docType{methods}
 \title{Method "qcprob"}
 \description{
-  \code{qcprob} is a generic function used to produce a QC probability
-  based on the input object. The method invokes particular
+  \code{qcprob} is a generic function used to produce a quality control
+  probability based on the input object. The method invokes particular
   \code{\link{methods}} which depend on the \code{\link{class}} of the
   first argument.
 }
 \usage{
-qcprob(object, \dots)
+\S4method{qcprob}{ANY}(object, \dots)
 }
 \arguments{
   \item{object}{an object for which a QC probability is desired}
