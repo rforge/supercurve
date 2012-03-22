@@ -222,10 +222,13 @@ is.RPPASet <- function(x) {
                      ngood <- sum(rating == "good"),
                      npoor <- nslides - ngood),
          type='n',
+         xaxt='n',
+         xlim=c(1, nslides),
          yaxt='n',
          ylab="Probability of Good Slide",
          ylim=0:1)
     mtext(side=3, paste("cutoff =", good.cutoff))
+    axis(1, at=seq_len(nslides))
     axis(2, at=seq(0, 1, by=0.1), las=1)
     rect(xleft=1,
          ybottom=c(0, good.cutoff),
