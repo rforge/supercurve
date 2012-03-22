@@ -253,7 +253,13 @@ is.RPPASet <- function(x) {
 setMethod("summary", signature(object="RPPASet"),
           function(object,
                    ...) {
-    RPPASetSummary(object)
+    dots <- list(...)
+    monitor <- if ("monitor" %in% names(dots)) {
+                   dots[["monitor"]]
+               } else {
+                   NULL
+               }
+    RPPASetSummary(object, monitor)
 })
 
 
@@ -404,10 +410,10 @@ setMethod("write.summary", signature(object="RPPASet"),
     }
 
     ## Write CSV files
-    progressMarquee(monitor) <- "Writing Fit Summary Files"
-    callGeneric(summary(object),
+    callGeneric(summary(object, monitor=monitor),
                 path,
-                prefix)
+                prefix,
+                monitor=monitor)
 })
 
 
