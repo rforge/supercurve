@@ -43,12 +43,6 @@ if (!isGeneric("plot")) {
                function(x, y, ...) standardGeneric("plot"))
 }
 
-## defined for: RPPAPreFitQC, DS5RPPAPreFitQC
-if (!isGeneric("qcprob")) {
-    setGeneric("qcprob",
-               function(object, ...) standardGeneric("qcprob"))
-}
-
 ## defined for: RPPAFit
 if (!isGeneric("resid")) {
     setGeneric("resid",
@@ -88,6 +82,12 @@ if (!isGeneric("fitSlide")) {
 if (!isGeneric("paramString")) {
     setGeneric("paramString",
                function(object, ...) standardGeneric("paramString"))
+}
+
+## defined for: RPPAPreFitQC, DS5RPPAPreFitQC
+if (!isGeneric("qcprob")) {
+    setGeneric("qcprob",
+               function(object, ...) standardGeneric("qcprob"))
 }
 
 ## defined for: FitClass, LoessFitClass, CobsFitClass, LogisticFitClass
