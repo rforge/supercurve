@@ -6,6 +6,20 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.4.3
+
+
+BUG FIXES
+
+    o	Corrected code that generated QC probabilities output
+	file. The probabilities may be associated with the wrong
+	filenames if any portion of the analysis failed for other
+	slides.
+
+    o	Changed output filename for normalized concentrations to
+	match upcoming naming convention.
+
+
 		CHANGES IN R VERSION 1.4.2
 
 
