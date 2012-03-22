@@ -46,11 +46,21 @@ is.RPPASetSummary <- function(x) {
 
 ##-----------------------------------------------------------------------------
 ## Create an RPPASetSummary object
-RPPASetSummary <- function(rppaset) {
+RPPASetSummary <- function(rppaset,
+                           monitor=NULL) {
     ## Check arguments
     if (!is.RPPASet(rppaset)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppaset"), "RPPASet"))
+    }
+    if (!is.null(monitor)) {
+        if (!is.SCProgressMonitor(monitor)) {
+            stop(sprintf("argument %s must be object of class %s",
+                         sQuote("monitor"), "SCProgressMonitor"))
+        }
+    } else {
+        ## Create one, if necessary
+        monitor <- SCProgressMonitor()
     }
 
     ## Begin processing
@@ -69,6 +79,7 @@ RPPASetSummary <- function(rppaset) {
         rownames(conc.ss) <- alias.name
     }
 
+    progressMarquee(monitor) <- "Normalizing concentrations"
     ## Median polish to normalize sample, slide effects
     ##   where:
     ##     row       - sample correction
@@ -96,8 +107,8 @@ RPPASetSummary <- function(rppaset) {
     ## Generate probabilities (goodness) for each processed slide (if any)
     prefitqcs.tf <- rppaset@completed[, "prefitqc"]
     probs <- if (!all(is.na(prefitqcs.tf))) {
+                 progressMarquee(monitor) <- "Generating QC probabilities"
                  prefitqcs <- rppaset@prefitqcs[prefitqcs.tf]
-                 names(prefitqcs) <- names(prefitqcs[prefitqcs.tf])
                  sapply(prefitqcs, qcprob)
              } else {
                  as.numeric(NaN)
@@ -180,6 +191,7 @@ setMethod("write.summary", signature(object="RPPASetSummary"),
 
 
     ## Begin processing
+    progressMarquee(monitor) <- "Writing Fit Summary Files"
 
     ## Write file for raw concentrations
     filename <- sprintf("%s_conc_raw.csv", prefix)
@@ -191,8 +203,8 @@ setMethod("write.summary", signature(object="RPPASetSummary"),
     conc.ss <- get_concs_ordered_for_write(object, "ss")
     write.csv(conc.ss, file=file.path(path, .portableFilename(filename)))
 
-    ## Write file for polished concentration
-    filename <- sprintf("%s_conc_med_polish.csv", prefix)
+    ## Write file for normalized concentrations
+    filename <- sprintf("%s_conc_norm_medpolish.csv", prefix)
     conc.medpol <- get_concs_ordered_for_write(object, "medpol")
     write.csv(conc.medpol, file=file.path(path, .portableFilename(filename)))
 

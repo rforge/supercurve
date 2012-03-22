@@ -10,7 +10,8 @@
   an RPPASet object.
 }
 \usage{
-RPPASetSummary(rppaset)
+RPPASetSummary(rppaset,
+               monitor=NULL)
 is.RPPASetSummary(x)
 \S4method{write.summary}{RPPASetSummary}(object,
               path,
