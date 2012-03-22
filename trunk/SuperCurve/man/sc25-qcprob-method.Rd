@@ -2,6 +2,7 @@
 \alias{qcprob}
 \alias{qcprob-method}
 \alias{qcprob,ANY-method}
+\alias{qcprob,NULL-method}
 \docType{methods}
 \title{Method "qcprob"}
 \description{
@@ -12,6 +13,7 @@
 }
 \usage{
 \S4method{qcprob}{ANY}(object, \dots)
+\S4method{qcprob}{NULL}(object, \dots)
 }
 \arguments{
   \item{object}{an object for which a QC probability is desired}
@@ -21,6 +23,8 @@
   The form of the value returned by \code{qcprob} depends on the
   class of its argument. See the documentation of the particular methods
   for details of what is produced by that method.
+
+  If the object is \code{NULL}, \code{NA} is returned.
 }
 \author{
   P. Roebuck \email{plroebuck@mdanderson.org}
