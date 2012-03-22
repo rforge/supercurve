@@ -99,7 +99,8 @@ rm(mkDefaultReplaceMethod)
 ##-----------------------------------------------------------------------------
 setMethod("initialize",
     signature(.Object="DefaultProgressMonitor"),
-    function(.Object, ...) {
+    function(.Object,
+             ...) {
         .Object@elapsed <- structure(0, units="secs", class="difftime")
         callNextMethod(.Object, ...)
     })
