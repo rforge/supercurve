@@ -40,15 +40,6 @@ normalize.house <- function(concs,
                             antibodies,
                             ...) {
     stopifnot(is.matrix(concs) || is.data.frame(concs))
-
-## Alternate setup for nonformal argument
-#    dots <- list(...)
-#    antibodies <- if ("antibodies" %in% names(dots)) {
-#                      dots["antibodies"]
-#                  } else {
-#                      stop(sprintf("argument %s not provided",
-#                                   sQuote("antibodies")))
-#                  }
     stopifnot(is.character(antibodies) && length(antibodies) >= 1)
 
     if (!all(antibodies %in% colnames(concs))) {
