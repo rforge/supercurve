@@ -19,7 +19,7 @@ if (!isGeneric("coefficients")) {
                function(object, ...) standardGeneric("coefficients"))
 }
 
-## defined for: LoessFitClass, CobsFitClass, LogisticFitClass, RPPAFit
+## defined for: FitClass, LoessFitClass, CobsFitClass, LogisticFitClass, RPPAFit
 if (!isGeneric("fitted")) {
     setGeneric("fitted",
                function(object, ...) standardGeneric("fitted"))
