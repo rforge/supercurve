@@ -22,9 +22,9 @@
 }
 \section{Methods}{
   \describe{
-    \item{coef(object, \dots)}{Extracts model coefficients} 
+    \item{coef(object, \dots)}{Extracts model coefficients.} 
     \item{coefficients(object, \dots)}{An alias for \code{coef}.}
-    \item{fitted(object, conc, \dots)}{Extracts fitted values of the model} 
+    \item{fitted(object, conc, \dots)}{Extracts fitted values of the model.} 
   }
 }
 \value{
