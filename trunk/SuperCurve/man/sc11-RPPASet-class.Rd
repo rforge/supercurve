@@ -116,6 +116,8 @@ is.RPPASet(x)
   argument is an object of class \code{RPPASet}.
 
   The \code{summary} method returns an object of class \code{RPPASetSummary}.
+
+  The \code{write.summary} method invisibly returns \code{NULL}.
 }
 \references{KRC}
 \author{

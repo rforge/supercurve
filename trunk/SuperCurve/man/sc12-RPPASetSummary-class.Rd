@@ -70,6 +70,8 @@ is.RPPASetSummary(x)
 
   The \code{is.RPPASetSummary} method returns \code{TRUE} if its
   argument is an object of class \code{RPPASetSummary}.
+
+  The \code{write.summary} method invisibly returns \code{NULL}.
 }
 \note{
   The three \acronym{CSV} files may be reordered (to match that of the original
