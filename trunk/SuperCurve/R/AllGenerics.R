@@ -32,9 +32,14 @@ if (!isGeneric("hist")) {
 }
 
 ## defined for: RPPA, RPPAFit. RPPADesign
-if (!isGeneric("image")) {
-    setGeneric("image",
-               function(x, ...) standardGeneric("image"))
+if (getRversion() == "2.15.0") {
+    ## R-2.15.0 was borken in respect to this generic. It was patched but damage done
+    setGeneric("image")
+} else {
+    if (!isGeneric("image")) {
+        setGeneric("image",
+                   function(x, ...) standardGeneric("image"))
+    }
 }
 
 ## defined for: RPPAFit, RPPADesign
