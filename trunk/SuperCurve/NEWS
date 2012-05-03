@@ -6,6 +6,16 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.4.4
+
+
+BUG FIXES
+
+    o	Patched for setGeneric() invocation issue with "image" which
+	caused compatibility issue with initial release of R-2.15.0;
+	later patched versions ran the original code without issue.
+
+
 		CHANGES IN R VERSION 1.4.3
 
 

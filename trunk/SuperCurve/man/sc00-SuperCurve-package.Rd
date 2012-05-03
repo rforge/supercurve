@@ -9,8 +9,8 @@
   \tabular{ll}{
     Package: \tab SuperCurve\cr
     Type: \tab Package\cr
-    Version: \tab 1.4.3\cr
-    Date: \tab 2012-03-16\cr
+    Version: \tab 1.4.4\cr
+    Date: \tab 2012-05-01\cr
     License: \tab See LICENSE for license information\cr
   }
 
