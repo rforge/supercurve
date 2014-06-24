@@ -1,13 +1,17 @@
 Package: tclish
-Version: 0.8.3
-Date: 2011/11/20
+Version: 1.0.0
+Date: 2014-06-05
 Title: Tcl/Tk Utilities Package
 Author: P. Roebuck
-Maintainer: P. Roebuck <plroebuck@mdanderson.org>
+Maintainer: P. Roebuck <proebuck@mdanderson.org>
 Description: Variety of Tcl/Tk methods used for GUI development.
-Depends: R (>= 2.8), tcltk
+Depends: R (>= 2.15)
+Imports: tcltk
 SystemRequirements: Tcl/Tk (>= 8.5)
+URL: http://supercurve.r-forge.r-project.org/#tclish
 License: Artistic-2.0
+Copyright: file COPYRIGHTS
 LazyLoad: yes
-Collate: tclutil.R tkutil.R tkoptiondb.R tkmessagebox.R tknotebook.R tktabnotebook.R tkprogressbar.R tkappdefaults.R zzz.R
+Collate: tclutil.R tkutil.R tkoptiondb.R tkmessagebox.R tknotebook.R
+  tktabnotebook.R tkprogressbar.R tkappdefaults.R zzz.R
 

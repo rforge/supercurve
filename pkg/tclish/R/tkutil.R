@@ -1,5 +1,6 @@
 ###
-### TKUTIL.R - Methods implementing Tk routines not in tcltk package
+### $Id$
+### Methods implementing Tk routines not in tcltk package
 ###
 
 require(tcltk) || stop("tcltk support is missing")

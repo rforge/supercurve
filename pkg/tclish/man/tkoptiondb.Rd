@@ -1,3 +1,5 @@
+% $Id$
+
 \name{tkoptiondb}
 \alias{optiondb_add}
 \alias{optiondb_get}
@@ -74,7 +76,7 @@ optiondb_readfile(filename,
   The other methods are invoked for their side-effect.
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \seealso{
   \code{\link[tcltk]{tclvalue}}

@@ -1,5 +1,6 @@
 ###
-### TCLUTIL.R - Methods implementing Tcl routines not in tcltk package
+### $Id$
+### Methods implementing Tcl routines not in tcltk package
 ###
 
 require(tcltk) || stop("tcltk support is missing")

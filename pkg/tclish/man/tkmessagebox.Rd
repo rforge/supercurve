@@ -1,3 +1,5 @@
+% $Id$
+
 \name{tkmessagebox}
 \alias{askokcancel}
 \alias{askquestion}
@@ -69,7 +71,7 @@ askretrycancel(title, message, \dots)
   Other methods are invoked for their side-effect.
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \note{
   The \code{parent} argument controls display location. If specified, the

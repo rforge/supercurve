@@ -2,6 +2,31 @@
 
 	**************************************************
 	*						 *
+	*	       1.0 SERIES NEWS			 *
+	*						 *
+	**************************************************
+
+
+                CHANGES IN R VERSION 1.0.0
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o   Dropped compatibility for anything less than R-2.15 as
+        no longer able to test against previous versions of R.
+
+NEW FEATURES
+
+    o   Updated package dependency/namespace issues to current
+        standard (for R-3.x compatibility). No code changes.
+
+    o   Added SVN revision information to many of the package files.
+
+    o   Added COPYRIGHTS file.
+
+
+	**************************************************
+	*						 *
 	*	       0.8 SERIES NEWS			 *
 	*						 *
 	**************************************************
@@ -13,7 +38,7 @@
 BUG FIXES
 
     o   Updated .onLoad() method to remove corner-case package
-        loading patch (for R-2-14 compatibility).
+        loading patch (for R-2.14 compatibility).
 
 
 		CHANGES IN R VERSION 0.8.2

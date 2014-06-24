@@ -1,7 +1,8 @@
 ###
-### TCLAFTER.R
+### $Id$
 ###
 
+library(tcltk)
 library(tclish)
 
 

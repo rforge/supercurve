@@ -1,3 +1,5 @@
+% $Id$
+
 \name{tkprogressbar}
 \alias{progressbar_create}
 \alias{progressbar_updatebarcolor}
@@ -36,7 +38,7 @@ progressbar_updatebarcolor(progressbar, col)
   Other methods are invoked for their side-effect.
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \examples{
   \dontrun{

@@ -1,8 +1,11 @@
 ###
-### NAMESPACE
+### $Id$
 ###
 
-## Public functions
+## Imports
+import(tcltk)
+
+## Public routines
 
 # Dialog boxes
 export(askokcancel)

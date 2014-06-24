@@ -1,5 +1,6 @@
 ###
-### TKMESSAGEBOX.R - Interface routines for tkMessageBox, a la Python
+### $Id$
+### Interface routines for tkMessageBox, a la Python
 ###
 
 options(warn=1)

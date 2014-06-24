@@ -1,3 +1,5 @@
+% $Id$
+
 \name{tkappdefaults}
 \alias{tkloadappdefaults}
 \title{Tk options database routines}
@@ -47,7 +49,7 @@ tkloadappdefaults(classNames,
   pathnames from which resource loading was attempted.
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \seealso{
   \code{\link{optiondb_readfile}}

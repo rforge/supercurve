@@ -1,3 +1,5 @@
+% $Id$
+
 \name{undocumented}
 \alias{tkOptionMenu}
 \alias{tkSeparator}
@@ -24,6 +26,7 @@
 \alias{tktk.scaling}
 \alias{tktk.useinputmethods}
 \alias{tktk.windowingsystem}
+\alias{tkimage.delete}
 \alias{tkwinfo.cells}
 \alias{tkwinfo.children}
 \alias{tkwinfo.class}

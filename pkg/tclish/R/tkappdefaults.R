@@ -1,5 +1,5 @@
 ###
-### TKAPPDEFAULTS.R
+### $Id$
 ###
 
 options(warn=1)

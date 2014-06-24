@@ -1,3 +1,5 @@
+% $Id$
+
 \name{tktabnotebook}
 \alias{tabnotebook_create}
 \alias{tabnotebook_page}
@@ -36,7 +38,7 @@ tabnotebook_page(tabnotebook, tabname)
   Other methods are invoked for their side-effect.
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \examples{
   \dontrun{
