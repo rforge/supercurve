@@ -1,3 +1,5 @@
+% $Id$
+
 \name{SlideDesignerGUI-package}
 \alias{SlideDesignerGUI-package}
 \docType{package}

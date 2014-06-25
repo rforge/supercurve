@@ -1,3 +1,5 @@
+% $Id$
+
 \name{slidedesignerGUI}
 \alias{slidedesignerGUI}
 \alias{sdui}
