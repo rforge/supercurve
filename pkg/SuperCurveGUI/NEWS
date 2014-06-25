@@ -6,6 +6,16 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 2.0.2
+
+
+NEW FEATURES
+
+    o	Added SVN revision information to most of the package files.
+
+    o	Added COPYRIGHTS file.
+
+
 		CHANGES IN R VERSION 2.0.1
 
 
