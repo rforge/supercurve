@@ -225,7 +225,7 @@ destroychildren <- function(parent) {
 
 
     .tkdestroychildren(parent)
-    assign("num.subwin", 0, env=parent$env)
+    assign("num.subwin", 0, envir=parent$env)
 }
 
 
@@ -934,7 +934,7 @@ createRow <- function(parent,
         button <- tkbutton(parent,
                            text=encodeButtonLabel(i, j))
         userdata <- list(row=i, col=j)
-        assign("userdata", userdata, env=button$env)
+        assign("userdata", userdata, envir=button$env)
         cmd <- substitute(function() pressButtonCB(widget),
                           list(widget=button))
         tkconfigure(button,
