@@ -1,0 +1,13 @@
+###
+### $Id$
+###
+
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: SuperCurveGUI
+Upstream-Contact: P. Roebuck <proebuck@mdanderson.org>
+Source: http://r-forge.r-project.org/projects/supercurve/
+
+Files: *
+Copyright: 2008-2014, MD Anderson Cancer Center (MDACC)
+License: Artistic-2.0
+
