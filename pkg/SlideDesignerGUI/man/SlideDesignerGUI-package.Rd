@@ -10,13 +10,13 @@
 \details{
   \tabular{ll}{
     Package: \tab SlideDesignerGUI\cr
-    Type: \tab Package\cr
-    Version: \tab 1.4.0\cr
-    Date: \tab 2011-04-01\cr
-    License: \tab See LICENSE for license information\cr
+    Type:    \tab Package\cr
+    Version: \tab \Sexpr[results=text]{packageDescription("SlideDesignerGUI")$Version}\cr
+    Date:    \tab \Sexpr[results=text]{packageDescription("SlideDesignerGUI")$Date}\cr
+    License: \tab \Sexpr[results=text]{packageDescription("SlideDesignerGUI")$License}\cr
   }
 
-  For a complete list of functions, use \code{library(help="SlideDesignerGUI")}.
+  For a complete list of functions, use \code{library(help="SlideDesignerGUI")}.\cr
   For a high-level summary of the changes for each revision, use
     \code{file.show(system.file("NEWS", package="SlideDesignerGUI"))}.
 }
