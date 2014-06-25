@@ -1,5 +1,5 @@
 ###
-### TKPROGRESSMONITOR.R
+### $Id$
 ###
 
 require(tcltk)
