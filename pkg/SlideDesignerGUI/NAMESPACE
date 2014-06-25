@@ -2,6 +2,10 @@
 ### $Id$
 ###
 
+## Imported methods
+import(tcltk)
+import(tclish)
+
 ## Public methods
 export(slidedesignerGUI)
 export(sdui)
