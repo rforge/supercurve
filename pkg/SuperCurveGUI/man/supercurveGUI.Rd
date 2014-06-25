@@ -1,3 +1,5 @@
+% $Id$
+
 \name{supercurveGUI}
 \alias{supercurveGUI}
 \alias{scui}

@@ -1,3 +1,5 @@
+% $Id$
+
 \name{SuperCurveGUI-package}
 \alias{SuperCurveGUI-package}
 \docType{package}
