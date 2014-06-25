@@ -37,7 +37,7 @@ sdui()
   \code{Sys.setenv(XUSERFILESEARCHPATH=file.path(path.expand("~"), "\%N.ad"))}
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \examples{
   \dontrun{

@@ -21,7 +21,7 @@
     \code{file.show(system.file("NEWS", package="SlideDesignerGUI"))}.
 }
 \author{
-  P. Roebuck, \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \keyword{package}
 
