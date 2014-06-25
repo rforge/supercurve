@@ -46,7 +46,7 @@ scui()
       \kbd{*software: superslide}
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \examples{
   \dontrun{
