@@ -6,6 +6,16 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.4.1
+
+
+NEW FEATURES
+
+    o	Added SVN revision information to many of the package files.
+
+    o	Added COPYRIGHTS file.
+
+
 		CHANGES IN R VERSION 1.4.0
 
 
