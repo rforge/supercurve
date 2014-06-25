@@ -1,4 +1,26 @@
 			Dear Emacs, please make this -*-Text-*- mode!
+
+	**************************************************
+	*                                                *
+	*          1.6 SERIES NEWS                       *
+	*                                                *
+	**************************************************
+
+
+		CHANGES IN R VERSION 1.6.0
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o	Dropped compatibility for anything less than R-2.15 as
+	no longer able to test against previous versions of R.
+
+NEW FEATURES
+
+    o	Updated package dependency/namespace issues to current
+	standard (for R-3.x compatibility). No code changes.
+
+
 	**************************************************
 	*                                                *
 	*          1.4 SERIES NEWS                       *
@@ -22,7 +44,6 @@ NEW FEATURES
 NEW FEATURES
 
     o	Production release of existing package enhancements.
-
 
 
 	**************************************************
