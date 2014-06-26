@@ -977,7 +977,7 @@ createDesignParamsPanel <- function(parent) {
     formal.args$software <- local({
                                 readmethod.re <- "read\\."
                                 methods <- ls(pattern=readmethod.re,
-                                              env=getNamespace("SuperCurve"))
+                                              envir=getNamespace("SuperCurve"))
                                 sub(readmethod.re, "", methods)
                             })
     txtdir <- tclvalue(getenv("txtdir.var"))
@@ -1858,7 +1858,7 @@ createProgressDialog <- function(parent,
                      Detail=detail.label,
                      ProgressBar=progressbar,
                      CloseButton=close.button)
-    assign("userdata", userdata, env=dialog$env)
+    assign("userdata", userdata, envir=dialog$env)
 
     return(dialog)
 }
