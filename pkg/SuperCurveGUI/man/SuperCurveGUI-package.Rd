@@ -11,8 +11,8 @@
   \tabular{ll}{
     Package: \tab SuperCurveGUI\cr
     Type:    \tab Package\cr
-    Version: \tab 2.0.2\cr
-    Date:    \tab 2011-06-01\cr
+    Version: \tab 2.1.1\cr
+    Date:    \tab 2012-07-03\cr
     License: \tab Artistic-2.0\cr
   }
 

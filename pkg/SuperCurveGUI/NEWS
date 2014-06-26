@@ -1,4 +1,34 @@
 			Dear Emacs, please make this -*-Text-*- mode!
+
+	**************************************************
+	*						 *
+	*	       2.1 SERIES NEWS			 *
+	*						 *
+	**************************************************
+
+
+		CHANGES IN R VERSION 2.1.1
+
+
+BUG FIXES
+
+    o	Removed quantification file preflight error checking code.
+
+
+		CHANGES IN R VERSION 2.1.0
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o	Normalization method can now be selected.
+
+    o	Added support for ArrayPro quantification files.
+
+NEW FEATURES
+
+    o	Changes necessary to support SuperCurve 1.5.
+
+
 	**************************************************
 	*						 *
 	*	       2.0 SERIES NEWS			 *

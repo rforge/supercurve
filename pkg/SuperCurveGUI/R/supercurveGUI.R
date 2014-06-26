@@ -23,7 +23,7 @@ attr(.GuiEnv, "name") <- "GlobalVars"
 ##-----------------------------------------------------------------------------
 ## Returns logical value indicating whether debugging support is enabled.
 .appDebugEnabled <- function() {
-    return(TRUE)
+    TRUE
 }
 
 
@@ -68,14 +68,14 @@ Try <- function(expr) {
                   title="Error Occurred!")
     }
 
-    return(result)
+    result
 }
 
 
 ##-----------------------------------------------------------------------------
 ## Returns private environment for storing application's global variables.
 guienv <- function() {
-    return(.GuiEnv)
+    .GuiEnv
 }
 
 
@@ -330,15 +330,6 @@ chooseQuantificationDirectoryWithRestarts <- function(initialdir) {
                              sQuote(dirname)))
             }
 
-            ## Does directory really contain quantification files?
-            file1 <- files[1]
-            tryCatch(SuperCurve::RPPA(file1, path=dirname),
-                     error=function(cond) {
-                         stop(sprintf("directory %s contains invalid file: %s",
-                                      dQuote(dirname),
-                                      conditionMessage(cond)))
-                     })
-
             dirname
         },
         retry=function() NULL)
@@ -422,7 +413,7 @@ updateMeasuresOptionMenu <- function() {
                          })
 
 
-    measure.var <- getenv("measure.var")
+    measure.var <- getenv("fit.measure.var")
     curr.value <- tclvalue(measure.var)
 
     measure.optmenu <- getenv("measure.optmenu")
@@ -434,7 +425,7 @@ updateMeasuresOptionMenu <- function() {
                tkinsert(popupmenu, "end",
                         "radiobutton",
                         label=measure,
-                        variable=getenv("measure.var"))
+                        variable=getenv("fit.measure.var"))
            },
            popupmenu=measure.popup)
 
@@ -460,7 +451,9 @@ updateMeasuresOptionMenu <- function() {
 ##-----------------------------------------------------------------------------
 loadSettingsWithRestarts <- function(pathname) {
     stopifnot(is.character(pathname) && length(pathname) == 1)
+message("enter loadSettingsWithRestarts()");
 
+    settings <- NULL
     withRestarts({
             ## Verify file contents in private environment
             local({
@@ -480,7 +473,7 @@ loadSettingsWithRestarts <- function(pathname) {
 reloadInterface <- function(settings) {
     ## Check arguments
     stopifnot(SuperCurve:::is.SuperCurveSettings(settings))
-
+message("enter reloadInterface()")
     ##-------------------------------------------------------------------------
     ## Updates values displayed by UI and associated globals
     reloadValue <- function(varname,
@@ -488,6 +481,7 @@ reloadInterface <- function(settings) {
         ## Check arguments
         stopifnot(is.character(varname) && length(varname) == 1)
         stopifnot(is.environment(envir))
+message(sprintf("enter reloadValue(%s)", varname))
 
         ## Get value of variable
         value <- get(varname, envir=envir, inherits=FALSE)
@@ -502,17 +496,53 @@ reloadInterface <- function(settings) {
         ## Update user interface
         tclvalue(envvar) <- value           ## Updates UI
         setenv(envvarname, envvar)          ## Updates global
+message(sprintf("exit reloadValue(%s)", varname))
         tclupdate("idletasks")
+    }
+
+
+    ##-------------------------------------------------------------------------
+    getFitModelLabel <- function(model) {
+        ## Check arguments
+        stopifnot(is.character(model) && length(model) == 1)
+
+        ## Begin processing
+        label <- SuperCurve::getRegisteredModelLabel(model)
+        if (is.null(label)) {
+            stop(sprintf("fit model value %s has no registered match",
+                         dQuote(model)))
+        }
+
+        label
+    }
+
+
+    ##-------------------------------------------------------------------------
+    getNormMethodLabel <- function(method) {
+        ## Check arguments
+        stopifnot(is.character(method) && length(method) == 1)
+
+        ## Begin processing
+        label <- SuperCurve::getRegisteredNormalizationMethodLabel(method)
+        if (is.null(label)) {
+            stop(sprintf("normalization method value %s has no registered match",
+                         dQuote(method)))
+        }
+
+        label
     }
 
 
     ##-------------------------------------------------------------------------
     ## Updates label displayed by UI and associated global
     reloadLabel <- function(varname,
+                            labelFunc,
                             envir) {
         ## Check arguments
         stopifnot(is.character(varname) && length(varname) == 1)
+        stopifnot(is.function(labelFunc))
         stopifnot(is.environment(envir))
+message(sprintf("enter reloadLabel(%s)", varname))
 
         ## Get value of variable
         value <- get(varname, envir=envir, inherits=FALSE)
@@ -521,11 +551,7 @@ reloadInterface <- function(settings) {
         }
 
         ## Get associated label for value
-        label <- SuperCurve::getRegisteredModelLabel(value)
-        if (is.null(label)) {
-            stop(sprintf("fit model value %s has no registered match",
-                         dQuote(value)))
-        }
+        label <- labelFunc(value)
 
         ## Get global variable, but assign label as its value
         envvarname <- paste(varname, "label", "var", sep=".")
@@ -534,6 +560,7 @@ reloadInterface <- function(settings) {
         ## Update user interface
         tclvalue(envvar) <- label           ## Updates UI
         setenv(envvarname, envvar)          ## Updates global
+message(sprintf("exit reloadLabel(%s)", varname))
         tclupdate("idletasks")
     }
 
@@ -547,42 +574,55 @@ reloadInterface <- function(settings) {
               imgdir         <- as(settings@imgdir, "character")
               outdir         <- as(settings@outdir, "character")
               software       <- settings@software
+              alt.layout     <- if (!is.null(settings@alt.layout)) {
+                                    settings@alt.layout
+                                } else {
+                                    "none"
+                                }
               antibodyfile   <- settings@antibodyfile
               aliasfile      <- settings@designparams@aliasfile
               designfile     <- settings@designparams@designfile
-              grouping       <- settings@designparams@grouping
-              ordering       <- settings@designparams@ordering
-              center         <- as.character(settings@designparams@center)
-              measure        <- settings@fitparams@measure
-              model          <- settings@fitparams@model
-              method         <- settings@fitparams@method
-              trim           <- as.character(settings@fitparams@trim)
-              ci             <- as.character(settings@fitparams@ci)
-              ignoreNegative <- as.character(settings@fitparams@ignoreNegative)
+              design.grouping<- settings@designparams@grouping
+              design.ordering<- settings@designparams@ordering
+              design.center  <- as.character(settings@designparams@center)
+              fit.measure    <- settings@fitparams@measure
+              fit.model      <- settings@fitparams@model
+              fit.method     <- settings@fitparams@method
+              fit.trim       <- as.character(settings@fitparams@trim)
+              fit.ci         <- as.character(settings@fitparams@ci)
+              fit.ignoreNegative <- as.character(settings@fitparams@ignoreNegative)
               prefitqc       <- as.character(settings@doprefitqc)
+              onlynormqcgood <- as.character(settings@onlynormqcgood)
               if (!is.null(settings@spatialparams)) {
                   spatial    <- as.character(TRUE)
-                  cutoff     <- as.character(settings@spatialparams@cutoff)
-                  gamma      <- as.character(settings@spatialparams@gamma)
-                  k          <- as.character(settings@spatialparams@k)
-                  plotSurface<- as.character(settings@spatialparams@plotSurface)
+                  spatial.cutoff     <- as.character(settings@spatialparams@cutoff)
+                  spatial.gamma      <- as.character(settings@spatialparams@gamma)
+                  spatial.k          <- as.character(settings@spatialparams@k)
+                  spatial.plotSurface<- as.character(settings@spatialparams@plotSurface)
               } else {
                   formal.args <- formals(SuperCurve:::spatialCorrection)
 
                   spatial    <- as.character(FALSE)
-                  cutoff     <- as.character(eval(formal.args$cutoff))
-                  k          <- as.character(eval(formal.args$k))
-                  gamma      <- as.character(eval(formal.args$gamma))
-                  plotSurface<- as.character(eval(formal.args$plotSurface))
+                  spatial.cutoff     <- as.character(eval(formal.args$cutoff))
+                  spatial.k          <- as.character(eval(formal.args$k))
+                  spatial.gamma      <- as.character(eval(formal.args$gamma))
+                  spatial.plotSurface<- as.character(eval(formal.args$plotSurface))
 
                   rm(formal.args)
               }
+              norm.method    <- settings@normparams@method
+              ## :TODO: Missing RPPANormalizationParams
         },
         envir=loadenv)
+message("loadenv")
+objects(envir=loadenv)
 
     ## Load values from private environment
-    reloadLabel("model", loadenv)
-    remove(model, envir=loadenv)
+    reloadLabel("fit.model", getFitModelLabel, loadenv)
+    remove(fit.model, envir=loadenv)
+
+    reloadLabel("norm.method", getNormMethodLabel, loadenv)
+    remove(norm.method, envir=loadenv)
 
     sapply(objects(envir=loadenv),
            reloadValue,
@@ -590,6 +630,7 @@ reloadInterface <- function(settings) {
 
     tclafter.idle(updateMeasuresOptionMenu)
     setDocumentEdited(FALSE)
+message("exit reloadInterface()\n")
 }
 
 
@@ -636,7 +677,7 @@ createOptionMenu <- function(parent,
     optmenu <- do.call("tkOptionMenu",
                        optmenu.args)
 
-    return(optmenu)
+    optmenu
 }
 
 
@@ -980,6 +1021,12 @@ createDesignParamsPanel <- function(parent) {
                                               envir=getNamespace("SuperCurve"))
                                 sub(readmethod.re, "", methods)
                             })
+    formal.args$alt.layout <- local({
+                                layoutmethod.re <- "layout\\.as\\."
+                                methods <- ls(pattern=layoutmethod.re,
+                                              envir=getNamespace("SuperCurve"))
+                                c("none", sub(layoutmethod.re, "", methods))
+                            })
     txtdir <- tclvalue(getenv("txtdir.var"))
 
     ## Prepare possible input values
@@ -1009,8 +1056,29 @@ cat(sprintf("\tfinal: [%s]\n", default))
              values=as.character(values))
     })
 
+    alt.layout.arg <- local({
+        rsrcClass <- "Layout"
+        rsrcName <- tolower(rsrcClass)
+        uservalue <- tclvalue(optiondb_get(rsrcName=rsrcName,
+                                           rsrcClass=rsrcClass))
+        value <- as.character(uservalue)
+cat(sprintf("%s: [%s] -> [%s]", rsrcName, uservalue, value))
+
+        values <- eval(formal.args$alt.layout)
+        x.default <- 1          # "none"
+        stopifnot(!is.na(x.default))
+cat(sprintf("\tdefault: [%s]", values[x.default]))
+
+        x.match <- match(value, values, nomatch=x.default)
+        default <- values[x.match]
+cat(sprintf("\tfinal: [%s]\n", default))
+        list(default=as.character(default),
+             values=as.character(values))
+    })
+
+
     ##-------------------------------------------------------------------------
-    ## Weird but it won't handle 'tclvalue(getenv("grouping.var")) <- value'
+    ## Weird but it won't handle 'tclvalue(getenv("my.tcl.var")) <- value'
     ## This achieves the same via temporary variable.
     setVariable <- function(x, value) {
         stopifnot(is.tclVar(x))
@@ -1020,16 +1088,17 @@ cat(sprintf("\tfinal: [%s]\n", default))
     }
 
 ## :NOPE: Works but painful...
-#    tcl("set", objects(unclass(getenv("grouping.var"))$env), grouping.arg$default)
+#    tcl("set", objects(unclass(getenv("design.grouping.var"))$env), grouping.arg$default)
 
 ## :BROKEN: Basic idea but doesn't work...
-#    tclvalue(getenv("grouping.var")) <- grouping.arg$default   # "blockSample"
+#    tclvalue(getenv("design.grouping.var")) <- grouping.arg$default   # "blockSample"
 
 ## Works via temporary...
-    setVariable(getenv("grouping.var"), grouping.arg$default)
-    setVariable(getenv("ordering.var"), ordering.arg$default)
-    setVariable(getenv("center.var"), center.arg$default)
+    setVariable(getenv("design.grouping.var"), grouping.arg$default)
+    setVariable(getenv("design.ordering.var"), ordering.arg$default)
+    setVariable(getenv("design.center.var"), center.arg$default)
     setVariable(getenv("software.var"), software.arg$default)
+    setVariable(getenv("alt.layout.var"), alt.layout.arg$default)
 
     ## Design Parameters
     design.frame <- tklabelframe(parent,
@@ -1039,14 +1108,14 @@ cat(sprintf("\tfinal: [%s]\n", default))
         grouping.label <- tklabel(design.frame,
                                   text="Grouping:")
         grouping.optmenu <- createOptionMenu(design.frame,
-                                             getenv("grouping.var"),
+                                             getenv("design.grouping.var"),
                                              grouping.arg$values)
 
         ## Create input section for 'ordering' argument
         ordering.label <- tklabel(design.frame,
                                   text="Ordering:")
         ordering.optmenu <- createOptionMenu(design.frame,
-                                             getenv("ordering.var"),
+                                             getenv("design.ordering.var"),
                                              ordering.arg$values)
 
         ## Create input section for 'center' argument
@@ -1056,7 +1125,7 @@ cat(sprintf("\tfinal: [%s]\n", default))
                                          offvalue="FALSE",
                                          onvalue="TRUE",
                                          text="",
-                                         variable=getenv("center.var"))
+                                         variable=getenv("design.center.var"))
 
         ## Manage widgets
         tkgrid(grouping.label,
@@ -1087,13 +1156,24 @@ cat(sprintf("\tfinal: [%s]\n", default))
                                              getenv("software.var"),
                                              software.arg$values)
 
+        ## Create input section for 'alt.layout' argument
+        alt.layout.label <- tklabel(readmethod.frame,
+                                    text="Alternate Layout:")
+        alt.layout.optmenu <- createOptionMenu(readmethod.frame,
+                                               getenv("alt.layout.var"),
+                                               alt.layout.arg$values)
+
         ## Manage widgets
         tkgrid(software.label,
                software.optmenu)
+        tkgrid(alt.layout.label,
+               alt.layout.optmenu)
 
         tkgrid.configure(software.label,
+                         alt.layout.label,
                          sticky="e")
         tkgrid.configure(software.optmenu,
+                         alt.layout.optmenu,
                          sticky="w")
     }
 
@@ -1144,7 +1224,7 @@ createFitParamsPanel <- function(parent) {
                                  c("Mean.Net", "Mean.Total")
                              })
 
-        return(measures)
+        measures
     }
 
 
@@ -1204,7 +1284,7 @@ cat(sprintf("\tfinal: [%s]\n", default))
                                values=as.character(c(TRUE, FALSE)))
 
     ##-------------------------------------------------------------------------
-    ## Weird but it won't handle 'tclvalue(getenv("grouping.var")) <- value'
+    ## Weird but it won't handle 'tclvalue(getenv("my.tcl.var")) <- value'
     ## This achieves the same via temporary variable.
     setVariable <- function(x, value) {
         stopifnot(is.tclVar(x))
@@ -1213,11 +1293,11 @@ cat(sprintf("\tfinal: [%s]\n", default))
         tclvalue(x) <- value
     }
 
-    setVariable(getenv("measure.var"), measure.arg$default)
-    setVariable(getenv("method.var"), method.arg$default)
-    setVariable(getenv("trim.var"), trim.arg$default)
-    setVariable(getenv("ci.var"), ci.arg$default)
-    setVariable(getenv("ignoreNegative.var"), ignoreNegative.arg$default)
+    setVariable(getenv("fit.measure.var"), measure.arg$default)
+    setVariable(getenv("fit.method.var"), method.arg$default)
+    setVariable(getenv("fit.trim.var"), trim.arg$default)
+    setVariable(getenv("fit.ci.var"), ci.arg$default)
+    setVariable(getenv("fit.ignoreNegative.var"), ignoreNegative.arg$default)
 
     ## Create panel
 
@@ -1229,7 +1309,7 @@ cat(sprintf("\tfinal: [%s]\n", default))
         measure.label <- tklabel(fit.frame,
                                  text="Spot Measure:")
         measure.optmenu <- createOptionMenu(fit.frame,
-                                            getenv("measure.var"),
+                                            getenv("fit.measure.var"),
                                             measure.arg$values)
         setenv("measure.optmenu", measure.optmenu)  # Save to update menu items
 
@@ -1239,10 +1319,10 @@ cat(sprintf("\tfinal: [%s]\n", default))
         {
             model.arg.labels <- sapply(model.arg$values,
                                        SuperCurve::getRegisteredModelLabel)
-            setVariable(getenv("model.label.var"),
+            setVariable(getenv("fit.model.label.var"),
                         model.arg.labels[model.arg$default])
             model.optmenu <- createOptionMenu(fit.frame,
-                                              getenv("model.label.var"),
+                                              getenv("fit.model.label.var"),
                                               model.arg.labels)
         }
 
@@ -1250,7 +1330,7 @@ cat(sprintf("\tfinal: [%s]\n", default))
         method.label <- tklabel(fit.frame,
                                 text="Fit Method:")
         method.optmenu <- createOptionMenu(fit.frame,
-                                           getenv("method.var"),
+                                           getenv("fit.method.var"),
                                            method.arg$values)
 
         ## Create input section for 'trim' argument
@@ -1264,7 +1344,7 @@ cat(sprintf("\tfinal: [%s]\n", default))
                                   from=trim.spinbox.min,
                                   state="readonly",
                                   to=trim.spinbox.max,
-                                  textvariable=getenv("trim.var"),
+                                  textvariable=getenv("fit.trim.var"),
                                   width=trim.spinbox.width)
 
         ## Create input section for 'ci' argument
@@ -1274,7 +1354,7 @@ cat(sprintf("\tfinal: [%s]\n", default))
                                      offvalue="FALSE",
                                      onvalue="TRUE",
                                      text="",
-                                     variable=getenv("ci.var"))
+                                     variable=getenv("fit.ci.var"))
 
         ## Create input section for 'ignoreNegative' argument
         ignoreNegative.label <- tklabel(fit.frame,
@@ -1283,7 +1363,7 @@ cat(sprintf("\tfinal: [%s]\n", default))
                                                  offvalue="FALSE",
                                                  onvalue="TRUE",
                                                  text="",
-                                         variable=getenv("ignoreNegative.var"))
+                                         variable=getenv("fit.ignoreNegative.var"))
 
         ## Manage widgets
         tkgrid(measure.label,
@@ -1331,7 +1411,7 @@ createSpatialAdjPanel <- function(parent) {
 
     ## Begin processing
     formal.args <- formals(SuperCurve:::spatialCorrection)
-    measure <- tclvalue(getenv("measure.var"))
+    measure <- tclvalue(getenv("fit.measure.var"))
 
     ## Prepare possible input values
     spatial.arg <- list(default=as.character(TRUE),
@@ -1343,7 +1423,7 @@ createSpatialAdjPanel <- function(parent) {
                             values=as.character(c(TRUE, FALSE)))
 
     ##-------------------------------------------------------------------------
-    ## Weird but it won't handle 'tclvalue(getenv("grouping.var")) <- value'
+    ## Weird but it won't handle 'tclvalue(getenv("my.tcl.var")) <- value'
     ## This achieves the same via temporary variable.
     setVariable <- function(x, value) {
         stopifnot(is.tclVar(x))
@@ -1352,18 +1432,12 @@ createSpatialAdjPanel <- function(parent) {
         tclvalue(x) <- value
     }
 
-## :NOPE: Works but painful...
-#    tcl("set", objects(unclass(getenv("grouping.var"))$env), grouping.arg$default)
 
-## :BROKEN: Basic idea but doesn't work...
-#    tclvalue(getenv("grouping.var")) <- grouping.arg$default   # "blockSample"
-
-## Works via temporary...
     setVariable(getenv("spatial.var"), spatial.arg$default)
-    setVariable(getenv("cutoff.var"), cutoff.arg$default)
-    setVariable(getenv("k.var"), k.arg$default)
-    setVariable(getenv("gamma.var"), gamma.arg$default)
-    setVariable(getenv("plotSurface.var"), plotSurface.arg$default)
+    setVariable(getenv("spatial.cutoff.var"), cutoff.arg$default)
+    setVariable(getenv("spatial.k.var"), k.arg$default)
+    setVariable(getenv("spatial.gamma.var"), gamma.arg$default)
+    setVariable(getenv("spatial.plotSurface.var"), plotSurface.arg$default)
 
     ## Spatial Adjustment
     spatial.checkbox <- tkcheckbutton(parent,
@@ -1388,14 +1462,14 @@ createSpatialAdjPanel <- function(parent) {
                                     increment=cutoff.spinbox.incr,
                                     state="readonly",
                                     to=cutoff.spinbox.max,
-                                    textvariable=getenv("cutoff.var"),
+                                    textvariable=getenv("spatial.cutoff.var"),
                                     width=cutoff.spinbox.width)
 
         ## Create input section for 'k' argument
         k.label <- tklabel(spatial.frame,
                            text="k:")
         k.entry <- tkentry(spatial.frame,
-                           textvariable=getenv("k.var"),
+                           textvariable=getenv("spatial.k.var"),
                            width=as.integer(12))
 
         ## Create input section for 'gamma' argument
@@ -1412,7 +1486,7 @@ createSpatialAdjPanel <- function(parent) {
                                    increment=gamma.spinbox.incr,
                                    state="readonly",
                                    to=gamma.spinbox.max,
-                                   textvariable=getenv("gamma.var"),
+                                   textvariable=getenv("spatial.gamma.var"),
                                    width=gamma.spinbox.width)
 
         ## Create input section for 'plotSurface' argument
@@ -1422,7 +1496,7 @@ createSpatialAdjPanel <- function(parent) {
                                               offvalue="FALSE",
                                               onvalue="TRUE",
                                               text="",
-                                             variable=getenv("plotSurface.var"))
+                                             variable=getenv("spatial.plotSurface.var"))
 
         ## Manage widgets
         tkgrid(cutoff.label,
@@ -1459,7 +1533,8 @@ createQCParamsPanel <- function(parent) {
     stopifnot(is.tkwin(parent))
 
     ## Begin processing
-    formal.args <- pairlist(prefitqc=formals(SuperCurve::RPPASet)$doprefitqc)
+    formal.args <- pairlist(prefitqc=formals(SuperCurve::RPPASet)$doprefitqc,
+                            onlynormqcgood=formals(SuperCurve::RPPASet)$onlynormqcgood)
 
     ## Prepare possible input values
     prefitqc.arg <- local({
@@ -1482,10 +1557,30 @@ cat(sprintf("\tfinal: [%s]\n", default))
              values=as.character(values))
     })
 
+    onlynormqcgood.arg <- local({
+        rsrcClass <- "OnlyNormQCGood"
+        rsrcName <- tolower(rsrcClass)
+        uservalue <- tclvalue(optiondb_get(rsrcName=rsrcName,
+                                           rsrcClass=rsrcClass))
+        value <- as.logical(uservalue)
+cat(sprintf("%s: [%s] -> [%s]", rsrcName, uservalue, value))
+
+        values <- c(TRUE, FALSE)
+        x.default <- match(eval(formal.args$prefitqc), values)
+        stopifnot(!is.na(x.default))
+cat(sprintf("\tdefault: [%s]", values[x.default]))
+
+        x.match <- match(value, values, nomatch=x.default)
+        default <- values[x.match]
+cat(sprintf("\tfinal: [%s]\n", default))
+        list(default=as.character(default),
+             values=as.character(values))
+    })
+
 
 
     ##-------------------------------------------------------------------------
-    ## Weird but it won't handle 'tclvalue(getenv("grouping.var")) <- value'
+    ## Weird but it won't handle 'tclvalue(getenv("my.tcl.var")) <- value'
     ## This achieves the same via temporary variable.
     setVariable <- function(x, value) {
         stopifnot(is.tclVar(x))
@@ -1496,6 +1591,7 @@ cat(sprintf("\tfinal: [%s]\n", default))
 
 
     setVariable(getenv("prefitqc.var"), prefitqc.arg$default)
+    setVariable(getenv("onlynormqcgood.var"), onlynormqcgood.arg$default)
 
     ## PreFit QC
     prefitqc.frame <- tklabelframe(parent,
@@ -1510,18 +1606,106 @@ cat(sprintf("\tfinal: [%s]\n", default))
                                            text="",
                                            variable=getenv("prefitqc.var"))
 
+        ## Create input section for 'onlynormqcgood' argument
+        onlynormqcgood.label <- tklabel(prefitqc.frame,
+                                        text="Only Normalize Good Slides?:")
+        onlynormqcgood.checkbox <- tkcheckbutton(prefitqc.frame,
+                                                 offvalue="FALSE",
+                                                 onvalue="TRUE",
+                                                 text="",
+                                                 variable=getenv("onlynormqcgood.var"))
+
         ## Manage widgets
         tkgrid(prefitqc.label,
                prefitqc.checkbox)
+        tkgrid(onlynormqcgood.label,
+               onlynormqcgood.checkbox)
 
         tkgrid.configure(prefitqc.label,
+                         onlynormqcgood.label,
                          sticky="e")
         tkgrid.configure(prefitqc.checkbox,
+                         onlynormqcgood.checkbox,
                          sticky="w")
     }
 
     ## Manage widgets
     tkpack(prefitqc.frame,
+           fill="x",
+           padx="3m")
+}
+
+
+##-----------------------------------------------------------------------------
+createNormalizationPanel <- function(parent) {
+    ## Check arguments
+    stopifnot(is.tkwin(parent))
+
+    ## Begin processing
+    formal.args <- formals(SuperCurve::RPPANormalizationParams)
+
+    ## Prepare possible input values
+    method.arg <- local({
+        rsrcClass <- "NormMethod"
+        rsrcName <- tolower(rsrcClass)
+        uservalue <- tclvalue(optiondb_get(rsrcName=rsrcName,
+                                           rsrcClass=rsrcClass))
+        value <- as.character(uservalue)
+cat(sprintf("%s: [%s] -> [%s]", rsrcName, uservalue, value))
+
+        values <- SuperCurve::getRegisteredNormalizationMethodKeys()
+        x.default <- match("vs", values)   # Default to variable slope
+        stopifnot(!is.na(x.default))
+cat(sprintf("\tdefault: [%s]", values[x.default]))
+
+        x.match <- match(value, values, nomatch=x.default)
+        default <- values[x.match]
+cat(sprintf("\tfinal: [%s]\n", default))
+        list(default=as.character(default),
+             values=as.character(values))
+    })
+
+
+    ##-------------------------------------------------------------------------
+    ## Weird but it won't handle 'tclvalue(getenv("my.tcl.var")) <- value'
+    ## This achieves the same via temporary variable.
+    setVariable <- function(x, value) {
+        stopifnot(is.tclVar(x))
+        stopifnot(!missing(value))
+
+        tclvalue(x) <- value
+    }
+
+
+    ## Normalization
+    norm.frame <- tklabelframe(parent,
+                               text="Normalization Parameters")
+    {
+        ## Create input section for 'method' argument
+        method.label <- tklabel(norm.frame,
+                                text="Normalization Method:")
+
+        method.arg.labels <- sapply(method.arg$values,
+                                    SuperCurve::getRegisteredNormalizationMethodLabel)
+        setVariable(getenv("norm.method.label.var"),
+                    method.arg.labels[method.arg$default])
+        method.optmenu <- createOptionMenu(norm.frame,
+                                           getenv("norm.method.label.var"),
+                                           method.arg.labels)
+
+        ## Manage widgets
+        tkgrid(method.label,
+               method.optmenu)
+
+        tkgrid.configure(method.label,
+                         sticky="e")
+        tkgrid.configure(method.optmenu,
+                         sticky="w")
+    }
+
+
+    ## Manage widgets
+    tkpack(norm.frame,
            fill="x",
            padx="3m")
 }
@@ -1548,11 +1732,20 @@ createSettingsFromUserInput <- function() {
 
 
     ##-------------------------------------------------------------------------
-    getModelFromLabel <- function() {
+    getFitModelFromLabel <- function() {
         model.arg.labels <- sapply(SuperCurve::getRegisteredModelKeys(),
                                    SuperCurve::getRegisteredModelLabel)
-        model.label <- tclvalue(getenv("model.label.var"))
+        model.label <- tclvalue(getenv("fit.model.label.var"))
         model <- names(which(model.arg.labels == model.label))
+    }
+
+
+    ##-------------------------------------------------------------------------
+    getNormMethodFromLabel <- function() {
+        method.arg.labels <- sapply(SuperCurve::getRegisteredNormalizationMethodKeys(),
+                                    SuperCurve::getRegisteredNormalizationMethodLabel)
+        method.label <- tclvalue(getenv("norm.method.label.var"))
+        method <- names(which(method.arg.labels == method.label))
     }
 
 
@@ -1565,34 +1758,51 @@ createSettingsFromUserInput <- function() {
     ## Get software argument for RPPA() method
     software <- tclvalue(getenv("software.var"))
 
+    ## Get alt.layout argument for RPPA() method
+    alt.layout <- tclvalue(getenv("alt.layout.var"))
+    if (alt.layout == "none") {
+        ## Use NULL if "none" selected (menu option for display purposes only)
+        alt.layout <- NULL
+    }
+
     ## Collect design parameters
     aliasfile <- getPathnameFromInput("aliasfile.var")
     designfile <- getPathnameFromInput("designfile.var")
-    dp <- list(grouping=tclvalue(getenv("grouping.var")),
-               ordering=tclvalue(getenv("ordering.var")),
-               center=tclvalue(getenv("center.var")),
+    dp <- list(grouping=tclvalue(getenv("design.grouping.var")),
+               ordering=tclvalue(getenv("design.ordering.var")),
+               center=tclvalue(getenv("design.center.var")),
                aliasfile=aliasfile,
                designfile=designfile)
 
     ## Collect fit parameters
-    fp <- list(measure=tclvalue(getenv("measure.var")),
-               model=getModelFromLabel(),
-               method=tclvalue(getenv("method.var")),
-               trim=tclvalue(getenv("trim.var")),
-               ci=tclvalue(getenv("ci.var")),
-               ignoreNegative=tclvalue(getenv("ignoreNegative.var")))
+    fp <- list(measure=tclvalue(getenv("fit.measure.var")),
+               model=getFitModelFromLabel(),
+               method=tclvalue(getenv("fit.method.var")),
+               trim=tclvalue(getenv("fit.trim.var")),
+               ci=tclvalue(getenv("fit.ci.var")),
+               ignoreNegative=tclvalue(getenv("fit.ignoreNegative.var")))
 
     ## Collect spatial parameters
-    sp <- list(cutoff=tclvalue(getenv("cutoff.var")),
-               k=tclvalue(getenv("k.var")),
-               gamma=tclvalue(getenv("gamma.var")),
-               plotSurface=tclvalue(getenv("plotSurface.var")))
+    sp <- list(cutoff=tclvalue(getenv("spatial.cutoff.var")),
+               k=tclvalue(getenv("spatial.k.var")),
+               gamma=tclvalue(getenv("spatial.gamma.var")),
+               plotSurface=tclvalue(getenv("spatial.plotSurface.var")))
+
+    ## Collect normalization parameters
+    np <- list(method=getNormMethodFromLabel())
+    np$arglist <- switch(EXPR=np$method,
+                         "medpolish" = list(calc.medians=FALSE))
+message("np:")
+str(np)
 
     ## Should Spatial Adjustment be performed?
     spatial <- tclvalue(getenv("spatial.var"))
 
     ## Should PreFit QC be performed?
     prefitqc <- tclvalue(getenv("prefitqc.var"))
+
+    ## Should only normalize slides with good QC scores?
+    onlynormqcgood <- tclvalue(getenv("onlynormqcgood.var"))
 
     ## Postprocess
     dp$center <- as.logical(dp$center)
@@ -1607,13 +1817,9 @@ createSettingsFromUserInput <- function() {
     sp$gamma <- as.numeric(sp$gamma)
     sp$plotSurface <- as.logical(sp$plotSurface)
 
-message(sprintf("spatial:  %s (%s)", spatial, class(spatial)))
     spatial <- as.logical(spatial)
-message(sprintf("spatial:  %s (%s)", spatial, class(spatial)))
-
-message(sprintf("prefitqc:  %s (%s)", prefitqc, class(prefitqc)))
     prefitqc <- as.logical(prefitqc)
-message(sprintf("prefitqc:  %s (%s)", prefitqc, class(prefitqc)))
+    onlynormqcgood <- as.logical(onlynormqcgood)
 
     ## Error checking
     if (is.null(txtdir)) {
@@ -1637,59 +1843,33 @@ message(sprintf("prefitqc:  %s (%s)", prefitqc, class(prefitqc)))
         }
     }
 
+    if (onlynormqcgood && !prefitqc) {
+        stop("prefit qc required for requested processing (onlynormqcgood)",
+             call.=FALSE)
+    }
+
     ## Create appropriate classes
     designparams <- do.call(SuperCurve::RPPADesignParams, dp)
-    fitparams <- do.call(SuperCurve::RPPAFitParams, fp)
     spatialparams <- if (spatial) {
                          do.call(SuperCurve::RPPASpatialParams, sp)
                      } else {
                          NULL
                      }
+    fitparams <- do.call(SuperCurve::RPPAFitParams, fp)
+    normparams <- do.call(SuperCurve::RPPANormalizationParams, np)
 
     SuperCurve::SuperCurveSettings(txtdir,
                                    imgdir,
                                    outdir,
-                                   designparams,
-                                   fitparams,
+                                   designparams=designparams,
+                                   fitparams=fitparams,
                                    spatialparams=spatialparams,
+                                   normparams=normparams,
                                    doprefitqc=prefitqc,
+                                   onlynormqcgood=onlynormqcgood,
                                    antibodyfile=antibodyfile,
-                                   software=software)
-}
-
-
-##-----------------------------------------------------------------------------
-saveSettings <- function(settings,
-                         rda.pathname,
-                         txt.pathname) {
-    ## Check arguments
-    stopifnot(SuperCurve:::is.SuperCurveSettings(settings))
-    stopifnot(is.character(rda.pathname) && length(rda.pathname) == 1)
-    stopifnot(is.character(txt.pathname) && length(txt.pathname) == 1)
-
-    ##---------------------------------------------------------------------
-    makeFileHeader <- function(string) {
-        stopifnot(is.character(string) && length(string) == 1)
-
-        paste("###",
-              paste("###", string),
-              "###",
-              "\n",
-              sep="\n")
-    }
-
-
-    ## Save settings (XDR format)
-    save(settings, file=rda.pathname, ascii=TRUE)
-
-    ## Save settings (human-readable text format)
-    version <- packageDescription("SuperCurve", fields="Version")
-    cat(makeFileHeader("SuperCurve settings"),
-        paramString(settings),
-        paste("supercurve version:", version), "\n",
-        "\n",  # blank line at EOF
-        sep="",
-        file=txt.pathname)
+                                   software=software,
+                                   alt.layout=alt.layout)
 }
 
 
@@ -1860,7 +2040,7 @@ createProgressDialog <- function(parent,
                      CloseButton=close.button)
     assign("userdata", userdata, envir=dialog$env)
 
-    return(dialog)
+    dialog
 }
 
 
@@ -1953,7 +2133,7 @@ monitorAnalysis <- function(dialog,
                    })
 
             ## Perform analysis
-            SuperCurve:::fitCurveAndSummarizeFromSettings(settings, monitor)
+            SuperCurve::fitCurveAndSummarizeFromSettings(settings, monitor)
 
             ## Update interface to show processing complete
             progressStage(monitor) <- "Summary"
@@ -2260,10 +2440,9 @@ performAnalysis <- function(settings) {
         }
     }
 
-    ## Save settings
-    saveSettings(settings,
-                 rda.pathname,
-                 txt.pathname)
+    ## Save settings (in both XDR and TEXT formats)
+    save(settings, file=rda.pathname, ascii=TRUE)
+    SuperCurve::write.summary(settings, path=outputdir)
     tclupdate()
 
     ## Configure progress dialog
@@ -2645,15 +2824,22 @@ supercurveGUI <- function() {
     ## Add entries to Tk option database
     local({
         ## Add "fake" resource values into options database
-        software  <- formals(RPPASet)$software
-        prefitqc  <- as.character(formals(RPPASet)$doprefitqc)
-        fitmethod <- eval(formals(RPPAFitParams)$method)[1]
-        fitmodel  <- formals(RPPAFitParams)$model
+        software       <- formals(SuperCurve::RPPASet)$software
+        alt.layout     <- "none"          # formals(RPPASet)$alt.layout == NULL
+        prefitqc       <- as.character(formals(SuperCurve::RPPASet)$doprefitqc)
+        onlynormqcgood <- prefitqc
+        fitmethod      <- eval(formals(SuperCurve::RPPAFitParams)$method)[1]
+        fitmodel       <- formals(SuperCurve::RPPAFitParams)$model
+        #normmethod     <- eval(formals(RPPANormalizationParams)$method)[1]
+        normmethod     <- "vs"   # formals(RPPANormalizationParams)$method)[4]
 
         initOptions(list("*software"=software,
+                         "*layout"=alt.layout,
                          "*prefitqc"=prefitqc,
+                         "*onlynormqcgood"=onlynormqcgood,
                          "*fitmethod"=fitmethod,
-                         "*fitmodel"=fitmodel))
+                         "*fitmodel"=fitmodel,
+                         "*normmethod"=normmethod))
 
         ## Add widget resource values into options database
         initOptions(list("*BannerFrame.Label.font"=bannerFont,
@@ -2681,37 +2867,39 @@ supercurveGUI <- function() {
     ## Initialize "global" variables
     initGlobals(list(
                      aliasfile.var=tclVar(""),
+                     alt.layout.var=tclVar(""),
                      analyze.button=NULL,
                      antibodyfile.var=tclVar(""),
-                     center.var=tclVar(""),
-                     ci.var=tclVar(""),
-                     cutoff.var=tclVar(""),
+                     design.center.var=tclVar(""),
+                     design.grouping.var=tclVar(""),
+                     design.ordering.var=tclVar(""),
                      designfile.var=tclVar(""),
                      dirty=FALSE,
                      errmsg=NULL,
+                     fit.ci.var=tclVar(""),
+                     fit.ignoreNegative.var=tclVar(""),
+                     fit.measure.var=tclVar(""),
+                     fit.method.var=tclVar(""),
+                     fit.model.label.var=tclVar(""),
+                     fit.trim.var=tclVar(""),
                      fonts=c(bannerFont, stageFont, prestageFont),
-                     gamma.var=tclVar(""),
-                     grouping.var=tclVar(""),
-                     ignoreNegative.var=tclVar(""),
                      images=c(required),
                      imgdir.var=tclVar(""),
                      initialdir=.getDefaultDirectory(),
-                     k.var=tclVar(""),
                      measure.optmenu=NULL,
-                     measure.var=tclVar(""),
-                     method.var=tclVar(""),
-                     model.label.var=tclVar(""),
-                     model.var=tclVar(""),
-                     ordering.var=tclVar(""),
+                     norm.method.label.var=tclVar(""),
+                     onlynormqcgood.var=tclVar(""),
                      outdir.var=tclVar(""),
-                     plotSurface.var=tclVar(""),
                      prefitqc.var=tclVar(""),
                      settings=NULL,
                      spatial.var=tclVar(""),
+                     spatial.cutoff.var=tclVar(""),
+                     spatial.gamma.var=tclVar(""),
+                     spatial.k.var=tclVar(""),
+                     spatial.plotSurface.var=tclVar(""),
                      software.var=tclVar(""),
                      spatial.checkbox=NULL,
                      toplevel=toplevel,
-                     trim.var=tclVar(""),
                      txtdir.var=tclVar("")
                 ))
 
@@ -2742,6 +2930,8 @@ supercurveGUI <- function() {
     createSpatialAdjPanel(spatialadjpage)
     qcparamspage <- tabnotebook_page(tabnotebook, "QC")
     createQCParamsPanel(qcparamspage)
+    normalizationpage <- tabnotebook_page(tabnotebook, "Normalization")
+    createNormalizationPanel(normalizationpage)
     tclupdate()
 
     ## :BUG: all background tasks are not being processed by tcltk package.
