@@ -1,5 +1,6 @@
 ###
-### RPPASETSUMMARY.R - Summarize fit processing results
+### $Id$
+### Summarize fit processing results
 ###
 
 

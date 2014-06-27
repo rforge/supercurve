@@ -1,5 +1,6 @@
 ###
-### NORMALIZE.R - Used after RPPAFit to remove sample effect
+### $Id$
+### Used after RPPAFit to remove sample effect
 ###
 
 

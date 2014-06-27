@@ -1,5 +1,5 @@
 ###
-### BOUNDEDRANGE.R
+### $Id$
 ###
 
 require(methods)

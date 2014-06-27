@@ -1,5 +1,5 @@
 ###
-### PROGRESSMONITOR.R
+### $Id$
 ###
 
 require(methods)

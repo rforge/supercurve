@@ -1,5 +1,5 @@
 ###
-### ALLGENERICS.R
+### $Id$
 ###
 
 

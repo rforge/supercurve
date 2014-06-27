@@ -1,5 +1,5 @@
 ###
-### DIRECTORY-CLASS.R
+### $Id$
 ###
 
 #:KRC: This entire class is completely unnecessary.

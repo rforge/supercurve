@@ -1,5 +1,5 @@
 ###
-### DILUTIONFITMETHODS.R
+### $Id$
 ###
 
 

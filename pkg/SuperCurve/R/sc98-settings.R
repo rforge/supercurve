@@ -1,5 +1,5 @@
 ###
-### SUPERCURVESETTINGS-CLASS.R
+### $Id$
 ###
 
 

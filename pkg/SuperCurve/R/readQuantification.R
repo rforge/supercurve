@@ -1,5 +1,5 @@
 ###
-### READQUANTIFICATION.R
+### $Id$
 ###
 
 ##

@@ -1,5 +1,6 @@
 ###
-### RPPASET.R - Fit a set of slides with a common layout
+### $Id$
+### Fit a set of slides with a common layout
 ###
 
 

@@ -1,5 +1,5 @@
 ###
-### ELAPSEDTIME.R
+### $Id$
 ###
 
 require(methods)

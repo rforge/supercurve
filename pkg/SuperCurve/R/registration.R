@@ -1,5 +1,6 @@
 ###
-### REGISTRATION.R - Generic registration routines
+### $Id$
+### Generic registration routines
 ###
 
 #:KRC: This whole thing still smells as though it is rebuilding
