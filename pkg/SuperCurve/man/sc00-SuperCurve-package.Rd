@@ -10,10 +10,10 @@
 \details{
   \tabular{ll}{
     Package: \tab SuperCurve\cr
-    Type: \tab Package\cr
-    Version: \tab 1.4.4\cr
-    Date: \tab 2012-05-01\cr
-    License: \tab See LICENSE for license information\cr
+    Type:    \tab Package\cr
+    Version: \tab 1.4.5\cr
+    Date:    \tab 2012-06-01\cr
+    License: \tab ARtistic-2.0\cr
   }
 
   For a complete list of functions, use \code{library(help="SuperCurve")}.
