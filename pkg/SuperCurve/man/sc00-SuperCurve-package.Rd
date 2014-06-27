@@ -16,7 +16,7 @@
     License: \tab ARtistic-2.0\cr
   }
 
-  For a complete list of functions, use \code{library(help="SuperCurve")}.
+  For a complete list of functions, use \code{library(help="SuperCurve")}.\cr
   For a high-level summary of the changes for each revision, use
     \code{file.show(system.file("NEWS", package="SuperCurve"))}.
 }
