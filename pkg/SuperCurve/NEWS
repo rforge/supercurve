@@ -6,6 +6,21 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.4.5
+
+
+NEW FEATURES
+
+    o	Added SVN revision information to most of the package files.
+
+    o	Added COPYRIGHTS file.
+
+
+BUG FIXES
+
+    o	Patch for partial argument name matching.
+
+
 		CHANGES IN R VERSION 1.4.4
 
 

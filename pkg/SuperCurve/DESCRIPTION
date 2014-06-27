@@ -1,14 +1,16 @@
 Package: SuperCurve
-Version: 1.4.4
-Date: 2012/05/01
+Version: 1.4.5
+Date: 2012-06-01
 Title: SuperCurve Package
 Author: Kevin R. Coombes, Shannon Neeley, Corwin Joy, Jianhua Hu, Keith Baggerly, and P. Roebuck.
-Maintainer: P. Roebuck <plroebuck@mdanderson.org>
+Maintainer: P. Roebuck <proebuck@mdanderson.org>
 Description: A package to analyze reverse phase protein lysate arrays.
 Depends: R (>= 2.9), methods, stats, utils, graphics, grDevices, MASS, cobs
 Suggests: boot, mgcv, quantreg, robustbase, splines, timeDate
 SystemRequirements: ImageMagick
-URL: http://odin.mdacc.tmc.edu/~plroebuck/supercurve/
+NeedsCompilation: no
+URL: http://r-forge.r-project.org/projects/supercurve/
 License: Artistic-2.0
+Copyright: file COPYRIGHTS
 LazyLoad: yes
 
