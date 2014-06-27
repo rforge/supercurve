@@ -1,6 +1,8 @@
 % NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
 % likely to be overwritten.
 %
+% $Id$
+%
 %\VignetteIndexEntry{RPPA Primer}
 %\VignetteKeywords{Preprocessing, Lysate Arrays}
 %\VignetteDepends{methods, stats, utils, graphics, grDevices, MASS, cobs, mgcv}
