@@ -42,7 +42,7 @@ getConfidenceInterval(result,
 \references{KRC}
 \author{
   Kevin R. Coombes \email{kcoombes@mdanderson.org},
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \seealso{
   \code{\link{RPPAFit-class}},

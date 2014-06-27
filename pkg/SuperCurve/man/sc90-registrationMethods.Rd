@@ -56,7 +56,7 @@ registerMethod(key, method, \dots, envir)
   \code{key}.
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \seealso{
   The \code{envir} argument of \code{\link[base]{eval}},

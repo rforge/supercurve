@@ -36,7 +36,7 @@ is.Directory(x)
   argument is an object of class \code{Directory}.
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \examples{
   pkgdir <- Directory(system.file(package="SuperCurve"))

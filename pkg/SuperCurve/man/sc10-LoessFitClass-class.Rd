@@ -42,7 +42,7 @@
 }
 \references{KRC}
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \seealso{
   \code{\linkS4class{FitClass}}

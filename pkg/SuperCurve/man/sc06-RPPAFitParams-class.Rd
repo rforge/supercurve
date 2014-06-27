@@ -195,7 +195,7 @@ is.RPPAFitParams(x)
 }
 \references{KRC}
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org},
+  P. Roebuck \email{proebuck@mdanderson.org},
   Kevin R. Coombes \email{kcoombes@mdanderson.org}
 }
 \seealso{

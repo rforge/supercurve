@@ -36,7 +36,7 @@ registerNormalizationMethod(key, method, ui.label=names(key))
   registering \code{method} and \code{ui.label} by association to \code{key}.
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \seealso{
   \code{\link{getRegisteredObject}},

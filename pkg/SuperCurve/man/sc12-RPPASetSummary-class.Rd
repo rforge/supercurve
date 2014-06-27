@@ -81,7 +81,7 @@ is.RPPASetSummary(x)
 }
 \references{KRC}
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \seealso{
   \code{\link{RPPASet}}

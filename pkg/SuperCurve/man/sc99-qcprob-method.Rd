@@ -29,7 +29,7 @@
   If the object is \code{NULL}, \code{NA} is returned.
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \keyword{methods}
 

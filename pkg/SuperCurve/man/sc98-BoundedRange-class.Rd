@@ -74,7 +74,7 @@ is.BoundedRange(x)
   argument is an object of class \code{BoundedRange}.
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \examples{
 showClass("BoundedRange")

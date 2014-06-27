@@ -35,5 +35,8 @@ data(rppaCell)
 }
 \source{Bryan Hennessey and Gordon Mills}
 \references{KRC}
+\author{
+  P. Roebuck \email{proebuck@mdanderson.org}
+}
 \keyword{datasets}
 

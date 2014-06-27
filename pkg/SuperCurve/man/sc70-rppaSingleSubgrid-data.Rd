@@ -42,5 +42,8 @@ data(rppaSingleSubgrid)
   describing that logical layout.
 }
 \references{KRC}
+\author{
+  P. Roebuck \email{proebuck@mdanderson.org}
+}
 \keyword{datasets}
 

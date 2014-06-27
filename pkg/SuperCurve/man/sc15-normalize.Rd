@@ -45,7 +45,7 @@ normalize(concs,
   \url{http://bioinformatics.oxfordjournals.org/content/25/11/1384}
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org},
+  P. Roebuck \email{proebuck@mdanderson.org},
   E. Shannon Neeley \email{sneeley@stat.byu.edu}
 }
 \seealso{

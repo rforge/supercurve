@@ -33,5 +33,8 @@ data(rppaTumor)
 }
 \source{Doris Swank and Gordon Mills}
 \references{KRC}
+\author{
+  P. Roebuck \email{proebuck@mdanderson.org}
+}
 \keyword{datasets}
 

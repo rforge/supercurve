@@ -64,7 +64,7 @@
   Arrays." (unpublished).
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \keyword{classes}
 \keyword{internal}

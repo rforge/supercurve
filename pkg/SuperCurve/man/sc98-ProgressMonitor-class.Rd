@@ -60,7 +60,7 @@ is.ProgressMonitor(x)
   This class should not be instantiated directly; extend this class instead.
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \keyword{classes}
 \keyword{methods}

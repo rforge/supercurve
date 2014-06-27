@@ -104,7 +104,7 @@ DefaultProgressMonitor(label, value, minimum=0, maximum=100)
   \code{DefaultProgressMonitor}.
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org}
+  P. Roebuck \email{proebuck@mdanderson.org}
 }
 \seealso{
   \code{\link{difftime}},

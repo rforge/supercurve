@@ -96,7 +96,7 @@ spatialCorrection(rppa,
   (in progress)
 }
 \author{
-  P. Roebuck \email{plroebuck@mdanderson.org},
+  P. Roebuck \email{proebuck@mdanderson.org},
   E. Shannon Neeley \email{sneeley@stat.byu.edu}
 }
 \seealso{
