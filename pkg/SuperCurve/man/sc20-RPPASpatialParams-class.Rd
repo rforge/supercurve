@@ -1,3 +1,5 @@
+% $Id$
+
 \name{RPPASpatialParams-class}
 \alias{RPPASpatialParams-class}
 \alias{RPPASpatialParams}

@@ -1,3 +1,5 @@
+% $Id$
+
 \name{ElapsedTime-class}
 \alias{ElapsedTime-class}
 \alias{ElapsedTime}

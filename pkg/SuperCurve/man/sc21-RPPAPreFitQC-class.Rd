@@ -1,3 +1,5 @@
+% $Id$
+
 \name{RPPAPreFitQC-class}
 \alias{RPPAPreFitQC-class}
 \alias{RPPAPreFitQC}

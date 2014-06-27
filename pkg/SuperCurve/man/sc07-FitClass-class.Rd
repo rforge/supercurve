@@ -1,3 +1,5 @@
+% $Id$
+
 \name{FitClass-class}
 \alias{FitClass-class}
 \alias{coef,FitClass-method}

@@ -1,3 +1,5 @@
+% $Id$
+
 \name{CobsFitClass-class}
 \alias{CobsFitClass-class}
 \alias{fitted,CobsFitClass-method}

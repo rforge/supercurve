@@ -1,3 +1,5 @@
+% $Id$
+
 \name{BoundedRange-class}
 \alias{BoundedRange-class}
 \alias{BoundedRange}

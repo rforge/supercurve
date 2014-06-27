@@ -1,3 +1,5 @@
+% $Id$
+
 \name{SCProgressMonitor-methods}
 \alias{progressMarquee}
 \alias{progressMarquee-method}

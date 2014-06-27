@@ -1,3 +1,5 @@
+% $Id$
+
 \name{write.summary-method}
 \alias{write.summary}
 \alias{write.summary-method}

@@ -1,3 +1,5 @@
+% $Id$
+
 \name{SCProgressMonitor-class}
 \alias{SCProgressMonitor-class}
 \alias{SCProgressMonitor}

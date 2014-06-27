@@ -1,3 +1,5 @@
+% $Id$
+
 \name{DS5RPPAPreFitQC-class}
 \alias{DS5RPPAPreFitQC-class}
 \alias{qcprob,DS5RPPAPreFitQC-method}

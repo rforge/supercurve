@@ -1,3 +1,5 @@
+% $Id$
+
 \name{RPPASet-class}
 \alias{RPPASet-class}
 \alias{RPPASet}

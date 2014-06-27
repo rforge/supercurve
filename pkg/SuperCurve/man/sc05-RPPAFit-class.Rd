@@ -1,3 +1,5 @@
+% $Id$
+
 \name{RPPAFit-class}
 \alias{RPPAFit-class}
 \alias{coef,RPPAFit-method}

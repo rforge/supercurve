@@ -1,3 +1,5 @@
+% $Id$
+
 \name{registerModel}
 \alias{getRegisteredModel}
 \alias{getRegisteredModelKeys}

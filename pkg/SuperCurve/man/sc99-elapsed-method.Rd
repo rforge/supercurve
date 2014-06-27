@@ -1,3 +1,5 @@
+% $Id$
+
 \name{elapsed-method}
 \alias{elapsed}
 \alias{elapsed-method}

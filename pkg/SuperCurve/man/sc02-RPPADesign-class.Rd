@@ -1,3 +1,5 @@
+% $Id$
+
 \name{RPPADesign-class}
 \alias{RPPADesignParams-class}
 \alias{RPPADesign-class}

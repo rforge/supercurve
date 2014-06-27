@@ -1,3 +1,5 @@
+% $Id$
+
 \name{registrationMethods}
 \alias{getRegisteredObject}
 \alias{getRegisteredObjectKeys}

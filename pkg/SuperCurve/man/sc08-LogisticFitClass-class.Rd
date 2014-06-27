@@ -1,3 +1,5 @@
+% $Id$
+
 \name{LogisticFitClass-class}
 \alias{LogisticFitClass-class}
 \alias{coef,LogisticFitClass-method}

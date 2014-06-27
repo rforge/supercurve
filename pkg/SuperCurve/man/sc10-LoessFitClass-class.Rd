@@ -1,3 +1,5 @@
+% $Id$
+
 \name{LoessFitClass-class}
 \alias{LoessFitClass-class}
 \alias{fitted,LoessFitClass-method}

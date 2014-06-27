@@ -1,3 +1,5 @@
+% $Id$
+
 \name{ProgressMonitor-methods}
 \alias{progressDone}
 \alias{progressDone-method}

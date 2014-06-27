@@ -1,3 +1,5 @@
+% $Id$
+
 \name{Directory-class}
 \alias{Directory-class}
 \alias{Directory}

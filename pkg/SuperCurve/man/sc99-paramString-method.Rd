@@ -1,3 +1,5 @@
+% $Id$
+
 \name{paramString-method}
 \alias{paramString}
 \alias{paramString-method}

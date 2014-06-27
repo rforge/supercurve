@@ -1,3 +1,5 @@
+% $Id$
+
 \name{rppaTriple-data}
 \alias{rppaTriple-data}
 \alias{rppaTriple}

@@ -1,3 +1,5 @@
+% $Id$
+
 \name{qcprob-method}
 \alias{qcprob}
 \alias{qcprob-method}

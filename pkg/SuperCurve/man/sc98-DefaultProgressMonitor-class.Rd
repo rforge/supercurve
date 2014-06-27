@@ -1,3 +1,5 @@
+% $Id$
+
 \name{DefaultProgressMonitor-class}
 \alias{DefaultProgressMonitor-class}
 \alias{DefaultProgressMonitor}

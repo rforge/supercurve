@@ -1,3 +1,5 @@
+% $Id$
+
 \name{spatialCorrection}
 \alias{spatialCorrection}
 \alias{spatialAdjustment}

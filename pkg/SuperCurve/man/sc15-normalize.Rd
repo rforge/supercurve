@@ -1,3 +1,5 @@
+% $Id$
+
 \name{normalize}
 \alias{normalize}
 \title{Normalization}

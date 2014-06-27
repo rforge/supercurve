@@ -1,3 +1,5 @@
+% $Id$
+
 \name{ProgressMonitor-class}
 \alias{ProgressMonitor-class}
 \alias{is.ProgressMonitor}

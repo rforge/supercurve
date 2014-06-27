@@ -1,3 +1,5 @@
+% $Id$
+
 \name{SuperCurveSettings-class}
 \alias{SuperCurveSettings-class}
 \alias{SuperCurveSettings}

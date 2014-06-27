@@ -1,3 +1,5 @@
+% $Id$
+
 \name{RPPASetSummary-class}
 \alias{RPPASetSummary-class}
 \alias{RPPASetSummary}

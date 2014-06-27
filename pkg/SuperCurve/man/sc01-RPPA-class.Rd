@@ -1,3 +1,5 @@
+% $Id$
+
 \name{RPPA-class}
 \alias{RPPA-class}
 \alias{RPPA}

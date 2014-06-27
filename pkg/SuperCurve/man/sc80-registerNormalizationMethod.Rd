@@ -1,3 +1,5 @@
+% $Id$
+
 \name{registerNormalizationMethod}
 \alias{getRegisteredNormalizationMethod}
 \alias{getRegisteredNormalizationMethodKeys}

@@ -1,3 +1,5 @@
+% $Id$
+
 \name{getConfidenceInterval}
 \alias{getConfidenceInterval}
 \title{Compute Confidence Intervals for a Model Fit to Dilution Series}
