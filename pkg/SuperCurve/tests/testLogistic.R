@@ -1,5 +1,5 @@
 ###
-### TESTLOGISTIC.R
+### $Id$
 ###
 
 
