@@ -11,9 +11,9 @@
   \tabular{ll}{
     Package: \tab SuperCurve\cr
     Type:    \tab Package\cr
-    Version: \tab 1.4.5\cr
-    Date:    \tab 2012-06-01\cr
-    License: \tab ARtistic-2.0\cr
+    Version: \tab \Sexpr[results=text]{packageDescription("SuperCurve")$Version}\cr
+    Date:    \tab \Sexpr[results=text]{packageDescription("SuperCurve")$Date}\cr
+    License: \tab \Sexpr[results=text]{packageDescription("SuperCurve")$License}\cr
   }
 
   For a complete list of functions, use \code{library(help="SuperCurve")}.\cr
