@@ -1,5 +1,6 @@
 ###
-### MKRPPASINGLESUBGRIDDATASET.R
+### $Id$
+### (Re)creates 'rppaSingleSubgrid' dataset object found in 'data' directory.
 ###
 
 

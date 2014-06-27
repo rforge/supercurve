@@ -1,5 +1,6 @@
 ###
-### MKRPPATUMORDATASET.R
+### $Id$
+### (Re)creates 'rppaTumor' dataset object found in 'data' directory.
 ###
 
 

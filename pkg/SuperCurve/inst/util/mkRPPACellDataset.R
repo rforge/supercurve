@@ -1,5 +1,6 @@
 ###
-### MKRPPACELLDATASET.R
+### $Id$
+### (Re)creates 'rppaCell' dataset object found in 'data' directory.
 ###
 
 

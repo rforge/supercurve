@@ -1,5 +1,6 @@
 ###
-### MKRPPATRIPLEDATASET.R
+### $Id$
+### (Re)creates 'rppaTriple' dataset object found in 'data' directory.
 ###
 
 
