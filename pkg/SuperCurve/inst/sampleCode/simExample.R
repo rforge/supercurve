@@ -1,3 +1,7 @@
+###
+### $Id$
+###
+
 doSims <- FALSE
 
 if (doSims) {

@@ -1,3 +1,7 @@
+###
+### $Id$
+###
+
 library("LysateArray")
 tumor.home <- 'LysateArray/slides'
 outputfile <- 'supercurve.csv'
