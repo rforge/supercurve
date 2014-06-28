@@ -131,7 +131,7 @@ setMethod("coef", signature(object="FitClass"),
 
     ## :TODO: Come up with another way to do this that doesn't involve
     ## writing into user workspace.
-    obj <- get(".RPPA.fit.model", env=.GlobalEnv)
+    obj <- get(".RPPA.fit.model", envir=.GlobalEnv)
     fitted(obj, conc)
 }
 
@@ -182,7 +182,7 @@ setMethod("coef", signature(object="FitClass"),
 
     ## Function .slide.model references object back here for curve model
     ## :TBD: Isn't writing into global environment considered rude?
-    assign(".RPPA.fit.model", object, env=.GlobalEnv)
+    assign(".RPPA.fit.model", object, envir=.GlobalEnv)
 
     tmp <- try({
                     nlsmeth(Y ~ SuperCurve:::.slide.model(Steps+X),
