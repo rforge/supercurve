@@ -105,7 +105,7 @@ seriesNames(design)
     when either \code{aliasfile} or \code{designfile} argument refer to
     relative filename; ignored when filename is absolute.}
   \item{center}{logical scalar. If \code{TRUE}, then dilution steps are
-    centered around 0.}
+    centered around \code{0}.}
   \item{controls}{optional list containing the character strings that identify
     control spots on the array. \code{RPPADesignParams} will also coerce a
     character vector appropriately.}
@@ -118,7 +118,7 @@ seriesNames(design)
     (for debuggging)}
   \item{main}{overall title for plot}
   \item{measure}{character string specifying measure to plot}
-  \item{\dots}{extra arguments for generic or plotting routines.}
+  \item{\dots}{extra arguments for generic or plotting routines}
 }
 \details{
   From their inception, reverse-phase protein array experiments have
