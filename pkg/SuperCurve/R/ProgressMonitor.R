@@ -126,7 +126,6 @@ setMethod("progressLabel",
 setReplaceMethod("progressLabel",
     signature(object="DefaultProgressMonitor", value="character"),
     function(object,
-             ...,
              value) {
         stopifnot(length(value) == 1)
         object@label <- value
@@ -147,7 +146,6 @@ setMethod("progressValue",
 setReplaceMethod("progressValue",
     signature(object="DefaultProgressMonitor", value="numeric"),
     function(object,
-             ...,
              value) {
         #message("progressValue<-(DefaultProgressMonitor, numeric)")
         progressValue(object@range) <- value
@@ -168,7 +166,6 @@ setMethod("progressMinimum",
 setReplaceMethod("progressMinimum",
     signature(object="DefaultProgressMonitor", value="numeric"),
     function(object,
-             ...,
              value) {
         progressMinimum(object@range) <- value
         object@elapsed <- elapsed(object)
@@ -188,7 +185,6 @@ setMethod("progressMaximum",
 setReplaceMethod("progressMaximum",
     signature(object="DefaultProgressMonitor", value="numeric"),
     function(object,
-             ...,
              value) {
         progressMaximum(object@range) <- value
         object@elapsed <- elapsed(object)
@@ -208,7 +204,6 @@ setMethod("progressError",
 setReplaceMethod("progressError",
     signature(object="DefaultProgressMonitor", value="logical"),
     function(object,
-             ...,
              value) {
         stopifnot(length(value) == 1)
         object@err <- value
@@ -229,7 +224,6 @@ setMethod("progressDone",
 setReplaceMethod("progressDone",
     signature(object="DefaultProgressMonitor", value="logical"),
     function(object,
-             ...,
              value) {
         stopifnot(length(value) == 1)
         object@done <- value
