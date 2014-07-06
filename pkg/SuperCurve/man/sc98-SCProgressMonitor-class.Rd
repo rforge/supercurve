@@ -20,14 +20,16 @@ via a progressbar and provides means to get/set values for such a widget.
 SCProgressMonitor(stage="")
 is.SCProgressMonitor(x)
 getStages()
-%%\S4method{progressMarquee}{SCProgressMonitor}(object)
-%%\S4method{progressMarquee}{SCProgressMonitor}(object, \dots) <- value
-%%\S4method{progressStage}{SCProgressMonitor}(object)
-%%\S4method{progressStage}{SCProgressMonitor}(object, \dots) <- value
+\S4method{progressMarquee}{SCProgressMonitor}(object)
+\S4method{progressMarquee}{SCProgressMonitor}(object) <- value
+\S4method{progressStage}{SCProgressMonitor}(object)
+\S4method{progressStage}{SCProgressMonitor}(object) <- value
 }
 \arguments{
   \item{stage}{string specifying current stage of task}
   \item{x}{object of (sub)class \code{SCProgressMonitor}}
+  \item{object}{object of (sub)class \code{SCProgressMonitor}}
+  \item{value}{value to be assigned}
 }
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to

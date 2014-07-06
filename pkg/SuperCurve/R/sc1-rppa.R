@@ -21,7 +21,8 @@ is.RPPA <- function(x) {
 RPPA <- function(file,
                  path=".",
                  antibody=NULL,
-                 software="microvigene") {
+                 software="microvigene",
+                 alt.layout=NULL) {
     ## Check arguments
     if (is.character(file)) {
       #:KRC: user-hostile.
@@ -33,28 +34,40 @@ RPPA <- function(file,
                          sQuote("file")))
         }
 
-        pathname <- if (.isAbsolutePathname(file)) {
-                        file
-                    } else {
-                        if (!is.character(path)) {
-                            stop(sprintf("argument %s must be character",
-                             sQuote("path")))
-                        } else if (!(length(path) == 1)) {
-                            stop(sprintf("argument %s must be of length 1",
-                             sQuote("path")))
-                        }
+        path_or_url <- if (.isAbsolutePathname(file) || .hasScheme(file)) {
+                           file
+                       } else {
+                           if (!is.character(path)) {
+                               stop(sprintf("argument %s must be character",
+                                            sQuote("path")))
+                           } else if (!(length(path) == 1)) {
+                               stop(sprintf("argument %s must be of length 1",
+                                            sQuote("path")))
+                           }
 
-                        file.path(path, file)
-                    }
+                           if (.hasScheme(path)) {
+                               paste(path, file, sep="/")
+                           } else {
+                               file.path(path, file)
+                           }
+                       }
 
-        #:KRC: Useless error checking that does not save you
-        if (!file.exists(pathname)) {
-            stop(sprintf("file %s does not exist",
-                         dQuote(pathname)))
+        is_url <- .hasScheme(path_or_url)
+        if (!is_url) {
+            #:KRC: Useless error checking that does not save you
+            ## :PLR: But has a more meaningful error message...
+            if (!file.exists(path_or_url)) {
+                stop(sprintf("file %s does not exist",
+                             dQuote(path_or_url)))
+            }
         }
 
         ## Convert to connection object
-        file <- file(pathname, "r")
+        file <- if (is_url) {
+                    url(path_or_url, "r")
+                } else {
+                    file(path_or_url, "r")
+                }
         on.exit(close(file))
     }
     filename <- basename(summary(file)$description)
@@ -79,7 +92,7 @@ RPPA <- function(file,
     }
 
     ## Read quantification file
-    quant.df <- readQuantification(file, software)
+    quant.df <- readQuantification(file, software, alt.layout)
 
     ## Create new class
     new("RPPA",
@@ -233,5 +246,15 @@ software <- function(rppa) {
     stopifnot(is.RPPA(rppa))
 
     attr(rppa@data, "software", exact=TRUE)
+}
+
+
+##-----------------------------------------------------------------------------
+## Retrieve the layout used to create this object. In this case, a non-NULL
+## value indicates an alternative layout was used.
+layout <- function(rppa) {
+    stopifnot(is.RPPA(rppa))
+
+    attr(rppa@data, "layout", exact=TRUE)
 }
 

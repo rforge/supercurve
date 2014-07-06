@@ -6,14 +6,14 @@
 
 ##=============================================================================
 setClass("RPPASetSummary",
-         representation(raw="matrix",                ## raw concentrations
-                        ss="matrix",                 ## sum squares ratio
-                        medpol="matrix",             ## polished concentrations
-                        probs="numeric",             ## probability good slide
-                        completed="matrix",          ## what worked/failed
-                        design="RPPADesign",         ## design for all slides
-                        software="character",        ## what processed slides
-                        version="character"))        ## package version
+         representation(raw="matrix",              ## raw concentrations
+                        ss="matrix",               ## sum squares ratio
+                        norm="matrix",             ## normalized concentrations
+                        probs="numeric",           ## probability good slide
+                        completed="matrix",        ## what worked/failed
+                        design="RPPADesign",       ## design for all slides
+                        onlynormqcgood="logical",  ## filter norm'd by qc score
+                        version="character"))      ## package version
 
 
 ##-----------------------------------------------------------------------------
@@ -48,11 +48,19 @@ is.RPPASetSummary <- function(x) {
 ##-----------------------------------------------------------------------------
 ## Create an RPPASetSummary object
 RPPASetSummary <- function(rppaset,
+                           onlynormqcgood=ran.prefitqc(rppaset),
                            monitor=NULL) {
     ## Check arguments
     if (!is.RPPASet(rppaset)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("rppaset"), "RPPASet"))
+    }
+    if (!is.logical(onlynormqcgood)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("onlynormqcgood")))
+    } else if (!(length(onlynormqcgood) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("onlynormqcgood")))
     }
     if (!is.null(monitor)) {
         if (!is.SCProgressMonitor(monitor)) {
@@ -80,31 +88,6 @@ RPPASetSummary <- function(rppaset,
         rownames(conc.ss) <- alias.name
     }
 
-    progressMarquee(monitor) <- "Normalizing concentrations"
-    ## Median polish to normalize sample, slide effects
-    ##   where:
-    ##     row       - sample correction
-    ##     residuals - polished concentrations
-    ##
-    pol <- medpolish(conc.raw, trace.iter=FALSE, na.rm=TRUE)
-    conc.medpol <- cbind(pol$row, pol$residuals)
-    colnames(conc.medpol)[1] <- "Correction"
-
-    ## Magically delicious hack to allow reorder on write
-    rppafits.tf <- rppaset@completed[, "fit"]
-    rppa <- rppaset@rppas[rppafits.tf][[1]]
-    stopifnot(is.RPPA(rppa))
-    software <- SuperCurve:::software(rppa)
-    if (!is.null(software) && software == "singlesubgrid") {
-        layout <- design@layout
-        firstsample.tf <- layout$SpotType == "Sample" & !duplicated(layout$Sample)
-        locations <- as.integer(rownames(rppa@data)[firstsample.tf])
-
-        attr(conc.raw,    "locations") <- locations
-        attr(conc.ss,     "locations") <- locations
-        attr(conc.medpol, "locations") <- locations
-    }
-
     ## Generate probabilities (goodness) for each processed slide (if any)
     prefitqcs.tf <- rppaset@completed[, "prefitqc"]
     probs <- if (!all(is.na(prefitqcs.tf))) {
@@ -115,15 +98,50 @@ RPPASetSummary <- function(rppaset,
                  as.numeric(NaN)
              }
 
+    ## Normalize the concentrations
+    progressMarquee(monitor) <- "Normalizing concentrations"
+    norm.tf <- if (onlynormqcgood) {
+                   ## Remove "bad" slides...
+                   local({
+                       probs.tmp <- probs
+                       probs.tmp[is.na(probs.tmp)] <- 0
+                       good.cutoff <- 0.8
+                       probs.tmp >= good.cutoff
+                   })
+               } else {
+                   rep(TRUE, ncol(conc.raw))
+               }
+    normparams <- rppaset@normparams
+    normalizeArgs <- c(list(), normparams@arglist)
+    normalizeArgs$object <- conc.raw[, norm.tf]
+    normalizeArgs$method <- normparams@method
+
+    conc.norm <- do.call(normalize, normalizeArgs)
+
+    ## Magically delicious hack to allow reorder on write
+    rppafits.tf <- rppaset@completed[, "fit"]
+    rppa <- rppaset@rppas[rppafits.tf][[1]]
+    alt.layout <- SuperCurve:::layout(rppa)
+    ## :TBD: Should this really be for SuperSlide only or more generic?
+    if (!is.null(alt.layout) && alt.layout == "superslide") {
+        layout <- design@layout
+        firstsample.tf <- layout$SpotType == "Sample" & !duplicated(layout$Sample)
+        locations <- as.integer(rownames(rppa@data)[firstsample.tf])
+
+        attr(conc.raw,  "locations") <- locations
+        attr(conc.ss,   "locations") <- locations
+        attr(conc.norm, "locations") <- locations
+    }
+
     ## Create new class
     new("RPPASetSummary",
         raw=conc.raw,
         ss=conc.ss,
-        medpol=conc.medpol,
+        norm=conc.norm,
         probs=probs,
         completed=rppaset@completed,
         design=rppaset@design,
-        software=software,
+        onlynormqcgood=onlynormqcgood,
         version=packageDescription("SuperCurve", fields="Version"))
 }
 
@@ -172,7 +190,8 @@ setMethod("write.summary", signature(object="RPPASetSummary"),
 
     ##-------------------------------------------------------------------------
     ## Allows concentrations to be written back in different order.
-    get_concs_ordered_for_write <- function(object, slotname) {
+    get_concs_ordered_for_write <- function(object,
+                                            slotname) {
         stopifnot(is.RPPASetSummary(object))
         stopifnot(is.character(slotname) && length(slotname) == 1)
 
@@ -191,6 +210,33 @@ setMethod("write.summary", signature(object="RPPASetSummary"),
     }
 
 
+    ##-------------------------------------------------------------------------
+    ## Create informative information to the filename
+    mknormtag <- function(object) {
+        stopifnot(is.RPPASetSummary(object))
+
+        attrs <- attr(object@norm, "normalization", exact=TRUE)
+        normMethod <- attrs$method
+        qctag <- if (object@onlynormqcgood) {
+                     "qc"
+                 }
+        if (normMethod == "medpolish") {
+            if (is.null(qctag)) {
+                normMethod
+            } else {
+                paste(normMethod, qctag, sep="-")
+            }
+        } else {
+            sweeptag <- if (attrs$swept.cols) "rowcol" else "col"
+            if (is.null(qctag)) {
+                paste(normMethod, sweeptag, sep="-")
+            } else {
+                paste(normMethod, sweeptag, qctag, sep="-")
+            }
+        }
+    }
+
+
     ## Begin processing
     progressMarquee(monitor) <- "Writing Fit Summary Files"
 
@@ -205,9 +251,9 @@ setMethod("write.summary", signature(object="RPPASetSummary"),
     write.csv(conc.ss, file=file.path(path, .portableFilename(filename)))
 
     ## Write file for normalized concentrations
-    filename <- sprintf("%s_conc_norm_medpolish.csv", prefix)
-    conc.medpol <- get_concs_ordered_for_write(object, "medpol")
-    write.csv(conc.medpol, file=file.path(path, .portableFilename(filename)))
+    filename <- sprintf("%s_conc_norm_%s.csv", prefix, mknormtag(object))
+    conc.norm <- get_concs_ordered_for_write(object, "norm")
+    write.csv(conc.norm, file=file.path(path, .portableFilename(filename)))
 
     ## If QC processing was performed...
     if (!(length(object@probs) == 1 && is.na(object@probs))) {
@@ -225,5 +271,7 @@ setMethod("write.summary", signature(object="RPPASetSummary"),
                 file=file.path(path, .portableFilename(filename)),
                 sep='\t',
                 col.names=NA)
+
+    invisible(NULL)
 })
 

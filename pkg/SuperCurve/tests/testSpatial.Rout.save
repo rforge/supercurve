@@ -1,0 +1,131 @@
+
+R version 2.14.2 (2012-02-29)
+Copyright (C) 2012 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ###
+> ### TESTSPATIAL.R
+> ###
+> 
+> 
+> options(warn=1)
+> library(SuperCurve)
+Loading required package: MASS
+Loading required package: cobs
+Loading required package: SparseM
+Package SparseM (0.86) loaded.
+	   To cite, see citation("SparseM")
+
+
+Attaching package: 'SparseM'
+
+The following object(s) are masked from 'package:base':
+
+    backsolve
+
+Loading required package: quantreg
+Loading required package: splines
+> source("checkFuncs")
+> 
+> ###########################
+> ## tests of cutoff
+> 
+> checkException(RPPASpatialParams(cutoff="bogus"),
++                msg="invalid character value should fail")
+Error : is.numeric(cutoff) && length(cutoff) == 1 is not TRUE
+[1] TRUE
+> checkException(RPPASpatialParams(cutoff=-1),
++                msg="invalid value (too small) should fail")
+Error in validObject(.Object) : 
+  invalid class "RPPASpatialParams" object: cutoff must be in interval [0, 1]
+[1] TRUE
+> checkException(RPPASpatialParams(cutoff=2),
++                msg="invalid value (too large) should fail")
+Error in validObject(.Object) : 
+  invalid class "RPPASpatialParams" object: cutoff must be in interval [0, 1]
+[1] TRUE
+> checkException(RPPASpatialParams(cutoff=1:10),
++                msg="numeric vector should fail")
+Error : is.numeric(cutoff) && length(cutoff) == 1 is not TRUE
+[1] TRUE
+> 
+> ###########################
+> ## tests of k
+> 
+> checkException(RPPASpatialParams(k="bogus"),
++                msg="invalid character value should fail")
+Error : is.numeric(k) && length(k) == 1 is not TRUE
+[1] TRUE
+> checkException(RPPASpatialParams(k=Inf),
++                msg="invalid value (infinite) should fail")
+Error in validObject(.Object) : 
+  invalid class "RPPASpatialParams" object: k must be finite
+[1] TRUE
+> checkException(RPPASpatialParams(k=1),
++                msg="invalid value (too small) should fail")
+Error in validObject(.Object) : 
+  invalid class "RPPASpatialParams" object: k must be greater than or equal 2
+[1] TRUE
+> checkException(RPPASpatialParams(k=1:10),
++                msg="numeric vector should fail")
+Error : is.numeric(k) && length(k) == 1 is not TRUE
+[1] TRUE
+> 
+> ###########################
+> ## tests of gamma
+> 
+> checkException(RPPASpatialParams(gamma="bogus"),
++                msg="invalid character value should fail")
+Error : is.numeric(gamma) && length(gamma) == 1 is not TRUE
+[1] TRUE
+> checkException(RPPASpatialParams(gamma=Inf),
++                msg="invalid value (infinite) should fail")
+Error in validObject(.Object) : 
+  invalid class "RPPASpatialParams" object: gamma must be finite
+[1] TRUE
+> checkException(RPPASpatialParams(gamma=-1),
++                msg="invalid value (too small) should fail")
+Error in validObject(.Object) : 
+  invalid class "RPPASpatialParams" object: gamma must be in interval [0, 2]
+[1] TRUE
+> checkException(RPPASpatialParams(gamma=3),
++                msg="invalid value (too large) should fail")
+Error in validObject(.Object) : 
+  invalid class "RPPASpatialParams" object: gamma must be in interval [0, 2]
+[1] TRUE
+> checkException(RPPASpatialParams(gamma=1:10),
++                msg="numeric vector should fail")
+Error : is.numeric(gamma) && length(gamma) == 1 is not TRUE
+[1] TRUE
+> 
+> ###########################
+> ## tests of plotSurface
+> 
+> checkException(RPPASpatialParams(plotSurface="bogus"),
++                msg="invalid character value should fail")
+Error : is.logical(plotSurface) && length(plotSurface) == 1 is not TRUE
+[1] TRUE
+> checkException(RPPASpatialParams(plotSurface=1),
++                msg="invalid logical value should fail")
+Error : is.logical(plotSurface) && length(plotSurface) == 1 is not TRUE
+[1] TRUE
+> checkException(RPPASpatialParams(plotSurface=c(TRUE, FALSE)),
++                msg="logical vector should fail")
+Error : is.logical(plotSurface) && length(plotSurface) == 1 is not TRUE
+[1] TRUE
+> 
+> 
+> 

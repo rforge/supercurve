@@ -113,7 +113,10 @@ extdatadir <- system.file("extdata", package="SuperCurve")
 
 txtdir <- file.path(extdatadir, "rppaSingleSubgridData")
 designfile <- file.path(txtdir, "slidedesign.tsv")
-rppa <- RPPA("Waldo.txt", path=txtdir, software="singlesubgrid")
+rppa <- RPPA("Waldo.txt",
+             path=txtdir,
+             software="microvigene",
+             alt.layout="superslide")
 designparams <- RPPADesignParams(grouping="blockSample",
                                  designfile=designfile)
 design <- RPPADesignFromParams(rppa, designparams)

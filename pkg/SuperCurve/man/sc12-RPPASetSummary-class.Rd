@@ -13,6 +13,7 @@
 }
 \usage{
 RPPASetSummary(rppaset,
+               onlynormqcgood=ran.prefitqc(rppaset),
                monitor=NULL)
 is.RPPASetSummary(x)
 \S4method{write.summary}{RPPASetSummary}(object,
@@ -23,6 +24,8 @@ is.RPPASetSummary(x)
 }
 \arguments{
   \item{rppaset}{object of class \code{RPPASet}}
+  \item{onlynormqcgood}{logical scalar. If \code{TRUE}, filters the slides
+    to be normalized according to their pre-fit quality control scores.}
   \item{monitor}{object of class \code{SCProgressMonitor}}
   \item{x}{object of class \code{RPPASetSummary}}
   \item{object}{object of class \code{RPPASetSummary}}
@@ -41,12 +44,15 @@ is.RPPASetSummary(x)
   \describe{
     \item{\code{raw}:}{numeric matrix of raw concentrations}
     \item{\code{ss}:}{numeric matrix of \eqn{R^2} statistical values}
-    \item{\code{medpol}:}{numeric matrix of median polished concentrations}
+    \item{\code{norm}:}{numeric matrix of normalized concentrations}
     \item{\code{probs}:}{numeric vector of goodness of fit probabilities}
     \item{\code{completed}:}{logical matrix specifying stage completion
       for each slide}
     \item{\code{design}:}{object of class \code{RPPADesign}, common to all
       the slides}
+    \item{\code{onlynormqcgood}:}{logical scalar specifying if raw
+      concentrations were filtered according to their pre-fit quality control
+      scores prior to normalization}
     \item{\code{version}:}{character string containing the version of this
       package used to construct the object}
   }
@@ -57,7 +63,7 @@ is.RPPASetSummary(x)
       \code{RPPASetSummary}.}
     \item{write.summary(object, path, prefix, monitor, \dots)}{
       Generates three \acronym{CSV} files: one for the raw concentrations, one
-      for the \eqn{R^2} statistics, and one for the polished concentrations;
+      for the \eqn{R^2} statistics, and one for the normalized concentrations;
       a fourth file containing the goodness of fit probabilities may be present
       if prefit QC analysis was requested. Additionally, a \acronym{TSV} file
       detailing completion of each stage of processing for each slide is

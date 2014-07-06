@@ -36,10 +36,12 @@ fitparams <- RPPAFitParams(measure="Mean.Net",
                            method="nlrob",
                            ignoreNegative=FALSE,
                            warnLevel=-1)
+normparams <- RPPANormalizationParams(method="vs")
 
 rppaset <- RPPASet(path,
                    designparams,
                    fitparams,
+                   normparams=normparams,
                    antibodyfile="proteinAssay.tsv")
 
 ###########################
@@ -64,19 +66,26 @@ emptydir <- file.path(persessionprojdir, "emptydir")
 dir.create(emptydir)
 checkException(RPPASet(path=emptydir,
                        designparams,
-                       fitparams),
+                       fitparams,
+                       normparams=normparams),
                msg="directory without quantification files should fail")
 
 ###########################
-## tests of designparams and fitparams
+## tests of designparams, fitparams, and normparams
 
 checkException(RPPASet(path,
                        designparams=fitparams),
                msg="invalid object should fail")
 checkException(RPPASet(path,
                        designparams,
-                       fitparams=RPPAFitParams(measure="bogus")),
+                       fitparams=RPPAFitParams(measure="bogus"),
+                       normparams=normparams),
                msg="fitparams with invalid measure should fail")
+checkException(RPPASet(path,
+                       designparams,
+                       fitparams,
+                       normparams=RPPANormalizationParams(method="bogus")),
+               msg="normparams with unregistered method should fail")
 
 
 ###########################
@@ -85,18 +94,21 @@ checkException(RPPASet(path,
 checkException(RPPASet(path=path,
                        designparams,
                        fitparams,
+                       normparams=normparams,
                        antibodyfile=5),
                msg="invalid value should fail")
 
 checkException(RPPASet(path=path,
                        designparams,
                        fitparams,
+                       normparams=normparams,
                        antibodyfile=c("results1", "results2")),
                msg="character vector should fail")
 
 checkException(RPPASet(path=path,
                        designparams,
                        fitparams,
+                       normparams=normparams,
                        antibodyfile=""),
                msg="empty string should fail")
 
@@ -104,12 +116,14 @@ nosuchfile <- "nosuch.tsv"
 checkException(RPPASet(path=path,
                        designparams,
                        fitparams,
+                       normparams=normparams,
                        antibodyfile=nosuchfile),
                msg="nonexistent file should fail")
 
 checkException(RPPASet(path=path,
                        designparams,
                        fitparams,
+                       normparams=normparams,
                        antibodyfile=path),
                msg="directory instead of file should fail")
 
@@ -120,6 +134,7 @@ local({
     checkException(RPPASet(path=path,
                            designparams,
                            fitparams,
+                           normparams=normparams,
                            antibodyfile=emptyfile),
                    msg="empty file should fail")
 })
@@ -136,6 +151,7 @@ local({
     checkException(RPPASet(path=path,
                            designparams,
                            fitparams,
+                           normparams=normparams,
                            antibodyfile=singlecolfile),
                    msg="file with single column should fail")
 })
@@ -154,6 +170,7 @@ local({
     checkException(RPPASet(path=path,
                            designparams,
                            fitparams,
+                           normparams=normparams,
                            antibodyfile=missingreqdcolsfile),
                    msg="file without required columns should fail")
 })

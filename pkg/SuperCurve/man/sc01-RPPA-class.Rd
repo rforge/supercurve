@@ -14,7 +14,11 @@
   reverse-phase protein array experiment.
 }
 \usage{
-RPPA(file, path=".", antibody=NULL, software="microvigene")
+RPPA(file,
+     path=".",
+     antibody=NULL,
+     software="microvigene",
+     alt.layout=NULL)
 is.RPPA(x)
 \S4method{dim}{RPPA}(x)
 \S4method{image}{RPPA}(x, measure="Mean.Net", main,
@@ -33,6 +37,8 @@ is.RPPA(x)
     extension.}
   \item{software}{character string specifying the software used to generate
     the quantification file (see section \sQuote{Details} below)}
+  \item{alt.layout}{character string specifying the name of the alternative
+    layout to be used (see section \sQuote{Details} below)}
   \item{object}{object of class \code{RPPA}}
   \item{x}{object of class \code{RPPA}}
   \item{measure}{character string containing the name of the measurement column
@@ -70,9 +76,15 @@ is.RPPA(x)
   return a data frame containing the file's data. The method will be searched
   for in the global namespace, then within the package itself. The default
   value selects method \code{read.microvigene}, which this package provides
-  to read \emph{MicroVigene} quantification files in text format. An additional
-  method, \code{read.singlesubgrid}, is provided to convert a single subgrid
-  physical layout (in MicroVigene format) into its actual logical one.
+  to read \emph{MicroVigene} quantification files in text format. Another
+  method, \code{read.arraypro}, is also provided to read \emph{Array-Pro}
+  quantification files in text format.
+
+  Likewise, the logical layout of the slide can also be changed. The
+  \code{alt.layout} argument is used in the selection of the actual method to
+  perform this function. For example, if the argument value is \dQuote{bar},
+  the code will attempt to invoke method \code{layout.as.bar} to convert the
+  physical layout of the data to that specified by the method itself.
 }
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to
@@ -116,6 +128,15 @@ is.RPPA(x)
 
   The \code{summary} method returns a summary of the underlying data frame.
 }
+\note{
+  The previous release provided a method, \code{read.singlesubgrid}, which
+  could convert a single subgrid physical layout (in MicroVigene format) into
+  its actual logical one.
+
+  So naturally, it's being reworked this release! To achieve the same thing in
+  this release, use:\cr
+    \code{RPPA(file, path, software="microvigene", alt.layout="superslide")}
+}
 \references{KRC}
 \author{
   Kevin R. Coombes \email{kcoombes@mdanderson.org},
@@ -130,7 +151,10 @@ extdatadir <- system.file("extdata", package="SuperCurve")
 
 ## Converts file from single subgrid to its logical equivalent (4x12x11x11)
 txtdir <- file.path(extdatadir, "rppaSingleSubgridData")
-waldo <- RPPA("Waldo.txt", path=txtdir, software="singlesubgrid")
+waldo <- RPPA("Waldo.txt",
+              path=txtdir,
+              software="microvigene",
+              alt.layout="superslide")
 dim(waldo)
 
 txtdir <- file.path(extdatadir, "rppaTumorData")

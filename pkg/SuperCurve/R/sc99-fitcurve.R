@@ -36,11 +36,13 @@ fitCurveAndSummarizeFromSettings <- function(settings,
                         designparams=settings@designparams,
                         fitparams=settings@fitparams,
                         spatialparams=settings@spatialparams,
+                        normparams=settings@normparams,
                         doprefitqc=settings@doprefitqc,
                         monitor=monitor)
     ## :NOTE: Handle following after list construction so NULL values dropped
     rppasetArgs$antibodyfile <- settings@antibodyfile
     rppasetArgs$software <- settings@software
+    rppasetArgs$alt.layout <- settings@alt.layout
 
     ## Perform analysis
     rppaset <- do.call(RPPASet, rppasetArgs)
@@ -55,6 +57,7 @@ fitCurveAndSummarizeFromSettings <- function(settings,
                   path=outdir,
                   graphs=TRUE,
                   tiffdir=imgdir,
+                  onlynormqcgood=settings@onlynormqcgood,
                   monitor=monitor)
 }
 

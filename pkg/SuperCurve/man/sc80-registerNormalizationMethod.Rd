@@ -55,8 +55,7 @@ registerNormalizationMethod("foo", normalize.foo, "Foo is as foo does")
 
 ## Use it...
 concs <- matrix(runif(500), nrow=10)
-	# :TBD: Remove package prefix when released to public...
-SuperCurve:::normalize(concs, method="foo", bar=0.005)
+normalize(concs, method="foo", bar=0.005)
   }
 }
 \keyword{data}

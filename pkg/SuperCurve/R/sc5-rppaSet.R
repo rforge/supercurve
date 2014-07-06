@@ -12,10 +12,11 @@ setClass("RPPASet",
                         design="RPPADesign",         ## common for all slides
                         rppas="array",               ## vector of RPPAs
                         spatialparams="OptionalRPPASpatialParams",
-                        fitparams="RPPAFitParams",
                         prefitqcs="array",           ## vector of QC values
+                        fitparams="RPPAFitParams",
                         fits="array",                ## set of fits
                         completed="matrix",          ## what worked/failed
+                        normparams="RPPANormalizationParams",
                         version="character"))        ## package version
 ## :KRC: Why is "rppas" an array or vector instead of a list (or environment)?
 ## :PLR: Because Corwin? wrote it this way...
@@ -250,17 +251,42 @@ is.RPPASet <- function(x) {
 
 
 ##-----------------------------------------------------------------------------
+## Return TRUE if PreFit QC was performed.
+ran.prefitqc <- function(rppaset) {
+    ## Check arguments
+    stopifnot(is.RPPASet(rppaset))
+
+    ## Begin processing
+    prefitqcs.tf <- rppaset@completed[, "prefitqc"]
+    return(!all(is.na(prefitqcs.tf)))
+}
+
+
+##-----------------------------------------------------------------------------
+setMethod("normalize", signature(object="RPPASet"),
+          function(object,
+                   method=getRegisteredNormalizationMethodKeys(),
+                   calc.medians=TRUE,
+                   sweep.cols=calc.medians,
+                   ...) {
+    ## Assemble matrix of concentrations from all fits in object
+    callGeneric(.fitSlot(object, "concentrations"))
+})
+
+
+##-----------------------------------------------------------------------------
 ## See R FAQ (8.1 How should I write summary methods?)
 setMethod("summary", signature(object="RPPASet"),
           function(object,
+                   onlynormqcgood=ran.prefitqc(object),
                    ...) {
     dots <- list(...)
     monitor <- if ("monitor" %in% names(dots)) {
                    dots[["monitor"]]
-               } else {
-                   NULL
                }
-    RPPASetSummary(object, monitor)
+    RPPASetSummary(object,
+                   onlynormqcgood,
+                   monitor)
 })
 
 
@@ -272,6 +298,7 @@ setMethod("write.summary", signature(object="RPPASet"),
                    prefix="supercurve",
                    graphs=TRUE,
                    tiffdir=NULL,
+                   onlynormqcgood=ran.prefitqc(object),
                    monitor=NULL,
                    ...) {
     ## Check arguments
@@ -307,6 +334,18 @@ setMethod("write.summary", signature(object="RPPASet"),
     } else if (!(length(graphs) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("graphs")))
+    }
+
+    if (is.numeric(onlynormqcgood)) {
+        onlynormqcgood <- as.logical(onlynormqcgood)
+    }
+
+    if (!is.logical(onlynormqcgood)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("onlynormqcgood")))
+    } else if (!(length(onlynormqcgood) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("onlynormqcgood")))
     }
 
     if (!is.null(monitor)) {
@@ -411,7 +450,9 @@ setMethod("write.summary", signature(object="RPPASet"),
     }
 
     ## Write CSV files
-    callGeneric(summary(object, monitor=monitor),
+    callGeneric(summary(object,
+                        onlynormqcgood=onlynormqcgood,
+                        monitor=monitor),
                 path,
                 prefix,
                 monitor=monitor)
@@ -480,10 +521,12 @@ RPPASet <- function(path,
                     designparams,
                     fitparams,
                     spatialparams=NULL,
+                    normparams,
                     doprefitqc=FALSE,
                     monitor=SCProgressMonitor(),
                     antibodyfile=NULL,
-                    software="microvigene") {
+                    software="microvigene",
+                    alt.layout=NULL) {
     ## Check arguments
     if (!is.character(path)) {
         stop(sprintf("argument %s must be character",
@@ -511,6 +554,11 @@ RPPASet <- function(path,
             stop(sprintf("argument %s must be object of class %s",
                          sQuote("spatialparams"), "RPPASpatialParams"))
         }
+    }
+
+    if (!is.RPPANormalizationParams(normparams)) {
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("normparams"), "RPPANormalizationParams"))
     }
 
     if (!is.SCProgressMonitor(monitor)) {
@@ -616,7 +664,8 @@ RPPASet <- function(path,
                         RPPA(slideFilename,
                              path=path,
                              antibody=antibody,
-                             software=software)
+                             software=software,
+                             alt.layout=alt.layout)
                     },
                     error=function(e) {
                         message(conditionMessage(e))
@@ -830,12 +879,13 @@ RPPASet <- function(path,
     ## Create new class
     new("RPPASet",
         call=call,
-        spatialparams=spatialparams,
-        fitparams=fitparams,
-        design=design,
         rppas=rppas,
+        spatialparams=spatialparams,
+        design=design,
         prefitqcs=prefitqcs,
         fits=fits,
+        fitparams=fitparams,
+        normparams=normparams,
         completed=completed,
         version=packageDescription("SuperCurve", fields="Version"))
 }

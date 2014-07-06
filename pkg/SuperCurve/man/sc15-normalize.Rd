@@ -1,31 +1,43 @@
 % $Id$
 
 \name{normalize}
-\alias{normalize}
+\alias{normalize,MatrixLike-method}
 \title{Normalization}
 \description{
   This function performs normalization for sample loading after quantification.
-  It is used after \code{RPPASet} has been created.
+  It is typically invoked as part of the process of creating summary
+  information from an \code{RPPASet} object.
 }
 \usage{
-normalize(concs,
+\S4method{normalize}{MatrixLike}(object,
           method=getRegisteredNormalizationMethodKeys(),
+          calc.medians=TRUE,
+          sweep.cols=calc.medians,
           \dots)
 }
 \arguments{
-  \item{concs}{data frame, matrix, or object of class \code{RPPASet}.}
+  \item{object}{data frame or matrix to be normalized}
   \item{method}{character string specifying name of method of sample loading
     normalization (see section \sQuote{Details} below)}
+  \item{calc.medians}{logical scalar. If \code{TRUE}, calculate row and column
+    median values from the data to be normalized.}
+  \item{sweep.cols}{logical scalar. If \code{TRUE}, subtract column medians
+    from data values prior to invoking the normalization method.}
   \item{\dots}{extra arguments for normalization routines}
 }
 \details{
+  By default, column medians are subtracted from the input data values; these
+  adjusted data values are then passed to the requested normalization routine
+  for further processing.
+
   The "method" argument may be augmented with user-provided normalization
   methods. Package-provided values are:
 
   \tabular{lll}{
-    median \tab sample median normalization\cr
-    house  \tab housekeeping normalization\cr
-    vs     \tab variable slope normalization\cr
+    medpolish \tab Tukey's median polish normalization\cr
+    median    \tab sample median normalization\cr
+    house     \tab housekeeping normalization\cr
+    vs        \tab variable slope normalization\cr
   }
 
   Specifying \dQuote{median} as the \code{method} argument causes the row
@@ -40,7 +52,7 @@ normalize(concs,
 }
 \references{
   Neeley ES, Kornblau SM, Coombes KR, Baggerly KA.\cr
-  "Variable slope normalization of reverse phase protein arrays"\cr
+  \emph{Variable slope normalization of reverse phase protein arrays}\cr
   Bioinformatics (2009) 25(11): 1384-1389.\cr
   \url{http://bioinformatics.oxfordjournals.org/content/25/11/1384}
 }
@@ -57,8 +69,6 @@ concs <- matrix(rnorm(1024),
                 ncol=length(antibodies),
                 dimnames=list(samples=NULL, antibodies=antibodies))
 
-normalize <- SuperCurve:::normalize    ## :TODO: Remove once exported
-
 ## Normalize using sample median
 normconcs <- normalize(concs, method="median")
 str(normconcs)
@@ -69,6 +79,10 @@ str(normconcs)
 
 ## Normalize using variable slope
 normconcs <- normalize(concs, method="vs")
+str(normconcs)
+
+## Normalize using Tukey's median polish (SuperCurve's previous default)
+normconcs <- normalize(concs, method="medpolish", calc.medians=FALSE)
 str(normconcs)
 
 ## Normalize using user-provided method (in this case, robust sample mean)

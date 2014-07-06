@@ -60,11 +60,21 @@ if (!isGeneric("residuals")) {
                function(object, ...) standardGeneric("residuals"))
 }
 
-## defined for: RPPA, RPPADesign, RPPAFit, RPPASet, RPPASetSummary,
-##              DS5RPPAPreFitQC
+## defined for: RPPA, RPPADesign, RPPAFit, RPPASet, DS5RPPAPreFitQC
 if (!isGeneric("summary")) {
     setGeneric("summary",
                function(object, ...) standardGeneric("summary"))
+}
+
+##
+## Borrowed generic definitions
+##
+
+## also defined by: affy
+## defined for: RPPASet, matrix, data.frame
+if (!isGeneric("normalize")) {
+    setGeneric("normalize",
+               function(object, ...) standardGeneric("normalize"))
 }
 
 ##
@@ -83,7 +93,8 @@ if (!isGeneric("fitSlide")) {
                function(object, ...) standardGeneric("fitSlide"))
 }
 
-## defined for: RPPADesignParams, RPPAFitParams, SuperCurveSettings
+## defined for: RPPADesignParams, RPPAFitParams, RPPASpatialParams,
+##              RPPANormalizationParams, SuperCurveSettings
 if (!isGeneric("paramString")) {
     setGeneric("paramString",
                function(object, ...) standardGeneric("paramString"))
@@ -101,7 +112,7 @@ if (!isGeneric("trimConc")) {
                function(object, ...) standardGeneric("trimConc"))
 }
 
-## defined for: RPPASet, RPPASetSummary
+## defined for: RPPASet, RPPASetSummary, SuperCurveSettings
 if (!isGeneric("write.summary")) {
     setGeneric("write.summary",
                function(object, ...) standardGeneric("write.summary"))

@@ -11,18 +11,22 @@ setClass("SuperCurveSettings",
                         imgdir="OptionalDirectory",
                         outdir="Directory",
                         designparams="RPPADesignParams",
-                        fitparams="RPPAFitParams",
                         spatialparams="OptionalRPPASpatialParams",
                         doprefitqc="logical",
+                        fitparams="RPPAFitParams",
+                        normparams="RPPANormalizationParams",
+                        onlynormqcgood="logical",
                         antibodyfile="OptionalFilename",
                         software="OptionalString",
+                        alt.layout="OptionalString",
                         version="character"),
-         prototype(version="0.0.0"))
+         prototype(alt.layout=NULL,
+                   version="0.0.0"))
 
 
 ##
-## :NOTE: If custom read.software routine used, settings will not reproduce
-## the runtime environment. How to cope? :TBD:
+## :NOTE: If custom read.<software> or layout.as.<alt.layout> routine used,
+## settings may not be able to reproduce the runtime environment.
 ##
 
 
@@ -99,6 +103,23 @@ validSuperCurveSettings <- function(object) {
         }
     }
 
+    ## Validate alt.layout slot
+    {
+        alt.layout <- object@alt.layout
+        if (!is.null(alt.layout)) {
+            ## Ensure layout method exists
+            layoutMethod <- suppressWarnings(.getLayoutMethod(alt.layout))
+            if (is.null(layoutMethod)) {
+                msg <- c(msg, "no user-provided method for layout found")
+            }
+        }
+    }
+
+    ## Validate onlynormqcgood slot against doprefitqc slot
+    if (object@onlynormqcgood && !object@doprefitqc) {
+        msg <- c(msg, "cannot normalize only good slides unless qc performed")
+    }
+
     ## Pass or fail?
     if (is.null(msg)) {
         TRUE
@@ -124,9 +145,12 @@ SuperCurveSettings <- function(txtdir,
                                designparams,
                                fitparams,
                                spatialparams=NULL,
+                               normparams,
                                doprefitqc=FALSE,
+                               onlynormqcgood=doprefitqc,
                                antibodyfile=NULL,
-                               software=NULL) {
+                               software=NULL,
+                               alt.layout=NULL) {
     ## Check arguments
     if (!is.character(txtdir)) {
         stop(sprintf("argument %s must be character",
@@ -162,12 +186,25 @@ SuperCurveSettings <- function(txtdir,
         }
     }
 
+    if (!is.RPPANormalizationParams(normparams)) {
+        stop(sprintf("argument %s must be object of class %s",
+                     sQuote("normparams"), "RPPANormalizationParams"))
+    }
+
     if (!is.logical(doprefitqc)) {
         stop(sprintf("argument %s must be logical",
                      sQuote("doprefitqc")))
     } else if (!(length(doprefitqc) == 1)) {
         stop(sprintf("argument %s must be of length 1",
                      sQuote("doprefitqc")))
+    }
+
+    if (!is.logical(onlynormqcgood)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("onlynormqcgood")))
+    } else if (!(length(onlynormqcgood) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("onlynormqcgood")))
     }
 
     if (!is.null(antibodyfile)) {
@@ -198,19 +235,80 @@ SuperCurveSettings <- function(txtdir,
         software <- formals(RPPASet)$software
     }
 
+    if (!is.null(alt.layout)) {
+        if (!is.character(alt.layout)) {
+            stop(sprintf("argument %s must be character",
+                         sQuote("alt.layout")))
+        } else if (!(length(alt.layout) == 1)) {
+            stop(sprintf("argument %s must be of length 1",
+                         sQuote("alt.layout")))
+        } else if (!nzchar(alt.layout)) {
+            stop(sprintf("argument %s must not be empty string",
+                         sQuote("alt.layout")))
+        }
+    }
+
     ## Create new class
     new("SuperCurveSettings",
         txtdir=as(txtdir, "Directory"),
         imgdir=if (!is.null(imgdir)) as(imgdir, "Directory") else NULL,
         outdir=as(outdir, "Directory"),
         designparams=designparams,
-        fitparams=fitparams,
         spatialparams=spatialparams,
         doprefitqc=doprefitqc,
+        fitparams=fitparams,
+        normparams=normparams,
+        onlynormqcgood=onlynormqcgood,
         antibodyfile=antibodyfile,
         software=software,
+        alt.layout=alt.layout,
         version=packageDescription("SuperCurve", fields="Version"))
 }
+
+
+##-----------------------------------------------------------------------------
+setMethod("write.summary", signature(object="SuperCurveSettings"),
+          function(object,
+                   path=as(settings@outdir, "character"),
+                   ...) {
+    ## Check arguments
+    if (!is.character(path)) {
+        stop(sprintf("argument %s must be character",
+                     sQuote("path")))
+    } else if (!(length(path) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("path")))
+    } else if (!dir.exists(path)) {
+        stop(sprintf("directory %s does not exist",
+                     dQuote(path)))
+    } else if (!dir.writable(path)) {
+        stop(sprintf("directory %s is not writable",
+                     dQuote(path)))
+    }
+
+    ##---------------------------------------------------------------------
+    makeFileHeader <- function(string) {
+        stopifnot(is.character(string) && length(string) == 1)
+
+        paste("###",
+              paste("###", string),
+              "###",
+              "\n",
+              sep="\n")
+    }
+
+
+    ## Begin processing
+    version <- packageDescription("SuperCurve", fields="Version")
+    cat(makeFileHeader("SuperCurve settings"),
+        paramString(object),
+        paste("supercurve version:", version), "\n",
+        "\n",  # blank line at EOF
+        sep="",
+        file=file.path(path, "sc-settings.txt"))
+
+    invisible(NULL)
+})
 
 
 ##-----------------------------------------------------------------------------
@@ -222,6 +320,7 @@ setMethod("paramString", signature(object="SuperCurveSettings"),
                    designparams.slots,
                    fitparams.slots,
                    spatialparams.slots,
+                   normparams.slots,
                    ...) {
     if (missing(designparams.slots)) {
         designparams.slots <- c("grouping",
@@ -249,6 +348,12 @@ setMethod("paramString", signature(object="SuperCurveSettings"),
                                  "plotSurface")
     }
 
+    if (missing(normparams.slots)) {
+        normparams.slots <- c("name",
+                              "method",
+                              "arglist")
+    }
+
 
     ##---------------------------------------------------------------------
     indent <- function(params.text,
@@ -271,11 +376,17 @@ setMethod("paramString", signature(object="SuperCurveSettings"),
 
     ## Handle parameters
     designparams  <- paramString(object@designparams, designparams.slots)
-    fitparams     <- paramString(object@fitparams, fitparams.slots)
     spatialparams <- if (!is.null(object@spatialparams)) {
                          paramString(object@spatialparams, spatialparams.slots)
                      } else {
                          NULL
+                     }
+    fitparams     <- paramString(object@fitparams, fitparams.slots)
+    normparams    <- paramString(object@normparams, normparams.slots)
+    software      <- if (!is.null(object@software)) {
+                         object@software
+                     } else {
+                         "microvigene"
                      }
 
     ## Create param string
@@ -283,7 +394,6 @@ setMethod("paramString", signature(object="SuperCurveSettings"),
           sprintf("imgdir: %s\n", shQuote(imgdir)),
           sprintf("outdir: %s\n", shQuote(object@outdir@path)),
           sprintf("designparams:\n%s\n", indent(designparams)),
-          sprintf("fitparams:\n%s\n", indent(fitparams)),
           if (!is.null(spatialparams)) {
               sprintf("spatialparams:\n%s\n", indent(spatialparams))
           } else {
@@ -292,11 +402,15 @@ setMethod("paramString", signature(object="SuperCurveSettings"),
           if (!is.null(object@doprefitqc)) {
               sprintf("doprefitqc: %s\n", object@doprefitqc)
           },
+          sprintf("fitparams:\n%s\n", indent(fitparams)),
+          sprintf("normparams:\n%s\n", indent(normparams)),
+          sprintf("onlynormqcgood: %s\n", object@onlynormqcgood),
           if (!is.null(object@antibodyfile)) {
               sprintf("antibodyfile: %s\n", shQuote(object@antibodyfile))
           },
-          if (!is.null(object@software)) {
-              sprintf("software: %s\n", object@software)
+          sprintf("software: %s\n", software),
+          if (!is.null(object@alt.layout)) {
+              sprintf("alt.layout: %s\n", object@alt.layout)
           },
           sep="")
 })

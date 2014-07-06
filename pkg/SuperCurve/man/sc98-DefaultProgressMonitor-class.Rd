@@ -26,19 +26,19 @@ via a progressbar and provides means to get/set values for such a widget.
 }
 \usage{
 DefaultProgressMonitor(label, value, minimum=0, maximum=100)
-%%\S4method{elapsed}{DefaultProgressMonitor}(object)
-%%\S4method{progressDone}{DefaultProgressMonitor}(object)
-%%\S4method{progressDone}{DefaultProgressMonitor}(object, \dots) <- value
-%%\S4method{progressError}{DefaultProgressMonitor}(object)
-%%\S4method{progressError}{DefaultProgressMonitor}(object, \dots) <- value
-%%\S4method{progressLabel}{DefaultProgressMonitor}(object)
-%%\S4method{progressLabel}{DefaultProgressMonitor}(object, \dots) <- value
-%%\S4method{progressMaximum}{DefaultProgressMonitor}(object)
-%%\S4method{progressMaximum}{DefaultProgressMonitor}(object, \dots) <- value
-%%\S4method{progressMinimum}{DefaultProgressMonitor}(object)
-%%\S4method{progressMinimum}{DefaultProgressMonitor}(object, \dots) <- value
-%%\S4method{progressValue}{DefaultProgressMonitor}(object)
-%%\S4method{progressValue}{DefaultProgressMonitor}(object, \dots) <- value
+\S4method{elapsed}{DefaultProgressMonitor}(object)
+\S4method{progressDone}{DefaultProgressMonitor}(object)
+\S4method{progressDone}{DefaultProgressMonitor}(object) <- value
+\S4method{progressError}{DefaultProgressMonitor}(object)
+\S4method{progressError}{DefaultProgressMonitor}(object) <- value
+\S4method{progressLabel}{DefaultProgressMonitor}(object)
+\S4method{progressLabel}{DefaultProgressMonitor}(object) <- value
+\S4method{progressMaximum}{DefaultProgressMonitor}(object)
+\S4method{progressMaximum}{DefaultProgressMonitor}(object) <- value
+\S4method{progressMinimum}{DefaultProgressMonitor}(object)
+\S4method{progressMinimum}{DefaultProgressMonitor}(object) <- value
+\S4method{progressValue}{DefaultProgressMonitor}(object)
+\S4method{progressValue}{DefaultProgressMonitor}(object) <- value
 }
 \arguments{
   \item{label}{string specifying label for progressbar widget}
@@ -46,6 +46,7 @@ DefaultProgressMonitor(label, value, minimum=0, maximum=100)
     completion}
   \item{minimum}{integer value representing minimum range of progress}
   \item{maximum}{integer value representing minimum range of progress}
+  \item{object}{object of (sub)class \code{DefaultProgressMonitor}}
 }
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to

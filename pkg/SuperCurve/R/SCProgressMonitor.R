@@ -41,7 +41,6 @@ setMethod("progressStage",
 setReplaceMethod("progressStage",
     signature(object="SCProgressMonitor", value="character"),
     function(object,
-             ...,
              value) {
         #message('progressStage<-(SCProgressMonitor, character)')
         stopifnot(length(value) == 1)
@@ -67,7 +66,6 @@ setMethod("progressMarquee",
 setReplaceMethod("progressMarquee",
     signature(object="SCProgressMonitor", value="character"),
     function(object,
-             ...,
              value) {
         #message('progressMarquee<-(SCProgressMonitor, character)')
         stopifnot(length(value) == 1)

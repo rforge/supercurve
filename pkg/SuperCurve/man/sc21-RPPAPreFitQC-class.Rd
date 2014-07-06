@@ -60,7 +60,10 @@ is.RPPAPreFitQC(x)
 extdatadir <- system.file("extdata", package="SuperCurve")
 
 txtdir <- file.path(extdatadir, "rppaSingleSubgridData")
-rppa <- RPPA("Foo.txt", path=txtdir, software="singlesubgrid")
+rppa <- RPPA("Foo.txt",
+             path=txtdir,
+             software="microvigene",
+             alt.layout="superslide")
 designfile <- file.path(txtdir, "slidedesign.tsv")
 design <- RPPADesign(rppa, designfile=designfile)
 rppa <- spatialAdjustment(rppa, design)

@@ -26,6 +26,8 @@ nosuchfile <- "nosuch.tsv"
 checkException(RPPA(nosuchfile),
                msg="nonexistent file should fail")
 
+## :TODO: Add test using scheme for 'file' argument...
+
 
 ###########################
 ## tests of path
@@ -36,6 +38,8 @@ checkException(RPPA(quantfile,
 checkException(RPPA(quantfile,
                     path=c(path, path.expand("~"))),
                msg="character vector should fail")
+
+## :TODO: Add test using scheme for 'path' argument...
 
 
 ###########################
@@ -145,10 +149,29 @@ checkException(RPPA(quantfile,
                     software="notEnuffRows"),
                msg="data import should fail - not enough rows")
 
+###########################
+## tests of readQuantification alt.layout
+
+checkException(RPPA(quantfile,
+                    path=path,
+                    alt.layout=pi),
+               msg="invalid value should fail")
+
+checkException(RPPA(quantfile,
+                    path=path,
+                    alt.layout=c("foo", "bar")),
+               msg="character vector should fail")
+
+checkException(RPPA(quantfile,
+                    path=path,
+                    alt.layout=""),
+               msg="empty string should fail")
+
+## :TODO: Add complex checks for 'alt.layout'
 
 
-
-
+###########################
+## tests of image
 
 
 akt <- RPPA("Akt.txt", path=path)

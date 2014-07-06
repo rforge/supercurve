@@ -101,6 +101,15 @@
 
 
 ##-----------------------------------------------------------------------------
+## Returns TRUE if URL begins with a supported scheme.
+.hasScheme <- function(url) {
+    stopifnot(is.character(url) && length(url) == 1)
+
+    grepl("^file:", url) || grepl("^http[s]?:", url)
+}
+
+
+##-----------------------------------------------------------------------------
 .isProbability <- function(x) {
     isTRUE(is.numeric(x) && (x >= 0 && x <= 1))
 }

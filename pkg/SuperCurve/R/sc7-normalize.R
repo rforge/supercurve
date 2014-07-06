@@ -12,6 +12,99 @@
 attr(.NormEnv, "name") <- "SuperCurveNormalizationMethods"
 
 
+##=============================================================================
+setClass("RPPANormalizationParams",
+         representation(name="character",        # ui.name of norm method
+                        method="character",      # key for norm method
+                        arglist="OptionalList")) # optional named arguments
+
+
+##-----------------------------------------------------------------------------
+## Invoked by validObject() method.
+validRPPANormalizationParams <- function(object) {
+
+    #cat("validating", class(object), "object", "\n")
+    msg <- NULL
+
+    ## Validate arglist slot (if it exists)
+    {
+        arglist <- object@arglist
+        if (!is.null(arglist)) {
+            nm <- names(arglist)
+            if (is.null(nm) || "" %in% nm) {
+                msg <- c(msg, "all list components must be named")
+            }
+        }
+    }
+
+    ## Pass or fail?
+    if (is.null(msg)) {
+        TRUE
+    } else {
+        msg
+    }
+}
+
+setValidity("RPPANormalizationParams", validRPPANormalizationParams)
+
+
+##-----------------------------------------------------------------------------
+is.RPPANormalizationParams <- function(x) {
+    is(x, "RPPANormalizationParams")
+}
+
+
+##-----------------------------------------------------------------------------
+## Generates an RPPANormalizationParams object.
+RPPANormalizationParams <- function(method=getRegisteredNormalizationMethodKeys(),
+                                    arglist=NULL) {
+    ## Check arguments
+    method <- match.arg(method)
+    if (!is.null(arglist)) stopifnot(is.list(arglist))
+
+    ## Create new class
+    new("RPPANormalizationParams",
+        name=getRegisteredNormalizationMethodLabel(method),
+        method=method,
+        arglist=arglist)
+}
+
+
+##-----------------------------------------------------------------------------
+## Returns a string representation of this instance. The content and format of
+## the returned string may vary between versions. Returned string may be
+## empty, but never null.
+setMethod("paramString", signature(object="RPPANormalizationParams"),
+          function(object,
+                   slots=slotNames(object),
+                   ...) {
+    ## Check arguments
+    stopifnot(is.character(slots) && length(slots) >= 1)
+
+    ## :TODO: Implementation currently ignores the 'slots' argument
+    ## and returns string containing parameters from various slots
+    ## as though:
+    ##     slotsToDisplay <- c("name", "method", "arglist")
+    ##     paramString(np, slotsToDisplay)
+    ##
+    arglist <- paste(lapply(names(object@arglist),
+                            function(nam, lst) {
+                                val <- if (is.character(lst[[nam]])) {
+                                           dQuote(lst[[nam]])
+                                       } else {
+                                           lst[[nam]]
+                                       }
+                                paste(nam, val, sep="=")
+                            },
+                            lst=object@arglist),
+                     collapse=", ")
+    paste(paste("name:", shQuote(object@name)), "\n",
+          paste("method:", shQuote(object@method)), "\n",
+          paste("arglist:", shQuote(arglist)), "\n",
+          sep="")
+})
+
+
 ##
 ## Private Methods
 ##
@@ -20,6 +113,25 @@ attr(.NormEnv, "name") <- "SuperCurveNormalizationMethods"
 ## Returns private environment for storing registered normalization methods
 normenv <- function() {
     return(.NormEnv)
+}
+
+
+##-----------------------------------------------------------------------------
+## Normalization method. Fits additive model using Tukey's median polish.
+normalize.medpolish <- function(concs,
+                                ...) {
+    stopifnot(is.matrix(concs) || is.data.frame(concs))
+
+    ## Median polish to normalize sample, slide effects
+    ##   where:
+    ##     row       - sample correction
+    ##     residuals - polished concentrations
+    ##
+    pol <- medpolish(concs, trace.iter=FALSE, na.rm=TRUE)
+    conc.medpol <- cbind(pol$row, pol$residuals)
+    colnames(conc.medpol)[1] <- "Correction"
+
+    return(normconcs <- conc.medpol)
 }
 
 
@@ -177,6 +289,23 @@ registerNormalizationMethod <- function(key,
 
 
 ##-----------------------------------------------------------------------------
+setClassUnion("MatrixLike", c("matrix", "data.frame"))
+setMethod("normalize", signature(object="MatrixLike"),
+          function(object,
+                   method=getRegisteredNormalizationMethodKeys(),
+                   calc.medians=TRUE,
+                   sweep.cols=calc.medians,
+                   ...) {
+    ## Call original function...
+    rppaNormalize(object,
+                  method=method,
+                  calc.medians=calc.medians,
+                  sweep.cols=sweep.cols,
+                  ...)
+})
+
+
+##-----------------------------------------------------------------------------
 ## Performs normalization for sample loading after quantification.
 ## It has two required input values:
 ##   1) the data matrix with samples in the rows and antibodies in the columns.
@@ -192,30 +321,28 @@ registerNormalizationMethod <- function(key,
 ##      vs     - variable slope normalization. Here the sample median
 ##               is used along with a multiplicative gamma.
 ##
-
-## :KRC: Should be called something different; there are "normalize"
-## functions for every technology in the universe. The name should at
-## least include "rppa" somewhere.
-
-normalize <- function(concs,
-                      method=getRegisteredNormalizationMethodKeys(),
-                      ...) {
+rppaNormalize <- function(concs,
+                          method=getRegisteredNormalizationMethodKeys(),
+                          calc.medians=TRUE,
+                          sweep.cols=calc.medians,
+                          ...) {
     ## Check arguments
-    if (is.RPPASet(concs)) {
-        ## Assemble matrix of concentrations from all fits in object
-        concs <- .fitSlot(concs, "concentrations")
-    }
-
     if (!(is.matrix(concs) || is.data.frame(concs))) {
         stop(sprintf("argument %s must be matrix-like",
                      sQuote("concs")))
     }
-
-    methodLabel <- method <- match.arg(method)
+    method <- match.arg(method)
+    stopifnot(is.logical(calc.medians) && length(calc.medians) == 1)
+    stopifnot(is.logical(sweep.cols) && length(sweep.cols) == 1)
 
     ## Begin processsing
-    rowMedian <- apply(concs, 1, median, na.rm=TRUE)
-    colMedian <- apply(concs, 2, median, na.rm=TRUE)
+    if (calc.medians) {
+        rowMedian <- apply(concs, 1, median, na.rm=TRUE)
+        colMedian <- apply(concs, 2, median, na.rm=TRUE)
+    } else {
+        rowMedian <- as.numeric(NA)
+        colMedian <- as.numeric(NA)
+    }
 
     ## Create environment for method to use
     env <- new.env(hash=TRUE)
@@ -223,17 +350,22 @@ normalize <- function(concs,
     env$colMedian <- colMedian
 
     ## Apply environment to method
-    method <- getRegisteredNormalizationMethod(method)
-    environment(method) <- env
+    normMethod <- getRegisteredNormalizationMethod(method)
+    environment(normMethod) <- env
+
+    ## Sweep columns first?
+    if (sweep.cols) {
+        concs <- sweep(concs, 2, colMedian, FUN="-")
+    }
 
     ## Invoke method
-    normconcs <- method(concs=sweep(concs, 2, colMedian, FUN="-"),
-                        ...)
+    normconcs <- normMethod(concs, ...)
 
     ## Store processing info in "normalization" attribute
-    attr(normconcs, "normalization") <- c(list(method=methodLabel,
+    attr(normconcs, "normalization") <- c(list(method=method,
                                                rowMedian=rowMedian,
-                                               colMedian=colMedian),
+                                               colMedian=colMedian,
+                                               swept.cols=sweep.cols),
                                           attr(normconcs, "normalization"))
 
     return(normconcs)
@@ -244,6 +376,7 @@ normalize <- function(concs,
 ## Initialization
 ##
 ## :TODO: Migrate following to .onLoad since registration should occur once
+registerNormalizationMethod("medpolish", normalize.medpolish, "Median Polish")
 registerNormalizationMethod("median", normalize.median)
 registerNormalizationMethod("house", normalize.house, "Housekeeping")
 registerNormalizationMethod("vs", normalize.vs, "Variable Slope")
