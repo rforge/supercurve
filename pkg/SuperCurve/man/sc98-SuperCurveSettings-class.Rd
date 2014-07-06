@@ -41,10 +41,10 @@ is.SuperCurveSettings(x)
   \item{spatialparams}{object of class \code{RPPASpatialParams}, or \code{NULL}}
   \item{doprefitqc}{logical scalar. If \code{TRUE}, performs pre-fit quality control.}
   \item{antibodyfile}{character string specifying filename containing mapping
-    from quantification files to antibodies, or NULL}
+    from quantification files to antibodies, or \code{NULL}}
   \item{software}{character string specifying the software used to generate
     the quantification files (see section \sQuote{Details} of
-    \code{\link{RPPA}}), or NULL to use the default value.}
+    \code{\link{RPPA}}), or \code{NULL} to use the default value.}
   \item{monitor}{object of (sub)class \code{ProgressMonitor}, or \code{NULL}}
   \item{object}{object of class \code{SuperCurveSettings}}
   \item{settings}{object of class \code{SuperCurveSettings}}
@@ -80,9 +80,9 @@ slotnames to display (for debuggging)}
     \item{\code{doprefitqc}:}{logical scalar specifying whether to perform
       pre-fit quality control}
     \item{antibodyfile}{character string specifying filename containing mapping
-      from quantification files to antibodies, or NULL}
+      from quantification files to antibodies, or \code{NULL}}
     \item{software}{character string specifying the software used to generate
-      the quantification files, or NULL}
+      the quantification files, or \code{NULL}}
     \item{\code{version}:}{character string containing the version of this
       package used to construct the object}
   }

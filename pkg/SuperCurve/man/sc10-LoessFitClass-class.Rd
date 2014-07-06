@@ -20,7 +20,7 @@
 }
 \section{Methods}{
   \describe{
-    \item{fitted(object, conc, \dots)}{Extracts fitted values of the model.} 
+    \item{fitted(object, conc, \dots)}{Extracts fitted values of the model} 
   }
 }
 \value{

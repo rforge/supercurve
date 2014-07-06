@@ -60,8 +60,10 @@
   }
 }
 \references{
-  Ju Z. "A Robust Classifier for the Quality Control of Reverse Phase Protein
-  Arrays." (unpublished).
+  Ju Z.\cr
+  emph{A Robust Classifier for the Quality Control of Reverse Phase Protein
+  Arrays.}\cr
+  (unpublished).
 }
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
