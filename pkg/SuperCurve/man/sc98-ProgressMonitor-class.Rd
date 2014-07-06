@@ -24,23 +24,24 @@ be extended to be used.
 }
 \usage{
 is.ProgressMonitor(x)
-%%\S4method{progressDone}{ProgressMonitor}(object, \dots)
+\S4method{progressDone}{ProgressMonitor}(object, \dots)
 %%\S4method{progressDone}{ProgressMonitor}(object, \dots) <- value
-%%\S4method{progressError}{ProgressMonitor}(object, \dots)
+\S4method{progressError}{ProgressMonitor}(object, \dots)
 %%\S4method{progressError}{ProgressMonitor}(object, \dots) <- value
-%%\S4method{progressLabel}{ProgressMonitor}(object, \dots)
+\S4method{progressLabel}{ProgressMonitor}(object, \dots)
 %%\S4method{progressLabel}{ProgressMonitor}(object, \dots) <- value
-%%\S4method{progressMaximum}{ProgressMonitor}(object, \dots)
+\S4method{progressMaximum}{ProgressMonitor}(object, \dots)
 %%\S4method{progressMaximum}{ProgressMonitor}(object, \dots) <- value
-%%\S4method{progressMinimum}{ProgressMonitor}(object, \dots)
+\S4method{progressMinimum}{ProgressMonitor}(object, \dots)
 %%\S4method{progressMinimum}{ProgressMonitor}(object, \dots) <- value
-%%\S4method{progressValue}{ProgressMonitor}(object, \dots)
+\S4method{progressValue}{ProgressMonitor}(object, \dots)
 %%\S4method{progressValue}{ProgressMonitor}(object, \dots) <- value
 }
 \arguments{
-%%\item{object}{object of (sub)class \code{ProgressMonitor}}
   \item{x}{object of (sub)class \code{ProgressMonitor}}
-  \item{\dots}{extra arguments for generic routines.}
+  \item{object}{object of (sub)class \code{ProgressMonitor}}
+  \item{\dots}{extra arguments for generic routines}
+%%  \item{value}{value to be assigned}
 }
 \section{Methods}{
   \describe{
