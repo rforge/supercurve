@@ -92,8 +92,10 @@ spatialCorrection(rppa,
 }
 \references{
   Neeley ES, Baggerly KA, Kornblau SM.\cr
-  "Surface Adjustment of Reverse Phase Protein Arrays Using Positive Control Spots"\cr
-  (in progress)
+  \emph{Surface Adjustment of Reverse Phase Protein Arrays Using Positive
+  Control Spots}\cr
+  Cancer Informatics (2012) 11: 77-86.\cr
+  \url{http://www.ncbi.nlm.nih.gov/pubmed/22550399}
 }
 \author{
   P. Roebuck \email{proebuck@mdanderson.org},
