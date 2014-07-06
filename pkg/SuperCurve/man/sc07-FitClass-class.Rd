@@ -31,7 +31,7 @@ is.FitClass(x)
   \item{diln}{numeric vector of dilutions for series to be fit}
   \item{intensity}{numeric vector of observed intensities for series to be fit}
   \item{est.conc}{numeric estimated concentration for dilution = 0}
-  \item{method}{character string specifying regression method to use fit the
+  \item{method}{character string specifying regression method to use to fit the
     series}
   \item{silent}{logical scalar. If \code{TRUE}, report of error messages will
     be suppressed in try(nlsmeth(...))}
