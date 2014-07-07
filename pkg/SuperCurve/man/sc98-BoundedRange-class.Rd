@@ -20,18 +20,18 @@ via a progressbar and provides means to get/set values for such a widget.
 \usage{
 BoundedRange(value, minimum=1, maximum=100)
 is.BoundedRange(x)
-%%\S4method{progressMaximum}{BoundedRange}(object)
-%%\S4method{progressMaximum}{BoundedRange}(object, \dots) <- value
-%%\S4method{progressMinimum}{BoundedRange}(object)
-%%\S4method{progressMinimum}{BoundedRange}(object, \dots) <- value
-%%\S4method{progressValue}{BoundedRange}(object)
-%%\S4method{progressValue}{BoundedRange}(object, \dots) <- value
+\S4method{progressMaximum}{BoundedRange}(object)
+\S4method{progressMaximum}{BoundedRange}(object) <- value
+\S4method{progressMinimum}{BoundedRange}(object)
+\S4method{progressMinimum}{BoundedRange}(object) <- value
+\S4method{progressValue}{BoundedRange}(object)
+\S4method{progressValue}{BoundedRange}(object) <- value
 }
 \arguments{
   \item{minimum}{integer specifying desired minimum value of closed interval}
   \item{maximum}{integer specifying desired maximum value of closed interval}
   \item{value}{integer specifying desired current value}
-%%\item{object}{object of class \code{BoundedRange}}
+  \item{object}{object of class \code{BoundedRange}}
   \item{x}{object of class \code{BoundedRange}}
   \item{\dots}{extra arguments for generic routines.}
 }
