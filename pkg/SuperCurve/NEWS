@@ -1,6 +1,29 @@
 
 	**************************************************
 	*						 *
+	*	       1.5 SERIES NEWS			 *
+	*						 *
+	**************************************************
+
+
+		CHANGES IN R VERSION 1.5.0
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o	Normalization routines now part of standard processing.
+
+    o	Added support for ArrayPro quantification software.
+
+    o	Many class definitions were changed, which may cause issues
+	attempting to load previously saved datafiles.
+
+    o	Dropped compatibility for anything less than R-2.15 as
+	no longer able to test against previous versions of R.
+
+
+	**************************************************
+	*						 *
 	*	       1.4 SERIES NEWS			 *
 	*						 *
 	**************************************************
