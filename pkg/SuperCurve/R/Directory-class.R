@@ -4,6 +4,10 @@
 
 #:KRC: This entire class is completely unnecessary.
 
+##
+## Classes
+##
+
 ##=============================================================================
 setClass("Directory",
          representation(path="character"))
@@ -49,22 +53,6 @@ is.Directory <- function(x) {
 
 
 ##-----------------------------------------------------------------------------
-## Coercion method
-setAs("Directory", "character",
-      function(from) {
-          from@path
-      })
-
-
-##-----------------------------------------------------------------------------
-## Coercion method
-setAs("character", "Directory",
-      function(from) {
-          Directory(from)
-      })
-
-
-##-----------------------------------------------------------------------------
 ## Generator method
 Directory <- function(path) {
     ## Check arguments
@@ -82,6 +70,30 @@ Directory <- function(path) {
 }
 
 
+##
+## Generic Methods (Coercion)
+##
+
+##-----------------------------------------------------------------------------
+## Coercion method
+setAs("Directory", "character",
+      function(from) {
+          from@path
+      })
+
+
+##-----------------------------------------------------------------------------
+## Coercion method
+setAs("character", "Directory",
+      function(from) {
+          Directory(from)
+      })
+
+
+##
+## Public Routines
+##
+
 ##-----------------------------------------------------------------------------
 ## :TODO: make generic...
 pathname <- function(object) {
@@ -91,6 +103,6 @@ pathname <- function(object) {
 
     }
 
-    return(as(object, "character"))
+    as(object, "character")
 }
 
