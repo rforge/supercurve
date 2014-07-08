@@ -13,13 +13,13 @@
 \usage{
 ElapsedTime()
 is.ElapsedTime(x)
-%%\S4method{elapsed}{ElapsedTime}(object, units="auto")
+\S4method{elapsed}{ElapsedTime}(object,
+        units=c("auto", "secs", "mins", "hours", "days"))
 }
 \arguments{
-%%\item{object}{object of class \code{ElapsedTime}}
   \item{x}{object of class \code{ElapsedTime}}
-%%\item{units}{string specifying desired unit of time}
-%%\item{\dots}{extra arguments for generic routines.}
+  \item{object}{object of class \code{ElapsedTime}}
+  \item{units}{string specifying desired unit of time}
 }
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to
@@ -30,7 +30,7 @@ is.ElapsedTime(x)
   \describe{
     \item{\code{start}:}{numeric scalar specifying the elapsed time
       for the currently running R process (taken from
-      \code{\link{proc.time}} when created).}
+      \code{\link{proc.time}} when created)}
   }
 }
 \section{Methods}{
@@ -40,7 +40,7 @@ is.ElapsedTime(x)
       difference between current time and the \code{start} slot value.
 
       Units may be specified if desired; otherwise, the largest possible
-      in which difference is greater than one will be chosen.}
+      unit in which difference is greater than one will be chosen.}
   }
 }
 \value{
@@ -59,8 +59,8 @@ is.ElapsedTime(x)
 \examples{
 showClass("ElapsedTime")
 et <- ElapsedTime()
-elapsed(et)
-elapsed(et, units="secs")     # Same units as above
+elapsed(et)                  # 'auto' reports 'secs' as less than minute later
+elapsed(et, units="secs")
 elapsed(et, units="mins")
 elapsed(et, units="hours")
 elapsed(et, units="days")
