@@ -14,10 +14,19 @@
 \usage{
 Directory(path)
 is.Directory(x)
+\S4method{coerce}{character,Directory}(from, to, strict=TRUE)
+\S4method{coerce}{Directory,character}(from, to, strict=TRUE)
 }
 \arguments{
   \item{path}{character string specifying a directory}
   \item{x}{object of class \code{Directory}}
+  \item{from}{object of class \code{Directory} or character string specifying
+    pathname of directory}
+  \item{to}{object of class \code{Directory} or character string specifying
+    pathname of directory}
+  \item{strict}{logical scalar. If \code{TRUE}, the returned object must be
+    strictly from the target class; otherwise, any simple extension of the
+    target class will be returned, without further change.}
 }
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to
@@ -29,6 +38,16 @@ is.Directory(x)
     \item{\code{path}:}{character string specifying a directory}
   }
 }
+\section{Methods}{
+  \describe{
+    \item{coerce}{\code{signature(from = "Directory", to = "character")}:
+      Coerce an object of class \code{Directory} to (or from) its character
+      string pathname equivalent.
+
+      These methods should not be called explicitly; instead, use an
+      explicit call to the \code{as} method.}
+  }
+}
 \value{
   The \code{Directory} generator returns an object of class \code{Directory}.
 
@@ -38,10 +57,14 @@ is.Directory(x)
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
 }
+\seealso{
+  \code{\link[methods]{as}}
+}
 \examples{
   pkgdir <- Directory(system.file(package="SuperCurve"))
   pkgdir.path <- as(pkgdir, "character")
 }
 \keyword{classes}
 \keyword{file}
+\keyword{methods}
 
