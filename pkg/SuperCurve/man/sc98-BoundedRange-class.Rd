@@ -33,7 +33,6 @@ is.BoundedRange(x)
   \item{value}{integer specifying desired current value}
   \item{object}{object of class \code{BoundedRange}}
   \item{x}{object of class \code{BoundedRange}}
-  \item{\dots}{extra arguments for generic routines.}
 }
 \section{Objects from the Class}{
   Although objects of the class can be created by a direct call to
