@@ -155,7 +155,7 @@ is.RPPAFitParams(x)
 \section{Slots}{
   \describe{
     \item{\code{measure}:}{character; see arguments above}
-    \item{\code{xform}:}{function or NULL; see arguments above}
+    \item{\code{xform}:}{function or \code{NULL}; see arguments above}
     \item{\code{method}:}{character; see arguments above}
     \item{\code{ci}:}{logical scalar; see arguments above}
     \item{\code{ignoreNegative}:}{logical scalar; see arguments above}
