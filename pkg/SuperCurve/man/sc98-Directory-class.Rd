@@ -41,11 +41,11 @@ is.Directory(x)
 \section{Methods}{
   \describe{
     \item{coerce}{\code{signature(from = "Directory", to = "character")}:
-      Coerce an object of class \code{Directory} to (or from) its character
-      string pathname equivalent.
-
-      These methods should not be called explicitly; instead, use an
-      explicit call to the \code{as} method.}
+      Coerce an object of class \code{Directory} to its character string
+      pathname equivalent.}
+    \item{coerce}{\code{signature(from = "character", to = "Directory")}:
+      Coerce a character string specifying directory pathname to an
+      equivalent object of class \code{Directory}.}
   }
 }
 \value{
@@ -53,6 +53,10 @@ is.Directory(x)
 
   The \code{is.Directory} method returns \code{TRUE} if its
   argument is an object of class \code{Directory}.
+}
+\note{
+  The coercion methods should not be called explicitly; instead, use an
+  explicit call to the \code{as} method.
 }
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
