@@ -56,6 +56,9 @@ local({
     ## Update package data directory
     filename <- sprintf("%s.RData", sub("Data$", "", basename(rawdata.dir)))
     dataset <- file.path(system.file("data", package="SuperCurve"), filename)
-    save(list=c(rppas, design), file=dataset)
+    save(list=c(rppas, design),
+         file=dataset, 
+         compress="xz", 
+         compression_level=9)
 })
 
