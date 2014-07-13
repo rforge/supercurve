@@ -47,22 +47,22 @@ is.ProgressMonitor(x)
   \describe{
     \item{progressDone}{
       \code{signature(object = "ProgressMonitor")}:\cr
-      Placeholder method.}
+      Placeholder method which must be implemented by subclass.}
     \item{progressError}{
       \code{signature(object = "ProgressMonitor")}:\cr
-      Placeholder method.}
+      Placeholder method which must be implemented by subclass.}
     \item{progressLabel}{
       \code{signature(object = "ProgressMonitor")}:\cr
-      Placeholder method.}
+      Placeholder method which must be implemented by subclass.}
     \item{progressMaximum}{
       \code{signature(object = "ProgressMonitor")}:\cr
-      Placeholder method.}
+      Placeholder method which must be implemented by subclass.}
     \item{progressMinimum}{
       \code{signature(object = "ProgressMonitor")}:\cr
-      Placeholder method.}
+      Placeholder method which must be implemented by subclass.}
     \item{progressValue}{
       \code{signature(object = "ProgressMonitor")}:\cr
-      Placeholder method.}
+      Placeholder method which must be implemented by subclass.}
   }
 }
 \value{

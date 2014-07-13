@@ -36,10 +36,10 @@ is.RPPAPreFitQC(x)
   \describe{
     \item{qcprob}{ 
       \code{signature(object = "RPPAPreFitQC")}:\cr 
-      Placeholder method.}
+      Placeholder method which must be implemented by subclass.}
     \item{summary}{
       \code{signature(object = "RPPAPreFitQC")}:\cr
-      Placeholder method.}
+      Placeholder method which must be implemented by subclass.}
   }
 }
 \value{
