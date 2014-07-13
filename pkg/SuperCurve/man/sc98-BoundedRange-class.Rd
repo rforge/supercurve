@@ -51,18 +51,24 @@ is.BoundedRange(x)
 }
 \section{Methods}{
   \describe{
-    \item{progressMaximum}{\code{signature(object = "BoundedRange")}:
+    \item{progressMaximum}{
+      \code{signature(object = "BoundedRange")}:\cr
       Returns integer representing maximum value of interval.}
-    \item{progressMaximum<-}{\code{signature(object = "BoundedRange",
-      value = "numeric")}: Sets the value of the \code{maximum} slot.}
-    \item{progressMinimum}{\code{signature(object = "BoundedRange")}:
+    \item{progressMaximum<-}{
+      \code{signature(object = "BoundedRange", value = "numeric")}:\cr
+      Sets the value of the \code{maximum} slot.}
+    \item{progressMinimum}{
+      \code{signature(object = "BoundedRange")}:\cr
       Returns integer representing minimum value of interval.}
-    \item{progressMinimum<-}{\code{signature(object = "BoundedRange",
-      value = "numeric")}: Sets the value of the \code{minimum} slot.}
-    \item{progressValue}{\code{signature(object = "BoundedRange")}:
+    \item{progressMinimum<-}{
+      \code{signature(object = "BoundedRange", value = "numeric")}:\cr
+      Sets the value of the \code{minimum} slot.}
+    \item{progressValue}{
+      \code{signature(object = "BoundedRange")}:\cr
       Returns integer representing current value.}
-    \item{progressValue<-}{\code{signature(object = "BoundedRange",
-      value = "numeric")}: Sets the value of the \code{value} slot.}
+    \item{progressValue<-}{
+      \code{signature(object = "BoundedRange", value = "numeric")}:\cr
+      Sets the value of the \code{value} slot.}
   }
 }
 \value{
