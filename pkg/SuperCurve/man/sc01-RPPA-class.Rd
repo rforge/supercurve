@@ -22,7 +22,7 @@ RPPA(file,
 is.RPPA(x)
 \S4method{dim}{RPPA}(x)
 \S4method{image}{RPPA}(x, measure="Mean.Net", main,
-    colorbar=FALSE, col=terrain.colors(256), \dots)
+      colorbar=FALSE, col=terrain.colors(256), \dots)
 \S4method{summary}{RPPA}(object, \dots)
 }
 \arguments{
@@ -66,7 +66,7 @@ is.RPPA(x)
                          mean intensity of the spot \cr
   } 
   The first four components (taken together) give the logical location of a
-  spot on an array. Additional columns may be included or may be added later.
+  spot on an array. Additional columns may be included or added later.
 
   Other methods can be specified to read the quantification files. The
   \code{software} argument is used in the selection of the actual method
@@ -102,17 +102,20 @@ is.RPPA(x)
 }
 \section{Methods}{
   \describe{
-    \item{dim(x)}{Returns the dimensions of the slide layout.}
-    \item{image(x, measure="Mean.Net", main=measure, colorbar=FALSE,
-      col=terrain.colors(256), \dots)}{Produces a "geographic" image
-      of the measurement column named by the \code{measure} argument.
-      The colors in the image represent the intensity of the measurement
-      at each spot on the array, and the display locations match the row
-      and column locations of the spot. Any measurement column can be
-      displayed using this function. An optional color bar can be added;
-      this will be placed at the right edge.}
-    \item{summary(object, \dots)}{Prints a summary of the underlying
-      data frame.}
+    \item{dim}{
+      \code{signature(x = "RPPA")}:\cr
+      Returns the dimensions of the slide layout.}
+    \item{image}{
+      \code{signature(x = "RPPA")}:\cr
+      Produces a "geographic" image of the measurement column named by
+      the \code{measure} argument. The colors in the image represent the
+      intensity of the measurement at each spot on the array, and the
+      display locations match the row and column locations of the spot.
+      Any measurement column can be displayed using this function. An
+      optional color bar can be added, placed along the right edge.}
+    \item{summary}{
+      \code{signature(object = "RPPA")}:\cr
+      Prints a summary of the underlying data frame.}
   }
 }
 \value{
@@ -133,9 +136,9 @@ is.RPPA(x)
   could convert a single subgrid physical layout (in MicroVigene format) into
   its actual logical one.
 
-  So naturally, it's being reworked this release! To achieve the same thing in
-  this release, use:\cr
-    \code{RPPA(file, path, software="microvigene", alt.layout="superslide")}
+  As this package now supports more than one software package, this had
+  to be reworked! To achieve the same thing in this release, use:\cr
+  \code{RPPA(file, path, software="microvigene", alt.layout="superslide")}
 }
 \references{KRC}
 \author{
@@ -143,8 +146,8 @@ is.RPPA(x)
   P. Roebuck \email{proebuck@mdanderson.org}
 }
 \seealso{
-  \code{\linkS4class{RPPAFit}},
-  \code{\linkS4class{RPPADesign}}
+  \code{\linkS4class{RPPADesign}},
+  \code{\linkS4class{RPPAFit}}
 }
 \examples{
 extdatadir <- system.file("extdata", package="SuperCurve")
