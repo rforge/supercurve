@@ -60,6 +60,9 @@ is.FitClass(x)
   \item{trimLevel}{numeric scalar multiplied to \acronym{MAD}}
   \item{\dots}{extra arguments for generic routines}
 }
+\section{Objects from the Class}{
+  This class should not be instantiated directly; extend this class instead.
+}
 \section{Methods}{
   \describe{
     \item{coef}{
@@ -88,9 +91,6 @@ is.FitClass(x)
   argument is an object of subclass of class \code{FitClass}.
 
   The \code{coef} and \code{coefficients} methods return \code{NULL}.
-}
-\section{Warning}{
-  This class should not be instantiated directly; extend this class instead.
 }
 \references{KRC}
 \author{

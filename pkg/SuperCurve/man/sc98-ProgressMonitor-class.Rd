@@ -43,6 +43,9 @@ is.ProgressMonitor(x)
   \item{\dots}{extra arguments for generic routines}
   \item{value}{value to be assigned}
 }
+\section{Objects from the Class}{
+  This class should not be instantiated directly; extend this class instead.
+}
 \section{Methods}{
   \describe{
     \item{progressDone}{
@@ -68,9 +71,6 @@ is.ProgressMonitor(x)
 \value{
   The \code{is.ProgressMonitor} method returns \code{TRUE} if its
   argument is an object of class \code{ProgressMonitor}.
-}
-\section{Warning}{
-  This class should not be instantiated directly; extend this class instead.
 }
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
