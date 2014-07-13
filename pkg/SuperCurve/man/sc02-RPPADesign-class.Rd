@@ -195,19 +195,29 @@ seriesNames(design)
 }
 \section{Methods}{
   \describe{
-    \item{dim(x)}{Returns the dimensions of the slide layout.}
-    \item{image(x, \dots)}{Produces a two-dimensional graphical display
-      of the layout design. Colors are used to represent different dilution
-      steps, and laid out in the same pattern as the rows and columns of
-      the array. This provides a visual check that the design has been
-      specified correctly.}
-    \item{paramString(object)}{Returns string representation of object.}
-    \item{plot(x, y, \dots)}{Plots an object of class \code{RPPA} by showing
-      its dilution series with respect to the corresponding object of class
-      \code{RPPADesign}.}
-    \item{summary(object, \dots)}{Lists the names of the control spots
-      on the array and prints a summary of the data frame describing
-      the layout.}
+    \item{dim}{
+      \code{signature(x = "RPPADesign")}:\cr
+      Returns the dimensions of the slide layout.}
+    \item{image}{
+      \code{signature(x = "RPPADesign")}:\cr
+      Produces a two-dimensional graphical display of the layout design.
+      Colors are used to represent different dilution steps, and laid out
+      in the same pattern as the rows and columns of the array. This provides
+      a visual check that the design has been specified correctly.}
+    \item{names}{
+      \code{signature(x = "RPPADesign")}:\cr
+      Returns the names of the samples on the slide.}
+    \item{paramString}{
+      \code{signature(object = "RPPADesignParams")}:\cr
+      Returns string representation of object.}
+    \item{plot}{
+      \code{signature(x = "RPPA", y = "RPPADesign")}:\cr
+      Plots an object of class \code{RPPA} by showing its dilution series with
+      respect to the corresponding object of class \code{RPPADesign}.}
+    \item{summary}{
+      \code{signature(object = "RPPADesign")}:\cr
+      Lists the names of the control spots on the array and prints a summary
+      of the data frame describing the layout.}
   }
 }
 \value{
