@@ -71,33 +71,46 @@ DefaultProgressMonitor(label, value, minimum=0, maximum=100)
 }
 \section{Methods}{
   \describe{
-    \item{elapsed}{\code{signature(object = "DefaultProgressMonitor")}:
+    \item{elapsed}{
+      \code{signature(object = "DefaultProgressMonitor")}:\cr
       Returns elapsed time since creation of abstract progressbar.}
-    \item{progressDone}{\code{signature(object = "DefaultProgressMonitor")}:
+    \item{progressDone}{
+      \code{signature(object = "DefaultProgressMonitor")}:\cr
       Returns \code{TRUE} if task is complete; otherwise, \code{FALSE}.}
-    \item{progressDone<-}{\code{signature(object = "DefaultProgressMonitor",
-      value = "logical")}: Sets value of the \code{done} slot.}
-    \item{progressError}{\code{signature(object = "DefaultProgressMonitor")}:
+    \item{progressDone<-}{
+      \code{signature(object = "DefaultProgressMonitor", value = "logical")}:\cr
+      Sets value of the \code{done} slot.}
+    \item{progressError}{
+      \code{signature(object = "DefaultProgressMonitor")}:\cr
       Returns \code{TRUE} if an error occurred during processing; otherwise,
       \code{FALSE}.}
-    \item{progressError<-}{\code{signature(object = "DefaultProgressMonitor",
-      value = "logical")}: Sets value of the \code{err} slot.}
-    \item{progressLabel}{\code{signature(object = "DefaultProgressMonitor")}:
+    \item{progressError<-}{
+      \code{signature(object = "DefaultProgressMonitor", value = "logical")}:\cr
+      Sets value of the \code{err} slot.}
+    \item{progressLabel}{
+      \code{signature(object = "DefaultProgressMonitor")}:\cr
       Returns string representing label for abstract progressbar.}
-    \item{progressLabel<-}{\code{signature(object = "DefaultProgressMonitor",
-      value = "character")}: Sets value of the \code{label} slot.}
-    \item{progressMaximum}{\code{signature(object = "DefaultProgressMonitor")}:
+    \item{progressLabel<-}{
+      \code{signature(object = "DefaultProgressMonitor", value = "character")}:\cr
+      Sets value of the \code{label} slot.}
+    \item{progressMaximum}{
+      \code{signature(object = "DefaultProgressMonitor")}:\cr
       Returns integer representing maximum value for abstract progressbar.}
-    \item{progressMaximum<-}{\code{signature(object = "DefaultProgressMonitor",
-      value = "numeric")}: Sets the maximum value of the \code{range} slot.}
-    \item{progressMinimum}{\code{signature(object = "DefaultProgressMonitor")}:
+    \item{progressMaximum<-}{
+      \code{signature(object = "DefaultProgressMonitor", value = "numeric")}:\cr
+      Sets the maximum value of the \code{range} slot.}
+    \item{progressMinimum}{
+      \code{signature(object = "DefaultProgressMonitor")}:\cr
       Returns integer representing minimum value for abstract progressbar.}
-    \item{progressMinimum<-}{\code{signature(object = "DefaultProgressMonitor",
-      value = "numeric")}: Sets the minimum value of the \code{range} slot.}
-    \item{progressValue}{\code{signature(object = "DefaultProgressMonitor")}:
+    \item{progressMinimum<-}{
+      \code{signature(object = "DefaultProgressMonitor", value = "numeric")}:\cr
+      Sets the minimum value of the \code{range} slot.}
+    \item{progressValue}{
+      \code{signature(object = "DefaultProgressMonitor")}:\cr
       Returns integer representing current value for abstract progressbar.}
-    \item{progressValue<-}{\code{signature(object = "DefaultProgressMonitor",
-      value = "numeric")}: Sets the current value of the \code{range} slot.}
+    \item{progressValue<-}{
+      \code{signature(object = "DefaultProgressMonitor", value = "numeric")}:\cr
+      Sets the current value of the \code{range} slot.}
   }
 }
 \value{
@@ -116,7 +129,7 @@ DefaultProgressMonitor(label, value, minimum=0, maximum=100)
 \examples{
 showClass("DefaultProgressMonitor")
 niters <- 10
-dpm <- SuperCurve:::DefaultProgressMonitor("my task", value=0, maximum=niters)
+dpm <- DefaultProgressMonitor("my task", value=0, maximum=niters)
 for (i in seq.int(niters)) {
     ## Perform portion of task
     progressValue(dpm) <- i # Modify current value
