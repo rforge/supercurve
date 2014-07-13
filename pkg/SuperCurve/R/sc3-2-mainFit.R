@@ -638,6 +638,13 @@ setMethod("coef", signature(object="RPPAFit"),
 })
 
 
+setMethod("coefficients", signature(object="RPPAFit"),
+          function(object,
+                   ...) {
+    coef(object, ...)
+})
+
+
 ##
 ## Initialization
 ##
