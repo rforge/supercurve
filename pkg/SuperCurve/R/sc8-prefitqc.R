@@ -299,6 +299,16 @@ setMethod("qcprob", signature(object="DS5RPPAPreFitQC"),
 
 
 ##-----------------------------------------------------------------------------
+setMethod("summary", signature(object="RPPAPreFitQC"),
+          function(object,
+                   ...) {
+    stop(sprintf("%s method must be implemented by any subclass of %s",
+                 sQuote("qcprob"),
+                 sQuote("RPPAPreFitQC")))
+})
+
+
+##-----------------------------------------------------------------------------
 setMethod("summary", signature(object="DS5RPPAPreFitQC"),
           function(object,
                    ...) {
