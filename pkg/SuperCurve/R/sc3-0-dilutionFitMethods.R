@@ -181,7 +181,7 @@ setMethod("coef", signature(object="FitClass"),
                                    sQuote(method))))
 
     ## Function .slide.model references object back here for curve model
-    ## :TBD: Isn't writing into global environment considered rude?
+    ## :NOTE: Writing into global environment is considered rude.
     assign(".RPPA.fit.model", object, envir=.GlobalEnv)
 
     tmp <- try({
