@@ -35,7 +35,8 @@ is.ElapsedTime(x)
 }
 \section{Methods}{
   \describe{
-    \item{elapsed}{\code{signature(object = "ElapsedTime")}:
+    \item{elapsed}{
+      \code{signature(object = "ElapsedTime")}:\cr
       Returns object of class \code{difftime} representing elapsed time
       difference between current time and the \code{start} slot value.
 

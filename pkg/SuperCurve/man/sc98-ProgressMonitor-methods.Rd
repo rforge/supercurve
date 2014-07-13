@@ -38,7 +38,7 @@
 \alias{progressValue<--method}
 \alias{progressValue<-,ANY-method}
 \docType{methods}
-\title{Methods for Manipulating Progess Models}
+\title{Methods for Manipulating Progess Monitors}
 \description{
   These are generic functions used as accessors and mutators for objects of
   Progress-related classes.

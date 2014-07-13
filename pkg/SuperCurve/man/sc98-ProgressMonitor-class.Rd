@@ -25,32 +25,44 @@ be extended to be used.
 \usage{
 is.ProgressMonitor(x)
 \S4method{progressDone}{ProgressMonitor}(object, \dots)
-%%\S4method{progressDone}{ProgressMonitor}(object, \dots) <- value
+\S4method{progressDone}{ProgressMonitor}(object, \dots) <- value
 \S4method{progressError}{ProgressMonitor}(object, \dots)
-%%\S4method{progressError}{ProgressMonitor}(object, \dots) <- value
+\S4method{progressError}{ProgressMonitor}(object, \dots) <- value
 \S4method{progressLabel}{ProgressMonitor}(object, \dots)
-%%\S4method{progressLabel}{ProgressMonitor}(object, \dots) <- value
+\S4method{progressLabel}{ProgressMonitor}(object, \dots) <- value
 \S4method{progressMaximum}{ProgressMonitor}(object, \dots)
-%%\S4method{progressMaximum}{ProgressMonitor}(object, \dots) <- value
+\S4method{progressMaximum}{ProgressMonitor}(object, \dots) <- value
 \S4method{progressMinimum}{ProgressMonitor}(object, \dots)
-%%\S4method{progressMinimum}{ProgressMonitor}(object, \dots) <- value
+\S4method{progressMinimum}{ProgressMonitor}(object, \dots) <- value
 \S4method{progressValue}{ProgressMonitor}(object, \dots)
-%%\S4method{progressValue}{ProgressMonitor}(object, \dots) <- value
+\S4method{progressValue}{ProgressMonitor}(object, \dots) <- value
 }
 \arguments{
   \item{x}{object of (sub)class \code{ProgressMonitor}}
   \item{object}{object of (sub)class \code{ProgressMonitor}}
   \item{\dots}{extra arguments for generic routines}
-%%  \item{value}{value to be assigned}
+  \item{value}{value to be assigned}
 }
 \section{Methods}{
   \describe{
-    \item{progressDone(object)}{Placeholder method.}
-    \item{progressError(object)}{Placeholder method.}
-    \item{progressLabel(object)}{Placeholder method.}
-    \item{progressMaximum(object)}{Placeholder method.}
-    \item{progressMinimum(object)}{Placeholder method.}
-    \item{progressValue(object)}{Placeholder method.}
+    \item{progressDone}{
+      \code{signature(object = "ProgressMonitor")}:\cr
+      Placeholder method.}
+    \item{progressError}{
+      \code{signature(object = "ProgressMonitor")}:\cr
+      Placeholder method.}
+    \item{progressLabel}{
+      \code{signature(object = "ProgressMonitor")}:\cr
+      Placeholder method.}
+    \item{progressMaximum}{
+      \code{signature(object = "ProgressMonitor")}:\cr
+      Placeholder method.}
+    \item{progressMinimum}{
+      \code{signature(object = "ProgressMonitor")}:\cr
+      Placeholder method.}
+    \item{progressValue}{
+      \code{signature(object = "ProgressMonitor")}:\cr
+      Placeholder method.}
   }
 }
 \value{
