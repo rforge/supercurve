@@ -40,10 +40,12 @@ is.Directory(x)
 }
 \section{Methods}{
   \describe{
-    \item{coerce}{\code{signature(from = "Directory", to = "character")}:
+    \item{coerce}{
+      \code{signature(from = "Directory", to = "character")}:\cr
       Coerce an object of class \code{Directory} to its character string
       pathname equivalent.}
-    \item{coerce}{\code{signature(from = "character", to = "Directory")}:
+    \item{coerce}{
+      \code{signature(from = "character", to = "Directory")}:\cr
       Coerce a character string specifying directory pathname to an
       equivalent object of class \code{Directory}.}
   }
