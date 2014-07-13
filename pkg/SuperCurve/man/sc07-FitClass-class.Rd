@@ -4,26 +4,43 @@
 \alias{FitClass-class}
 \alias{coef,FitClass-method}
 \alias{coefficients,FitClass-method}
-\alias{fitted,FitClass-method}
 \alias{fitSeries,FitClass-method}
 \alias{fitSlide,FitClass-method}
+\alias{fitted,FitClass-method}
 \alias{trimConc,FitClass-method}
 \alias{is.FitClass}
 \docType{class}
 \title{Class "FitClass"}
 \description{
-  The FitClass class represents the model that was fit in the \code{RPPAFit}
-  routine. Functions for use with the FitClass are only to be used internally.  
+  The \code{FitClass} class is a virtual class representing the model that
+  was fit in the \code{RPPAFit} routine. Functions for use with \code{FitClass}
+  are only to be used internally.  
 }
 \usage{
 is.FitClass(x)
 \S4method{coef}{FitClass}(object, \dots)
 \S4method{coefficients}{FitClass}(object, \dots)
-\S4method{fitted}{FitClass}(object, conc, \dots)
-\S4method{fitSeries}{FitClass}(object, diln, intensity, est.conc, method="nls",
-                               silent=TRUE, trace=FALSE, \dots)
-\S4method{fitSlide}{FitClass}(object, conc, intensity, \dots)
-\S4method{trimConc}{FitClass}(object, conc, intensity, design, trimLevel, \dots)
+\S4method{fitSeries}{FitClass}(object,
+          diln,
+          intensity,
+          est.conc,
+          method="nls",
+          silent=TRUE,
+          trace=FALSE,
+          \dots)
+\S4method{fitSlide}{FitClass}(object,
+         conc,
+         intensity,
+         \dots)
+\S4method{fitted}{FitClass}(object,
+       conc,
+       \dots)
+\S4method{trimConc}{LogisticFitClass}(object,
+         conc,
+         intensity,
+         design,
+         trimLevel,
+         \dots)
 }
 \arguments{
   \item{x}{object of (sub)class \code{FitClass}}
@@ -34,7 +51,7 @@ is.FitClass(x)
   \item{method}{character string specifying regression method to use to fit the
     series}
   \item{silent}{logical scalar. If \code{TRUE}, report of error messages will
-    be suppressed in try(nlsmeth(...))}
+    be suppressed in \code{try(nlsmeth(...))}}
   \item{trace}{logical scalar. Used in \code{nls} method.}
   \item{conc}{numeric vector containing current estimates of concentration for
     each series}
@@ -45,24 +62,35 @@ is.FitClass(x)
 }
 \section{Methods}{
   \describe{
-    \item{coef(object, \dots)}{Extracts model coefficients from objects
-      returned by modeling functions. Returns \code{NULL} if subclass does
-      not override.}
-    \item{coefficients(object, \dots)}{An alias for \code{coef}.}
-    \item{fitted(object, conc, \dots)}{Extracts fitted values of the model.}
-    \item{fitSeries(object, diln, intensity, est.conc, method="nls",
-      silent=TRUE, trace=FALSE, \dots)}{Finds the concentration for an
-      individual dilution series given the curve fit for the slide.}
-    \item{fitSlide(object, conc, intensity, \dots)}{Uses the concentration and
-      intensity series for an entire slide to fit a curve for the slide of
-      intensity = f(conc).}
-    \item{trimConc(object, conc, intensity, design, trimLevel, \dots)}{Returns
-      concentration and intensity cutoffs for the model.}
+    \item{coef}{
+      \code{signature(object = "FitClass")}:\cr
+      Placeholder method which should be implemented by subclass if appropriate
+      for the particular model.}
+    \item{coefficients}{
+      \code{signature(object = "FitClass")}:\cr
+      An alias for \code{coef}.}
+    \item{fitSeries}{
+      \code{signature(object = "FitClass")}:\cr
+      Placeholder method which must be implemented by subclass.}
+    \item{fitSlide}{
+      \code{signature(object = "FitClass")}:\cr
+      Placeholder method which must be implemented by subclass.}
+    \item{fitted}{
+      \code{signature(object = "FitClass")}:\cr
+      Placeholder method which must be implemented by subclass.}
+    \item{trimConc}{
+      \code{signature(object = "FitClass")}:\cr
+      Placeholder method which must be implemented by subclass.}
   }
 }
 \value{
   The \code{is.FitClass} method returns \code{TRUE} if its
   argument is an object of subclass of class \code{FitClass}.
+
+  The \code{coef} and \code{coefficients} methods return \code{NULL}.
+}
+\section{Warning}{
+  This class should not be instantiated directly; extend this class instead.
 }
 \references{KRC}
 \author{

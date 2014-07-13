@@ -4,36 +4,57 @@
 \alias{LogisticFitClass-class}
 \alias{coef,LogisticFitClass-method}
 \alias{coefficients,LogisticFitClass-method}
+\alias{fitSeries,LogisticFitClass-method}
+\alias{fitSlide,LogisticFitClass-method}
 \alias{fitted,LogisticFitClass-method}
+\alias{trimConc,LogisticFitClass-method}
 \docType{class}
 \title{Class "LogisticFitClass"}
 \description{
-  The LogisticFitClass class represents models that were fit with the
+  The \code{LogisticFitClass} class represents models that were fit with the
   logistic model.
 }
 \usage{
 \S4method{coef}{LogisticFitClass}(object, \dots)
 \S4method{coefficients}{LogisticFitClass}(object, \dots)
-\S4method{fitted}{LogisticFitClass}(object, conc, \dots)
+\S4method{fitSeries}{LogisticFitClass}(object,
+          diln,
+          intensity,
+          est.conc,
+          method="nls",
+          silent=TRUE,
+          trace=FALSE,
+          \dots)
+\S4method{fitSlide}{LogisticFitClass}(object,
+         conc,
+         intensity,
+         \dots)
+\S4method{fitted}{LogisticFitClass}(object,
+       conc,
+       \dots)
+\S4method{trimConc}{LogisticFitClass}(object,
+         conc,
+         intensity,
+         design,
+         trimLevel,
+         \dots)
 } 
 \arguments{
   \item{object}{object of class \code{LogisticFitClass}}
+  \item{diln}{numeric vector of dilutions for series to be fit}
+  \item{intensity}{numeric vector of observed intensities for series to be fit}
+  \item{est.conc}{numeric estimated concentration for dilution = 0}
+  \item{method}{character string specifying regression method to use to fit the
+    series}
+  \item{silent}{logical scalar. If \code{TRUE}, report of error messages will
+    be suppressed in \code{try(nlsmeth(...))}}
+  \item{trace}{logical scalar. Used in \code{nls} method.}
   \item{conc}{numeric vector containing estimates of the log concentration
     for each dilution series}
+  \item{design}{object of class \code{RPPADesign} describing the layout
+    of the array}
+  \item{trimLevel}{numeric scalar multiplied to \acronym{MAD}}
   \item{\dots}{extra arguments for generic routines}
-}
-\section{Methods}{
-  \describe{
-    \item{coef(object, \dots)}{Extracts model coefficients} 
-    \item{coefficients(object, \dots)}{An alias for \code{coef}}
-    \item{fitted(object, conc, \dots)}{Extracts fitted values of the model} 
-  }
-}
-\value{
-  The \code{coef} and \code{coefficients} methods return a named vector
-  of length three with logistic curve coefficients.
-
-  The \code{fitted} method returns a numeric vector.
 }
 \section{Objects from the Class}{
   Objects are created internally by calls to the methods
@@ -47,6 +68,36 @@
 }
 \section{Extends}{
   Class \code{\linkS4class{FitClass}}, directly.
+}
+\section{Methods}{
+  \describe{
+    \item{coef}{
+      \code{signature(object = "LogisticFitClass")}:\cr
+      Extracts model coefficients from objects returned by modeling functions.}
+    \item{coefficients}{
+      \code{signature(object = "LogisticFitClass")}:\cr
+      An alias for \code{coef}}
+    \item{fitSeries}{
+      \code{signature(object = "LogisticFitClass")}:\cr
+      Finds the concentration for an individual dilution series given the
+      curve fit for the slide.}
+    \item{fitSlide}{
+      \code{signature(object = "LogisticFitClass")}:\cr
+      Uses the concentration and intensity series for an entire slide to
+      fit a curve for the slide of intensity = f(conc).}
+    \item{fitted}{
+      \code{signature(object = "LogisticFitClass")}:\cr
+      Extracts fitted values of the model.}
+    \item{trimConc}{
+      \code{signature(object = "LogisticFitClass")}:\cr
+      Returns concentration and intensity cutoffs for the model.}
+  }
+}
+\value{
+  The \code{coef} and \code{coefficients} methods return a named vector
+  of length three with logistic curve coefficients.
+
+  The \code{fitted} method returns a numeric vector.
 }
 \references{KRC}
 \author{
