@@ -55,14 +55,18 @@ getStages()
 }
 \section{Methods}{
   \describe{
-    \item{progressStage}{\code{signature(object = "SCProgressMonitor")}:
+    \item{progressStage}{
+      \code{signature(object = "SCProgressMonitor")}:\cr
       Returns string representing current stage of task.}
-    \item{progressStage<-}{\code{signature(object = "SCProgressMonitor",
-      value = "character")}: Sets value of the \code{stage} slot.}
-    \item{progressMarquee}{\code{signature(object = "SCProgressMonitor")}:
+    \item{progressStage<-}{
+      \code{signature(object = "SCProgressMonitor", value = "character")}:\cr
+      Sets value of the \code{stage} slot.}
+    \item{progressMarquee}{
+      \code{signature(object = "SCProgressMonitor")}:\cr
       Returns string representing marquee for current stage.}
-    \item{progressMarquee<-}{\code{signature(object = "SCProgressMonitor",
-      value = "character")}: Sets value of the \code{marquee} slot.}
+    \item{progressMarquee<-}{
+      \code{signature(object = "SCProgressMonitor", value = "character")}:\cr
+      Sets value of the \code{marquee} slot.}
   }
 }
 \value{
