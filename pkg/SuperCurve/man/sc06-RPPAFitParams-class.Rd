@@ -169,7 +169,9 @@ is.RPPAFitParams(x)
 }
 \section{Methods}{
   \describe{
-    \item{paramString(object)}{Returns string representation of object.}
+    \item{paramString}{
+      \code{signature(object = "RPPAFitParams")}:\cr
+      Returns string representation of object.}
   }
 }
 \value{
