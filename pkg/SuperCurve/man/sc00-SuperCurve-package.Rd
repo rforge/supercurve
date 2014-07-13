@@ -17,7 +17,7 @@
   }
 
   For a complete list of functions, use \code{library(help="SuperCurve")}.\cr
-  For a high-level summary of the changes for each revision, use
+  For a high-level summary of the changes for each revision, use\cr
     \code{file.show(system.file("NEWS", package="SuperCurve"))}.
 }
 \author{
