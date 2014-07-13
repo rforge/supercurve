@@ -13,7 +13,7 @@
   nonparametric model.
 }
 \usage{
-\S4method{fitSeries}{LoessFitClass}(object,
+\S4method{fitSeries}{CobsFitClass}(object,
           diln,
           intensity,
           est.conc,
@@ -26,7 +26,7 @@
          intensity,
          \dots)
 \S4method{fitted}{CobsFitClass}(object, conc, \dots)
-\S4method{trimConc}{LoessFitClass}(object,
+\S4method{trimConc}{CobsFitClass}(object,
          conc,
          intensity,
          design,

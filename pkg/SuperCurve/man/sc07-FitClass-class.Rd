@@ -35,7 +35,7 @@ is.FitClass(x)
 \S4method{fitted}{FitClass}(object,
        conc,
        \dots)
-\S4method{trimConc}{LogisticFitClass}(object,
+\S4method{trimConc}{FitClass}(object,
          conc,
          intensity,
          design,
