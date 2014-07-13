@@ -102,30 +102,35 @@
 }
 \section{Methods}{
   \describe{
-    \item{coef(object, \dots)}{Extracts model coefficients from objects
-      returned by modeling functions.}
-    \item{coefficients(object, \dots)}{An alias for \code{coef}.}
-    \item{fitted(object, type=c("Y", "y", "X", "x"), \dots)}{Extracts the
-      fitted values of the model. This process is more complicated
-      than it may seem at first, since we are estimating values on
-      both the \eqn{X} and \eqn{Y} axes. By default, the fitted
+    \item{coef}{
+      \code{signature(object = "RPPAFit")}:\cr
+      Extracts model coefficients from objects returned by modeling functions.}
+    \item{coefficients}{
+      \code{signature(object = "RPPAFit")}:\cr
+      An alias for \code{coef}.}
+    \item{fitted}{
+      \code{signature(object = "RPPAFit")}:\cr
+      Extracts the fitted values of the model. This process is more
+      complicated than it may seem at first, since we are estimating values
+      on both the \eqn{X} and \eqn{Y} axes. By default, the fitted
       values are assumed to be the intensities, \eqn{Y}, which are
       obtained using either an uppercase or lowercase 'y' as the
       \code{type} argument. The fitted log concentrations are
       returned when \code{type} is set to either uppercase or
       lowercase 'x'. In the notation used above to describe the model,
       these fitted values are given by \eqn{X_i = X - \delta_i}.}
-    \item{hist(x, type=c("Residuals", "StdRes", "ResidualsR2"),
-      xlab=NULL, main=NULL, \dots)}{Produces a histogram of the residuals.
-      The exact form of the residuals being displayed depends on the value
-      of the \code{type} argument.}
-    \item{image(x, measure=c("Residuals", "StdRes", "X", "Y"), \dots)}{
+    \item{hist}{
+      \code{signature(x = "RPPAFit")}:\cr
+      Produces a histogram of the residuals. The exact form of the residuals
+      being displayed depends on the value of the \code{type} argument.}
+    \item{image}{
+      \code{signature(x = "RPPAFit")}:\cr
       Produces a 'geographic' plot of either the residuals or the fitted
       values, depending on the value of the \code{measure} argument. The
       implementation reuses code from the \code{image} method for an
       \code{\link{RPPA}} object.}
-    \item{plot(x, y, type=c("cloud", "series", "individual", "steps", "resid"),
-      xlab="Log Concentration", ylab="Intensity", \dots)}{
+    \item{plot}{
+      \code{signature(x = "RPPAFit", y = "missing")}:\cr
       Produces a diagnostic plot of the model fit. The default \code{type},
       'cloud', simply plots the fitted \eqn{X} values against the observed
       \eqn{Y} values as a cloud of points around the jointly estimated
@@ -133,17 +138,20 @@
       points belonging to the same dilution series. The 'individual' plot
       produces separate graphs for each dilution series, laying each one
       alongside the jointly fitted sigmoid curve.}
-    \item{resid(object, type=c("raw", "standardized", "r2"), \dots)}{
+    \item{resid}{
+      \code{signature(object = "RPPAFit")}:\cr
       An alias for \code{residuals}.}
-    \item{residuals(object, type=c("raw", "standardized", "r2"), \dots)}{
+    \item{residuals}{
+      \code{signature(object = "RPPAFit")}:\cr
       Reports the residual errors. The 'raw' residuals are defined
       as the difference between the observed intensities and the
       fitted intensities, as computed by the \code{fitted} function.
       The 'standardized' residuals are obtained by standardizing the
       raw residuals.}
-    \item{summary(object, \dots)}{Prints a summary of the \code{RPPAFit}
-      object. At present, this reports the function call used to fit the
-      model and important fitting parameters.}
+    \item{summary}{
+      \code{signature(object = "RPPAFit")}:\cr
+      Prints a summary of the \code{RPPAFit} object, which reports the
+      function call used to fit the model and important fitting parameters.}
   }
 }
 \value{
