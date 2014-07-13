@@ -147,8 +147,9 @@ slotnames to display (for debuggging)}
 \seealso{
   \code{\linkS4class{Directory}},
   \code{\linkS4class{RPPADesignParams}},
+  \code{\linkS4class{RPPASpatialParams}},
   \code{\linkS4class{RPPAFitParams}},
-  \code{\linkS4class{RPPASpatialParams}}
+  \code{\linkS4class{RPPANormalizationParams}}
 }
 \examples{
   \dontrun{
