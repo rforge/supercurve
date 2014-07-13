@@ -64,7 +64,7 @@ is.BoundedRange <- function(x) {
 
 
 ##-----------------------------------------------------------------------------
-## Generator method
+## Generator method.
 BoundedRange <- function(value,
                          minimum=1,
                          maximum=100) {
@@ -80,7 +80,7 @@ BoundedRange <- function(value,
 
 
 ##
-## Methods
+## Generic Methods
 ##
 
 
@@ -90,6 +90,7 @@ setMethod("progressMinimum",
     function(object) {
         object@minimum
     })
+
 
 ##-----------------------------------------------------------------------------
 setReplaceMethod("progressMinimum",
@@ -103,12 +104,14 @@ setReplaceMethod("progressMinimum",
         object
     })
 
+
 ##-----------------------------------------------------------------------------
 setMethod("progressMaximum",
     signature(object="BoundedRange"),
     function(object) {
         object@maximum
     })
+
 
 ##-----------------------------------------------------------------------------
 setReplaceMethod("progressMaximum",
@@ -122,12 +125,14 @@ setReplaceMethod("progressMaximum",
         object
     })
 
+
 ##-----------------------------------------------------------------------------
 setMethod("progressValue",
     signature(object="BoundedRange"),
     function(object) {
         object@value
     })
+
 
 ##-----------------------------------------------------------------------------
 setReplaceMethod("progressValue",
