@@ -53,15 +53,17 @@
 }
 \section{Methods}{
   \describe{
-    \item{qcprob(object, \dots)}{Calculates the probability of good slide,
-      returned as numeric scalar.}
-    \item{summary(object, \dots)}{Prints a summary of the underlying
-      data frame.}
+    \item{qcprob}{
+      \code{signature(object = "DS5RPPAPreFitQC")}:\cr
+      Calculates the probability of good slide, returned as numeric scalar.}
+    \item{summary}{
+      \code{signature(object = "DS5RPPAPreFitQC")}:\cr
+      Prints a summary of the underlying data frame.}
   }
 }
 \references{
   Ju Z.\cr
-  emph{A Robust Classifier for the Quality Control of Reverse Phase Protein
+  \emph{A Robust Classifier for the Quality Control of Reverse Phase Protein
   Arrays.}\cr
   (unpublished).
 }
@@ -69,5 +71,5 @@
   P. Roebuck \email{proebuck@mdanderson.org}
 }
 \keyword{classes}
-\keyword{internal}
+\keyword{methods}
 

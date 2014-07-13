@@ -34,9 +34,12 @@ is.RPPAPreFitQC(x)
 }
 \section{Methods}{
   \describe{
-    \item{qcprob(object, \dots)}{Calculates the probability of good slide.}
-    \item{summary(object, \dots)}{Prints a summary of the underlying
-      data frame.}
+    \item{qcprob}{ 
+      \code{signature(object = "RPPAPreFitQC")}:\cr 
+      Placeholder method.}
+    \item{summary}{
+      \code{signature(object = "RPPAPreFitQC")}:\cr
+      Placeholder method.}
   }
 }
 \value{
@@ -49,8 +52,8 @@ is.RPPAPreFitQC(x)
   The \code{summary} method returns a summary of the underlying data frame.
 }
 \section{Warning}{
-  The current implementation is only capable of handling designs with 5
-  dilution series. Anything else will fail.
+  \strong{The current implementation only handles designs with 5 dilution
+  series.\cr Anything else will fail.}
 }
 \references{KRC}
 \author{
