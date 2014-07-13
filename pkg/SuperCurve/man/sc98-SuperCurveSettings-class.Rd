@@ -104,12 +104,12 @@ slotnames to display (for debuggging)}
     \item{\code{onlynormqcgood}:}{logical scalar specifying whether to filter
       the slides to be normalized according to their pre-fit quality control
       scores}
-    \item{antibodyfile}{character string specifying filename containing mapping
-      from quantification files to antibodies, or \code{NULL}}
-    \item{software}{character string specifying the software used to generate
-      the quantification files, or \code{NULL}}
-    \item{alt.layout}{character string specifying the name of the alternative
-      layout to be used, or \code{NULL}}
+    \item{\code{antibodyfile}:}{character string specifying filename containing
+      mapping from quantification files to antibodies, or \code{NULL}}
+    \item{\code{software}:}{character string specifying the software used to
+      generate the quantification files, or \code{NULL}}
+    \item{\code{alt.layout}:}{character string specifying the name of the
+      alternative layout to be used, or \code{NULL}}
     \item{\code{version}:}{character string containing the version of this
       package used to construct the object}
   }
