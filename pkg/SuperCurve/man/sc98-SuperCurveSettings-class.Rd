@@ -116,9 +116,12 @@ slotnames to display (for debuggging)}
 }
 \section{Methods}{
   \describe{
-    \item{paramString(object)}{Returns string representation of object.}
-    \item{write.summary(object, path, \dots)}{Writes a text file representation
-      of object.}
+    \item{paramString}{
+      \code{signature(object = "SuperCurveSettings")}:\cr
+      Returns string representation of object.}
+    \item{write.summary}{
+      \code{signature(object = "SuperCurveSettings")}:\cr
+      Writes a text file representation of object.}
   }
 }
 \value{
