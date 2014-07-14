@@ -200,7 +200,7 @@ is.RPPAFitParams(x)
   Kevin R. Coombes \email{kcoombes@mdanderson.org}
 }
 \seealso{
-  \code{\linkS4class{RPPAFit}}
+  \code{\linkS4class{RPPAFit}},
   \code{\link{RPPAFit-class}},
   \code{\link{RPPA}},
   \code{\link{RPPADesign}}
