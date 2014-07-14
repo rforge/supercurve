@@ -128,9 +128,14 @@ is.RPPASet(x)
 }
 \section{Methods}{
   \describe{
-    \item{summary(object, \dots)}{Creates an object of class
-      \code{RPPASetSummary}.}
-    \item{write.summary(object, path, prefix, graphs, tiffdir, \dots)}{
+    \item{normalize}{
+      \code{signature(object = "RPPASet")}:\cr
+      Assembles matrix of concentrations from all fits in object.}
+    \item{summary}{
+      \code{signature(object = "RPPASet")}:\cr
+      Creates an object of class \code{RPPASetSummary}.}
+    \item{write.summary}{
+      \code{signature(object = "RPPASet")}:\cr
       Writes a record of the entire RPPASet, including fitted values,
       residuals, and images of the processed slides.}
   }
