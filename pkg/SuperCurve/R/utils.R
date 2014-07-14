@@ -124,6 +124,7 @@
 
 ##-----------------------------------------------------------------------------
 ## Specifies measures used for determining location on lysate array.
+## :TODO: Convert to public method since used promiscuously by SuperCurveGUI.
 .locationColnames <- function() {
     c("Main.Row",
       "Main.Col",
