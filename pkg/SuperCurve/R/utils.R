@@ -25,9 +25,9 @@
 
 
     ## Begin processing
-    return(sapply(strsplit(s, split="\\."),
-                  cap,
-                  USE.NAMES=!is.null(names(s))))
+    sapply(strsplit(s, split="\\."),
+           cap,
+           USE.NAMES=!is.null(names(s)))
 }
 
 
@@ -38,11 +38,11 @@
     stopifnot(is.data.frame(layout))
 
     ## Begin processing
-    return(sapply(.locationColnames(),
-                  function(df, column) {
-                      max(df[[column]])
-                  },
-                  df=layout))
+    sapply(.locationColnames(),
+           function(df, column) {
+               max(df[[column]])
+           },
+           df=layout)
 }
 
 
@@ -50,10 +50,10 @@
 ## Specifies measures capable of being used for fits.
 ## N.B.: use intersection of this with what is actually available in data.frame
 .fitColnames <- function() {
-    return(c("Mean.Net",
-             "Mean.Total",
-             "Median.Net",
-             "Median.Total"))
+    c("Mean.Net",
+      "Mean.Total",
+      "Median.Net",
+      "Median.Total")
 }
 
 
@@ -125,10 +125,10 @@
 ##-----------------------------------------------------------------------------
 ## Specifies measures used for determining location on lysate array.
 .locationColnames <- function() {
-    return(c("Main.Row",
-             "Main.Col",
-             "Sub.Row",
-             "Sub.Col"))
+    c("Main.Row",
+      "Main.Col",
+      "Sub.Row",
+      "Sub.Col")
 }
 
 
@@ -147,7 +147,7 @@
 ##-----------------------------------------------------------------------------
 ## Returns logical value indicating whether code is running as a package.
 packaged <- function() {
-    return(getPackageName() != ".GlobalEnv")
+    getPackageName() != ".GlobalEnv"
 }
 
 
@@ -288,8 +288,7 @@ getStages <- function() {
                        graph    = "Graphing")
     stages <- as.character(stagesList)
     names(stages) <- names(stagesList)
-
-    return(stages)
+    stages
 }
 
 
