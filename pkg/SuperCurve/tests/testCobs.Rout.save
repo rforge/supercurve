@@ -1,6 +1,6 @@
 
-R version 2.12.2 Patched (2011-03-13 r54781)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.3 Patched (2013-03-13 r62287) -- "Security Blanket"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
 
@@ -17,7 +17,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > ###
-> ### TESTCOBS.R
+> ### $Id: testCobs.R 834 2014-06-27 16:22:16Z proebuck $
 > ###
 > 
 > 
@@ -34,9 +34,6 @@ Type 'q()' to quit R.
 Loading required package: MASS
 Loading required package: cobs
 Loading required package: SparseM
-Package SparseM (0.86) loaded.
-	   To cite, see citation("SparseM")
-
 
 Attaching package: 'SparseM'
 
@@ -92,7 +89,7 @@ Loading required package: splines
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.4.0 
+Test of SuperCurve version 1.5.0 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -133,7 +130,7 @@ model = cobs; method = nlrq; measure = Mean.Net
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.4.0 
+Test of SuperCurve version 1.5.0 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -234,7 +231,7 @@ Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.4.0 
+Test of SuperCurve version 1.5.0 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -315,3 +312,6 @@ sample 96.4.12
        -9.2994 
 > 
 > 
+> proc.time()
+   user  system elapsed 
+115.375   0.927 127.471 

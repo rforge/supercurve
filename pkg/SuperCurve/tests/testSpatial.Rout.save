@@ -1,6 +1,6 @@
 
-R version 2.14.2 (2012-02-29)
-Copyright (C) 2012 The R Foundation for Statistical Computing
+R version 2.15.3 Patched (2013-03-13 r62287) -- "Security Blanket"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
 
@@ -17,7 +17,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > ###
-> ### TESTSPATIAL.R
+> ### $Id: testSpatial.R 859 2014-07-06 19:25:22Z proebuck $
 > ###
 > 
 > 
@@ -26,9 +26,6 @@ Type 'q()' to quit R.
 Loading required package: MASS
 Loading required package: cobs
 Loading required package: SparseM
-Package SparseM (0.86) loaded.
-	   To cite, see citation("SparseM")
-
 
 Attaching package: 'SparseM'
 
@@ -129,3 +126,6 @@ Error : is.logical(plotSurface) && length(plotSurface) == 1 is not TRUE
 > 
 > 
 > 
+> proc.time()
+   user  system elapsed 
+  0.671   0.046   0.820 

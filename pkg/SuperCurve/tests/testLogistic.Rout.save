@@ -1,6 +1,6 @@
 
-R version 2.12.2 Patched (2011-03-13 r54781)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.3 Patched (2013-03-13 r62287) -- "Security Blanket"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
 
@@ -17,7 +17,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > ###
-> ### TESTLOGISTIC.R
+> ### $Id: testLogistic.R 834 2014-06-27 16:22:16Z proebuck $
 > ###
 > 
 > 
@@ -34,9 +34,6 @@ Type 'q()' to quit R.
 Loading required package: MASS
 Loading required package: cobs
 Loading required package: SparseM
-Package SparseM (0.86) loaded.
-	   To cite, see citation("SparseM")
-
 
 Attaching package: 'SparseM'
 
@@ -105,7 +102,7 @@ The following object(s) are masked from 'package:robustbase':
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.4.0 
+Test of SuperCurve version 1.5.0 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -138,8 +135,10 @@ Warning in RPPAFitFromParams(rppa, design, params) :
 [1] "AKT Mean.Net 1544083 692611"
 Warning in RPPAFitFromParams(rppa, design, params) :
   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
-Warning in lsfit(x, y, d^2, int = FALSE) : 'X' matrix was collinear
-Warning in lsfit(x, y, d^2, int = FALSE) : 'X' matrix was collinear
+Warning in lsfit(x, y, d^2, intercept = FALSE) :
+  'X' matrix was collinear
+Warning in lsfit(x, y, d^2, intercept = FALSE) :
+  'X' matrix was collinear
 [1] "ERK2 Mean.Net 6277287 2330149"
 Warning in RPPAFitFromParams(rppa, design, params) :
   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
@@ -154,7 +153,7 @@ Warning in RPPAFitFromParams(rppa, design, params) :
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.4.0 
+Test of SuperCurve version 1.5.0 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -261,7 +260,7 @@ Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.4.0 
+Test of SuperCurve version 1.5.0 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -350,3 +349,6 @@ Difference between replicates
 -0.750200 -0.135700  0.012470  0.001151  0.196500  0.603300 
 > 
 > 
+> proc.time()
+   user  system elapsed 
+ 35.768   0.293  39.587 
