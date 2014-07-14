@@ -30,7 +30,7 @@
   adjusted data values are then passed to the requested normalization routine
   for further processing.
 
-  The "method" argument may be augmented with user-provided normalization
+  The \code{method} argument may be augmented with user-provided normalization
   methods. Package-provided values are:
 
   \tabular{lll}{
@@ -61,7 +61,7 @@
   E. Shannon Neeley \email{sneeley@stat.byu.edu}
 }
 \seealso{
-  \code{\linkS4class{RPPASet}},
+  \code{\linkS4class{RPPASet}}
 }
 \examples{
 antibodies <- c("FOO", "BAR", "PLUGH", "WALDO")
