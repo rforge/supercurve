@@ -68,13 +68,13 @@ is.SuperCurveSettings(x)
   \item{path}{character string specifying the directory where settings
     summary should be saved. Must be writable.}
   \item{designparams.slots}{strings specifying \code{RPPADesignParams}
-slotnames to display (for debuggging)}
+    slotnames to display (for debuggging)}
   \item{fitparams.slots}{strings specifying \code{RPPAFitParams}
-slotnames to display (for debuggging)}
+    slotnames to display (for debuggging)}
   \item{spatialparams.slots}{strings specifying \code{RPPASpatialParams}
-slotnames to display (for debuggging)}
+    slotnames to display (for debuggging)}
   \item{normparams.slots}{strings specifying \code{RPPANormalizationParams}
-slotnames to display (for debuggging)}
+    slotnames to display (for debuggging)}
   \item{\dots}{extra arguments for generic routines}
 }
 \section{Objects from the Class}{
