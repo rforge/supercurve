@@ -21,17 +21,32 @@
 \usage{
 \S4method{coef}{RPPAFit}(object, \dots)
 \S4method{coefficients}{RPPAFit}(object, \dots)
-\S4method{fitted}{RPPAFit}(object, type=c("Y", "y", "X", "x"), \dots)
-\S4method{hist}{RPPAFit}(x, type=c("Residuals", "StdRes", "ResidualsR2"),
-  xlab=NULL, main=NULL, \dots)
-\S4method{image}{RPPAFit}(x, measure=c("Residuals", "ResidualsR2", "StdRes", "X", "Y"),
-  main, \dots)
-\S4method{plot}{RPPAFit,missing}(x, y, type=c("cloud", "series", "individual", "steps", "resid"),
-  col=NULL, main, xform=NULL, xlab="Log Concentration", ylab="Intensity", \dots)
-\S4method{resid}{RPPAFit}(object, type=c("raw", "standardized", "r2"),
-  \dots)
-\S4method{residuals}{RPPAFit}(object, type=c("raw", "standardized", "r2"),
-  \dots)
+\S4method{fitted}{RPPAFit}(object,
+       type=c("Y", "y", "X", "x"),
+       \dots)
+\S4method{hist}{RPPAFit}(x,
+     type=c("Residuals", "StdRes", "ResidualsR2"),
+     xlab=NULL,
+     main=NULL,
+     \dots)
+\S4method{image}{RPPAFit}(x,
+      measure=c("Residuals", "ResidualsR2", "StdRes", "X", "Y"),
+      main,
+      \dots)
+\S4method{plot}{RPPAFit,missing}(x, y,
+     type=c("cloud", "series", "individual", "steps", "resid"),
+     col=NULL,
+     main,
+     xform=NULL,
+     xlab="Log Concentration",
+     ylab="Intensity",
+     \dots)
+\S4method{resid}{RPPAFit}(object,
+      type=c("raw", "standardized", "r2"),
+      \dots)
+\S4method{residuals}{RPPAFit}(object,
+          type=c("raw", "standardized", "r2"),
+          \dots)
 \S4method{summary}{RPPAFit}(object, \dots)
 }
 \arguments{
