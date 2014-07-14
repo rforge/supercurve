@@ -59,9 +59,8 @@ is.RPPASetSummary(x)
 }
 \section{Methods}{
   \describe{
-    \item{summary(object, \dots)}{Creates an object of class
-      \code{RPPASetSummary}.}
-    \item{write.summary(object, path, prefix, monitor, \dots)}{
+    \item{write.summary}{
+      \code{signature(object = "RPPASetSummary")}:\cr
       Generates three \acronym{CSV} files: one for the raw concentrations, one
       for the \eqn{R^2} statistics, and one for the normalized concentrations;
       a fourth file containing the goodness of fit probabilities may be present
@@ -106,9 +105,11 @@ fitparams <- RPPAFitParams(measure="Mean.Net",
                            ignoreNegative=FALSE,
                            warnLevel=-1,
                            verbose=FALSE)
+normparams <- RPPANormalizationParams(method="vs")
 rppaset <- RPPASet(txtdir,
                    designparams,
-                   fitparams)
+                   fitparams,
+                   normparams=normparams)
 ## If you REALLY want to do this manually. It will be invoked
 ## automatically if you invoke write.summary(rppaset) instead...
 write.summary(summary(rppaset),
