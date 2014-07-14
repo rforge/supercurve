@@ -65,7 +65,6 @@ is.RPPANormalizationParams(x)
   informational purposes. The content and format of the returned string
   may vary between different versions of this package.
 }
-\references{KRC}
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
 }

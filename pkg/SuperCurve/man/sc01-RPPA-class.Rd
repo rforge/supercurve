@@ -140,7 +140,6 @@ is.RPPA(x)
   to be reworked! To achieve the same thing in this release, use:\cr
   \code{RPPA(file, path, software="microvigene", alt.layout="superslide")}
 }
-\references{KRC}
 \author{
   Kevin R. Coombes \email{kcoombes@mdanderson.org},
   P. Roebuck \email{proebuck@mdanderson.org}

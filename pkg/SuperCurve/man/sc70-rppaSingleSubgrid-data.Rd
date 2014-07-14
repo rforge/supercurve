@@ -41,7 +41,6 @@ data(rppaSingleSubgrid)
   The object \code{sdesign} is an object of class \code{\link{RPPADesign}}
   describing that logical layout.
 }
-\references{KRC}
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
 }

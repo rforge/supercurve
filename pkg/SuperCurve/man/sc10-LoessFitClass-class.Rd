@@ -85,7 +85,6 @@
 \value{
   The \code{fitted} method returns a numeric vector.
 }
-\references{KRC}
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
 }

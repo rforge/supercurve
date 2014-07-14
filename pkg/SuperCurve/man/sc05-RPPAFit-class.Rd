@@ -187,7 +187,6 @@
 
   The \code{summary} method invisibly returns \code{NULL}.
 }
-\references{KRC}
 \author{
   Kevin R. Coombes \email{kcoombes@mdanderson.org},
   P. Roebuck \email{proebuck@mdanderson.org}

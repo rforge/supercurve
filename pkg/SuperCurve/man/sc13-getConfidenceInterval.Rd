@@ -39,7 +39,6 @@ getConfidenceInterval(result,
   slots \code{lower}, \code{upper}, and \code{conf.width} that describe the
   confidence interval.
 }
-\references{KRC}
 \author{
   Kevin R. Coombes \email{kcoombes@mdanderson.org},
   P. Roebuck \email{proebuck@mdanderson.org}

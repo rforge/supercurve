@@ -92,7 +92,6 @@ is.FitClass(x)
 
   The \code{coef} and \code{coefficients} methods return \code{NULL}.
 }
-\references{KRC}
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
 }

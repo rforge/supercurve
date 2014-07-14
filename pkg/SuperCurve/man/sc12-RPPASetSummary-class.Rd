@@ -82,7 +82,6 @@ is.RPPASetSummary(x)
   The three \acronym{CSV} files may be reordered (to match that of the original
   input) when written to disk.
 }
-\references{KRC}
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
 }

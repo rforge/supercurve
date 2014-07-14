@@ -258,7 +258,6 @@ seriesNames(design)
   informational purposes. The content and format of the returned string
   may vary between different versions of this package.
 }
-\references{KRC}
 \author{
   Kevin R. Coombes \email{kcoombes@mdanderson.org},
   P. Roebuck \email{proebuck@mdanderson.org}

@@ -55,7 +55,6 @@ is.RPPAPreFitQC(x)
   \strong{The current implementation only handles designs with 5 dilution
   series.\cr Anything else will fail.}
 }
-\references{KRC}
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
 }

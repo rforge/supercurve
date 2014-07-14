@@ -44,7 +44,6 @@ data(rppaTriple)
   \code{tripledesign} is an object of class \code{\link{RPPADesign}}.
 }
 \source{Victor Levin}
-\references{KRC}
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
 }
