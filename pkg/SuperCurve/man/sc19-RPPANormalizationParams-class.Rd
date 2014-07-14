@@ -45,7 +45,9 @@ is.RPPANormalizationParams(x)
 }
 \section{Methods}{
   \describe{
-    \item{paramString(object)}{Returns string representation of object.}
+    \item{paramString}{
+      \code{signature(object = "RPPANormalizationParams")}:\cr
+      Returns string representation of object.}
   }
 }
 \value{
