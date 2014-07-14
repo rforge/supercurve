@@ -6,6 +6,25 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.5.1
+
+
+NEW FEATURES
+
+    o	Changed package dependencies from Depends to Imports and
+	updated namespace dependencies appropriately.
+
+    o	Updated dataset generation scripts to use 'xz' compression.
+
+    o	Updated datasets with 'xz' compression.
+
+    o	Updated saved test output files using R-2.15.3. Added
+	pseudo-test to record sessionInfo() output.
+
+    o	Significantly updated documentation, though it introduced
+	warning about missing alias for certain S4 replacement methods.
+
+
 		CHANGES IN R VERSION 1.5.0
 
 

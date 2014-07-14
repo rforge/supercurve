@@ -5,6 +5,9 @@
 
 ## Imported methods
 import(methods)
+import(cobs)
+import(grDevices)
+import(utils)
 importFrom("MASS", rlm)
 importFrom("graphics", hist)
 importFrom("graphics", image)
