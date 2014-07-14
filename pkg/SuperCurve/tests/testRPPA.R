@@ -26,7 +26,10 @@ nosuchfile <- "nosuch.tsv"
 checkException(RPPA(nosuchfile),
                msg="nonexistent file should fail")
 
-## :TODO: Add test using scheme for 'file' argument...
+badurl <- "http://www.example.org/myslide.tsv"
+checkException(RPPA(badurl),
+               msg="unresolvable URL should fail")
+## :TODO: Add test using valid URL for 'file' argument...
 
 
 ###########################
@@ -38,8 +41,6 @@ checkException(RPPA(quantfile,
 checkException(RPPA(quantfile,
                     path=c(path, path.expand("~"))),
                msg="character vector should fail")
-
-## :TODO: Add test using scheme for 'path' argument...
 
 
 ###########################
