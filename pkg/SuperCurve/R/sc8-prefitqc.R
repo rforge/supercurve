@@ -272,22 +272,20 @@ setMethod("qcprob", signature(object="DS5RPPAPreFitQC"),
         cv1         <- x@cvs[1]
         cv2         <- x@cvs[2]
         cv8         <- x@cvs[4]
-        step4slope  <- x@slopes[3]
-        step4skew   <- x@skews[3]
+        step16slope <- x@slopes[5]
         drdiff2     <- x@drdiffs[2]
         drdiff8     <- x@drdiffs[4]
         percentgood <- x@percentgood
 
-        z <- 3.01 -
-             (1.228      * slopediff) -
-             (21.43      * cv1) -
-             (35.46      * cv2) -
-             (27.95      * cv8) -
-             (0.01053    * step4slope) +
-             (0.08624    * step4skew) +
-             (0.0000462  * drdiff2) -
-             (0.00004722 * drdiff8) +
-             (0.01173    * percentgood)
+        z <- 3.013 -
+             (0.9585     * slopediff) -
+             (21.51      * cv1) -
+             (43.06      * cv2) -
+             (19.29      * cv8) -
+             (0.01574    * step16slope) +
+             (0.00003885 * drdiff2) -
+             (0.00004131 * drdiff8) +
+             (0.01271    * percentgood)
         as.numeric(z)  ## Strip attributes
     }
 

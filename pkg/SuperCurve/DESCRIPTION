@@ -1,6 +1,7 @@
 Package: SuperCurve
-Version: 1.5.1
-Date: 2012-07-14
+Version: 1.5.2
+Phase: Beta
+Date: 2014-07-18
 Title: SuperCurve Package
 Author: Kevin R. Coombes, Shannon Neeley, Corwin Joy, Jianhua Hu, Keith Baggerly, and P. Roebuck.
 Maintainer: P. Roebuck <proebuck@mdanderson.org>
@@ -14,4 +15,4 @@ URL: http://r-forge.r-project.org/projects/supercurve/
 License: Artistic-2.0
 Copyright: file COPYRIGHTS
 LazyLoad: yes
-
+Packaged: 2014-07-18 18:07:44 UTC; paulr

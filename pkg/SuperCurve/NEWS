@@ -6,6 +6,15 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.5.2
+
+
+BUG FIXES
+
+    o	Updated QC model prediction parameters to match those used
+	in the submitted paper.
+
+
 		CHANGES IN R VERSION 1.5.1
 
 
