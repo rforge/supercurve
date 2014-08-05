@@ -12,6 +12,7 @@
     Package: \tab SuperCurve\cr
     Type:    \tab Package\cr
     Version: \tab \Sexpr[results=text]{packageDescription("SuperCurve")$Version}\cr
+    Phase:   \tab \Sexpr[results=text]{packageDescription("SuperCurve")$Phase}\cr
     Date:    \tab \Sexpr[results=text]{packageDescription("SuperCurve")$Date}\cr
     License: \tab \Sexpr[results=text]{packageDescription("SuperCurve")$License}\cr
   }
