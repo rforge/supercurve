@@ -371,13 +371,3 @@ rppaNormalize <- function(concs,
     return(normconcs)
 }
 
-
-##
-## Initialization
-##
-## :TODO: Migrate following to .onLoad since registration should occur once
-registerNormalizationMethod("medpolish", normalize.medpolish, "Median Polish")
-registerNormalizationMethod("median", normalize.median)
-registerNormalizationMethod("house", normalize.house, "Housekeeping")
-registerNormalizationMethod("vs", normalize.vs, "Variable Slope")
-

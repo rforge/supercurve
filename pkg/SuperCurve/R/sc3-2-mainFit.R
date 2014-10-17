@@ -371,7 +371,7 @@ registerModel <- function(key,
        stop(sprintf("argument %s must be name of subclass of class %s",
                     sQuote("classname"),
                     sQuote("FitClass")))
-   }
+    }
 
     registerClassname(key, classname, ui.label=ui.label, envir=modelenv())
 }
@@ -643,16 +643,4 @@ setMethod("coefficients", signature(object="RPPAFit"),
                    ...) {
     coef(object, ...)
 })
-
-
-##
-## Initialization
-##
-
-## :TODO: Migrate following to .onLoad since registration should occur once
-## :KRC: NO! The interface needs to be exposed properly for other people
-## to register models. Don't move anything until we figure that part out...
-registerModel("logistic", "LogisticFitClass", "Logistic")
-registerModel("cobs",     "CobsFitClass", "Monotone Increasing B-spline")
-registerModel("loess",    "LoessFitClass", "Loess")
 
