@@ -27,18 +27,6 @@ Type 'q()' to quit R.
 [1] "C"
 > 
 > library(SuperCurve)
-Loading required package: MASS
-Loading required package: cobs
-Loading required package: SparseM
-
-Attaching package: 'SparseM'
-
-The following object(s) are masked from 'package:base':
-
-    backsolve
-
-Loading required package: quantreg
-Loading required package: splines
 > library(robustbase)
 > library(boot)
 
@@ -138,6 +126,17 @@ Error in registerModel("bogus", "numeric") :
 +                           fitmethod=fitmethod)
 +                })
 *** model: cobs, method: nls
+Loading required package: cobs
+Loading required package: SparseM
+
+Attaching package: 'SparseM'
+
+The following object(s) are masked from 'package:base':
+
+    backsolve
+
+Loading required package: quantreg
+Loading required package: splines
 *** model: loess, method: nls
 *** model: logistic, method: nls
 *** model: cobs, method: nlrob
@@ -192,4 +191,4 @@ Warning in lsfit(x, y, d^2, intercept = FALSE) :
 > 
 > proc.time()
    user  system elapsed 
-146.093   0.946 160.994 
+131.774   0.109 131.876 

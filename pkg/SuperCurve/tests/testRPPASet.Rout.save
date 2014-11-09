@@ -23,18 +23,6 @@ Type 'q()' to quit R.
 > 
 > options(warn=1)
 > library(SuperCurve)
-Loading required package: MASS
-Loading required package: cobs
-Loading required package: SparseM
-
-Attaching package: 'SparseM'
-
-The following object(s) are masked from 'package:base':
-
-    backsolve
-
-Loading required package: quantreg
-Loading required package: splines
 > library(robustbase)
 > library(boot)
 
@@ -152,7 +140,7 @@ Error in RPPASet(path = c("results1", "results2")) :
 > checkException(RPPASet(path=nosuchdir),
 +                msg="nonexistent directory should fail")
 Error in RPPASet(path = nosuchdir) : 
-  directory "/tmp/RtmpObVaaz/supercurve/nosuch" does not exist
+  directory "/tmp/RtmpEKo7YD/supercurve/nosuch" does not exist
 [1] TRUE
 > 
 > filenotdir <- file.path(persessionprojdir, "somefile")
@@ -161,7 +149,7 @@ Error in RPPASet(path = nosuchdir) :
 > checkException(RPPASet(path=filenotdir),
 +                msg="not a directory should fail")
 Error in RPPASet(path = filenotdir) : 
-  directory "/tmp/RtmpObVaaz/supercurve/somefile" does not exist
+  directory "/tmp/RtmpEKo7YD/supercurve/somefile" does not exist
 [1] TRUE
 > 
 > emptydir <- file.path(persessionprojdir, "emptydir")
@@ -172,7 +160,7 @@ Error in RPPASet(path = filenotdir) :
 +                        normparams=normparams),
 +                msg="directory without quantification files should fail")
 Error in RPPASet(path = emptydir, designparams, fitparams, normparams = normparams) : 
-  no quantification files found in directory "/tmp/RtmpObVaaz/supercurve/emptydir"
+  no quantification files found in directory "/tmp/RtmpEKo7YD/supercurve/emptydir"
 [1] TRUE
 > 
 > ###########################
@@ -244,7 +232,7 @@ Error in RPPASet(path = path, designparams, fitparams, normparams = normparams, 
 +                        antibodyfile=nosuchfile),
 +                msg="nonexistent file should fail")
 Error in value[[3L]](cond) : 
-  cannot load antibody data from file "/private/tmp/rforge/sandbox/SuperCurve.Rcheck/SuperCurve/extdata/rppaTumorData/nosuch.tsv" - file.exists(antibodyfile) is not TRUE
+  cannot load antibody data from file "/private/tmp/supercurve/SuperCurve.Rcheck/SuperCurve/extdata/rppaTumorData/nosuch.tsv" - file.exists(antibodyfile) is not TRUE
 [1] TRUE
 > 
 > checkException(RPPASet(path=path,
@@ -254,7 +242,7 @@ Error in value[[3L]](cond) :
 +                        antibodyfile=path),
 +                msg="directory instead of file should fail")
 Error in value[[3L]](cond) : 
-  cannot load antibody data from file "/private/tmp/rforge/sandbox/SuperCurve.Rcheck/SuperCurve/extdata/rppaTumorData" - argument is not a file
+  cannot load antibody data from file "/private/tmp/supercurve/SuperCurve.Rcheck/SuperCurve/extdata/rppaTumorData" - argument is not a file
 [1] TRUE
 > 
 > local({
@@ -269,7 +257,7 @@ Error in value[[3L]](cond) :
 +                    msg="empty file should fail")
 + })
 Error in value[[3L]](cond) : 
-  cannot load antibody data from file "/tmp/RtmpObVaaz/supercurve/emptyfile.tsv" - no lines available in input
+  cannot load antibody data from file "/tmp/RtmpEKo7YD/supercurve/emptyfile.tsv" - no lines available in input
 [1] TRUE
 > 
 > local({
@@ -289,7 +277,7 @@ Error in value[[3L]](cond) :
 +                    msg="file with single column should fail")
 + })
 Error in value[[3L]](cond) : 
-  cannot load antibody data from file "/tmp/RtmpObVaaz/supercurve/singlecolfile.tsv" - missing required column: "Antibody"
+  cannot load antibody data from file "/tmp/RtmpEKo7YD/supercurve/singlecolfile.tsv" - missing required column: "Antibody"
 [1] TRUE
 > 
 > local({
@@ -311,7 +299,7 @@ Error in value[[3L]](cond) :
 +                    msg="file without required columns should fail")
 + })
 Error in value[[3L]](cond) : 
-  cannot load antibody data from file "/tmp/RtmpObVaaz/supercurve/missingreqdcols.tsv" - missing required column: "Antibody"
+  cannot load antibody data from file "/tmp/RtmpEKo7YD/supercurve/missingreqdcols.tsv" - missing required column: "Antibody"
 [1] TRUE
 > 
 > 
@@ -334,7 +322,7 @@ Error in function (classes, fdef, mtable)  :
 +                              path=nosuchdir),
 +                msg="nonexistent output directory should fail")
 Error in .local(object, ...) : 
-  directory "/tmp/RtmpObVaaz/supercurve/nosuch" does not exist
+  directory "/tmp/RtmpEKo7YD/supercurve/nosuch" does not exist
 [1] TRUE
 > 
 > switch(.Platform$OS.type,
@@ -349,7 +337,7 @@ Error in .local(object, ...) :
 +            cat("skipped readonly output directory test (not implemented)", "\n")
 +        })
 Error in .local(object, ...) : 
-  directory "/tmp/RtmpObVaaz/supercurve/readonly" is not writable
+  directory "/tmp/RtmpEKo7YD/supercurve/readonly" is not writable
 [1] TRUE
 > 
 > ###########################
@@ -413,7 +401,7 @@ Error in .local(object, ...) : argument 'tiffdir' must be of length 1
 +                              tiffdir=nosuchdir),
 +                msg="nonexistent directory should fail")
 Error in .local(object, ...) : 
-  directory "/tmp/RtmpObVaaz/supercurve/nosuch" does not exist
+  directory "/tmp/RtmpEKo7YD/supercurve/nosuch" does not exist
 [1] TRUE
 > 
 > checkException(write.summary(rppaset,
@@ -422,7 +410,7 @@ Error in .local(object, ...) :
 +                              tiffdir=filenotdir),
 +                msg="not a directory should fail")
 Error in .local(object, ...) : 
-  directory "/tmp/RtmpObVaaz/supercurve/somefile" does not exist
+  directory "/tmp/RtmpEKo7YD/supercurve/somefile" does not exist
 [1] TRUE
 > 
 > ## :NOTE: If unspecified, "tiffdir" is assumed to be sibling of "path".
@@ -511,4 +499,4 @@ Error : (converted from warning) ImageMagick executable 'convert' not installed 
 > 
 > proc.time()
    user  system elapsed 
- 12.381   0.159  13.715 
+ 11.915   0.084  11.998 

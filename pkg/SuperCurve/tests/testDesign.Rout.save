@@ -23,18 +23,6 @@ Type 'q()' to quit R.
 > 
 > options(warn=1)
 > library(SuperCurve)
-Loading required package: MASS
-Loading required package: cobs
-Loading required package: SparseM
-
-Attaching package: 'SparseM'
-
-The following object(s) are masked from 'package:base':
-
-    backsolve
-
-Loading required package: quantreg
-Loading required package: splines
 > source("checkFuncs")
 > 
 > extdata.dir <- system.file("extdata", package="SuperCurve")
@@ -1108,4 +1096,4 @@ Error in .local(x, y, ...) : invalid measure 'bogus'
 > 
 > proc.time()
    user  system elapsed 
-  1.559   0.076   1.805 
+  1.332   0.056   1.383 

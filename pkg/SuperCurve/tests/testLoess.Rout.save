@@ -31,18 +31,6 @@ Type 'q()' to quit R.
 + }
 > options(warn=1)
 > library(SuperCurve)
-Loading required package: MASS
-Loading required package: cobs
-Loading required package: SparseM
-
-Attaching package: 'SparseM'
-
-The following object(s) are masked from 'package:base':
-
-    backsolve
-
-Loading required package: quantreg
-Loading required package: splines
 > library(robustbase)
 > 
 > extdata.dir <- system.file("extdata", package="SuperCurve")
@@ -91,7 +79,7 @@ Loading required package: splines
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.5.0 
+Test of SuperCurve version 1.5.4 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -119,6 +107,15 @@ model = loess; method = nlrq; measure = Mean.Net
 +     }
 +     print(paste(itemName, measure, round(meansq), round(tmeansq)))
 + }
+Loading required package: quantreg
+Loading required package: SparseM
+
+Attaching package: 'SparseM'
+
+The following object(s) are masked from 'package:base':
+
+    backsolve
+
 [1] "ACTB-gray Mean.Net 469690 205795"
 
 > remove(i, itemName, item, meansq, tmeansq)
@@ -130,7 +127,7 @@ model = loess; method = nlrq; measure = Mean.Net
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.5.0 
+Test of SuperCurve version 1.5.4 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -185,7 +182,7 @@ Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.5.0 
+Test of SuperCurve version 1.5.4 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -390,4 +387,4 @@ U87                 6.0426 1.6166 0.2675
 > 
 > proc.time()
    user  system elapsed 
-273.634   1.478 301.713 
+248.613   0.129 248.740 

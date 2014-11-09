@@ -22,19 +22,16 @@ Type 'q()' to quit R.
 > 
 > 
 > options(warn=1)
-> library(SuperCurve)
-Loading required package: MASS
-Loading required package: cobs
-Loading required package: SparseM
-
-Attaching package: 'SparseM'
-
-The following object(s) are masked from 'package:base':
-
-    backsolve
-
-Loading required package: quantreg
-Loading required package: splines
+> pkgname <- "SuperCurve"
+> suppressPackageStartupMessages(library(pkgname, character.only=TRUE))
+> 
+> ## Load packages for all possible processing options
+> suggested <- unlist(strsplit(packageDescription(pkgname)$Suggests, ', '))
+> invisible(sapply(suggested,
++                  function(pkgname) {
++                      suppressPackageStartupMessages(
++                          require(pkgname, character.only=TRUE))
++                  }))
 > 
 > show(sessionInfo())
 R version 2.15.3 Patched (2013-03-13 r62287)
@@ -48,10 +45,14 @@ attached base packages:
 [8] base     
 
 other attached packages:
-[1] SuperCurve_1.5.0 cobs_1.2-2       quantreg_5.05    SparseM_1.03    
-[5] MASS_7.3-23     
+[1] timeDate_3011.99  robustbase_0.91-1 quantreg_5.05     SparseM_1.05     
+[5] mgcv_1.8-3        nlme_3.1-108      boot_1.3-7        SuperCurve_1.5.4 
+
+loaded via a namespace (and not attached):
+[1] DEoptimR_1.0-1  MASS_7.3-23     Matrix_1.1-2-2  cobs_1.2-2     
+[5] grid_2.15.3     lattice_0.20-29
 > 
 > 
 > proc.time()
    user  system elapsed 
-  0.658   0.048   0.981 
+  2.899   0.084   2.976 

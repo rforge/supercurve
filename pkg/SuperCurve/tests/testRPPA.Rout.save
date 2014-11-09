@@ -23,18 +23,6 @@ Type 'q()' to quit R.
 > 
 > options(warn=1)
 > library(SuperCurve)
-Loading required package: MASS
-Loading required package: cobs
-Loading required package: SparseM
-
-Attaching package: 'SparseM'
-
-The following object(s) are masked from 'package:base':
-
-    backsolve
-
-Loading required package: quantreg
-Loading required package: splines
 > source("checkFuncs")
 > 
 > extdata.dir <- system.file("extdata", package="SuperCurve")
@@ -146,7 +134,7 @@ Error in readQuantification(file, software, alt.layout) :
 > checkException(RPPA("cellLineInfo.tsv", path=path),
 +                msg="not MicroVigene datafile should fail")
 Error in readMethod(conn) : 
-  file "/private/tmp/rforge/sandbox/SuperCurve.Rcheck/SuperCurve/extdata/rppaCellData/cellLineInfo.tsv" is not a MicroVigene datafile
+  file "/private/tmp/supercurve/SuperCurve.Rcheck/SuperCurve/extdata/rppaCellData/cellLineInfo.tsv" is not a MicroVigene datafile
 [1] TRUE
 > 
 > ###########################
@@ -189,7 +177,7 @@ Error in readQuantification(file, software, alt.layout) :
 Warning in .getReadMethod(software) :
   no user-provided method named 'read.bogus' found
 Error in readQuantification(file, software, alt.layout) : 
-  cannot import data from file "/private/tmp/rforge/sandbox/SuperCurve.Rcheck/SuperCurve/extdata/rppaCellData/Akt.txt"
+  cannot import data from file "/private/tmp/supercurve/SuperCurve.Rcheck/SuperCurve/extdata/rppaCellData/Akt.txt"
 [1] TRUE
 > 
 > local({
@@ -205,7 +193,7 @@ Error in readQuantification(file, software, alt.layout) :
 Warning in .getReadMethod(software) :
   no user-provided method named 'read.local' found
 Error in readQuantification(file, software, alt.layout) : 
-  cannot import data from file "/private/tmp/rforge/sandbox/SuperCurve.Rcheck/SuperCurve/extdata/rppaCellData/Akt.txt"
+  cannot import data from file "/private/tmp/supercurve/SuperCurve.Rcheck/SuperCurve/extdata/rppaCellData/Akt.txt"
 [1] TRUE
 > 
 > read.noCols <- function(file) {
@@ -312,4 +300,4 @@ pdf
 > 
 > proc.time()
    user  system elapsed 
-  0.821   0.065   1.137 
+  0.660   0.046   0.749 
