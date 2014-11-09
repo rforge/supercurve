@@ -117,6 +117,23 @@ normenv <- function() {
 
 
 ##-----------------------------------------------------------------------------
+registerPkgNormalizationMethods <- function() {
+    registerNormalizationMethod("medpolish",
+                                normalize.medpolish,
+                                "Median Polish")
+    registerNormalizationMethod("median",
+                                normalize.median,
+                                "Median")
+    registerNormalizationMethod("house",
+                                normalize.house,
+                                "Housekeeping")
+    registerNormalizationMethod("vs",
+                                normalize.vs,
+                                "Variable Slope")
+}
+
+
+##-----------------------------------------------------------------------------
 ## Normalization method. Fits additive model using Tukey's median polish.
 normalize.medpolish <- function(concs,
                                 ...) {

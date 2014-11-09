@@ -22,6 +22,14 @@ modelenv <- function() {
 }
 
 
+##-----------------------------------------------------------------------------
+registerPkgFitModels <- function() {
+    registerModel("logistic", "LogisticFitClass", "Logistic")
+    registerModel("cobs", "CobsFitClass", "Monotone Increasing B-spline")
+    registerModel("loess", "LoessFitClass", "Loess")
+}
+
+
 ##
 ## Public Methods
 ##
