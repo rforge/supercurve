@@ -6,6 +6,15 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.5.4
+
+
+BUG FIXES
+
+    o	Fix for registration invocations in .onLoad() method
+	requiring 'methods' package be available.
+
+
 		CHANGES IN R VERSION 1.5.3
 
 
