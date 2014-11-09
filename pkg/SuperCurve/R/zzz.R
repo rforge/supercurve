@@ -66,14 +66,13 @@
     }
 
     ## Register fit models
-    registerModel("logistic", "LogisticFitClass", "Logistic")
-    registerModel("cobs", "CobsFitClass", "Monotone Increasing B-spline")
-    registerModel("loess", "LoessFitClass", "Loess")
+    setHook(packageEvent("SuperCurve", "onLoad"),
+            function(...) {
+                ## Requires 'methods' package be available
+                registerPkgFitModels()
+            })
 
     ## Register normalization methods
-    registerNormalizationMethod("medpolish", normalize.medpolish, "Median Polish")
-    registerNormalizationMethod("median", normalize.median, "Median")
-    registerNormalizationMethod("house", normalize.house, "Housekeeping")
-    registerNormalizationMethod("vs", normalize.vs, "Variable Slope")
+    registerPkgNormalizationMethods()
 }
 
