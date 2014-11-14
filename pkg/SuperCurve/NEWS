@@ -6,6 +6,19 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.5.5
+
+
+BUG FIXES
+
+    o	Both high-level normalize() generic methods were broken.
+	Modified the normalize(RPPASet) method to now simply require
+	the object itself; other arguments are defaulted using values
+	from the object's RPPANormalizationParams slot. The
+	normalize(MatrixLike) method was missing match.arg() on the
+	'method' argument.
+
+
 		CHANGES IN R VERSION 1.5.4
 
 
