@@ -81,12 +81,12 @@ str(normconcs)
 normconcs <- normalize(concs, method="vs")
 str(normconcs)
 
-## Normalize using Tukey's median polish (SuperCurve's previous default)
+## Normalize using Tukey's median polish (previous default method)
 normconcs <- normalize(concs, method="medpolish", calc.medians=FALSE)
 str(normconcs)
 
 ## Normalize using user-provided method (in this case, robust sample mean)
-normalize.robustmean <- function(concs, trim=0, na.rm=FALSE, ...) {
+normalize.robustmean <- function(concs, trim=0, na.rm=FALSE) {
     stopifnot(is.matrix(concs) || is.data.frame(concs))
     stopifnot(is.numeric(trim))
     stopifnot(is.logical(na.rm))
@@ -97,7 +97,7 @@ normalize.robustmean <- function(concs, trim=0, na.rm=FALSE, ...) {
     ## Store method-specific info in "normalization" attribute
     attr(normconcs, "normalization") <- list(rowMean=rowMean)
 
-    return(normconcs)
+    normconcs
 }
 
 registerNormalizationMethod("rmean", normalize.robustmean)
