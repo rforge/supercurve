@@ -382,7 +382,7 @@ rppaNormalize <- function(concs,
     attr(normconcs, "normalization") <- c(list(method=method,
                                                rowMedian=rowMedian,
                                                colMedian=colMedian,
-                                               swept.cols=sweep.cols),
+                                               sweep.cols=sweep.cols),
                                           attr(normconcs, "normalization"))
 
     normconcs

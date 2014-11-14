@@ -227,7 +227,7 @@ setMethod("write.summary", signature(object="RPPASetSummary"),
                 paste(normMethod, qctag, sep="-")
             }
         } else {
-            sweeptag <- if (attrs$swept.cols) "rowcol" else "col"
+            sweeptag <- if (attrs$sweep.cols) "rowcol" else "col"
             if (is.null(qctag)) {
                 paste(normMethod, sweeptag, sep="-")
             } else {
