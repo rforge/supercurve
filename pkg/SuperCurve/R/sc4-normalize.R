@@ -306,25 +306,7 @@ registerNormalizationMethod <- function(key,
 
 
 ##-----------------------------------------------------------------------------
-setClassUnion("MatrixLike", c("matrix", "data.frame"))
-setMethod("normalize", signature(object="MatrixLike"),
-          function(object,
-                   method=getRegisteredNormalizationMethodKeys(),
-                   calc.medians=TRUE,
-                   sweep.cols=calc.medians,
-                   ...) {
-    ## Call original function...
-    rppaNormalize(object,
-                  method=method,
-                  calc.medians=calc.medians,
-                  sweep.cols=sweep.cols,
-                  ...)
-})
-
-
-##-----------------------------------------------------------------------------
-## Performs normalization for sample loading after quantification.
-## It has two required input values:
+## Method has two required input values:
 ##   1) the data matrix with samples in the rows and antibodies in the columns.
 ##   2) the name of the method of sample loading normalization. This argument
 ##      may be augmented with user-provided normalization methods.
@@ -338,19 +320,46 @@ setMethod("normalize", signature(object="MatrixLike"),
 ##      vs     - variable slope normalization. Here the sample median
 ##               is used along with a multiplicative gamma.
 ##
+setClassUnion("MatrixLike", c("matrix", "data.frame"))
+setMethod("normalize", signature(object="MatrixLike"),
+          function(object,
+                   method=getRegisteredNormalizationMethodKeys(),
+                   calc.medians=TRUE,
+                   sweep.cols=calc.medians,
+                   ...) {
+    ## Check arguments
+    method <- match.arg(method)
+    stopifnot(is.logical(calc.medians) && length(calc.medians) == 1)
+    stopifnot(is.logical(sweep.cols) && length(sweep.cols) == 1)
+
+    ## Call original function...
+    rppaNormalize(object,
+                  method=method,
+                  calc.medians=calc.medians,
+                  sweep.cols=sweep.cols,
+                  ...)
+})
+
+
+##-----------------------------------------------------------------------------
+## Performs normalization for sample loading after quantification.
 rppaNormalize <- function(concs,
-                          method=getRegisteredNormalizationMethodKeys(),
-                          calc.medians=TRUE,
-                          sweep.cols=calc.medians,
+                          method,
+                          calc.medians,
+                          sweep.cols,
                           ...) {
     ## Check arguments
     if (!(is.matrix(concs) || is.data.frame(concs))) {
         stop(sprintf("argument %s must be matrix-like",
                      sQuote("concs")))
     }
-    method <- match.arg(method)
+    stopifnot(is.character(method) && length(method) == 1)
     stopifnot(is.logical(calc.medians) && length(calc.medians) == 1)
     stopifnot(is.logical(sweep.cols) && length(sweep.cols) == 1)
+    if (!(method %in% getRegisteredNormalizationMethodKeys())) {
+        stop(sprintf("argument %s must be registered normalization method",
+                     sQuote("method")))
+    }
 
     ## Begin processsing
     if (calc.medians) {
