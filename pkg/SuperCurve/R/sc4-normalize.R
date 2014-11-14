@@ -112,7 +112,7 @@ setMethod("paramString", signature(object="RPPANormalizationParams"),
 ##-----------------------------------------------------------------------------
 ## Returns private environment for storing registered normalization methods
 normenv <- function() {
-    return(.NormEnv)
+    .NormEnv
 }
 
 
@@ -148,7 +148,7 @@ normalize.medpolish <- function(concs,
     conc.medpol <- cbind(pol$row, pol$residuals)
     colnames(conc.medpol)[1] <- "Correction"
 
-    return(normconcs <- conc.medpol)
+    normconcs <- conc.medpol
 }
 
 
@@ -159,7 +159,7 @@ normalize.median <- function(concs,
     stopifnot(is.matrix(concs) || is.data.frame(concs))
     stopifnot(is.numeric(rowMedian))
 
-    return(normconcs <- sweep(concs, 1, rowMedian, FUN="-"))
+    normconcs <- sweep(concs, 1, rowMedian, FUN="-")
 }
 
 
@@ -191,7 +191,7 @@ normalize.house <- function(concs,
     attr(normconcs, "normalization") <- list(antibodies=antibodies,
                                              houseMedian=houseMedian)
 
-    return(normconcs)
+    normconcs
 }
 
 
@@ -257,7 +257,7 @@ normalize.vs <- function(concs,
     ## Store method-specific info in "normalization" attribute
     attr(normconcs, "normalization") <- list(gamma=gamma)
 
-    return(normconcs)
+    normconcs
 }
 
 
@@ -268,14 +268,14 @@ normalize.vs <- function(concs,
 ##-----------------------------------------------------------------------------
 ## Returns normalization method associated with key for invocation.
 getRegisteredNormalizationMethod <- function(key) {
-    return(method <- getRegisteredMethod(key, envir=normenv())$method)
+    method <- getRegisteredMethod(key, envir=normenv())$method
 }
 
 
 ##-----------------------------------------------------------------------------
 ## Returns label associated with key for display by user interface.
 getRegisteredNormalizationMethodLabel <- function(key) {
-    return(ui.label <- getRegisteredMethod(key, envir=normenv())$ui.label)
+    ui.label <- getRegisteredMethod(key, envir=normenv())$ui.label
 }
 
 
@@ -287,7 +287,7 @@ getRegisteredNormalizationMethodKeys <- function() {
         stop("no registered normalization methods exist")
     }
 
-    return(keys)
+    keys
 }
 
 
@@ -385,6 +385,6 @@ rppaNormalize <- function(concs,
                                                swept.cols=sweep.cols),
                                           attr(normconcs, "normalization"))
 
-    return(normconcs)
+    normconcs
 }
 
