@@ -362,26 +362,24 @@ rppaNormalize <- function(concs,
     }
 
     ## Begin processsing
-    if (calc.medians) {
-        rowMedian <- apply(concs, 1, median, na.rm=TRUE)
-        colMedian <- apply(concs, 2, median, na.rm=TRUE)
-    } else {
-        rowMedian <- as.numeric(NA)
-        colMedian <- as.numeric(NA)
-    }
 
     ## Create environment for method to use
     env <- new.env(hash=TRUE)
-    env$rowMedian <- rowMedian
-    env$colMedian <- colMedian
-
-    ## Apply environment to method
     normMethod <- getRegisteredNormalizationMethod(method)
     environment(normMethod) <- env
 
+    ## Calculate medians?
+    if (calc.medians) {
+        env$rowMedian <- apply(concs, 1, median, na.rm=TRUE)
+        env$colMedian <- apply(concs, 2, median, na.rm=TRUE)
+    } else {
+        env$rowMedian <- as.numeric(NA)
+        env$colMedian <- as.numeric(NA)
+    }
+
     ## Sweep columns first?
     if (sweep.cols) {
-        concs <- sweep(concs, 2, colMedian, FUN="-")
+        concs <- sweep(concs, 2, env$colMedian, FUN="-")
     }
 
     ## Invoke method
@@ -389,9 +387,9 @@ rppaNormalize <- function(concs,
 
     ## Store processing info in "normalization" attribute
     attr(normconcs, "normalization") <- c(list(method=method,
-                                               rowMedian=rowMedian,
-                                               colMedian=colMedian,
+                                               calc.medians=calc.medians,
                                                sweep.cols=sweep.cols),
+                                          as.list(env),
                                           attr(normconcs, "normalization"))
 
     normconcs
