@@ -264,13 +264,16 @@ ran.prefitqc <- function(rppaset) {
 
 ##-----------------------------------------------------------------------------
 setMethod("normalize", signature(object="RPPASet"),
-          function(object,
-                   method=getRegisteredNormalizationMethodKeys(),
-                   calc.medians=TRUE,
-                   sweep.cols=calc.medians,
-                   ...) {
+          function(object, ...) {
+    concs <- .fitSlot(object, "concentrations")
+    normparams <- object@normparams
+    arglist <- c(list(concs,
+                      method=normparams@method),
+                 normparams@arglist,
+                 ...)
+
     ## Assemble matrix of concentrations from all fits in object
-    callGeneric(.fitSlot(object, "concentrations"))
+    do.call(callGeneric, arglist)
 })
 
 
