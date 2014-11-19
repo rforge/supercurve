@@ -461,7 +461,7 @@ message("enter loadSettingsWithRestarts()");
                 ## XDR datafiles created by this package will contain a
                 ## variable named 'settings'.
                 stopifnot(exists("settings"))
-                stopifnot(SuperCurve:::is.SuperCurveSettings(settings))
+                stopifnot(SuperCurve::is.SuperCurveSettings(settings))
                 settings
             })
         },
@@ -472,7 +472,7 @@ message("enter loadSettingsWithRestarts()");
 ##-----------------------------------------------------------------------------
 reloadInterface <- function(settings) {
     ## Check arguments
-    stopifnot(SuperCurve:::is.SuperCurveSettings(settings))
+    stopifnot(SuperCurve::is.SuperCurveSettings(settings))
 message("enter reloadInterface()")
     ##-------------------------------------------------------------------------
     ## Updates values displayed by UI and associated globals
@@ -600,7 +600,7 @@ message(sprintf("exit reloadLabel(%s)", varname))
                   spatial.k          <- as.character(settings@spatialparams@k)
                   spatial.plotSurface<- as.character(settings@spatialparams@plotSurface)
               } else {
-                  formal.args <- formals(SuperCurve:::spatialCorrection)
+                  formal.args <- formals(SuperCurve::spatialCorrection)
 
                   spatial    <- as.character(FALSE)
                   spatial.cutoff     <- as.character(eval(formal.args$cutoff))
@@ -1410,7 +1410,7 @@ createSpatialAdjPanel <- function(parent) {
     stopifnot(is.tkwin(parent))
 
     ## Begin processing
-    formal.args <- formals(SuperCurve:::spatialCorrection)
+    formal.args <- formals(SuperCurve::spatialCorrection)
     measure <- tclvalue(getenv("fit.measure.var"))
 
     ## Prepare possible input values
@@ -2407,12 +2407,12 @@ displayProgressDialog <- function(dialog,
 ##-----------------------------------------------------------------------------
 performAnalysis <- function(settings) {
     ## Check arguments
-    stopifnot(SuperCurve:::is.SuperCurveSettings(settings))
+    stopifnot(SuperCurve::is.SuperCurveSettings(settings))
 
     ## Confirm user selections
     question <- paste("Run analysis with the following options:",
                       "\n\n",
-                      SuperCurve:::paramString(settings),
+                      SuperCurve::paramString(settings),
                       sep="")
     if (!askyesno(default="yes",
                   message=question,

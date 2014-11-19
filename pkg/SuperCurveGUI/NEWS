@@ -7,6 +7,20 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 2.1.4
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o	Dropped compatibility for anything less than R-2.15 as
+	no longer able to test against previous versions of R.
+
+NEW FEATURES
+
+    o	Changed package dependencies from Depends to Imports and
+        updated namespace dependencies appropriately.
+
+
 		CHANGES IN R VERSION 2.1.3
 
 

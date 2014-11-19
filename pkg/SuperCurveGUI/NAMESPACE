@@ -4,6 +4,10 @@
 
 ## Imported methods
 import(methods)
+import(tcltk)
+import(tclish)
+importFrom(SuperCurve, is.SCProgressMonitor)
+importFrom(SuperCurve, spatialCorrection)
 importClassesFrom(SuperCurve, BoundedRange)
 importClassesFrom(SuperCurve, ProgressMonitor, DefaultProgressMonitor)
 importClassesFrom(SuperCurve, SCProgressMonitor)
@@ -15,6 +19,8 @@ importMethodsFrom(SuperCurve, progressMaximum, "progressMaximum<-")
 importMethodsFrom(SuperCurve, progressMinimum, "progressMinimum<-")
 importMethodsFrom(SuperCurve, progressStage, "progressStage<-")
 importMethodsFrom(SuperCurve, progressValue, "progressValue<-")
+importMethodsFrom(SuperCurve, elapsed)
+importMethodsFrom(SuperCurve, paramString)
 
 ## Public functions
 export(supercurveGUI)
