@@ -5,7 +5,7 @@
 %
 %\VignetteIndexEntry{RPPA Primer}
 %\VignetteKeywords{Preprocessing, Lysate Arrays}
-%\VignetteDepends{methods, stats, utils, graphics, grDevices, MASS, cobs, mgcv}
+%\VignetteDepends{methods, stats, utils, graphics, grDevices, MASS, cobs, mgcv, SuperCurveSampleData}
 %\VignettePackage{SuperCurve}
 \documentclass{article}
 
@@ -179,9 +179,10 @@ with the quantifications, feel free; these are also included.
 These also allow us to illustrate how an \Rclass{RPPA} object can
 be constructed from a MicroVigene .txt file:
 <<getStarted02>>=
+extdata.dir <- system.file("extdata", package="SuperCurveSampleData");
+rawdata.dir <- file.path(extdata.dir, "rppaCellData");
 filename <- "Akt.txt";
-directory <- system.file("extdata", "rppaCellData", package="SuperCurve");
-aktTake2 <- RPPA(file=filename, path=directory);
+aktTake2 <- RPPA(file=filename, path=rawdata.dir);
 class(aktTake2);
 isTRUE(all.equal(akt, aktTake2, check.attributes=FALSE));
 @
@@ -239,8 +240,7 @@ read.user <- function(file) {
     return(df);
 }
 filename <- "Akt.txt";
-directory <- system.file("extdata", "rppaCellData", package="SuperCurve");
-aktTake3 <- RPPA(file=filename, path=directory, software="user");
+aktTake3 <- RPPA(file=filename, path=rawdata.dir, software="user");
 isTRUE(all.equal(akt, aktTake3, check.attributes=FALSE));
 @ 
 again, this \Rclass{RPPA} object is just the same as
@@ -368,9 +368,8 @@ construct an \Rclass{RPPADesign} object using a more low-level
 approach, such as reading the sample information (and possibly
 the dilution levels as well) from a separate file. 
 <<getStarted15>>=
-directory <- system.file("extdata", "rppaCellData", package="SuperCurve");
 filename <- "Akt.txt";
-aktTemp <- read.delim(file=file.path(directory, filename), skip=4);
+aktTemp <- read.delim(file=file.path(rawdata.dir, filename), skip=4);
 names(aktTemp)[5] <- "Sample";
 designColHdrs <- c("Main.Row", "Main.Col", "Sub.Row", "Sub.Col", "Sample");
 aktTemp <- aktTemp[, names(aktTemp) %in% designColHdrs];
