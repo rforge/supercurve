@@ -109,9 +109,9 @@ spatialCorrection(rppa,
   \code{\link[mgcv]{choose.k}}
 }
 \examples{
-extdatadir <- system.file("extdata", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 
-txtdir <- file.path(extdatadir, "rppaSingleSubgridData")
+txtdir <- file.path(extdata.dir, "rppaSingleSubgridData")
 designfile <- file.path(txtdir, "slidedesign.tsv")
 rppa <- RPPA("Waldo.txt",
              path=txtdir,

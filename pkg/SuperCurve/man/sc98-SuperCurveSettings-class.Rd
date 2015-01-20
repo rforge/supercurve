@@ -153,9 +153,9 @@ is.SuperCurveSettings(x)
 }
 \examples{
   \dontrun{
-extdatadir <- system.file("extdata", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 
-txtdir <- file.path(extdatadir, "rppaTumorData")
+txtdir <- file.path(extdata.dir, "rppaTumorData")
 designparams <- RPPADesignParams(center=FALSE,
                                  controls=list("neg con", "pos con"),
                                  grouping="blockSample")

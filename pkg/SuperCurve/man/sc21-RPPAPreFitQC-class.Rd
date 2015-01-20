@@ -59,9 +59,9 @@ is.RPPAPreFitQC(x)
   P. Roebuck \email{proebuck@mdanderson.org}
 }
 \examples{
-extdatadir <- system.file("extdata", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 
-txtdir <- file.path(extdatadir, "rppaSingleSubgridData")
+txtdir <- file.path(extdata.dir, "rppaSingleSubgridData")
 rppa <- RPPA("Foo.txt",
              path=txtdir,
              software="microvigene",

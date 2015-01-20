@@ -266,9 +266,9 @@ seriesNames(design)
   \code{\linkS4class{RPPA}}
 }
 \examples{
-extdatadir <- system.file("extdata", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 
-txtdir <- file.path(extdatadir, "rppaTumorData")
+txtdir <- file.path(extdata.dir, "rppaTumorData")
 erk2 <- RPPA("ERK2.txt", path=txtdir)
 design <- RPPADesign(erk2, grouping="blockSample", center=TRUE)
 dim(design)
@@ -283,7 +283,7 @@ summary(design)
 
 plot(erk2, design)
 
-txtdir <- file.path(extdatadir, "rppaCellData")
+txtdir <- file.path(extdata.dir, "rppaCellData")
 akt <- RPPA("Akt.txt", path=txtdir)
 ## Uses duplicate 8-step dilution series within 4x4 subgrids.
 ## They are interleaved, with top two identical rows containing the first

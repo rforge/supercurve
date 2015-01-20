@@ -49,9 +49,9 @@ getConfidenceInterval(result,
 }
 \examples{
   \dontrun{
-extdatadir <- system.file("extdata", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 
-txtdir <- file.path(extdatadir, "rppaCellData")
+txtdir <- file.path(extdata.dir, "rppaCellData")
 akt <- RPPA("Akt.txt", path=txtdir)
 design <- RPPADesign(akt,
                      grouping="blockSample",

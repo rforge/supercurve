@@ -198,9 +198,9 @@
   \code{\link[graphics]{hist}}
 }
 \examples{
-extdatadir <- system.file("extdata", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 
-txtdir <- file.path(extdatadir, "rppaTumorData")
+txtdir <- file.path(extdata.dir, "rppaTumorData")
 erk2 <- RPPA("ERK2.txt", path=txtdir)
 design <- RPPADesign(erk2,
                      grouping="blockSample",

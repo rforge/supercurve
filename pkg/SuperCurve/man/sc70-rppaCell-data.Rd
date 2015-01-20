@@ -14,28 +14,27 @@
   ERK2, and beta catenin (CTNNB1) in 40 cell lines, measured in
   duplicate dilution series using reverse-phase protein arrays.
 
-  The data set also contains a description of the design of the
-  reverse-phase protein array used in a set of experiments to measure
-  protein levels in 40 different cell lines. Cell lysates were spotted
-  on the array in duplicate in eight-step dilution series. The layout of
-  the array consisted of a grid of 4x4 subgrids. Each subgrid contained
-  the duplicate dilution series for a single sample. Each of the
-  identical top two rows of a subgrid contained the four most
-  concentrated dilution steps (in decreasing concentrations from left to
-  right), and the identical bottom two rows contained the four least
-  concentrated dilution steps.
+  See corresponding manpage of the raw data for a description of the
+  design of the \acronym{RPPA}.
 }
 \usage{
 data(rppaCell)
+}
+\details{
+  The corresponding raw datafiles are available in the
+  \file{extdata/rppaCellData} subdirectory of the 
+  \package{SuperCurveSampleData} package.
 }
 \format{
   The objects \code{akt}, \code{c.erk2}, and \code{ctnnb1} are
   objects of class \code{\link{RPPA}}. The object \code{design40}
   is an object of class \code{\link{RPPADesign}}.
 }
-\source{Bryan Hennessey and Gordon Mills}
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
+}
+\seealso{ 
+  \code{\link[SuperCurveSampleData]{rppaCell-extdata}}
 }
 \keyword{datasets}
 

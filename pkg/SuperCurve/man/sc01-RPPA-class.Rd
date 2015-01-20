@@ -149,17 +149,17 @@ is.RPPA(x)
   \code{\linkS4class{RPPAFit}}
 }
 \examples{
-extdatadir <- system.file("extdata", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 
 ## Converts file from single subgrid to its logical equivalent (4x12x11x11)
-txtdir <- file.path(extdatadir, "rppaSingleSubgridData")
+txtdir <- file.path(extdata.dir, "rppaSingleSubgridData")
 waldo <- RPPA("Waldo.txt",
               path=txtdir,
               software="microvigene",
               alt.layout="superslide")
 dim(waldo)
 
-txtdir <- file.path(extdatadir, "rppaTumorData")
+txtdir <- file.path(extdata.dir, "rppaTumorData")
 erk2 <- RPPA("ERK2.txt", path=txtdir)
 dim(erk2)
 summary(erk2)

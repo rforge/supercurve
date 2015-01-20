@@ -21,31 +21,27 @@
   in 16-bit grayscale (actb.gray); all other proteins were scanned
   in color.
 
-  This data set also contains a description of the design used for
-  the reverse-phase protein arrays from this study. Cell lysates
-  were spotted on the array in six-step dilution series. The layout
-  of the array consists of a grid of 6x6 subgrids. The first three
-  rows of a subgrid contain 3 replicates of a cell line. The last
-  three rows contain 3 replicates of another cell line. Each subgrid
-  is replicated on the array 3 times, so that there are a total of
-  9 replicates per cell line per state. The top part of the array
-  contains the fed cell lines and the bottom part of the array
-  contains the starved cell lines. There is one subgrid on the array
-  that contains only buffer material and another subgrid that did
-  not have anything printed (blank). There are a total of 18 spots
-  each of buffer and blank material.
+  See corresponding manpage of the raw data for a description of the
+  design of the \acronym{RPPA}.
 }
 \usage{
 data(rppaTriple)
+}
+\details{
+  The corresponding raw datafiles are available in the
+  \file{extdata/rppaTripleData} subdirectory of the 
+  \package{SuperCurveSampleData} package.
 }
 \format{
   The objects \code{actb}, \code{actb.gray}, \code{cas3}, \code{fak},
   and \code{odc1} are objects of class \code{\link{RPPA}}. The object
   \code{tripledesign} is an object of class \code{\link{RPPADesign}}.
 }
-\source{Victor Levin}
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
+}
+\seealso{ 
+  \code{\link[SuperCurveSampleData]{rppaTriple-extdata}}
 }
 \keyword{datasets}
 
