@@ -24,7 +24,7 @@ data(rppaSingleSubgrid)
 \details{
   The corresponding raw datafiles are available in the
   \file{extdata/rppaSingleSubgridData} subdirectory of the 
-  \package{SuperCurveSampleData} package.
+  \pkg{SuperCurveSampleData} package.
 }
 \format{
   The objects \code{foo}, \code{bar}, \code{plugh}, and \code{waldo}

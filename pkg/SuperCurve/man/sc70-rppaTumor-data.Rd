@@ -23,7 +23,7 @@ data(rppaTumor)
 \details{
   The corresponding raw datafiles are available in the
   \file{extdata/rppaTumorData} subdirectory of the
-  \package{SuperCurveSampleData} package.
+  \pkg{SuperCurveSampleData} package.
 }
 \format{
   The objects \code{erk2}, \code{gsk3}, and \code{jnk} are objects

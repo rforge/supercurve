@@ -30,7 +30,7 @@ data(rppaTriple)
 \details{
   The corresponding raw datafiles are available in the
   \file{extdata/rppaTripleData} subdirectory of the 
-  \package{SuperCurveSampleData} package.
+  \pkg{SuperCurveSampleData} package.
 }
 \format{
   The objects \code{actb}, \code{actb.gray}, \code{cas3}, \code{fak},

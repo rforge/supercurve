@@ -23,7 +23,7 @@ data(rppaCell)
 \details{
   The corresponding raw datafiles are available in the
   \file{extdata/rppaCellData} subdirectory of the 
-  \package{SuperCurveSampleData} package.
+  \pkg{SuperCurveSampleData} package.
 }
 \format{
   The objects \code{akt}, \code{c.erk2}, and \code{ctnnb1} are
