@@ -32,7 +32,7 @@ local({
     ## Superslide data (5 dilution series) with 4 antibodies
     ##
 
-    extdata.dir <- system.file("extdata", package="SuperCurve")
+    extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
     rawdata.dir <- file.path(extdata.dir, "rppaSingleSubgridData")
     proteinassayfile <- file.path(rawdata.dir, "proteinAssay.tsv")
     proteinassay.df <- read.delim(proteinassayfile)

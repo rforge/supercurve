@@ -31,7 +31,7 @@ local({
     ## Tumor data with 3 antibodies
     ##
 
-    extdata.dir <- system.file("extdata", package="SuperCurve")
+    extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
     rawdata.dir <- file.path(extdata.dir, "rppaTumorData")
     proteinassayfile <- file.path(rawdata.dir, "proteinAssay.tsv")
     proteinassay.df <- read.delim(proteinassayfile)
