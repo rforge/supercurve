@@ -16,7 +16,7 @@ library(SuperCurve)
 library(robustbase)
 library(boot)
 
-extdata.dir <- system.file("extdata", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 
 ######################################
 ## load the data from the 40 cell lines

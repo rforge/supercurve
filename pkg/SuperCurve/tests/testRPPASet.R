@@ -25,7 +25,7 @@ if (!dir.create(persessionprojdir)) {
     stop("cannot create per-session project directory")
 }
 
-extdata.dir <- system.file("extdata", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 path <- file.path(extdata.dir, "rppaTumorData")
 designfile <- file.path(path, "slidedesign.tsv")
 designparams <- RPPADesignParams(grouping="blockSample",

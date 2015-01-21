@@ -12,7 +12,7 @@ library(robustbase)
 library(boot)
 source("checkFuncs")
 
-extdata.dir <- system.file("extdata", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 
 ## Get a valid RPPA object to get started
 path <- file.path(extdata.dir, "rppaTumorData")

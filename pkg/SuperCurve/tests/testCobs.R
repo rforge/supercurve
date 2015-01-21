@@ -15,7 +15,7 @@ options(warn=1)
 library(SuperCurve)
 library(robustbase)
 
-extdata.dir <- system.file("extdata", package="SuperCurve")
+extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 
 ######################################
 ## load the tumor data
