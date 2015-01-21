@@ -6,6 +6,14 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.0.1
+
+
+BUG FIXES
+
+    o	Manpages were missing from package when originally submitted.
+
+
 		CHANGES IN R VERSION 1.0.0
 
 
