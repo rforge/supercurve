@@ -21,11 +21,11 @@ via a progressbar and provides means to get/set values for such a widget.
 BoundedRange(value, minimum=1, maximum=100)
 is.BoundedRange(x)
 \S4method{progressMaximum}{BoundedRange}(object)
-\S4method{progressMaximum}{BoundedRange}(object) <- value
+\S4method{progressMaximum}{BoundedRange,numeric}(object) <- value
 \S4method{progressMinimum}{BoundedRange}(object)
-\S4method{progressMinimum}{BoundedRange}(object) <- value
+\S4method{progressMinimum}{BoundedRange,numeric}(object) <- value
 \S4method{progressValue}{BoundedRange}(object)
-\S4method{progressValue}{BoundedRange}(object) <- value
+\S4method{progressValue}{BoundedRange,numeric}(object) <- value
 }
 \arguments{
   \item{minimum}{integer specifying desired minimum value of closed interval}

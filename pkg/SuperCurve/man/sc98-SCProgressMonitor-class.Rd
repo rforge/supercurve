@@ -21,9 +21,9 @@ SCProgressMonitor(stage="")
 is.SCProgressMonitor(x)
 getStages()
 \S4method{progressMarquee}{SCProgressMonitor}(object)
-\S4method{progressMarquee}{SCProgressMonitor}(object) <- value
+\S4method{progressMarquee}{SCProgressMonitor,character}(object) <- value
 \S4method{progressStage}{SCProgressMonitor}(object)
-\S4method{progressStage}{SCProgressMonitor}(object) <- value
+\S4method{progressStage}{SCProgressMonitor,character}(object) <- value
 }
 \arguments{
   \item{stage}{string specifying current stage of task}

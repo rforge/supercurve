@@ -28,17 +28,17 @@ via a progressbar and provides means to get/set values for such a widget.
 DefaultProgressMonitor(label, value, minimum=0, maximum=100)
 \S4method{elapsed}{DefaultProgressMonitor}(object)
 \S4method{progressDone}{DefaultProgressMonitor}(object)
-\S4method{progressDone}{DefaultProgressMonitor}(object) <- value
+\S4method{progressDone}{DefaultProgressMonitor,logical}(object) <- value
 \S4method{progressError}{DefaultProgressMonitor}(object)
-\S4method{progressError}{DefaultProgressMonitor}(object) <- value
+\S4method{progressError}{DefaultProgressMonitor,logical}(object) <- value
 \S4method{progressLabel}{DefaultProgressMonitor}(object)
-\S4method{progressLabel}{DefaultProgressMonitor}(object) <- value
+\S4method{progressLabel}{DefaultProgressMonitor,character}(object) <- value
 \S4method{progressMaximum}{DefaultProgressMonitor}(object)
-\S4method{progressMaximum}{DefaultProgressMonitor}(object) <- value
+\S4method{progressMaximum}{DefaultProgressMonitor,numeric}(object) <- value
 \S4method{progressMinimum}{DefaultProgressMonitor}(object)
-\S4method{progressMinimum}{DefaultProgressMonitor}(object) <- value
+\S4method{progressMinimum}{DefaultProgressMonitor,numeric}(object) <- value
 \S4method{progressValue}{DefaultProgressMonitor}(object)
-\S4method{progressValue}{DefaultProgressMonitor}(object) <- value
+\S4method{progressValue}{DefaultProgressMonitor,numeric}(object) <- value
 }
 \arguments{
   \item{label}{string specifying label for progressbar widget}
