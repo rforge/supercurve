@@ -201,7 +201,7 @@ DS5RPPAPreFitQC <- function(rppa,
         ## If distribution is symmetric, then
         ## mean = median and there is zero skewness.
         skew <- if (all(positives >= 0.0)) {
-                    abs(skewness(log(positives)))
+                    abs(timeDate::skewness(log(positives)))
                 } else {
                     NaN  # Set (as would have been done) w/o warning
                 }

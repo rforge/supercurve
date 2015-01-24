@@ -158,25 +158,29 @@ setMethod("coef", signature(object="FitClass"),
     ## Begin processing
 
     ## Ensure necessary packages available
-    if (method == "nlrob" && !require(robustbase)) {
-        stop(sprintf("%s package required for %s method",
-                     sQuote("robustbase"),
-                     sQuote(method)))
-    } else if (method == "nlrq" && !require(quantreg)) {
-        stop(sprintf("%s package required for %s method",
-                     sQuote("quantreg"),
-                     sQuote(method)))
+    if (method == "nlrob") {
+        if (!require(robustbase)) {
+            stop(sprintf("%s package required for %s method",
+                         sQuote("robustbase"),
+                         sQuote(method)))
+        }
+    } else if (method == "nlrq") {
+        if (!require(quantreg)) {
+            stop(sprintf("%s package required for %s method",
+                         sQuote("quantreg"),
+                         sQuote(method)))
+        }
     }
 
     ## Define regression method
     nlsmeth <- switch(EXPR=method,
-                      nls=nls,
-                      nlrob=nlrob,
+                      nls=stats::nls,
+                      nlrob=robustbase::nlrob,
                       nlrq=function(...) {
-                               nlrq(...,
-                                    control=nlrq.control(maxiter=10,
-                                                         eps=1e-02))
-                           },
+                          params <- quantreg::nlrq.control(maxiter=10,
+                                                           eps=1e-02)
+                          quantreg::nlrq(control=params, ...)
+                      },
                       stop(sprintf("unrecognized regression method %s",
                                    sQuote(method))))
 
@@ -419,7 +423,7 @@ setMethod("fitSlide", signature(object="CobsFitClass"),
     xvec[xvec < (aknot1 + adj)] <- aknot1 + adj
     xvec[xvec > (aknotn - adj)] <- aknotn - adj
 
-    a <- spline.des(aknotnew, xvec, ord=3)
+    a <- splines::spline.des(aknotnew, xvec, ord=3)
     fvalvec <- (a$design) %*% acoef
 
     return(as.vector(fvalvec))

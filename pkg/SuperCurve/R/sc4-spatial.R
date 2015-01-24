@@ -309,9 +309,12 @@ spatialCorrection <- function(rppa,
 
     ## Fits a generalized additive model to estimate a surface
     ## from positive controls
+    fmla <- switch(EXPR=measure,
+                   Mean.Net   = Mean.Net   ~ s(Row, Col, bs="ts", k=adjK),
+                   Mean.Total = Mean.Total ~ s(Row, Col, bs="ts", k=adjK))
     for (dilution in dilutions) {
-        #pcsub <- positives[positives$Dilution == dilution, ]
-        pcsub <- subset(positives, Dilution == dilution, drop=FALSE)
+        #pcsub <- subset(positives, Dilution == dilution, drop=FALSE)
+        pcsub <- positives[positives$Dilution == dilution, ]
 
         ## Make choice of k robust in case that the number of
         ## available spots is less than k (YH).
@@ -321,13 +324,11 @@ spatialCorrection <- function(rppa,
             adjK <- round(spotCount / 3)  ## arbitrary magic number
         }
 
-        b1 <- gam(switch(EXPR=measure,
-                         Mean.Net   = Mean.Net   ~ s(Row, Col, bs="ts", k=adjK),
-                         Mean.Total = Mean.Total ~ s(Row, Col, bs="ts", k=adjK)),
-                  data=pcsub,
-                  gamma=gamma)
+        b1 <- mgcv::gam(fmla,
+                        data=pcsub,
+                        gamma=gamma)
         surface <- paste("surface", dilution, sep="")
-        assign(surface, predict.gam(b1, newdata=pd))
+        assign(surface, mgcv::predict.gam(b1, newdata=pd))
         remove(b1)
     }
 
