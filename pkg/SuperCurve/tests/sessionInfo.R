@@ -21,10 +21,10 @@ suggestedPackages <- function(pkgname) {
 
 
 ## Load packages for all possible processing options
-invisible(sapply(suggestedPackages(),
-                 function(pkgname) {
+invisible(sapply(suggestedPackages(pkgname),
+                 function(suggested) {
                      suppressPackageStartupMessages(
-                         require(pkgname, character.only=TRUE))
+                         require(suggested, character.only=TRUE))
                  }))
 
 show(sessionInfo())
