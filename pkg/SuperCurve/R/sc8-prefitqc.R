@@ -255,14 +255,6 @@ setMethod("qcprob", signature(object="RPPAPreFitQC"),
 
 
 ##-----------------------------------------------------------------------------
-setMethod("qcprob", signature(object="NULL"),
-          function(object,
-                   ...) {
-    as.double(NA)
-})
-
-
-##-----------------------------------------------------------------------------
 setMethod("qcprob", signature(object="DS5RPPAPreFitQC"),
           function(object,
                    ...) {
