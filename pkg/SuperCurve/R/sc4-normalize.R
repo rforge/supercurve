@@ -360,6 +360,18 @@ rppaNormalize <- function(concs,
         stop(sprintf("argument %s must be registered normalization method",
                      sQuote("method")))
     }
+    if (sweep.cols && !calc.medians) {
+        stop(sprintf("argument %s must be TRUE if argument %s is TRUE",
+                     sQuote("calc.medians"),
+                     sQuote("sweep.cols")))
+    }
+    if (method == "vs" && !sweep.cols) {
+        ## normalize.vs() method precondition
+        stop(sprintf("argument %s must be TRUE if argument %s is %s",
+                     sQuote("sweep.cols"),
+                     sQuote("method"),
+                     dQuote("vs")))
+    }
 
     ## Begin processsing
 
