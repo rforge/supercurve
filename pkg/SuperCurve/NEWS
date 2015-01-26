@@ -6,6 +6,25 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.5.8
+
+
+BUG FIXES
+
+    o	Additional argument checks for rppaNormalize() method.
+
+    o	Corrected sessionInfo test which did not handle package
+	suggestions spanning multiple lines.
+
+    o	Reverted import of 'cobs' package back as package dependency.
+
+
+NEW FEATURES
+
+    o	Added new normalize() tests. Updated all test result
+	comparison files, integrating new data package location.
+
+
 		CHANGES IN R VERSION 1.5.7
 
 
