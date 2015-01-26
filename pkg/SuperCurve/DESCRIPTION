@@ -4,7 +4,7 @@ Phase: Beta
 Date: 2015-01-25
 Title: SuperCurve Package
 Author: Kevin R. Coombes, Shannon Neeley, Corwin Joy, Jianhua Hu, Keith Baggerly, and P. Roebuck.
-Maintainer: P. Roebuck <proebuck@mdanderson.org>
+Maintainer: "P. Roebuck" <proebuck@mdanderson.org>
 Description: A package to analyze reverse phase protein lysate arrays.
 Depends: R (>= 2.15), methods, cobs
 Imports: utils, grDevices, graphics, stats, MASS
