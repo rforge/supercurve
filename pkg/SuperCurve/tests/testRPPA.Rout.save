@@ -17,15 +17,16 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > ###
-> ### $Id: testRPPA.R 908 2014-07-14 05:05:01Z proebuck $
+> ### $Id: testRPPA.R 945 2015-01-21 00:06:51Z proebuck $
 > ###
 > 
 > 
 > options(warn=1)
 > library(SuperCurve)
+Loading required package: cobs
 > source("checkFuncs")
 > 
-> extdata.dir <- system.file("extdata", package="SuperCurve")
+> extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 > path <- file.path(extdata.dir, "rppaCellData")
 > 
 > ###########################
@@ -134,7 +135,7 @@ Error in readQuantification(file, software, alt.layout) :
 > checkException(RPPA("cellLineInfo.tsv", path=path),
 +                msg="not MicroVigene datafile should fail")
 Error in readMethod(conn) : 
-  file "/private/tmp/supercurve/SuperCurve.Rcheck/SuperCurve/extdata/rppaCellData/cellLineInfo.tsv" is not a MicroVigene datafile
+  file "/Library/Frameworks/R.framework/Versions/2.15/Resources/library/SuperCurveSampleData/extdata/rppaCellData/cellLineInfo.tsv" is not a MicroVigene datafile
 [1] TRUE
 > 
 > ###########################
@@ -177,7 +178,7 @@ Error in readQuantification(file, software, alt.layout) :
 Warning in .getReadMethod(software) :
   no user-provided method named 'read.bogus' found
 Error in readQuantification(file, software, alt.layout) : 
-  cannot import data from file "/private/tmp/supercurve/SuperCurve.Rcheck/SuperCurve/extdata/rppaCellData/Akt.txt"
+  cannot import data from file "/Library/Frameworks/R.framework/Versions/2.15/Resources/library/SuperCurveSampleData/extdata/rppaCellData/Akt.txt"
 [1] TRUE
 > 
 > local({
@@ -193,7 +194,7 @@ Error in readQuantification(file, software, alt.layout) :
 Warning in .getReadMethod(software) :
   no user-provided method named 'read.local' found
 Error in readQuantification(file, software, alt.layout) : 
-  cannot import data from file "/private/tmp/supercurve/SuperCurve.Rcheck/SuperCurve/extdata/rppaCellData/Akt.txt"
+  cannot import data from file "/Library/Frameworks/R.framework/Versions/2.15/Resources/library/SuperCurveSampleData/extdata/rppaCellData/Akt.txt"
 [1] TRUE
 > 
 > read.noCols <- function(file) {
@@ -300,4 +301,4 @@ pdf
 > 
 > proc.time()
    user  system elapsed 
-  0.660   0.046   0.749 
+  0.707   0.052   0.788 

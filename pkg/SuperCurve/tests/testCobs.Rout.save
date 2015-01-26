@@ -17,7 +17,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > ###
-> ### $Id: testCobs.R 834 2014-06-27 16:22:16Z proebuck $
+> ### $Id: testCobs.R 945 2015-01-21 00:06:51Z proebuck $
 > ###
 > 
 > 
@@ -31,9 +31,10 @@ Type 'q()' to quit R.
 + }
 > options(warn=1)
 > library(SuperCurve)
+Loading required package: cobs
 > library(robustbase)
 > 
-> extdata.dir <- system.file("extdata", package="SuperCurve")
+> extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 > 
 > ######################################
 > ## load the tumor data
@@ -77,7 +78,7 @@ Type 'q()' to quit R.
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.5.4 
+Test of SuperCurve version 1.5.8 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -105,7 +106,7 @@ model = cobs; method = nlrq; measure = Mean.Net
 +     }
 +     print(paste(itemName, measure, round(meansq), round(tmeansq)))
 + }
-Loading required package: cobs
+Loading required package: quantreg
 Loading required package: SparseM
 
 Attaching package: 'SparseM'
@@ -114,8 +115,6 @@ The following object(s) are masked from 'package:base':
 
     backsolve
 
-Loading required package: quantreg
-Loading required package: splines
 [1] "ERK2 Mean.Net 295246 121653"
 [1] "GSK3 Mean.Net 297740 123763"
 [1] "JNK Mean.Net 333207 101898"
@@ -129,7 +128,7 @@ Loading required package: splines
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.5.4 
+Test of SuperCurve version 1.5.8 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -230,7 +229,7 @@ Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.5.4 
+Test of SuperCurve version 1.5.8 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -313,4 +312,4 @@ sample 96.4.12
 > 
 > proc.time()
    user  system elapsed 
-104.251   0.282 104.530 
+109.028   0.357 109.477 

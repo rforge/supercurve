@@ -17,12 +17,13 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > ###
-> ### $Id: testSpatial.R 859 2014-07-06 19:25:22Z proebuck $
+> ### $Id: testRPPASpatialParams.R 956 2015-01-26 01:40:28Z proebuck $
 > ###
 > 
 > 
 > options(warn=1)
 > library(SuperCurve)
+Loading required package: cobs
 > source("checkFuncs")
 > 
 > ###########################
@@ -116,4 +117,4 @@ Error : is.logical(plotSurface) && length(plotSurface) == 1 is not TRUE
 > 
 > proc.time()
    user  system elapsed 
-  0.523   0.035   0.550 
+  0.565   0.040   0.613 

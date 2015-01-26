@@ -17,7 +17,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > ###
-> ### $Id: testLoess.R 834 2014-06-27 16:22:16Z proebuck $
+> ### $Id: testLoess.R 945 2015-01-21 00:06:51Z proebuck $
 > ###
 > 
 > 
@@ -31,9 +31,10 @@ Type 'q()' to quit R.
 + }
 > options(warn=1)
 > library(SuperCurve)
+Loading required package: cobs
 > library(robustbase)
 > 
-> extdata.dir <- system.file("extdata", package="SuperCurve")
+> extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 > 
 > ######################################
 > ## load the tumor data
@@ -79,7 +80,7 @@ Type 'q()' to quit R.
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.5.4 
+Test of SuperCurve version 1.5.8 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -127,7 +128,7 @@ The following object(s) are masked from 'package:base':
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.5.4 
+Test of SuperCurve version 1.5.8 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -182,7 +183,7 @@ Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y
 
 > cat(paste("\nTest of SuperCurve version", ver), "\n")
 
-Test of SuperCurve version 1.5.4 
+Test of SuperCurve version 1.5.8 
 
 > cat(paste("model = ", model, "; method = ", method, 
 +     "; measure = ", measure, sep = ""), "\n")
@@ -387,4 +388,4 @@ U87                 6.0426 1.6166 0.2675
 > 
 > proc.time()
    user  system elapsed 
-248.613   0.129 248.740 
+264.258   0.688 265.939 

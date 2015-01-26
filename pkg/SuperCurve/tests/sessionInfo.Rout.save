@@ -17,7 +17,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > ###
-> ### $Id: sessionInfo.R 909 2014-07-14 05:21:21Z proebuck $
+> ### $Id: sessionInfo.R 955 2015-01-24 22:10:34Z proebuck $
 > ###
 > 
 > 
@@ -25,12 +25,24 @@ Type 'q()' to quit R.
 > pkgname <- "SuperCurve"
 > suppressPackageStartupMessages(library(pkgname, character.only=TRUE))
 > 
+> 
+> ##-----------------------------------------------------------------------------
+> ## Returns character of package names corresponding to "Suggests:" field
+> suggestedPackages <- function(pkgname) {
++     ## Mung suggested packages metadata to remove tab and newline characters
++     suggests <- packageDescription(pkgname)$Suggests
++     suggests <- gsub('\n', ' ', suggests)
++     suggests <- gsub('\t', '',  suggests)
++ 
++     unlist(strsplit(suggests, ', '))
++ }
+> 
+> 
 > ## Load packages for all possible processing options
-> suggested <- unlist(strsplit(packageDescription(pkgname)$Suggests, ', '))
-> invisible(sapply(suggested,
-+                  function(pkgname) {
+> invisible(sapply(suggestedPackages(pkgname),
++                  function(suggested) {
 +                      suppressPackageStartupMessages(
-+                          require(pkgname, character.only=TRUE))
++                          require(suggested, character.only=TRUE))
 +                  }))
 > 
 > show(sessionInfo())
@@ -45,14 +57,17 @@ attached base packages:
 [8] base     
 
 other attached packages:
-[1] timeDate_3011.99  robustbase_0.91-1 quantreg_5.05     SparseM_1.05     
-[5] mgcv_1.8-3        nlme_3.1-108      boot_1.3-7        SuperCurve_1.5.4 
+ [1] SuperCurveSampleData_1.0.1 timeDate_3011.99          
+ [3] robustbase_0.92-2          quantreg_5.05             
+ [5] SparseM_1.6                mgcv_1.8-4                
+ [7] nlme_3.1-108               boot_1.3-7                
+ [9] SuperCurve_1.5.8           cobs_1.3-0                
 
 loaded via a namespace (and not attached):
-[1] DEoptimR_1.0-1  MASS_7.3-23     Matrix_1.1-2-2  cobs_1.2-2     
-[5] grid_2.15.3     lattice_0.20-29
+[1] DEoptimR_1.0-2  MASS_7.3-23     Matrix_1.1-4    grid_2.15.3    
+[5] lattice_0.20-29
 > 
 > 
 > proc.time()
    user  system elapsed 
-  2.899   0.084   2.976 
+  3.068   0.096   3.206 

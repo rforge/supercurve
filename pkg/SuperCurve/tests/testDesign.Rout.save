@@ -17,15 +17,16 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > ###
-> ### $Id: testDesign.R 834 2014-06-27 16:22:16Z proebuck $
+> ### $Id: testDesign.R 945 2015-01-21 00:06:51Z proebuck $
 > ###
 > 
 > 
 > options(warn=1)
 > library(SuperCurve)
+Loading required package: cobs
 > source("checkFuncs")
 > 
-> extdata.dir <- system.file("extdata", package="SuperCurve")
+> extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
 > 
 > ## Get a valid RPPA object to get started
 > path <- file.path(extdata.dir, "rppaTumorData")
@@ -1096,4 +1097,4 @@ Error in .local(x, y, ...) : invalid measure 'bogus'
 > 
 > proc.time()
    user  system elapsed 
-  1.332   0.056   1.383 
+  1.391   0.063   1.459 
