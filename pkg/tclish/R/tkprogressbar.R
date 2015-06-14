@@ -17,7 +17,8 @@ require(tcltk) || stop("tcltk support is missing")
     stopifnot(tclvalue(tkwinfo.class(progressbar)) == "Progressbar")
 
     ## Begin processing
-    evalq(userdata$Canvas, envir=progressbar$env)
+    #evalq(userdata$Canvas, envir=progressbar$env)
+    progressbar$env$userdata$Canvas
 }
 
 

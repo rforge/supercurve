@@ -375,7 +375,8 @@ tkwinfo.y <- function(...) {
                           special,
                           ...) {
         ID <- paste(parent$ID, special, sep=".")
-        evalq(num.subwin <- num.subwin + 1, parent$env)
+        #evalq(num.subwin <- num.subwin + 1, parent$env)
+        parent$env$num.subwin <- parent$env$num.subwin + 1
         win <- .Tk.newwin(ID)
         assign(ID, win, envir = parent$env)
         assign("parent", parent, envir = win$env)

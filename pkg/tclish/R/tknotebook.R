@@ -25,7 +25,8 @@ require(tcltk) || stop("tcltk support is missing")
     ## Determine greatest width/height using all pages
     maxw <- as.integer(0)
     maxh <- as.integer(0)
-    pages <- evalq(userdata$Pages, envir=notebook$env)
+    #pages <- evalq(userdata$Pages, envir=notebook$env)
+    pages <- notebook$env$userdata$Pages
     for (page in pages) {
         w <- as.integer(tkwinfo.reqwidth(page))
         if (w > maxw) {

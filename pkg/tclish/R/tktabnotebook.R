@@ -17,7 +17,8 @@ require(tcltk) || stop("tcltk support is missing")
     stopifnot(tclvalue(tkwinfo.class(tabnotebook)) == "Tabnotebook")
 
     ## Begin processing
-    evalq(userdata$Canvas, envir=tabnotebook$env)
+    #evalq(userdata$Canvas, envir=tabnotebook$env)
+    tabnotebook$env$userdata$Canvas
 }
 
 
@@ -28,7 +29,8 @@ require(tcltk) || stop("tcltk support is missing")
     stopifnot(tclvalue(tkwinfo.class(tabnotebook)) == "Tabnotebook")
 
     ## Begin processing
-    evalq(userdata$Notebook, envir=tabnotebook$env)
+    #evalq(userdata$Notebook, envir=tabnotebook$env)
+    tabnotebook$env$userdata$Notebook
 }
 
 

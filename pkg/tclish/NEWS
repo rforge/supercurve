@@ -7,6 +7,17 @@
 	**************************************************
 
 
+                CHANGES IN R VERSION 1.0.1
+
+
+BUG FIXES
+
+    o   Fix for tcltk global namespace leakage patch. Thanks for
+	breaking code that had worked for over a decade to correct
+	a corner-case nonissue (allowing '<-' to be redefined).
+        <https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=15970>
+
+
                 CHANGES IN R VERSION 1.0.0
 
 
