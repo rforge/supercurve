@@ -6,6 +6,16 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.5.9
+
+
+BUG FIXES
+
+    o	Fixes for getRegisteredNormalizationMethodKeys() method
+	when used to provide function argument default values.
+	Only an issue when indirectly called by SuperCurveGUI.
+
+
 		CHANGES IN R VERSION 1.5.8
 
 
