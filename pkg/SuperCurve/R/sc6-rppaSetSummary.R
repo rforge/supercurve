@@ -113,9 +113,8 @@ RPPASetSummary <- function(rppaset,
                }
     normparams <- rppaset@normparams
     normalizeArgs <- c(list(), normparams@arglist)
-    normalizeArgs$object <- conc.raw[, norm.tf]
+    normalizeArgs$object <- conc.raw[, norm.tf, drop=FALSE]
     normalizeArgs$method <- normparams@method
-
     conc.norm <- do.call(normalize, normalizeArgs)
 
     ## Magically delicious hack to allow reorder on write
