@@ -56,7 +56,7 @@ is.RPPANormalizationParams <- function(x) {
 
 ##-----------------------------------------------------------------------------
 ## Generates an RPPANormalizationParams object.
-RPPANormalizationParams <- function(method=getRegisteredNormalizationMethodKeys(),
+RPPANormalizationParams <- function(method=SuperCurve::getRegisteredNormalizationMethodKeys(),
                                     arglist=NULL) {
     ## Check arguments
     method <- match.arg(method)
@@ -323,7 +323,7 @@ registerNormalizationMethod <- function(key,
 setClassUnion("MatrixLike", c("matrix", "data.frame"))
 setMethod("normalize", signature(object="MatrixLike"),
           function(object,
-                   method=getRegisteredNormalizationMethodKeys(),
+                   method=SuperCurve::getRegisteredNormalizationMethodKeys(),
                    calc.medians=TRUE,
                    sweep.cols=calc.medians,
                    ...) {
