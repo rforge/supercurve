@@ -1,11 +1,11 @@
 Package: SuperCurve
-Version: 1.5.9
+Version: 1.5.10
 Phase: Beta
-Date: 2015-06-14
-Title: SuperCurve Package
-Author: Kevin R. Coombes, Shannon Neeley, Corwin Joy, Jianhua Hu, Keith Baggerly, and P. Roebuck.
+Date: 2015-06-29
+Title: RPPA Analysis Package
+Author: Kevin R. Coombes, Shannon Neeley, Corwin Joy, Jianhua Hu, Keith Baggerly, and P. Roebuck
 Maintainer: "P. Roebuck" <proebuck@mdanderson.org>
-Description: A package to analyze reverse phase protein lysate arrays.
+Description: Analyze reverse phase protein lysate arrays.
 Depends: R (>= 2.15), methods, cobs
 Imports: utils, grDevices, graphics, stats, MASS
 Suggests: boot, mgcv, quantreg, robustbase, splines, timeDate,

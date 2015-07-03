@@ -6,6 +6,15 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.5.10
+
+
+BUG FIXES
+
+    o	Changes to DESCRIPTION file to eliminate R CMD check
+	warnings due to overly-pedantic CRAN package policies.
+
+
 		CHANGES IN R VERSION 1.5.9
 
 
