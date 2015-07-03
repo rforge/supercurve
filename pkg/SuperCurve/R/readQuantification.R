@@ -77,11 +77,9 @@ readQuantification <- function(conn,
     }
 
     if (!is.character(software)) {
-      #:KRC: should try(as.character...) instead
         stop(sprintf("argument %s must be character",
                      sQuote("software")))
     } else if (!(length(software) == 1)) {
-      #:KRC: warning, not error unless length=0
         stop(sprintf("argument %s must be of length 1",
                      sQuote("software")))
     } else if (!nzchar(software)) {
@@ -163,7 +161,7 @@ readQuantification <- function(conn,
     storage.mode(quant.df$Sub.Row)  <- "integer"
     storage.mode(quant.df$Sub.Col)  <- "integer"
 
-    return(quant.df)
+    quant.df
 }
 
 
@@ -279,7 +277,7 @@ read.microvigene <- function(conn) {
     attr(mvdata.df, "version")   <- mvvers
     attr(mvdata.df, "timestamp") <- getTimestamp(pathname)
 
-    return(mvdata.df)
+    mvdata.df
 }
 
 
@@ -359,7 +357,7 @@ read.arraypro <- function(conn) {
     ## Annotate data frame with metadata
     attr(apdata.df, "software")  <- "arraypro"
 
-    return(apdata.df)
+    apdata.df
 }
 
 
@@ -425,6 +423,6 @@ layout.as.superslide <- function(data.df,
     data.df <- data.df[new.ind, ]
     attr(data.df, "layout") <- "superslide"
 
-    return(data.df)
+    data.df
 }
 
