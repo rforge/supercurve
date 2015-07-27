@@ -269,7 +269,7 @@ SuperCurveSettings <- function(txtdir,
 ##-----------------------------------------------------------------------------
 setMethod("write.summary", signature(object="SuperCurveSettings"),
           function(object,
-                   path=as(settings@outdir, "character"),
+                   path=as(object@outdir, "character"),
                    ...) {
     ## Check arguments
     if (!is.character(path)) {

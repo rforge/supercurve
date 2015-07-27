@@ -29,7 +29,7 @@ SuperCurveSettings(txtdir,
 fitCurveAndSummarizeFromSettings(settings, monitor=NULL)
 is.SuperCurveSettings(x)
 \S4method{write.summary}{SuperCurveSettings}(object,
-              path=as(settings@outdir, "character"),
+              path=as(object@outdir, "character"),
               \dots)
 \S4method{paramString}{SuperCurveSettings}(object,
             designparams.slots,
