@@ -9,7 +9,7 @@
 \title{Class "RPPANormalizationParams"}
 \description{
   The RPPANormalizationParams class is used to bundle the parameter set together
-  that control how to perform spatial adjustment into a reuseable object.
+  that control how to perform spatial adjustment into a reusable object.
 }
 \usage{
 RPPANormalizationParams(method,
@@ -24,7 +24,7 @@ is.RPPANormalizationParams(x)
   \item{object}{object of class \code{RPPANormalizationParams}}
   \item{x}{object of class \code{RPPANormalizationParams}}
   \item{slots}{strings specifying \code{RPPANormalizationParams} slotnames
-    to display (for debuggging)}
+    to display (for debugging)}
   \item{\dots}{extra arguments for generic routines}
 }
 \details{

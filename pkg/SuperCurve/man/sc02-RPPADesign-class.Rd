@@ -115,7 +115,7 @@ seriesNames(design)
     in \code{paramString} method)}
   \item{design}{object of class \code{RPPADesign}}
   \item{slots}{strings specifying \code{RPPADesignParams} slotnames to display
-    (for debuggging)}
+    (for debugging)}
   \item{main}{overall title for plot}
   \item{measure}{character string specifying measure to plot}
   \item{\dots}{extra arguments for generic or plotting routines}

@@ -110,7 +110,7 @@ is.RPPAFitParams(x)
   \item{object}{object of class \code{RPPAFitParams}}
   \item{x}{object of class \code{RPPAFit} (or \code{RPPAFitParams})}
   \item{slots}{strings specifying \code{RPPAFitParams} slotnames to display
-    (for debuggging)}
+    (for debugging)}
   \item{\dots}{extra arguments for generic routines.}
 }
 \details{
@@ -134,7 +134,7 @@ is.RPPAFitParams(x)
   improved fitted model \eqn{f} for the overall slide response curve. These
   individual series are matched to the overall slide response curve using the
   algorithm specified in \code{method}. The default method is \code{nls}, a
-  least squares matchup, but we also offer robust alternatives which can do
+  least squares match-up, but we also offer robust alternatives which can do
   better.
 
   Finally, we re-estimate \eqn{f} using the improved estimates for

@@ -9,7 +9,7 @@
 \title{Class "RPPASpatialParams"}
 \description{
   The RPPASpatialParams class is used to bundle the parameter set together
-  that control how to perform spatial adjustment into a reuseable object.
+  that control how to perform spatial adjustment into a reusable object.
 }
 \usage{
 RPPASpatialParams(cutoff=0.8,
@@ -31,7 +31,7 @@ is.RPPASpatialParams(x)
   \item{object}{object of class \code{RPPASpatialParams}}
   \item{x}{object of class \code{RPPASpatialParams}}
   \item{slots}{strings specifying \code{RPPASpatialParams} slotnames to display
-    (for debuggging)}
+    (for debugging)}
   \item{\dots}{extra arguments for generic routines}
 }
 \details{

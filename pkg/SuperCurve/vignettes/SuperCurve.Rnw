@@ -70,7 +70,7 @@ substrate is washed away. After drying, the array is
 then imaged, typically with a flatbed scanner, producing
 a TIF image file. (Ideally, the TIF file should be 16-bit
 grayscale. We have encountered cases where the files were
-exported as 24-bit truecolor, and then converted to 
+exported as true color (24-bit), and then converted to 
 grayscale afterwards. Depending on the software used,
 this latter step can introduce substantial distortions.)
 The printed spots visible in the image file 
