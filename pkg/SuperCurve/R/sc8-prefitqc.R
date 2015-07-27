@@ -17,7 +17,8 @@ setClass("DS5RPPAPreFitQC",
                         slopes="numeric",
                         skews="numeric",
                         percentgood="numeric",
-                        adjusted="logical"),
+                        adjusted="logical",
+                        antibody="character"),
          prototype(adjusted=FALSE))
 
 
@@ -32,7 +33,7 @@ is.RPPAPreFitQC <- function(x) {
 ## Generates subclass instance of an RPPAPreFitQC object (factory-style)
 RPPAPreFitQC <- function(rppa,
                          design,
-                         useAdjusted=TRUE) {
+                         useAdjusted=FALSE) {
     ## Check arguments
     if (!is.RPPA(rppa)) {
         stop(sprintf("argument %s must be object of class %s",
@@ -97,7 +98,7 @@ RPPAPreFitQC <- function(rppa,
 DS5RPPAPreFitQC <- function(rppa,
                             design,
                             measures,
-                            useAdjusted=TRUE) {
+                            useAdjusted=FALSE) {
     ## Check arguments
     stopifnot(is.RPPA(rppa))
     stopifnot(is.RPPADesign(design))
@@ -147,6 +148,10 @@ DS5RPPAPreFitQC <- function(rppa,
                      sQuote("timeDate"),
                      sQuote("DS5RPPAPreFitQC")))
     }
+
+    ## :TODO: Noticed ArrayPro slides sometimes have Dilution column.
+    ## If so, rename it pre-merge and compare that it matches design.
+    ## Assuming it does, remove duplicate; otherwise, stop processing of slide!
 
     mydata <- .mergeDataWithLayout(rppa, design)
 
@@ -234,6 +239,7 @@ DS5RPPAPreFitQC <- function(rppa,
 
     ## Create new class
     new("DS5RPPAPreFitQC",
+        antibody=rppa@antibody,
         adjusted=useAdjusted,
         slopediff=slopediff,
         cvs=cvs,
@@ -302,7 +308,9 @@ setMethod("summary", signature(object="RPPAPreFitQC"),
 setMethod("summary", signature(object="DS5RPPAPreFitQC"),
           function(object,
                    ...) {
-    cat(sprintf("An %s object", class(object)), "\n")
+    cat(sprintf("A %s object representing QC measures for antibody %s",
+                class(object),
+                object@antibody), "\n")
     cat("Measures spatially adjusted:", object@adjusted, "\n")
     cat("Difference from perfect slope:", object@slopediff, "\n")
     cat("Coefficients of variances:", "\n")

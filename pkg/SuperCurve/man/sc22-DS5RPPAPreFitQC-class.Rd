@@ -32,6 +32,7 @@
 }
 \section{Slots}{
   \describe{
+    \item{\code{antibody}:}{character string specifying name of antibody}
     \item{\code{slopediff}:}{numeric scalar specifying the difference from
       perfect slope}
     \item{\code{cvs}:}{numeric vector containing the coefficient of variance

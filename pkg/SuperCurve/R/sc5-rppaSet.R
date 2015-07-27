@@ -644,8 +644,8 @@ RPPASet <- function(path,
 
     ## Tracking success/failure of each step
     input.tf    <- logical(length(slideFilenames))
-    spatial.tf  <- logical(length(slideFilenames))
     prefitqc.tf <- logical(length(slideFilenames))
+    spatial.tf  <- logical(length(slideFilenames))
     fits.tf     <- logical(length(slideFilenames))
 
     ## Load slides to process
@@ -703,6 +703,57 @@ RPPASet <- function(path,
     ## This will trigger if no RPPAs exist.
     if (!is.RPPADesign(design)) {
         stop("no slides can be processed")
+    }
+
+    ## Perform pre-fit QC, if enabled
+    prefitqcs <- array(list(), length(slideFilenames), list(antibodies))
+    if (doprefitqc) {
+        progressStage(monitor) <- "Pre-Fit QC"
+        progressMarquee(monitor) <- "Performing quality checks on slides"
+        progressValue(monitor) <- 0
+
+        for (i in seq_along(slideFilenames)) {
+            antibody <- antibodies[i]
+
+            progressLabel(monitor) <- antibody
+            message(paste("quality checking slide",
+                          antibody, "-", "please wait."))
+            flush.console()
+
+            rppa <- rppas[[i]]
+            if (!is.null(rppa)) {
+                prefitqc <- tryCatch({
+                                RPPAPreFitQC(rppa, design)
+                            },
+                            error=function(e) {
+                                traceback()
+                                message(conditionMessage(e))
+                                NULL
+                            })
+                ## Update only on success
+                if (is.RPPAPreFitQC(prefitqc)) {
+                    prefitqcs[[i]] <- prefitqc
+                    prefitqc.tf[i] <- TRUE
+                }
+            } else {
+                warning(paste("no slide to quality check for", antibody))
+            }
+            progressValue(monitor) <- i
+        }
+
+        ## Plot 'goodness of slide' values
+        dev.new(title="Predicted Slide Quality Plot")
+        tryCatch({
+                     qcprobs <- sapply(prefitqcs, qcprob)
+                     qcprobs[is.na(qcprobs)] <- 0
+                     .plotProbabilityOfGoodSlide(qcprobs)
+                 },
+                 error=function(e) {
+                     message("cannot plot slide quality probabilities")
+                     warning(conditionMessage(e), immediate.=TRUE)
+                 })
+    } else {
+        prefitqc.tf <- rep(NA, length(prefitqc.tf))
     }
 
     ##-------------------------------------------------------------------------
@@ -766,59 +817,6 @@ RPPASet <- function(path,
         }
     } else {
         spatial.tf <- rep(NA, length(spatial.tf))
-    }
-
-    ## Perform pre-fit QC, if enabled
-    prefitqcs <- array(list(), length(slideFilenames), list(antibodies))
-    if (doprefitqc) {
-        progressStage(monitor) <- "Pre-Fit QC"
-        progressMarquee(monitor) <- "Performing quality checks on slides"
-        progressValue(monitor) <- 0
-
-        for (i in seq_along(slideFilenames)) {
-            antibody <- antibodies[i]
-
-            progressLabel(monitor) <- antibody
-            message(paste("quality checking slide",
-                          antibody, "-", "please wait."))
-            flush.console()
-
-            rppa <- rppas[[i]]
-            if (!is.null(rppa)) {
-                prefitqc <- tryCatch({
-                                RPPAPreFitQC(rppa,
-                                             design,
-                                             doSpatialAdj)
-                            },
-                            error=function(e) {
-                                traceback()
-                                message(conditionMessage(e))
-                                NULL
-                            })
-                ## Update only on success
-                if (is.RPPAPreFitQC(prefitqc)) {
-                    prefitqcs[[i]] <- prefitqc
-                    prefitqc.tf[i] <- TRUE
-                }
-            } else {
-                warning(paste("no slide to quality check for", antibody))
-            }
-            progressValue(monitor) <- i
-        }
-
-        ## Plot 'goodness of slide' values
-        dev.new(title="Predicted Slide Quality Plot")
-        tryCatch({
-                     qcprobs <- sapply(prefitqcs, qcprob)
-                     qcprobs[is.na(qcprobs)] <- 0
-                     .plotProbabilityOfGoodSlide(qcprobs)
-                 },
-                 error=function(e) {
-                     message("cannot plot slide quality probabilities")
-                     warning(conditionMessage(e), immediate.=TRUE)
-                 })
-    } else {
-        prefitqc.tf <- rep(NA, length(prefitqc.tf))
     }
 
     ##-------------------------------------------------------------------------

@@ -13,7 +13,7 @@
   quality control rating of a reverse-phase protein array slide.
 }
 \usage{
-RPPAPreFitQC(rppa, design, useAdjusted=TRUE)
+RPPAPreFitQC(rppa, design, useAdjusted=FALSE)
 is.RPPAPreFitQC(x)
 \S4method{qcprob}{RPPAPreFitQC}(object, \dots)
 \S4method{summary}{RPPAPreFitQC}(object, \dots)
@@ -68,7 +68,6 @@ rppa <- RPPA("Foo.txt",
              alt.layout="superslide")
 designfile <- file.path(txtdir, "slidedesign.tsv")
 design <- RPPADesign(rppa, designfile=designfile)
-rppa <- spatialAdjustment(rppa, design)
 fitqc <- RPPAPreFitQC(rppa, design)
 summary(fitqc)
 qcprob(fitqc)

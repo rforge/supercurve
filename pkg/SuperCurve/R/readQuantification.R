@@ -291,8 +291,18 @@ read.arraypro <- function(conn) {
     ## Begin processing
 
     ## Read data from file
-    apdata.df <- read.delim(conn,
-                            quote="")
+    apdata.df <- tryCatch(read.delim(conn,
+                                     quote=""),
+                          error=function(e) {
+                              badformat <- "more columns than column names"
+                              if (conditionMessage(e) == badformat) {
+                                  stop(sprintf('may not be ArrayPro data: %s',
+                                               badformat),
+                                       call.=FALSE)
+                              } else {
+                                  stop(e)
+                              }
+                          })
 
     ## Eliminate unneeded columns
     if ("X" %in% colnames(apdata.df)) {

@@ -283,8 +283,8 @@ dir.writable <- function(path) {
 getStages <- function() {
     ## :NOTE: SuperCurveGUI::setStages() uses these EXACT list names...
     stagesList <- list(input    = "Data Input",
-                       spatial  = "Spatial Adj",
                        prefitqc = "Pre-Fit QC",
+                       spatial  = "Spatial Adj",
                        fit      = "Curve Fitting",
                        graph    = "Graphing")
     stages <- as.character(stagesList)
