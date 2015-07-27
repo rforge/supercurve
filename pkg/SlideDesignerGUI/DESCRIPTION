@@ -1,9 +1,9 @@
 Package: SlideDesignerGUI
-Version: 1.6.1
-Date: 2014-07-01
-Title: Slide Designer GUI package
+Version: 1.6.2
+Date: 2015-07-14
+Title: Slide Designer GUI Package
 Author: P. Roebuck, based on earlier work by Kevin R. Coombes
-Maintainer: P. Roebuck <proebuck@mdanderson.org>
+Maintainer: "P. Roebuck" <proebuck@mdanderson.org>
 Description: Graphical User Interface for recording layout of a slide design.
 Depends: R (>= 2.15)
 Imports: tcltk, tclish (>= 1.0.0)
@@ -13,4 +13,6 @@ URL: http://supercurve.r-forge.r-project.org/#SlideDesignerGUI
 License: Artistic-2.0
 Copyright: file COPYRIGHTS
 LazyLoad: yes
+Repository: R-Forge
+Repository/R-Forge/Project: supercurve
 

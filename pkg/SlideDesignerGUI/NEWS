@@ -7,6 +7,22 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.6.2
+
+BUG FIXES
+
+    o	Change to DESCRIPTION file to eliminate R CMD check
+	warning due to overly-pedantic CRAN package policies.
+	Added repository-oriented fields as well.
+
+
+		CHANGES IN R VERSION 1.6.1
+
+BUG FIXES
+
+    o	Minor formatting correction to package manpage.
+
+
 		CHANGES IN R VERSION 1.6.0
 
 
