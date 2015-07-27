@@ -6,6 +6,19 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.5.11
+
+
+BUG FIXES
+
+    o	Updated manpages and vignette to correct misspellings.
+
+
+NEW FEATURES
+
+    o	Added spell checking setup for R and custom dictionaries.
+
+
 		CHANGES IN R VERSION 1.5.10
 
 
