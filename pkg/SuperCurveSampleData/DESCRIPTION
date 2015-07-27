@@ -1,9 +1,9 @@
 Package: SuperCurveSampleData
-Version: 1.0.1
-Date: 2015-01-21
+Version: 1.0.2
+Date: 2015-07-21
 Title: SuperCurve RPPA Sample Data
 Author: P. Roebuck
-Maintainer: P. Roebuck <proebuck@mdanderson.org>
+Maintainer: "P. Roebuck" <proebuck@mdanderson.org>
 Description: Reverse phase protein lysate array sample data for SuperCurve.
 Depends: R (>= 2.15)
 NeedsCompilation: no
@@ -13,4 +13,6 @@ Copyright: file COPYRIGHTS
 LazyData: no
 LazyLoad: no
 biocViews: ExperimentData, Microarray
+Repository: R-Forge
+Repository/R-Forge/Project: supercurve
 
