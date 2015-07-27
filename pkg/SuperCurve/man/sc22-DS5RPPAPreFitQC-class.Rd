@@ -66,7 +66,8 @@
   Akbani R, Weinstein JN, Mills GB, Coombes KR\cr
   \emph{Development of a Robust Classifier for Quality Control of
   Reverse Phase Protein Arrays.}\cr
-  (submitted).
+  Bioinformatics (2015) 31(6): 912-918.\cr
+  \url{http://www.ncbi.nlm.nih.gov/pubmed/25380958}
 }
 \author{
   P. Roebuck \email{proebuck@mdanderson.org}
