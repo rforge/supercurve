@@ -6,6 +6,30 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.5.12
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o	Pre-Fit QC is now performed prior to spatial adjustment.
+
+
+NEW FEATURES
+
+    o	Added 'antibody' slot to DS5RPPAPreFitQC object, and
+	updated summary() method to display it.
+
+
+BUG FIXES
+
+    o	Corrected bug in write.summary() method 'path' argument
+	default value pulled from [nonexistant] global variable
+	instead of its 'object' argument.
+
+    o	Updated read.arraypro() method to give better error message
+	if (accidentally) asked to read Microvigene datafile.
+
+
 		CHANGES IN R VERSION 1.5.11
 
 

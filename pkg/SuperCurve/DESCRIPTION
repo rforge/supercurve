@@ -1,6 +1,6 @@
 Package: SuperCurve
-Version: 1.5.11
-Date: 2015-07-14
+Version: 1.5.12
+Date: 2015-07-21
 Title: RPPA Analysis Package
 Author: Kevin R. Coombes, Shannon Neeley, Corwin Joy, Jianhua Hu, Keith Baggerly, and P. Roebuck
 Maintainer: "P. Roebuck" <proebuck@mdanderson.org>
@@ -17,5 +17,4 @@ Copyright: file COPYRIGHTS
 LazyLoad: yes
 Repository: R-Forge
 Repository/R-Forge/Project: supercurve
-
 
