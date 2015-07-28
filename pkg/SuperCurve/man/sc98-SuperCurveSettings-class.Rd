@@ -8,7 +8,7 @@
 \alias{fitCurveAndSummarizeFromSettings}
 \alias{is.SuperCurveSettings}
 \docType{class}
-\title{Class "SuperCurveSettings"}
+\title{Class \dQuote{SuperCurveSettings}}
 \description{
   The SuperCurveSettings class represents the arguments needed
   to perform curve fitting.

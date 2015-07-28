@@ -7,7 +7,7 @@
 \alias{fitted,LoessFitClass-method}
 \alias{trimConc,LoessFitClass-method}
 \docType{class}
-\title{Class "LoessFitClass"}
+\title{Class \dQuote{LoessFitClass}}
 \description{
   The \code{LoessFitClass} class represents models that were fit with the
   nonparametric model.

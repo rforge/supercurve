@@ -10,7 +10,7 @@
 \alias{progressStage,SCProgressMonitor-method}
 \alias{progressStage<-,SCProgressMonitor,character-method}
 \docType{class}
-\title{Class "SCProgressMonitor"}
+\title{Class \dQuote{SCProgressMonitor}}
 \description{
   The \code{SCProgressMonitor} class represents an attempt to abstract
 reporting of progress of a task. This class assumes that progress is reported
@@ -51,7 +51,7 @@ getStages()
 \section{Extends}{
   Class \code{\linkS4class{DefaultProgressMonitor}}, directly.
   Class \code{\linkS4class{ProgressMonitor}},
-    by class "DefaultProgressMonitor", distance 2.
+    by class \dQuote{DefaultProgressMonitor}, distance 2.
 }
 \section{Methods}{
   \describe{

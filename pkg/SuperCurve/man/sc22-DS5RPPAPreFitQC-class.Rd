@@ -5,7 +5,7 @@
 \alias{qcprob,DS5RPPAPreFitQC-method}
 \alias{summary,DS5RPPAPreFitQC-method}
 \docType{class}
-\title{Class "DS5RPPAPreFitQC"}
+\title{Class \dQuote{DS5RPPAPreFitQC}}
 \description{
   The DS5RPPAPreFitQC class represents the inputs necessary to determine the
   quality control rating of a reverse-phase protein array slide with 5 dilution

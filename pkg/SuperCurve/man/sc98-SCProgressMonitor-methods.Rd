@@ -14,7 +14,7 @@
 \alias{progressStage<--method}
 \alias{progressStage<-,ANY-method}
 \docType{methods}
-\title{Methods for Manipulating SuperCurve Progess Models}
+\title{Methods for Manipulating SuperCurve Progress Models}
 \description{
   These are generic functions used as accessors and mutators for
   SuperCurve-specific additions for objects of Progress-related subclasses.

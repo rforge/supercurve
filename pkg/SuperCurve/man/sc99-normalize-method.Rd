@@ -6,7 +6,7 @@
 \alias{normalize,ANY-method}
 \alias{normalize,NULL-method}
 \docType{methods}
-\title{Method "normalize"}
+\title{Method \dQuote{normalize}}
 \description{
   \code{normalize} is a generic function used to normalize the data based
   on the input object. The method invokes particular \code{\link{methods}}

@@ -18,7 +18,7 @@
 \alias{progressValue,DefaultProgressMonitor-method}
 \alias{progressValue<-,DefaultProgressMonitor,numeric-method}
 \docType{class}
-\title{Class "DefaultProgressMonitor"}
+\title{Class \dQuote{DefaultProgressMonitor}}
 \description{
   The \code{DefaultProgressMonitor} class represents an attempt to abstract
 reporting of progress of a task. This class assumes that progress is reported

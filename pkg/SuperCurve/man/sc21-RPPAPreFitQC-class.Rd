@@ -7,7 +7,7 @@
 \alias{qcprob,RPPAPreFitQC-method}
 \alias{summary,RPPAPreFitQC-method}
 \docType{class}
-\title{Class "RPPAPreFitQC"}
+\title{Class \dQuote{RPPAPreFitQC}}
 \description{
   The RPPAPreFitQC class represents the inputs necessary to determine the
   quality control rating of a reverse-phase protein array slide.

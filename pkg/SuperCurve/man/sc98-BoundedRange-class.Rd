@@ -11,7 +11,7 @@
 \alias{progressValue,BoundedRange-method}
 \alias{progressValue<-,BoundedRange,numeric-method}
 \docType{class}
-\title{Class "BoundedRange"}
+\title{Class \dQuote{BoundedRange}}
 \description{
   The \code{BoundedRange} class represents an attempt to abstract
 reporting of progress of a task. This class assumes that progress is reported

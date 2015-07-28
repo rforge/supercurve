@@ -7,7 +7,7 @@
 \alias{coerce,Directory,character-method}
 \alias{is.Directory}
 \docType{class}
-\title{Class "Directory"}
+\title{Class \dQuote{Directory}}
 \description{
   The Directory class represents a file system directory.
 }

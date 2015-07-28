@@ -8,7 +8,7 @@
 \alias{image,RPPA-method}
 \alias{summary,RPPA-method}
 \docType{class}
-\title{Class "RPPA"}
+\title{Class \dQuote{RPPA}}
 \description{
   The RPPA class represents the raw quantification data from a
   reverse-phase protein array experiment.

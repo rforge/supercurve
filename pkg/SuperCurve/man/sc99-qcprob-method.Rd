@@ -6,7 +6,7 @@
 \alias{qcprob,ANY-method}
 \alias{qcprob,NULL-method}
 \docType{methods}
-\title{Method "qcprob"}
+\title{Method \dQuote{qcprob}}
 \description{
   \code{qcprob} is a generic function used to produce a quality control
   probability based on the input object. The method invokes particular

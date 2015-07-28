@@ -16,7 +16,7 @@
 \alias{progressValue,ProgressMonitor-method}
 \alias{progressValue<-,ProgressMonitor,ANY-method}
 \docType{class}
-\title{Class "ProgressMonitor"}
+\title{Class \dQuote{ProgressMonitor}}
 \description{
   The \code{ProgressMonitor} class is a virtual class for abstract reporting
 of progress of a task. All the generic methods here are placeholders that must

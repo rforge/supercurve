@@ -5,7 +5,7 @@
 \alias{write.summary-method}
 \alias{write.summary,ANY-method}
 \docType{methods}
-\title{Method "write.summary"}
+\title{Method \dQuote{write.summary}}
 \description{
   \code{write.summary} is a generic function used like a \code{summary} method
   that writes to disk, saving summary information from the object in an

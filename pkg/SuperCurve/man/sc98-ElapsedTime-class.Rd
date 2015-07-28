@@ -6,7 +6,7 @@
 \alias{is.ElapsedTime}
 \alias{elapsed,ElapsedTime-method}
 \docType{class}
-\title{Class "ElapsedTime"}
+\title{Class \dQuote{ElapsedTime}}
 \description{
   The \code{ElapsedTime} class represents a means of reporting elapsed time.
 }

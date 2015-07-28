@@ -7,7 +7,7 @@
 \alias{fitted,CobsFitClass-method}
 \alias{trimConc,CobsFitClass-method}
 \docType{class}
-\title{Class "CobsFitClass"}
+\title{Class \dQuote{CobsFitClass}}
 \description{
   The \code{CobsFitClass} class represents models that were fit with the
   nonparametric model.

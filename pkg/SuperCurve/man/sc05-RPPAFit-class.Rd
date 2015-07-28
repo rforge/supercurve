@@ -12,7 +12,7 @@
 \alias{residuals,RPPAFit-method}
 \alias{summary,RPPAFit-method}
 \docType{class}
-\title{Class "RPPAFit"}
+\title{Class \dQuote{RPPAFit}}
 \description{
   Objects of the \code{RPPAFit} class represent the results of fitting a
   statistical model of response to the dilution series in a

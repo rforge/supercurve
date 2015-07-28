@@ -6,7 +6,7 @@
 \alias{is.RPPANormalizationParams}
 \alias{paramString,RPPANormalizationParams-method}
 \docType{class}
-\title{Class "RPPANormalizationParams"}
+\title{Class \dQuote{RPPANormalizationParams}}
 \description{
   The RPPANormalizationParams class is used to bundle the parameter set together
   that control how to perform spatial adjustment into a reusable object.

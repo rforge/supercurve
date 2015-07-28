@@ -8,7 +8,7 @@
 \alias{write.summary,RPPASet-method}
 \alias{is.RPPASet}
 \docType{class}
-\title{Class "RPPASet"}
+\title{Class \dQuote{RPPASet}}
 \description{
   The RPPASet class fits supercurves to an entire directory of
   reverse-phase protein array experiments.

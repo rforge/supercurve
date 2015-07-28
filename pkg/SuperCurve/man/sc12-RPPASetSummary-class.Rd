@@ -6,7 +6,7 @@
 \alias{is.RPPASetSummary}
 \alias{write.summary,RPPASetSummary-method}
 \docType{class}
-\title{Class "RPPASetSummary"}
+\title{Class \dQuote{RPPASetSummary}}
 \description{
   The RPPASetSummary class contains the summary information derived from
   an RPPASet object.
@@ -64,7 +64,7 @@ is.RPPASetSummary(x)
       Generates three \acronym{CSV} files: one for the raw concentrations, one
       for the \eqn{R^2} statistics, and one for the normalized concentrations;
       a fourth file containing the goodness of fit probabilities may be present
-      if prefit QC analysis was requested. Additionally, a \acronym{TSV} file
+      if pre-fit QC analysis was requested. Additionally, a \acronym{TSV} file
       detailing completion of each stage of processing for each slide is
       produced.}
   }

@@ -6,7 +6,7 @@
 \alias{is.RPPASpatialParams}
 \alias{paramString,RPPASpatialParams-method}
 \docType{class}
-\title{Class "RPPASpatialParams"}
+\title{Class \dQuote{RPPASpatialParams}}
 \description{
   The RPPASpatialParams class is used to bundle the parameter set together
   that control how to perform spatial adjustment into a reusable object.

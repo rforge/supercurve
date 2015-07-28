@@ -9,7 +9,7 @@
 \alias{is.RPPAFitParams}
 \alias{paramString,RPPAFitParams-method}
 \docType{class}
-\title{Fitting Dilution Curves to Protein Lysate Arrays with Class "RPPAFitParams"}
+\title{Fitting Dilution Curves to Protein Lysate Arrays with Class \dQuote{RPPAFitParams}}
 \description{
   The \code{RPPAFit} function fits an intensity response model to the
   dilution series in a reverse-phase protein array experiment. Individual

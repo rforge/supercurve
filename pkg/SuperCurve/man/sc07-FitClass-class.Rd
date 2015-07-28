@@ -10,7 +10,7 @@
 \alias{trimConc,FitClass-method}
 \alias{is.FitClass}
 \docType{class}
-\title{Class "FitClass"}
+\title{Class \dQuote{FitClass}}
 \description{
   The \code{FitClass} class is a virtual class representing the model that
   was fit in the \code{RPPAFit} routine. Functions for use with \code{FitClass}

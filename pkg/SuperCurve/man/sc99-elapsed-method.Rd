@@ -5,7 +5,7 @@
 \alias{elapsed-method}
 \alias{elapsed,ANY-method}
 \docType{methods}
-\title{Method "elapsed"}
+\title{Method \dQuote{elapsed}}
 \description{
   \code{elapsed} is a generic function used to return the elapsed time since
   some operation (related to the object) began. The method invokes particular

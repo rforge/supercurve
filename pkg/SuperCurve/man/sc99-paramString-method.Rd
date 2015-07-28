@@ -5,7 +5,7 @@
 \alias{paramString-method}
 \alias{paramString,ANY-method}
 \docType{methods}
-\title{Method "paramString"}
+\title{Method \dQuote{paramString}}
 \description{
   \code{paramString} is a generic function used to produce a string
   representation of an object's slots. The method invokes particular

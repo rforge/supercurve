@@ -17,7 +17,7 @@
 \alias{plot,RPPA,RPPADesign-method}
 \alias{summary,RPPADesign-method}
 \docType{class}
-\title{Class "RPPADesign" and Class "RPPADesignParams"}
+\title{Class \dQuote{RPPADesign} and Class \dQuote{RPPADesignParams}}
 \description{
   The \code{RPPADesign} class represents the information that describes
   how a particular set of RPPA slides was designed. The

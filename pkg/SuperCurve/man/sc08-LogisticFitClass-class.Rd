@@ -9,7 +9,7 @@
 \alias{fitted,LogisticFitClass-method}
 \alias{trimConc,LogisticFitClass-method}
 \docType{class}
-\title{Class "LogisticFitClass"}
+\title{Class \dQuote{LogisticFitClass}}
 \description{
   The \code{LogisticFitClass} class represents models that were fit with the
   logistic model.
