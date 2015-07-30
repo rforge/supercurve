@@ -564,6 +564,19 @@ RPPASet <- function(path,
                      sQuote("normparams"), "RPPANormalizationParams"))
     }
 
+    if (!is.logical(doprefitqc)) {
+        stop(sprintf("argument %s must be logical",
+                     sQuote("doprefitqc")))
+    } else if (!(length(doprefitqc) == 1)) {
+        stop(sprintf("argument %s must be of length 1",
+                     sQuote("doprefitqc")))
+    } else if (is.na(doprefitqc)) {
+        doprefitqc <- FALSE
+        warning(sprintf("argument %s converted from NA to FALSE",
+                        dQuote(doprefitqc)),
+                immediate.=FALSE)
+    }
+
     if (!is.SCProgressMonitor(monitor)) {
         stop(sprintf("argument %s must be object of class %s",
                      sQuote("monitor"), "SCProgressMonitor"))
@@ -871,8 +884,8 @@ RPPASet <- function(path,
 
     ## Create matrix for tracking what succeeded/failed
     completed <- cbind(input.tf,
-                       spatial.tf,
                        prefitqc.tf,
+                       spatial.tf,
                        fits.tf)
     rownames(completed) <- slideFilenames
     colnames(completed) <- names(getStages()[1:4])
