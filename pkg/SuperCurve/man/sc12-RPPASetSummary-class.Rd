@@ -45,7 +45,8 @@ is.RPPASetSummary(x)
     \item{\code{raw}:}{numeric matrix of raw concentrations}
     \item{\code{ss}:}{numeric matrix of \eqn{R^2} statistical values}
     \item{\code{norm}:}{numeric matrix of normalized concentrations}
-    \item{\code{probs}:}{numeric vector of goodness of fit probabilities}
+    \item{\code{probs}:}{numeric vector of goodness of fit probabilities,
+      or \code{NULL} (if pre-fit QC analysis was not requested)}
     \item{\code{completed}:}{logical matrix specifying stage completion
       for each slide}
     \item{\code{design}:}{object of class \code{RPPADesign}, common to all

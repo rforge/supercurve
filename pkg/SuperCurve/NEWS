@@ -6,6 +6,16 @@
 	**************************************************
 
 
+		CHANGES IN R VERSION 1.5.15
+
+
+BUG FIXES
+
+    o	Modified code to prevent possiblity that the output file
+	containing pre-fit QC scores might not be written even
+	though analysis was requested and performed.
+
+
 		CHANGES IN R VERSION 1.5.14
 
 

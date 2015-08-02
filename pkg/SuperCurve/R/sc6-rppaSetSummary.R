@@ -5,15 +5,17 @@
 
 
 ##=============================================================================
+setClassUnion("OptionalNumeric", c("numeric", "NULL"))
 setClass("RPPASetSummary",
          representation(raw="matrix",              ## raw concentrations
                         ss="matrix",               ## sum squares ratio
                         norm="matrix",             ## normalized concentrations
-                        probs="numeric",           ## probability good slide
+                        probs="OptionalNumeric",   ## probability good slide
                         completed="matrix",        ## what worked/failed
                         design="RPPADesign",       ## design for all slides
                         onlynormqcgood="logical",  ## filter norm'd by qc score
-                        version="character"))      ## package version
+                        version="character"),      ## package version
+         prototype(probs=NULL))
 
 
 ##-----------------------------------------------------------------------------
@@ -95,7 +97,7 @@ RPPASetSummary <- function(rppaset,
                  prefitqcs <- rppaset@prefitqcs[prefitqcs.tf]
                  sapply(prefitqcs, qcprob)
              } else {
-                 as.numeric(NaN)
+                 NULL
              }
 
     ## Normalize the concentrations
@@ -254,8 +256,8 @@ setMethod("write.summary", signature(object="RPPASetSummary"),
     conc.norm <- get_concs_ordered_for_write(object, "norm")
     write.csv(conc.norm, file=file.path(path, .portableFilename(filename)))
 
-    ## If QC processing was performed...
-    if (!(length(object@probs) == 1 && is.na(object@probs))) {
+    ## If QC processing was requested...
+    if (!is.null(object@probs)) {
         ## Write file for QC probabilities
         filename <- sprintf("%s_prefit_qc.csv", prefix)
         probs.df <- data.frame("Filename"=names(object@probs),
