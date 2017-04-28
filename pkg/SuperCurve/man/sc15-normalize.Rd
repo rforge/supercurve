@@ -54,7 +54,7 @@
   Neeley ES, Kornblau SM, Coombes KR, Baggerly KA.\cr
   \emph{Variable slope normalization of reverse phase protein arrays}\cr
   Bioinformatics (2009) 25(11): 1384-1389.\cr
-  \url{http://bioinformatics.oxfordjournals.org/content/25/11/1384}
+  \url{https://academic.oup.com/bioinformatics/article/25/11/1384/331482/Variable-slope-normalization-of-reverse-phase}
 }
 \author{
   P. Roebuck \email{proebuck@mdanderson.org},
