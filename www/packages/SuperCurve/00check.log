@@ -1,0 +1,1315 @@
+* using log directory 'C:/Users/Kevin/Desktop/RForge/supercurve/pkg/SuperCurve.Rcheck'
+* using R version 3.4.0 (2017-04-21)
+* using platform: x86_64-w64-mingw32 (64-bit)
+* using session charset: ISO8859-1
+* using option '--as-cran'
+* checking for file 'SuperCurve/DESCRIPTION' ... OK
+* this is package 'SuperCurve' version '1.5.15'
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: '"P. Roebuck" <proebuck@mdanderson.org>'
+
+New submission
+
+Suggests or Enhances not in mainstream repositories:
+  SuperCurveSampleData
+
+The Date field is over a month old.
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking whether package 'SuperCurve' can be installed ... WARNING
+Found the following significant warnings:
+  Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
+  Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
+See 'C:/Users/Kevin/Desktop/RForge/supercurve/pkg/SuperCurve.Rcheck/00install.out' for details.
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking 'build' directory ... OK
+* checking DESCRIPTION meta-information ... OK
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking R files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... NOTE
+Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
+Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
+
+A namespace must be able to be loaded with just the base namespace
+loaded: otherwise if the namespace gets loaded by a saved object, the
+session will be unable to start.
+
+Probably some imports need to be declared in the NAMESPACE file.
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking use of S3 registration ... OK
+* checking dependencies in R code ... NOTE
+'library' or 'require' calls in package code:
+  'mgcv' 'quantreg' 'robustbase' 'timeDate'
+  Please use :: or requireNamespace() instead.
+  See section 'Suggested packages' in the 'Writing R Extensions' manual.
+There are ::: calls to the package's namespace in its code. A package
+  almost never needs to use ::: for its own objects:
+  '.slide.model' 'layout'
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... NOTE
+.coef.quantile.est: no visible global function definition for
+  'quantile'
+.computeBackgroundCutoff: no visible global function definition for
+  'quantile'
+.createFitGraphs: no visible global function definition for 'par'
+.est.bg.noise: no visible global function definition for 'mad'
+.firstPass: no visible global function definition for 'median'
+.generic.trim: no visible global function definition for 'quantile'
+.loess.line: no visible global function definition for 'lines'
+.loess.line: no visible global function definition for 'approx'
+.plotProbabilityOfGoodSlide: no visible global function definition for
+  'mtext'
+.plotProbabilityOfGoodSlide: no visible global function definition for
+  'axis'
+.plotProbabilityOfGoodSlide: no visible global function definition for
+  'rect'
+.plotProbabilityOfGoodSlide: no visible global function definition for
+  'text'
+.plotProbabilityOfGoodSlide: no visible global function definition for
+  'abline'
+.plotProbabilityOfGoodSlide: no visible global function definition for
+  'points'
+DS5RPPAPreFitQC : CV: no visible global function definition for 'sd'
+DS5RPPAPreFitQC : slopeDiff: no visible global function definition for
+  'lm'
+DS5RPPAPreFitQC: no visible global function definition for 'lm'
+RPPADesignFromParams: no visible global function definition for
+  'median'
+RPPAFitFromParams: no visible global function definition for 'var'
+RPPAPreFitQC: no visible binding for global variable 'SpotType'
+getConfidenceInterval: no visible global function definition for
+  'rnorm'
+getConfidenceInterval: no visible global function definition for
+  'quantile'
+normalize.house: no visible binding for global variable 'median'
+normalize.median: no visible binding for global variable 'rowMedian'
+normalize.medpolish: no visible global function definition for
+  'medpolish'
+normalize.vs: no visible binding for global variable 'rowMedian'
+normalize.vs : estimateGamma: no visible global function definition for
+  'cor'
+normalize.vs : estimateGamma: no visible global function definition for
+  'pt'
+normalize.vs : estimateGamma: no visible global function definition for
+  'var'
+rppaNormalize: no visible binding for global variable 'median'
+spatialCorrection: no visible global function definition for 'par'
+spatialCorrection : scaleBySurface: no visible global function
+  definition for 'median'
+fitSlide,LogisticFitClass: no visible global function definition for
+  'nls'
+fitSlide,LogisticFitClass: no visible global function definition for
+  'nls.control'
+fitted,CobsFitClass: no visible global function definition for
+  'predict'
+fitted,LoessFitClass: no visible global function definition for
+  'predict'
+image,RPPA: no visible global function definition for 'par'
+image,RPPA: no visible global function definition for 'axis'
+image,RPPA: no visible global function definition for 'box'
+image,RPPA: no visible global function definition for 'abline'
+image,RPPADesign: no visible global function definition for 'axis'
+image,RPPADesign: no visible global function definition for 'abline'
+plot,RPPA-RPPADesign: no visible global function definition for 'par'
+plot,RPPA-RPPADesign: no visible global function definition for 'lines'
+plot,RPPAFit-missing: no visible global function definition for 'lines'
+plot,RPPAFit-missing: no visible global function definition for
+  'abline'
+plot,RPPAFit-missing: no visible global function definition for 'title'
+plot,RPPAFit-missing: no visible global function definition for
+  'points'
+plot,RPPAFit-missing: no visible global function definition for
+  'legend'
+plot,RPPAFit-missing: no visible global function definition for 'lm'
+residuals,RPPAFit: no visible global function definition for 'var'
+Undefined global functions or variables:
+  SpotType abline approx axis box cor legend lines lm mad median
+  medpolish mtext nls nls.control par points predict pt quantile rect
+  rnorm rowMedian sd text title var
+Consider adding
+  importFrom("graphics", "abline", "axis", "box", "legend", "lines",
+             "mtext", "par", "points", "rect", "text", "title")
+  importFrom("stats", "approx", "cor", "lm", "mad", "median",
+             "medpolish", "nls", "nls.control", "predict", "pt",
+             "quantile", "rnorm", "sd", "var")
+to your NAMESPACE file.
+
+Found the following assignments to the global environment:
+File 'SuperCurve/R/sc3-0-dilutionFitMethods.R':
+  assign(".RPPA.fit.model", object, envir = .GlobalEnv)
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd line widths ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... WARNING
+Codoc mismatches from documentation object 'normalize':
+\S4method{normalize}{MatrixLike}
+  Code: function(object, method =
+                 SuperCurve::getRegisteredNormalizationMethodKeys(),
+                 calc.medians = TRUE, sweep.cols = calc.medians, ...)
+  Docs: function(object, method =
+                 getRegisteredNormalizationMethodKeys(), calc.medians =
+                 TRUE, sweep.cols = calc.medians, ...)
+  Mismatches in argument default values:
+    Name: 'method' Code: SuperCurve::getRegisteredNormalizationMethodKeys() Docs: getRegisteredNormalizationMethodKeys()
+
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking contents of 'data' directory ... OK
+* checking data for non-ASCII characters ... OK
+* checking data for ASCII and uncompressed saves ... OK
+* checking sizes of PDF files under 'inst/doc' ... OK
+* checking installed files from 'inst/doc' ... OK
+* checking files in 'vignettes' ... OK
+* checking examples ... OK
+* checking for unstated dependencies in 'tests' ... OK
+* checking tests ... OK
+  Running 'sessionInfo.R'
+  Comparing 'sessionInfo.Rout' to 'sessionInfo.Rout.save' ...11,12d10
+< Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
+< Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
+35,39c33,34
+< R version 3.4.0 (2017-04-21)
+< Platform: x86_64-w64-mingw32/x64 (64-bit)
+< Running under: Windows 7 x64 (build 7601) Service Pack 1
+< 
+< Matrix products: default
+---
+> R version 2.15.3 Patched (2013-03-13 r62287)
+> Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+42,46c37
+< [1] LC_COLLATE=C                          
+< [2] LC_CTYPE=English_United States.1252   
+< [3] LC_MONETARY=English_United States.1252
+< [4] LC_NUMERIC=C                          
+< [5] LC_TIME=English_United States.1252    
+---
+> [1] C/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+53,57c44,48
+<  [1] SuperCurveSampleData_1.0.2 timeDate_3012.100         
+<  [3] robustbase_0.92-7          quantreg_5.33             
+<  [5] SparseM_1.77               mgcv_1.8-17               
+<  [7] nlme_3.1-131               boot_1.3-19               
+<  [9] SuperCurve_1.5.15          cobs_1.3-3                
+---
+>  [1] SuperCurveSampleData_1.0.1 timeDate_3011.99          
+>  [3] robustbase_0.92-2          quantreg_5.05             
+>  [5] SparseM_1.6                mgcv_1.8-4                
+>  [7] nlme_3.1-108               boot_1.3-7                
+>  [9] SuperCurve_1.5.8           cobs_1.3-0                
+60,61c51,52
+< [1] lattice_0.20-35    MASS_7.3-47        grid_3.4.0         MatrixModels_0.4-1
+< [5] Matrix_1.2-9       DEoptimR_1.0-8     compiler_3.4.0    
+---
+> [1] DEoptimR_1.0-2  MASS_7.3-23     Matrix_1.1-4    grid_2.15.3    
+> [5] lattice_0.20-29
+  Running 'testCobs.R'
+  Comparing 'testCobs.Rout' to 'testCobs.Rout.save' ...16,19c16,293
+< >>>>                <<<< 
+< >>>>  Test skipped  <<<< 
+< >>>>                <<<< 
+< To run all package tests, define "SUPERCURVE_FULL_TEST" environment variable
+---
+> > options(warn=1)
+> > library(SuperCurve)
+> > library(robustbase)
+> > 
+> > extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
+> > 
+> > ######################################
+> > ## load the tumor data
+> > home <- file.path(extdata.dir, "rppaTumorData")
+> > 
+> > ## first locate the list of assays
+> > ## the name 'proteins' is required
+> > ## must include two columns named 'Antibody' and 'Filename'.
+> > proteins <- read.delim(file.path(home, "proteinAssay.tsv"), as.is=TRUE)
+> > rownames(proteins) <- as.character(proteins$Antibody)
+> > 
+> > for (i in seq_len(nrow(proteins))) {
+> +     temp <- RPPA(proteins$Filename[i],
+> +                  path=home,
+> +                  antibody=proteins$Antibody[i])
+> +     assign(proteins$Antibody[i], temp, 1)
+> + }
+> > remove(i, temp)
+> > 
+> > ######################################
+> > ## work out the appropriate design layout
+> > design <- RPPADesign(ERK2,
+> +                      grouping="blockSample",
+> +                      center=TRUE,
+> +                      controls=list("neg con", "pos con"))
+> > 
+> > ######################################
+> > ## must define the 'model' to use
+> > model <- "cobs"
+> > 
+> > ######################################
+> > ## must define the 'measure' to use
+> > measure <- "Mean.Net"
+> > 
+> > ######################################
+> > ## must define the 'method' to use
+> > method <- 'nlrq'
+> > source("testRblock", echo=TRUE, max.deparse.len=1024)
+> 
+> > ver <- packageDescription("SuperCurve", fields = "Version")
+> 
+> > cat(paste("\nTest of SuperCurve version", ver), "\n")
+> 
+> Test of SuperCurve version 1.5.8 
+> 
+> > cat(paste("model = ", model, "; method = ", method, 
+> +     "; measure = ", measure, sep = ""), "\n")
+> model = cobs; method = nlrq; measure = Mean.Net 
+> 
+> > for (i in seq_len(nrow(proteins))) {
+> +     itemName <- proteins$Antibody[i]
+> +     item <- eval(as.name(itemName))
+> +     temp <- try(RPPAFit(item, design, measure, method = method, 
+> +         model = model, ignoreNegative = FALSE, warnLevel = -1), 
+> +         TRUE)
+> +     if (is(temp, "try-error")) {
+> +         print(paste(itemName, measure, ver, "FAILED"))
+> +         next
+> +     }
+> +     meansq <- mean(resid(temp)^2, na.rm = TRUE)
+> +     tmeansq <- mean(resid(temp)^2, na.rm = TRUE, trim = 0.1)
+> +     par(bg = "white")
+> +     plot(temp, xlim = c(-15, 15), main = paste(itemName, measure, 
+> +         ver), sub = paste("Mean square residuals =", round(meansq)))
+> +     if (FALSE) {
+> +         dev.copy(png, file.path(paste(itemName, measure, ver, 
+> +             "png", sep = ".")), width = 640, height = 640)
+> +         dev.off()
+> +     }
+> +     print(paste(itemName, measure, round(meansq), round(tmeansq)))
+> + }
+> 
+> Attaching package: 'SparseM'
+> 
+> The following object(s) are masked from 'package:base':
+> 
+>     backsolve
+> 
+> [1] "ERK2 Mean.Net 295246 121653"
+> [1] "GSK3 Mean.Net 297740 123763"
+> [1] "JNK Mean.Net 333207 101898"
+> 
+> > remove(i, itemName, item, meansq, tmeansq)
+> > 
+> > method <- 'nlrob'
+> > source("testRblock", echo=TRUE, max.deparse.len=1024)
+> 
+> > ver <- packageDescription("SuperCurve", fields = "Version")
+> 
+> > cat(paste("\nTest of SuperCurve version", ver), "\n")
+> 
+> Test of SuperCurve version 1.5.8 
+> 
+> > cat(paste("model = ", model, "; method = ", method, 
+> +     "; measure = ", measure, sep = ""), "\n")
+> model = cobs; method = nlrob; measure = Mean.Net 
+> 
+> > for (i in seq_len(nrow(proteins))) {
+> +     itemName <- proteins$Antibody[i]
+> +     item <- eval(as.name(itemName))
+> +     temp <- try(RPPAFit(item, design, measure, method = method, 
+> +         model = model, ignoreNegative = FALSE, warnLevel = -1), 
+> +         TRUE)
+> +     if (is(temp, "try-error")) {
+> +         print(paste(itemName, measure, ver, "FAILED"))
+> +         next
+> +     }
+> +     meansq <- mean(resid(temp)^2, na.rm = TRUE)
+> +     tmeansq <- mean(resid(temp)^2, na.rm = TRUE, trim = 0.1)
+> +     par(bg = "white")
+> +     plot(temp, xlim = c(-15, 15), main = paste(itemName, measure, 
+> +         ver), sub = paste("Mean square residuals =", round(meansq)))
+> +     if (FALSE) {
+> +         dev.copy(png, file.path(paste(itemName, measure, ver, 
+> +             "png", sep = ".")), width = 640, height = 640)
+> +         dev.off()
+> +     }
+> +     print(paste(itemName, measure, round(meansq), round(tmeansq)))
+> + }
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> [1] "ERK2 Mean.Net 263983 124538"
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> [1] "GSK3 Mean.Net 291770 124061"
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> [1] "JNK Mean.Net 284123 104377"
+> 
+> > remove(i, itemName, item, meansq, tmeansq)
+> > 
+> > method <- "nls"
+> > source("testRblock", echo=TRUE, max.deparse.len=1024)
+> 
+> > ver <- packageDescription("SuperCurve", fields = "Version")
+> 
+> > cat(paste("\nTest of SuperCurve version", ver), "\n")
+> 
+> Test of SuperCurve version 1.5.8 
+> 
+> > cat(paste("model = ", model, "; method = ", method, 
+> +     "; measure = ", measure, sep = ""), "\n")
+> model = cobs; method = nls; measure = Mean.Net 
+> 
+> > for (i in seq_len(nrow(proteins))) {
+> +     itemName <- proteins$Antibody[i]
+> +     item <- eval(as.name(itemName))
+> +     temp <- try(RPPAFit(item, design, measure, method = method, 
+> +         model = model, ignoreNegative = FALSE, warnLevel = -1), 
+> +         TRUE)
+> +     if (is(temp, "try-error")) {
+> +         print(paste(itemName, measure, ver, "FAILED"))
+> +         next
+> +     }
+> +     meansq <- mean(resid(temp)^2, na.rm = TRUE)
+> +     tmeansq <- mean(resid(temp)^2, na.rm = TRUE, trim = 0.1)
+> +     par(bg = "white")
+> +     plot(temp, xlim = c(-15, 15), main = paste(itemName, measure, 
+> +         ver), sub = paste("Mean square residuals =", round(meansq)))
+> +     if (FALSE) {
+> +         dev.copy(png, file.path(paste(itemName, measure, ver, 
+> +             "png", sep = ".")), width = 640, height = 640)
+> +         dev.off()
+> +     }
+> +     print(paste(itemName, measure, round(meansq), round(tmeansq)))
+> + }
+> [1] "ERK2 Mean.Net 257063 130929"
+> [1] "GSK3 Mean.Net 258045 136270"
+> [1] "JNK Mean.Net 273147 114311"
+> 
+> > remove(i, itemName, item, meansq, tmeansq)
+> > 
+> > ######################################
+> > ## print the concentrations from the last fit. These will
+> > ## automatically be compared with the saved output when we
+> > ## run 'R CMD check'
+> > round(temp@concentrations, digits=4)
+>   sample 1.1.1   sample 2.1.1   sample 3.1.2   sample 4.1.2   sample 5.1.3 
+>        -4.0811        -7.6974        -3.3025        -3.9834        -3.9924 
+>   sample 6.1.3   sample 7.1.4   sample 8.1.4   sample 9.1.5  sample 10.1.5 
+>        -7.4559        -4.0671        -7.2802        -4.9620        -8.9690 
+>  sample 11.1.6  sample 12.1.6  sample 13.1.7  sample 14.1.7  sample 15.1.8 
+>        -5.0436        -9.2994        -5.4855        -7.0199        -7.9932 
+>  sample 16.1.8  sample 17.1.9  sample 18.1.9 sample 19.1.10 sample 20.1.10 
+>        -4.3036        -3.6753        -4.4229        -2.1163        -7.8233 
+> sample 21.1.11 sample 22.1.11 sample 23.1.12 sample 24.1.12  sample 25.2.1 
+>        -4.4619        -5.8950        -1.2669        -6.2549        -2.9121 
+>  sample 26.2.1  sample 27.2.2  sample 28.2.2  sample 29.2.3  sample 30.2.3 
+>        -8.6760        -3.1489        -6.5158        -2.3676        -9.2994 
+>  sample 31.2.4  sample 32.2.4  sample 33.2.5  sample 34.2.5  sample 35.2.6 
+>        -4.0385        -6.0364        -3.2396        -5.1490        -3.3325 
+>  sample 36.2.6  sample 37.2.7  sample 38.2.7  sample 39.2.8  sample 40.2.8 
+>        -3.8885        -3.1190        -3.6320        -0.6942        -7.3687 
+>  sample 41.2.9  sample 42.2.9 sample 43.2.10 sample 44.2.10 sample 45.2.11 
+>        -3.1086        -3.4728        -1.0455        -4.5497        -2.6940 
+> sample 46.2.11 sample 47.2.12 sample 48.2.12  sample 49.3.1  sample 50.3.1 
+>        -8.0472        -0.7377        -1.9651        -3.0461        -3.9900 
+>  sample 51.3.2  sample 52.3.2  sample 53.3.3  sample 54.3.3  sample 55.3.4 
+>        -3.0364        -5.8671        -2.6317        -3.5379        -3.2286 
+>  sample 56.3.4  sample 57.3.5  sample 58.3.5  sample 59.3.6  sample 60.3.6 
+>        -5.8460        -2.4706        -3.9862        -3.2859        -4.3974 
+>  sample 61.3.7  sample 62.3.7  sample 63.3.8  sample 64.3.8  sample 65.3.9 
+>        -2.5938        -3.6830        -3.4970        -6.6738        -2.8363 
+>  sample 66.3.9 sample 67.3.10 sample 68.3.10 sample 69.3.11 sample 70.3.11 
+>        -6.3722        -6.5586        -6.7842        -2.7708        -4.3201 
+> sample 71.3.12 sample 72.3.12  sample 73.4.1  sample 74.4.1  sample 75.4.2 
+>        -4.5702        -7.5675        -3.8352        -6.5253        -8.0721 
+>  sample 76.4.2  sample 77.4.3  sample 78.4.3  sample 79.4.4  sample 80.4.4 
+>        -7.9626        -4.8128        -4.7216        -0.9142        -3.2661 
+>  sample 81.4.5  sample 82.4.5  sample 83.4.6  sample 84.4.6  sample 85.4.7 
+>        -4.3757        -7.6829        -3.2964        -4.6277        -6.3757 
+>  sample 86.4.7  sample 87.4.8  sample 88.4.8  sample 89.4.9  sample 90.4.9 
+>        -6.0699        -5.4793        -8.3355        -4.7962        -4.4836 
+> sample 91.4.10 sample 92.4.10 sample 93.4.11 sample 94.4.11 sample 95.4.12 
+>        -3.1734        -6.7587        -3.8599        -5.4981        -7.4548 
+> sample 96.4.12 
+>        -9.2994 
+> > 
+> > 
+  Running 'testDesign.R'
+  Comparing 'testDesign.Rout' to 'testDesign.Rout.save' ...10,11d9
+< Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
+< Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
+  Running 'testFit.R' [110s]
+  Comparing 'testFit.Rout' to 'testFit.Rout.save' ...14,15d13
+< Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
+< Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
+21c19
+< The following object is masked from 'package:robustbase':
+---
+> The following object(s) are masked from 'package:robustbase':
+44c42
+< Error in RPPAFitParams() : argument "measure" is missing, with no default
+---
+> Error in is.character(measure) : 'measure' is missing
+158c156
+< The following object is masked from 'package:base':
+---
+> The following object(s) are masked from 'package:base':
+  Running 'testLoess.R'
+  Comparing 'testLoess.Rout' to 'testLoess.Rout.save' ...16,19c16,369
+< >>>>                <<<< 
+< >>>>  Test skipped  <<<< 
+< >>>>                <<<< 
+< To run all package tests, define "SUPERCURVE_FULL_TEST" environment variable
+---
+> > options(warn=1)
+> > library(SuperCurve)
+> > library(robustbase)
+> > 
+> > extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
+> > 
+> > ######################################
+> > ## load the tumor data
+> > home <- file.path(extdata.dir, "rppaTripleData")
+> > 
+> > ## first locate the list of assays
+> > ## the name 'proteins' is required
+> > ## must include two columns named 'Antibody' and 'Filename'.
+> > proteins <- read.delim(file.path(home, "proteinAssay.tsv"), as.is=TRUE)
+> > rownames(proteins) <- as.character(proteins$Antibody)
+> > 
+> > for (i in seq_len(nrow(proteins))) {
+> +     temp <- RPPA(proteins$Filename[i],
+> +                  path=home,
+> +                  antibody=proteins$Antibody[i])
+> +     assign(proteins$Antibody[i], temp, 1)
+> + }
+> > remove(i, temp)
+> > 
+> > ######################################
+> > ## work out the appropriate design layout
+> > design <- RPPADesign(ACTB)
+> > 
+> > ######################################
+> > ## must define the 'model' to use
+> > model <- "loess"
+> > 
+> > ######################################
+> > ## must define the 'measure' to use
+> > measure <- "Mean.Net"
+> > 
+> > ######################################
+> > ## loess is very slow; we are only going to test
+> > ## a single protein.
+> > proteins <- proteins[nrow(proteins), ]
+> > 
+> > ######################################
+> > ## must define the 'method' to use
+> > method <- 'nlrq'
+> > source("testRblock", echo=TRUE, max.deparse.len=1024)
+> 
+> > ver <- packageDescription("SuperCurve", fields = "Version")
+> 
+> > cat(paste("\nTest of SuperCurve version", ver), "\n")
+> 
+> Test of SuperCurve version 1.5.8 
+> 
+> > cat(paste("model = ", model, "; method = ", method, 
+> +     "; measure = ", measure, sep = ""), "\n")
+> model = loess; method = nlrq; measure = Mean.Net 
+> 
+> > for (i in seq_len(nrow(proteins))) {
+> +     itemName <- proteins$Antibody[i]
+> +     item <- eval(as.name(itemName))
+> +     temp <- try(RPPAFit(item, design, measure, method = method, 
+> +         model = model, ignoreNegative = FALSE, warnLevel = -1), 
+> +         TRUE)
+> +     if (is(temp, "try-error")) {
+> +         print(paste(itemName, measure, ver, "FAILED"))
+> +         next
+> +     }
+> +     meansq <- mean(resid(temp)^2, na.rm = TRUE)
+> +     tmeansq <- mean(resid(temp)^2, na.rm = TRUE, trim = 0.1)
+> +     par(bg = "white")
+> +     plot(temp, xlim = c(-15, 15), main = paste(itemName, measure, 
+> +         ver), sub = paste("Mean square residuals =", round(meansq)))
+> +     if (FALSE) {
+> +         dev.copy(png, file.path(paste(itemName, measure, ver, 
+> +             "png", sep = ".")), width = 640, height = 640)
+> +         dev.off()
+> +     }
+> +     print(paste(itemName, measure, round(meansq), round(tmeansq)))
+> + }
+> 
+> Attaching package: 'SparseM'
+> 
+> The following object(s) are masked from 'package:base':
+> 
+>     backsolve
+> 
+> [1] "ACTB-gray Mean.Net 469690 205795"
+> 
+> > remove(i, itemName, item, meansq, tmeansq)
+> > 
+> > method <- 'nlrob'
+> > source("testRblock", echo=TRUE, max.deparse.len=1024)
+> 
+> > ver <- packageDescription("SuperCurve", fields = "Version")
+> 
+> > cat(paste("\nTest of SuperCurve version", ver), "\n")
+> 
+> Test of SuperCurve version 1.5.8 
+> 
+> > cat(paste("model = ", model, "; method = ", method, 
+> +     "; measure = ", measure, sep = ""), "\n")
+> model = loess; method = nlrob; measure = Mean.Net 
+> 
+> > for (i in seq_len(nrow(proteins))) {
+> +     itemName <- proteins$Antibody[i]
+> +     item <- eval(as.name(itemName))
+> +     temp <- try(RPPAFit(item, design, measure, method = method, 
+> +         model = model, ignoreNegative = FALSE, warnLevel = -1), 
+> +         TRUE)
+> +     if (is(temp, "try-error")) {
+> +         print(paste(itemName, measure, ver, "FAILED"))
+> +         next
+> +     }
+> +     meansq <- mean(resid(temp)^2, na.rm = TRUE)
+> +     tmeansq <- mean(resid(temp)^2, na.rm = TRUE, trim = 0.1)
+> +     par(bg = "white")
+> +     plot(temp, xlim = c(-15, 15), main = paste(itemName, measure, 
+> +         ver), sub = paste("Mean square residuals =", round(meansq)))
+> +     if (FALSE) {
+> +         dev.copy(png, file.path(paste(itemName, measure, ver, 
+> +             "png", sep = ".")), width = 640, height = 640)
+> +         dev.off()
+> +     }
+> +     print(paste(itemName, measure, round(meansq), round(tmeansq)))
+> + }
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> [1] "ACTB-gray Mean.Net 438465 212956"
+> 
+> > remove(i, itemName, item, meansq, tmeansq)
+> > 
+> > method <- "nls"
+> > source("testRblock", echo=TRUE, max.deparse.len=1024)
+> 
+> > ver <- packageDescription("SuperCurve", fields = "Version")
+> 
+> > cat(paste("\nTest of SuperCurve version", ver), "\n")
+> 
+> Test of SuperCurve version 1.5.8 
+> 
+> > cat(paste("model = ", model, "; method = ", method, 
+> +     "; measure = ", measure, sep = ""), "\n")
+> model = loess; method = nls; measure = Mean.Net 
+> 
+> > for (i in seq_len(nrow(proteins))) {
+> +     itemName <- proteins$Antibody[i]
+> +     item <- eval(as.name(itemName))
+> +     temp <- try(RPPAFit(item, design, measure, method = method, 
+> +         model = model, ignoreNegative = FALSE, warnLevel = -1), 
+> +         TRUE)
+> +     if (is(temp, "try-error")) {
+> +         print(paste(itemName, measure, ver, "FAILED"))
+> +         next
+> +     }
+> +     meansq <- mean(resid(temp)^2, na.rm = TRUE)
+> +     tmeansq <- mean(resid(temp)^2, na.rm = TRUE, trim = 0.1)
+> +     par(bg = "white")
+> +     plot(temp, xlim = c(-15, 15), main = paste(itemName, measure, 
+> +         ver), sub = paste("Mean square residuals =", round(meansq)))
+> +     if (FALSE) {
+> +         dev.copy(png, file.path(paste(itemName, measure, ver, 
+> +             "png", sep = ".")), width = 640, height = 640)
+> +         dev.off()
+> +     }
+> +     print(paste(itemName, measure, round(meansq), round(tmeansq)))
+> + }
+> [1] "ACTB-gray Mean.Net 421580 234844"
+> 
+> > remove(i, itemName, item, meansq, tmeansq)
+> > 
+> > ######################################
+> > ## print the concentrations from the last fit. These will
+> > ## automatically be compared with the saved output when we
+> > ## run 'R CMD check'
+> > round(temp@concentrations, digits=4)
+>  Series.1.1.1  Series.1.1.2  Series.1.1.3  Series.1.1.4  Series.1.1.5 
+>       -0.8602       -0.5906       -0.7306        1.9298        1.9597 
+>  Series.1.1.6  Series.1.2.1  Series.1.2.2  Series.1.2.3  Series.1.2.4 
+>        2.2992       -0.0766       -0.0985        0.2027        2.8092 
+>  Series.1.2.5  Series.1.2.6  Series.1.3.1  Series.1.3.2  Series.1.3.3 
+>        3.2177        3.2285        1.9441        2.2368        1.9823 
+>  Series.1.3.4  Series.1.3.5  Series.1.3.6  Series.1.4.1  Series.1.4.2 
+>        2.9777        2.5031        2.9114        3.3828        3.6138 
+>  Series.1.4.3  Series.1.4.4  Series.1.4.5  Series.1.4.6  Series.1.5.1 
+>        3.5499        3.5921        3.6464        4.0593        3.1576 
+>  Series.1.5.2  Series.1.5.3  Series.1.5.4  Series.1.5.5  Series.1.5.6 
+>        3.2333        2.9223        2.9495        3.1347        3.2423 
+>  Series.1.6.1  Series.1.6.2  Series.1.6.3  Series.1.6.4  Series.1.6.5 
+>        3.6149        3.9160        3.6874        3.3865        3.5561 
+>  Series.1.6.6  Series.1.7.1  Series.1.7.2  Series.1.7.3  Series.1.7.4 
+>        3.8625        3.8820        4.0591        3.8911        7.2820 
+>  Series.1.7.5  Series.1.7.6  Series.1.8.1  Series.1.8.2  Series.1.8.3 
+>        6.6822        6.8652        4.7676        5.1979        4.7265 
+>  Series.1.8.4  Series.1.8.5  Series.1.8.6  Series.1.9.1  Series.1.9.2 
+>        3.7238        3.8765        4.1746        4.5535        4.5426 
+>  Series.1.9.3  Series.1.9.4  Series.1.9.5  Series.1.9.6 Series.1.10.1 
+>        4.5674        6.8556        7.3246        7.5989        4.1443 
+> Series.1.10.2 Series.1.10.3 Series.1.10.4 Series.1.10.5 Series.1.10.6 
+>        4.6125        4.4950        4.3480        3.9703        4.5727 
+> Series.1.11.1 Series.1.11.2 Series.1.11.3 Series.1.11.4 Series.1.11.5 
+>        2.9584        3.1721        2.9397        3.0561        2.7478 
+> Series.1.11.6 Series.1.12.1 Series.1.12.2 Series.1.12.3 Series.1.12.4 
+>        3.1182        1.7063        1.7571        1.7199        0.9924 
+> Series.1.12.5 Series.1.12.6  Series.2.1.1  Series.2.1.2  Series.2.1.3 
+>        0.5025        1.1475        1.9074        1.6779        2.0198 
+>  Series.2.1.4  Series.2.1.5  Series.2.1.6  Series.2.2.1  Series.2.2.2 
+>       -1.0751       -0.2828       -1.1889        2.1312        1.9446 
+>  Series.2.2.3  Series.2.2.4  Series.2.2.5  Series.2.2.6  Series.2.3.1 
+>        1.8413        1.8101        1.5698        1.7560        2.9397 
+>  Series.2.3.2  Series.2.3.3  Series.2.3.4  Series.2.3.5  Series.2.3.6 
+>        2.7681        2.7168        1.3844        1.4297        1.2760 
+>  Series.2.4.1  Series.2.4.2  Series.2.4.3  Series.2.4.4  Series.2.4.5 
+>        4.7562        4.5977        4.3986        4.7928        4.9474 
+>  Series.2.4.6  Series.2.5.1  Series.2.5.2  Series.2.5.3  Series.2.5.4 
+>        5.1598        4.7345        4.7211        4.4231        4.6817 
+>  Series.2.5.5  Series.2.5.6  Series.2.6.1  Series.2.6.2  Series.2.6.3 
+>        4.5105        4.4279        6.1930        5.6408        5.3673 
+>  Series.2.6.4  Series.2.6.5  Series.2.6.6  Series.2.7.1  Series.2.7.2 
+>        5.1603        5.0483        4.8821        6.4825        6.4761 
+>  Series.2.7.3  Series.2.7.4  Series.2.7.5  Series.2.7.6  Series.2.8.1 
+>        6.5935        4.2292        3.9509        3.7344        6.4995 
+>  Series.2.8.2  Series.2.8.3  Series.2.8.4  Series.2.8.5  Series.2.8.6 
+>        6.3415        6.0467        4.2122        4.0063        3.9265 
+>  Series.2.9.1  Series.2.9.2  Series.2.9.3  Series.2.9.4  Series.2.9.5 
+>        5.8043        5.2290        5.0294        3.9849        3.9305 
+>  Series.2.9.6 Series.2.10.1 Series.2.10.2 Series.2.10.3 Series.2.10.4 
+>        3.9001       -0.2383       -0.3098       -0.5901       -0.0632 
+> Series.2.10.5 Series.2.10.6 Series.2.11.1 Series.2.11.2 Series.2.11.3 
+>       -0.3272       -0.4103       -0.2294       -0.4625       -0.4174 
+> Series.2.11.4 Series.2.11.5 Series.2.11.6 Series.2.12.1 Series.2.12.2 
+>       -0.8695       -1.1522       -1.3751       -0.7454       -1.2136 
+> Series.2.12.3 Series.2.12.4 Series.2.12.5 Series.2.12.6  Series.3.1.1 
+>       -1.0312       -3.2044       -3.1881       -2.7890        0.0310 
+>  Series.3.1.2  Series.3.1.3  Series.3.1.4  Series.3.1.5  Series.3.1.6 
+>        0.5650        0.6239        2.5525        2.3076        2.1425 
+>  Series.3.2.1  Series.3.2.2  Series.3.2.3  Series.3.2.4  Series.3.2.5 
+>        3.4380        3.3023        3.1705        4.0556        4.0233 
+>  Series.3.2.6  Series.3.3.1  Series.3.3.2  Series.3.3.3  Series.3.3.4 
+>        4.0407        3.5934        3.5800        3.2331        5.4542 
+>  Series.3.3.5  Series.3.3.6  Series.3.4.1  Series.3.4.2  Series.3.4.3 
+>        5.1599        5.4712        5.5806        5.1363        4.9577 
+>  Series.3.4.4  Series.3.4.5  Series.3.4.6  Series.3.5.1  Series.3.5.2 
+>        5.0053        4.6410        4.8304        4.5422        4.5434 
+>  Series.3.5.3  Series.3.5.4  Series.3.5.5  Series.3.5.6  Series.3.6.1 
+>        4.3845        4.1813        4.3831        4.4786        5.5073 
+>  Series.3.6.2  Series.3.6.3  Series.3.6.4  Series.3.6.5  Series.3.6.6 
+>        5.6549        5.3021        4.5688        5.0839        5.0391 
+>  Series.3.7.1  Series.3.7.2  Series.3.7.3  Series.3.7.4  Series.3.7.5 
+>        5.2775        4.6508        4.7517        7.8111        7.6375 
+>  Series.3.7.6  Series.3.8.1  Series.3.8.2  Series.3.8.3  Series.3.8.4 
+>        8.1827        5.0843        4.7216        4.3684        6.9000 
+>  Series.3.8.5  Series.3.8.6  Series.3.9.1  Series.3.9.2  Series.3.9.3 
+>        7.0314        7.5694        4.0392        4.2468        3.9571 
+>  Series.3.9.4  Series.3.9.5  Series.3.9.6 Series.3.10.1 Series.3.10.2 
+>        7.6208        8.4689        9.0228        4.0383        4.0884 
+> Series.3.10.3 Series.3.10.4 Series.3.10.5 Series.3.10.6 Series.3.11.1 
+>        4.1733        3.5459        4.2132        3.7448        3.6395 
+> Series.3.11.2 Series.3.11.3 Series.3.11.4 Series.3.11.5 Series.3.11.6 
+>        3.8334        3.7254        2.9809        2.8519        3.2691 
+> Series.3.12.1 Series.3.12.2 Series.3.12.3 Series.3.12.4 Series.3.12.5 
+>        2.7177        2.9806        2.7030        2.5105        2.8469 
+> Series.3.12.6  Series.4.1.1  Series.4.1.2  Series.4.1.3  Series.4.1.4 
+>        2.7346        1.3324        1.5012        1.3320        1.7609 
+>  Series.4.1.5  Series.4.1.6  Series.4.2.1  Series.4.2.2  Series.4.2.3 
+>        0.9723        1.4843        3.4579        3.3962        3.3801 
+>  Series.4.2.4  Series.4.2.5  Series.4.2.6  Series.4.3.1  Series.4.3.2 
+>        3.1690        3.1007        2.6054        4.1886        3.8864 
+>  Series.4.3.3  Series.4.3.4  Series.4.3.5  Series.4.3.6  Series.4.4.1 
+>        3.1904        3.4127        3.2599        2.7650        7.2229 
+>  Series.4.4.2  Series.4.4.3  Series.4.4.4  Series.4.4.5  Series.4.4.6 
+>        6.7795        6.1075        6.8747        6.4518        5.7240 
+>  Series.4.5.1  Series.4.5.2  Series.4.5.3  Series.4.5.4  Series.4.5.5 
+>        5.1526        5.0230        4.7089        5.5965        5.1155 
+>  Series.4.5.6  Series.4.6.1  Series.4.6.2  Series.4.6.3  Series.4.6.4 
+>        4.8510        4.4937        4.6357        4.5758        4.9750 
+>  Series.4.6.5  Series.4.6.6  Series.4.7.1  Series.4.7.2  Series.4.7.3 
+>        4.7688        4.6433        7.3814        7.5395        7.1163 
+>  Series.4.7.4  Series.4.7.5  Series.4.7.6  Series.4.8.1  Series.4.8.2 
+>        5.3279        5.0409        4.4522        7.0404        7.2365 
+>  Series.4.8.3  Series.4.8.4  Series.4.8.5  Series.4.8.6  Series.4.9.1 
+>        6.9942        5.7698        5.5294        5.1406        7.3507 
+>  Series.4.9.2  Series.4.9.3  Series.4.9.4  Series.4.9.5  Series.4.9.6 
+>        7.4498        7.1456        5.5059        4.9892        4.4154 
+> Series.4.10.1 Series.4.10.2 Series.4.10.3 Series.4.10.4 Series.4.10.5 
+>       -1.5823       -1.1667       -1.3396       -1.8055       -1.7891 
+> Series.4.10.6 Series.4.11.1 Series.4.11.2 Series.4.11.3 Series.4.11.4 
+>       -1.7296       -1.9226       -1.9552       -1.6579       -1.7498 
+> Series.4.11.5 Series.4.11.6 Series.4.12.1 Series.4.12.2 Series.4.12.3 
+>       -2.1154       -3.0667       -4.2887       -3.7101       -4.2395 
+> Series.4.12.4 Series.4.12.5 Series.4.12.6 
+>       -2.7825       -3.5347       -3.8492 
+> > 
+> > ######################################
+> > ## This early design had each series repeated nine times,
+> > ## three times within a subgrid and again in three adjacent
+> > ## subgrids. Here we measure the variability of the
+> > ## replicates.
+> > d <- ACTB@data[seq(6, nrow(ACTB@data), by=6), ]
+> > attach(d)
+> > foo <- paste("Series", Main.Row, Main.Col, Sub.Row, sep=".")
+> > detach()
+> > sum(foo == seriesNames(design))
+> [1] 288
+> > 
+> > avgs <- tapply(temp@concentrations, list(d$Sample), mean)
+> > spread <- tapply(temp@concentrations, list(d$Sample), sd)
+> > res <- data.frame(Mean=avgs, SD=spread, CV=spread/abs(avgs))
+> > round(res[order(res$SD), ], digits=4)
+>                       Mean     SD     CV
+> G26                 3.9861 0.1538 0.0386
+> U251 10%            7.2505 0.1902 0.0262
+> KM12L4              4.8456 0.2662 0.0549
+> PASW 480 10%01      3.4531 0.3068 0.0888
+> L3.6 10%            4.6902 0.3184 0.0679
+> L3.6                3.4922 0.3522 0.1009
+> SNB19               4.4653 0.4409 0.0987
+> SNB19 10%           4.5664 0.4514 0.0988
+> MDA468              2.2163 0.4642 0.2094
+> G26 10%             5.1302 0.4673 0.0911
+> PASW 480 10%01 10%  5.0677 0.4861 0.0959
+> MDA231              2.6485 0.4997 0.1887
+> SW 480 10%          3.1886 0.5514 0.1729
+> U251                6.0558 0.5838 0.0964
+> U87 EGFR 10%        3.5444 0.5884 0.1660
+> KM12C               4.9814 0.6154 0.1235
+> U87 10%             7.8049 0.6710 0.0860
+> KM12L4 10%          5.4445 0.7859 0.1443
+> BT474 10%           2.5034 0.8812 0.3520
+> Buffer             -1.0343 1.0071 0.9738
+> KM12C 10%           5.4111 1.0302 0.1904
+> Blank              -2.4603 1.0446 0.4246
+> MDA468 10%          2.8517 1.1378 0.3990
+> U87 EGFR 0.5        3.0561 1.1730 0.3838
+> BT474               0.7421 1.2301 1.6576
+> MCF7                0.4455 1.2552 2.8177
+> MDA231 10%          3.9119 1.3215 0.3378
+> MCF7 10%            2.3930 1.5054 0.6291
+> K562                2.7173 1.5122 0.5565
+> U87                 6.0426 1.6166 0.2675
+> > 
+> > 
+  Running 'testLogistic.R'
+  Comparing 'testLogistic.Rout' to 'testLogistic.Rout.save' ...16,19c16,330
+< >>>>                <<<< 
+< >>>>  Test skipped  <<<< 
+< >>>>                <<<< 
+< To run all package tests, define "SUPERCURVE_FULL_TEST" environment variable
+---
+> > options(warn=1)
+> > library(SuperCurve)
+> > library(robustbase)
+> > library(boot)
+> 
+> Attaching package: 'boot'
+> 
+> The following object(s) are masked from 'package:robustbase':
+> 
+>     salinity
+> 
+> > 
+> > extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
+> > 
+> > ######################################
+> > ## load the data from the 40 cell lines
+> > home <- file.path(extdata.dir, "rppaCellData")
+> > 
+> > ## first locate the list of assays
+> > ## the name 'proteins' is required
+> > ## must include two columns named 'Antibody' and 'Filename'.
+> > proteins <- read.delim(file.path(home, "proteinAssay.tsv"), as.is=TRUE)
+> > rownames(proteins) <- as.character(proteins$Antibody)
+> > 
+> > for (i in seq_len(nrow(proteins))) {
+> +     temp <- RPPA(proteins$Filename[i],
+> +                  path=home,
+> +                  antibody=proteins$Antibody[i])
+> +     assign(proteins$Antibody[i], temp, 1)
+> + }
+> > remove(i, temp)
+> > 
+> > ######################################
+> > ## work out the appropriate design layout
+> > 
+> > steps <- rep(c(rep(8:5, 2), rep(4:1, 2)), 40) - 4.5
+> > rep.temp <- factor(paste("Rep", rep(rep(1:2, each=4), 80), sep=""))
+> > series <- factor(paste(as.character(AKT@data$Sample),
+> +                        as.character(rep.temp),
+> +                        sep="."))
+> > ## the name 'design' is required'
+> > design <- RPPADesign(AKT, steps=steps, series=series)
+> > remove(steps, rep.temp, series)
+> > 
+> > ######################################
+> > ## must define the 'model' to use
+> > model <- "logistic"
+> > 
+> > ######################################
+> > ## must define the 'measure' to use
+> > measure <- "Mean.Net"
+> > 
+> > ######################################
+> > ## must define the 'method' to use
+> > method <- "nlrq"
+> > source("testRblock", echo=TRUE, max.deparse.len=1024)
+> 
+> > ver <- packageDescription("SuperCurve", fields = "Version")
+> 
+> > cat(paste("\nTest of SuperCurve version", ver), "\n")
+> 
+> Test of SuperCurve version 1.5.8 
+> 
+> > cat(paste("model = ", model, "; method = ", method, 
+> +     "; measure = ", measure, sep = ""), "\n")
+> model = logistic; method = nlrq; measure = Mean.Net 
+> 
+> > for (i in seq_len(nrow(proteins))) {
+> +     itemName <- proteins$Antibody[i]
+> +     item <- eval(as.name(itemName))
+> +     temp <- try(RPPAFit(item, design, measure, method = method, 
+> +         model = model, ignoreNegative = FALSE, warnLevel = -1), 
+> +         TRUE)
+> +     if (is(temp, "try-error")) {
+> +         print(paste(itemName, measure, ver, "FAILED"))
+> +         next
+> +     }
+> +     meansq <- mean(resid(temp)^2, na.rm = TRUE)
+> +     tmeansq <- mean(resid(temp)^2, na.rm = TRUE, trim = 0.1)
+> +     par(bg = "white")
+> +     plot(temp, xlim = c(-15, 15), main = paste(itemName, measure, 
+> +         ver), sub = paste("Mean square residuals =", round(meansq)))
+> +     if (FALSE) {
+> +         dev.copy(png, file.path(paste(itemName, measure, ver, 
+> +             "png", sep = ".")), width = 640, height = 640)
+> +         dev.off()
+> +     }
+> +     print(paste(itemName, measure, round(meansq), round(tmeansq)))
+> + }
+> Warning in RPPAFitFromParams(rppa, design, params) :
+>   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+> 
+> Attaching package: 'SparseM'
+> 
+> The following object(s) are masked from 'package:base':
+> 
+>     backsolve
+> 
+> [1] "AKT Mean.Net 1544083 692611"
+> Warning in RPPAFitFromParams(rppa, design, params) :
+>   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+> Warning in lsfit(x, y, d^2, intercept = FALSE) :
+>   'X' matrix was collinear
+> Warning in lsfit(x, y, d^2, intercept = FALSE) :
+>   'X' matrix was collinear
+> [1] "ERK2 Mean.Net 6277287 2330149"
+> Warning in RPPAFitFromParams(rppa, design, params) :
+>   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+> [1] "CTNNB1 Mean.Net 4737490 928624"
+> 
+> > remove(i, itemName, item, meansq, tmeansq)
+> > 
+> > method <- "nlrob"
+> > source("testRblock", echo=TRUE, max.deparse.len=1024)
+> 
+> > ver <- packageDescription("SuperCurve", fields = "Version")
+> 
+> > cat(paste("\nTest of SuperCurve version", ver), "\n")
+> 
+> Test of SuperCurve version 1.5.8 
+> 
+> > cat(paste("model = ", model, "; method = ", method, 
+> +     "; measure = ", measure, sep = ""), "\n")
+> model = logistic; method = nlrob; measure = Mean.Net 
+> 
+> > for (i in seq_len(nrow(proteins))) {
+> +     itemName <- proteins$Antibody[i]
+> +     item <- eval(as.name(itemName))
+> +     temp <- try(RPPAFit(item, design, measure, method = method, 
+> +         model = model, ignoreNegative = FALSE, warnLevel = -1), 
+> +         TRUE)
+> +     if (is(temp, "try-error")) {
+> +         print(paste(itemName, measure, ver, "FAILED"))
+> +         next
+> +     }
+> +     meansq <- mean(resid(temp)^2, na.rm = TRUE)
+> +     tmeansq <- mean(resid(temp)^2, na.rm = TRUE, trim = 0.1)
+> +     par(bg = "white")
+> +     plot(temp, xlim = c(-15, 15), main = paste(itemName, measure, 
+> +         ver), sub = paste("Mean square residuals =", round(meansq)))
+> +     if (FALSE) {
+> +         dev.copy(png, file.path(paste(itemName, measure, ver, 
+> +             "png", sep = ".")), width = 640, height = 640)
+> +         dev.off()
+> +     }
+> +     print(paste(itemName, measure, round(meansq), round(tmeansq)))
+> + }
+> Warning in RPPAFitFromParams(rppa, design, params) :
+>   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> [1] "AKT Mean.Net 1457191 689323"
+> Warning in RPPAFitFromParams(rppa, design, params) :
+>   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+> [1] "ERK2 Mean.Net 6139545 2305429"
+> Warning in RPPAFitFromParams(rppa, design, params) :
+>   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+>   failed to converge in 20 steps
+> [1] "CTNNB1 Mean.Net 3931938 1054908"
+> 
+> > remove(i, itemName, item, meansq, tmeansq)
+> > 
+> > method <- "nls"
+> > source("testRblock", echo=TRUE, max.deparse.len=1024)
+> 
+> > ver <- packageDescription("SuperCurve", fields = "Version")
+> 
+> > cat(paste("\nTest of SuperCurve version", ver), "\n")
+> 
+> Test of SuperCurve version 1.5.8 
+> 
+> > cat(paste("model = ", model, "; method = ", method, 
+> +     "; measure = ", measure, sep = ""), "\n")
+> model = logistic; method = nls; measure = Mean.Net 
+> 
+> > for (i in seq_len(nrow(proteins))) {
+> +     itemName <- proteins$Antibody[i]
+> +     item <- eval(as.name(itemName))
+> +     temp <- try(RPPAFit(item, design, measure, method = method, 
+> +         model = model, ignoreNegative = FALSE, warnLevel = -1), 
+> +         TRUE)
+> +     if (is(temp, "try-error")) {
+> +         print(paste(itemName, measure, ver, "FAILED"))
+> +         next
+> +     }
+> +     meansq <- mean(resid(temp)^2, na.rm = TRUE)
+> +     tmeansq <- mean(resid(temp)^2, na.rm = TRUE, trim = 0.1)
+> +     par(bg = "white")
+> +     plot(temp, xlim = c(-15, 15), main = paste(itemName, measure, 
+> +         ver), sub = paste("Mean square residuals =", round(meansq)))
+> +     if (FALSE) {
+> +         dev.copy(png, file.path(paste(itemName, measure, ver, 
+> +             "png", sep = ".")), width = 640, height = 640)
+> +         dev.off()
+> +     }
+> +     print(paste(itemName, measure, round(meansq), round(tmeansq)))
+> + }
+> Warning in RPPAFitFromParams(rppa, design, params) :
+>   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+> [1] "AKT Mean.Net 1431296 731954"
+> Warning in RPPAFitFromParams(rppa, design, params) :
+>   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+> [1] "ERK2 Mean.Net 6139134 2305947"
+> Warning in RPPAFitFromParams(rppa, design, params) :
+>   number of sample labels in design (80) does not match number of sample labels given in raw RPPA quantification file (40).
+> [1] "CTNNB1 Mean.Net 3513461 1285953"
+> 
+> > remove(i, itemName, item, meansq, tmeansq)
+> > 
+> > ######################################
+> > ## print the concentrations from the last fit. These will
+> > ## automatically be compared with the saved output when we
+> > ## run 'R CMD check'
+> > round(temp@concentrations, digits=4)
+>   sample1.Rep1   sample1.Rep2   sample2.Rep1   sample2.Rep2   sample3.Rep1 
+>        -5.1892        -4.5712        -3.5405        -3.5980        -4.0855 
+>   sample3.Rep2   sample4.Rep1   sample4.Rep2   sample5.Rep1   sample5.Rep2 
+>        -4.1104        -6.7238        -6.8595        -6.8595        -6.8595 
+>   sample6.Rep1   sample6.Rep2   sample7.Rep1   sample7.Rep2   sample8.Rep1 
+>        -3.5128        -3.4557        -5.2420        -5.1163        -6.1570 
+>   sample8.Rep2   sample9.Rep1   sample9.Rep2  sample10.Rep1  sample10.Rep2 
+>        -6.0861        -4.6253        -4.5410        -4.0139        -3.6981 
+>  sample11.Rep1  sample11.Rep2  sample12.Rep1  sample12.Rep2  sample13.Rep1 
+>        -3.5221        -3.8266        -6.8595        -6.8595        -3.5580 
+>  sample13.Rep2  sample14.Rep1  sample14.Rep2  sample15.Rep1  sample15.Rep2 
+>        -4.1612        -3.3573        -3.6340        -3.8601        -4.0298 
+>  sample16.Rep1  sample16.Rep2  sample17.Rep1  sample17.Rep2  sample18.Rep1 
+>        -3.0052        -2.5149        -3.5660        -3.8485        -4.6309 
+>  sample18.Rep2  sample19.Rep1  sample19.Rep2  sample20.Rep1  sample20.Rep2 
+>        -3.8807        -2.8514        -2.8337        -3.5091        -3.3617 
+>  sample21.Rep1  sample21.Rep2  sample22.Rep1  sample22.Rep2  sample23.Rep1 
+>        -2.8416        -2.7097        -4.0453        -3.9206        -3.4822 
+>  sample23.Rep2  sample24.Rep1  sample24.Rep2  sample25.Rep1  sample25.Rep2 
+>        -3.5596        -3.5323        -3.5729        -4.4223        -4.2475 
+>  sample26.Rep1  sample26.Rep2  sample27.Rep1  sample27.Rep2  sample28.Rep1 
+>        -4.1082        -4.2054        -3.0064        -2.7806        -5.7280 
+>  sample28.Rep2  sample29.Rep1  sample29.Rep2  sample30.Rep1  sample30.Rep2 
+>        -6.1335        -3.7236        -3.4875        -3.0277        -3.4006 
+>  sample31.Rep1  sample31.Rep2  sample32.Rep1  sample32.Rep2  sample33.Rep1 
+>        -3.5409        -3.6323        -2.9251        -2.4574        -3.7302 
+>  sample33.Rep2  sample34.Rep1  sample34.Rep2  sample35.Rep1  sample35.Rep2 
+>        -3.2884        -3.9493        -3.9947        -3.5154        -3.8421 
+>  sample36.Rep1  sample36.Rep2  sample37.Rep1  sample37.Rep2  sample38.Rep1 
+>        -3.1455        -3.2030        -4.0554        -4.0488        -2.5447 
+>  sample38.Rep2 sample 39.Rep1 sample 39.Rep2 sample 40.Rep1 sample 40.Rep2 
+>        -2.8795        -1.4051        -1.7690        -3.6933        -4.1579 
+> > 
+> > ######################################
+> > x <- temp@concentrations
+> > rep1 <- which(regexpr("Rep1", names(x)) > 0)
+> > rep2 <- which(regexpr("Rep2", names(x)) > 0)
+> > cat("Difference between replicates", "\n")
+> Difference between replicates 
+> > summary(x[rep1]-x[rep2])
+>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+> -0.750200 -0.135700  0.012470  0.001151  0.196500  0.603300 
+> > 
+> > 
+  Running 'testNormalize.R'
+  Running 'testRPPA.R'
+  Comparing 'testRPPA.Rout' to 'testRPPA.Rout.save' ...10,11d9
+< Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
+< Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
+47c45
+<   cannot open URL 'http://www.example.org/myslide.tsv': HTTP status was '404 Not Found'
+---
+>   cannot open: HTTP status was '404 Not Found'
+123c121
+<   file "C:/R/R-3.4.0/library/SuperCurveSampleData/extdata/rppaCellData/cellLineInfo.tsv" is not a MicroVigene datafile
+---
+>   file "/Library/Frameworks/R.framework/Versions/2.15/Resources/library/SuperCurveSampleData/extdata/rppaCellData/cellLineInfo.tsv" is not a MicroVigene datafile
+166c164
+<   cannot import data from file "C:/R/R-3.4.0/library/SuperCurveSampleData/extdata/rppaCellData/Akt.txt"
+---
+>   cannot import data from file "/Library/Frameworks/R.framework/Versions/2.15/Resources/library/SuperCurveSampleData/extdata/rppaCellData/Akt.txt"
+182c180
+<   cannot import data from file "C:/R/R-3.4.0/library/SuperCurveSampleData/extdata/rppaCellData/Akt.txt"
+---
+>   cannot import data from file "/Library/Frameworks/R.framework/Versions/2.15/Resources/library/SuperCurveSampleData/extdata/rppaCellData/Akt.txt"
+  Running 'testRPPANormalizationParams.R'
+  Comparing 'testRPPANormalizationParams.Rout' to 'testRPPANormalizationParams.Rout.save' ...10,11d9
+< Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
+< Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
+  Running 'testRPPASet.R' [13s]
+  Comparing 'testRPPASet.Rout' to 'testRPPASet.Rout.save' ...10,11d9
+< Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
+< Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
+17c15
+< The following object is masked from 'package:robustbase':
+---
+> The following object(s) are masked from 'package:robustbase':
+129c127
+<   directory "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/nosuch" does not exist
+---
+>   directory "/tmp/RtmpXvDrjD/supercurve/nosuch" does not exist
+138c136
+<   directory "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/somefile" does not exist
+---
+>   directory "/tmp/RtmpXvDrjD/supercurve/somefile" does not exist
+149c147
+<   no quantification files found in directory "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/emptydir"
+---
+>   no quantification files found in directory "/tmp/RtmpXvDrjD/supercurve/emptydir"
+221c219
+<   cannot load antibody data from file "C:/R/R-3.4.0/library/SuperCurveSampleData/extdata/rppaTumorData/nosuch.tsv" - file.exists(antibodyfile) is not TRUE
+---
+>   cannot load antibody data from file "/Library/Frameworks/R.framework/Versions/2.15/Resources/library/SuperCurveSampleData/extdata/rppaTumorData/nosuch.tsv" - file.exists(antibodyfile) is not TRUE
+231c229
+<   cannot load antibody data from file "C:/R/R-3.4.0/library/SuperCurveSampleData/extdata/rppaTumorData" - argument is not a file
+---
+>   cannot load antibody data from file "/Library/Frameworks/R.framework/Versions/2.15/Resources/library/SuperCurveSampleData/extdata/rppaTumorData" - argument is not a file
+246c244
+<   cannot load antibody data from file "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/emptyfile.tsv" - no lines available in input
+---
+>   cannot load antibody data from file "/tmp/RtmpXvDrjD/supercurve/emptyfile.tsv" - no lines available in input
+266c264
+<   cannot load antibody data from file "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/singlecolfile.tsv" - missing required column: "Antibody"
+---
+>   cannot load antibody data from file "/tmp/RtmpXvDrjD/supercurve/singlecolfile.tsv" - missing required column: "Antibody"
+288c286
+<   cannot load antibody data from file "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/missingreqdcols.tsv" - missing required column: "Antibody"
+---
+>   cannot load antibody data from file "/tmp/RtmpXvDrjD/supercurve/missingreqdcols.tsv" - missing required column: "Antibody"
+300c298
+< Error in (function (classes, fdef, mtable)  : 
+---
+> Error in function (classes, fdef, mtable)  : 
+311c309
+<   directory "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/nosuch" does not exist
+---
+>   directory "/tmp/RtmpXvDrjD/supercurve/nosuch" does not exist
+325c323,325
+< skipped readonly output directory test (not implemented) 
+---
+> Error in .local(object, ...) : 
+>   directory "/tmp/RtmpXvDrjD/supercurve/readonly" is not writable
+> [1] TRUE
+388c388
+<   directory "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/nosuch" does not exist
+---
+>   directory "/tmp/RtmpXvDrjD/supercurve/nosuch" does not exist
+397c397
+<   directory "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/somefile" does not exist
+---
+>   directory "/tmp/RtmpXvDrjD/supercurve/somefile" does not exist
+454c454,458
+< skipped ImageMagick test (not implemented) 
+---
+> dev.new(): using pdf(file="Rplots4.pdf")
+> merging graphs and image for ERK2
+> sh: convert: command not found
+> Error : (converted from warning) ImageMagick executable 'convert' not installed or unavailable via PATH
+> [1] TRUE
+  Running 'testRPPASpatialParams.R'
+  Comparing 'testRPPASpatialParams.Rout' to 'testRPPASpatialParams.Rout.save' ...10,11d9
+< Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
+< Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
+* checking for unstated dependencies in vignettes ... OK
+* checking package vignettes in 'inst/doc' ... OK
+* checking re-building of vignette outputs ... OK
+* checking PDF version of manual ... OK
+* DONE
+Status: 2 WARNINGs, 4 NOTEs
