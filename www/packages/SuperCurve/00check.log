@@ -1,4 +1,4 @@
-* using log directory 'C:/Users/Kevin/Desktop/RForge/supercurve/pkg/SuperCurve.Rcheck'
+* using log directory 'C:/Users/coom05/Desktop/rforge/supercurve/pkg/SuperCurve.Rcheck'
 * using R version 3.4.0 (2017-04-21)
 * using platform: x86_64-w64-mingw32 (64-bit)
 * using session charset: ISO8859-1
@@ -13,6 +13,18 @@ New submission
 Suggests or Enhances not in mainstream repositories:
   SuperCurveSampleData
 
+Found the following (possibly) invalid URLs:
+  URL: https://academic.oup.com/bioinformatics/article/23/15/1986/205819/Non-parametric-quantification-of-protein-lysate
+    From: man/sc09-CobsFitClass-class.Rd
+    Status: Error
+    Message: libcurl error code 7
+    	Failed to connect to academic.oup.com port 443: Connection refused
+  URL: https://academic.oup.com/bioinformatics/article/25/11/1384/331482/Variable-slope-normalization-of-reverse-phase
+    From: man/sc15-normalize.Rd
+    Status: Error
+    Message: libcurl error code 7
+    	Failed to connect to academic.oup.com port 443: Connection refused
+
 The Date field is over a month old.
 * checking package namespace information ... OK
 * checking package dependencies ... OK
@@ -25,7 +37,7 @@ The Date field is over a month old.
 Found the following significant warnings:
   Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
   Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
-See 'C:/Users/Kevin/Desktop/RForge/supercurve/pkg/SuperCurve.Rcheck/00install.out' for details.
+See 'C:/Users/coom05/Desktop/rforge/supercurve/pkg/SuperCurve.Rcheck/00install.out' for details.
 * checking installed package size ... OK
 * checking package directory ... OK
 * checking 'build' directory ... OK
@@ -178,7 +190,10 @@ Codoc mismatches from documentation object 'normalize':
 * checking sizes of PDF files under 'inst/doc' ... OK
 * checking installed files from 'inst/doc' ... OK
 * checking files in 'vignettes' ... OK
-* checking examples ... OK
+* checking examples ... NOTE
+Examples with CPU or elapsed time > 5s
+                       user system elapsed
+sc14-spatialCorrection 6.07   0.14    6.25
 * checking for unstated dependencies in 'tests' ... OK
 * checking tests ... OK
   Running 'sessionInfo.R'
@@ -215,7 +230,7 @@ Codoc mismatches from documentation object 'normalize':
 >  [7] nlme_3.1-108               boot_1.3-7                
 >  [9] SuperCurve_1.5.8           cobs_1.3-0                
 60,61c51,52
-< [1] lattice_0.20-35    MASS_7.3-47        grid_3.4.0         MatrixModels_0.4-1
+< [1] lattice_0.20-35    MASS_7.3-47        grid_3.4.0         MatrixModels_0.4-2
 < [5] Matrix_1.2-9       DEoptimR_1.0-8     compiler_3.4.0    
 ---
 > [1] DEoptimR_1.0-2  MASS_7.3-23     Matrix_1.1-4    grid_2.15.3    
@@ -509,7 +524,7 @@ Codoc mismatches from documentation object 'normalize':
   Comparing 'testDesign.Rout' to 'testDesign.Rout.save' ...10,11d9
 < Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
 < Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
-  Running 'testFit.R' [110s]
+  Running 'testFit.R' [176s]
   Comparing 'testFit.Rout' to 'testFit.Rout.save' ...14,15d13
 < Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
 < Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
@@ -1233,7 +1248,7 @@ Codoc mismatches from documentation object 'normalize':
   Comparing 'testRPPANormalizationParams.Rout' to 'testRPPANormalizationParams.Rout.save' ...10,11d9
 < Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
 < Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
-  Running 'testRPPASet.R' [13s]
+  Running 'testRPPASet.R' [21s]
   Comparing 'testRPPASet.Rout' to 'testRPPASet.Rout.save' ...10,11d9
 < Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
 < Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
@@ -1242,15 +1257,15 @@ Codoc mismatches from documentation object 'normalize':
 ---
 > The following object(s) are masked from 'package:robustbase':
 129c127
-<   directory "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/nosuch" does not exist
+<   directory "C:\Users\coom05\AppData\Local\Temp\RtmpSywoHu/supercurve/nosuch" does not exist
 ---
 >   directory "/tmp/RtmpXvDrjD/supercurve/nosuch" does not exist
 138c136
-<   directory "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/somefile" does not exist
+<   directory "C:\Users\coom05\AppData\Local\Temp\RtmpSywoHu/supercurve/somefile" does not exist
 ---
 >   directory "/tmp/RtmpXvDrjD/supercurve/somefile" does not exist
 149c147
-<   no quantification files found in directory "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/emptydir"
+<   no quantification files found in directory "C:\Users\coom05\AppData\Local\Temp\RtmpSywoHu/supercurve/emptydir"
 ---
 >   no quantification files found in directory "/tmp/RtmpXvDrjD/supercurve/emptydir"
 221c219
@@ -1262,15 +1277,15 @@ Codoc mismatches from documentation object 'normalize':
 ---
 >   cannot load antibody data from file "/Library/Frameworks/R.framework/Versions/2.15/Resources/library/SuperCurveSampleData/extdata/rppaTumorData" - argument is not a file
 246c244
-<   cannot load antibody data from file "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/emptyfile.tsv" - no lines available in input
+<   cannot load antibody data from file "C:\Users\coom05\AppData\Local\Temp\RtmpSywoHu/supercurve/emptyfile.tsv" - no lines available in input
 ---
 >   cannot load antibody data from file "/tmp/RtmpXvDrjD/supercurve/emptyfile.tsv" - no lines available in input
 266c264
-<   cannot load antibody data from file "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/singlecolfile.tsv" - missing required column: "Antibody"
+<   cannot load antibody data from file "C:\Users\coom05\AppData\Local\Temp\RtmpSywoHu/supercurve/singlecolfile.tsv" - missing required column: "Antibody"
 ---
 >   cannot load antibody data from file "/tmp/RtmpXvDrjD/supercurve/singlecolfile.tsv" - missing required column: "Antibody"
 288c286
-<   cannot load antibody data from file "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/missingreqdcols.tsv" - missing required column: "Antibody"
+<   cannot load antibody data from file "C:\Users\coom05\AppData\Local\Temp\RtmpSywoHu/supercurve/missingreqdcols.tsv" - missing required column: "Antibody"
 ---
 >   cannot load antibody data from file "/tmp/RtmpXvDrjD/supercurve/missingreqdcols.tsv" - missing required column: "Antibody"
 300c298
@@ -1278,7 +1293,7 @@ Codoc mismatches from documentation object 'normalize':
 ---
 > Error in function (classes, fdef, mtable)  : 
 311c309
-<   directory "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/nosuch" does not exist
+<   directory "C:\Users\coom05\AppData\Local\Temp\RtmpSywoHu/supercurve/nosuch" does not exist
 ---
 >   directory "/tmp/RtmpXvDrjD/supercurve/nosuch" does not exist
 325c323,325
@@ -1288,11 +1303,11 @@ Codoc mismatches from documentation object 'normalize':
 >   directory "/tmp/RtmpXvDrjD/supercurve/readonly" is not writable
 > [1] TRUE
 388c388
-<   directory "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/nosuch" does not exist
+<   directory "C:\Users\coom05\AppData\Local\Temp\RtmpSywoHu/supercurve/nosuch" does not exist
 ---
 >   directory "/tmp/RtmpXvDrjD/supercurve/nosuch" does not exist
 397c397
-<   directory "C:\Users\Kevin\AppData\Local\Temp\RtmporB0vF/supercurve/somefile" does not exist
+<   directory "C:\Users\coom05\AppData\Local\Temp\RtmpSywoHu/supercurve/somefile" does not exist
 ---
 >   directory "/tmp/RtmpXvDrjD/supercurve/somefile" does not exist
 454c454,458
@@ -1312,4 +1327,4 @@ Codoc mismatches from documentation object 'normalize':
 * checking re-building of vignette outputs ... OK
 * checking PDF version of manual ... OK
 * DONE
-Status: 2 WARNINGs, 4 NOTEs
+Status: 2 WARNINGs, 5 NOTEs

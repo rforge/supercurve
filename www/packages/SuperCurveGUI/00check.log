@@ -1,4 +1,4 @@
-* using log directory 'C:/Users/Kevin/Desktop/RForge/supercurve/pkg/SuperCurveGUI.Rcheck'
+* using log directory 'C:/Users/coom05/Desktop/rforge/supercurve/pkg/SuperCurveGUI.Rcheck'
 * using R version 3.4.0 (2017-04-21)
 * using platform: x86_64-w64-mingw32 (64-bit)
 * using session charset: ISO8859-1
@@ -26,7 +26,7 @@ Found the following significant warnings:
   Warning: running command 'C:\Windows\system32\cmd.exe /c convert --version' had status 4
   Warning: ImageMagick executable 'convert' not installed or unavailable via PATH
   Warning: replacing previous import 'tcltk::tkimage.delete' by 'tclish::tkimage.delete' when loading 'SuperCurveGUI'
-See 'C:/Users/Kevin/Desktop/RForge/supercurve/pkg/SuperCurveGUI.Rcheck/00install.out' for details.
+See 'C:/Users/coom05/Desktop/rforge/supercurve/pkg/SuperCurveGUI.Rcheck/00install.out' for details.
 * checking installed package size ... OK
 * checking package directory ... OK
 * checking DESCRIPTION meta-information ... OK
