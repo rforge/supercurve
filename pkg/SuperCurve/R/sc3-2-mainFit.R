@@ -487,7 +487,7 @@ RPPAFitFromParams <- function(rppa,
     yval <- intensity[!.controlVector(design)]
 
     ## Create new class
-    fc <- new(modelClass)
+    fc <- new(modelClass, coefficients=c(alpha=first[[1]], beta=first[[2]], gamma=first[[3]]))
 
     ## Do a two pass estimation, first using rough conc. estimates,
     ## then using better ones
@@ -553,7 +553,7 @@ RPPAFitFromParams <- function(rppa,
             ss.ratio[this] <- rsquared
 
             i.this <- i.this + as.integer(1)
-        }
+        }  # end: this in series
         progmethod(sprintf("%s fit series complete", pass.name))
 
         if (verbose) {
