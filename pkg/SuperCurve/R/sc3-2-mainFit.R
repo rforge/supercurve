@@ -487,7 +487,13 @@ RPPAFitFromParams <- function(rppa,
     yval <- intensity[!.controlVector(design)]
 
     ## Create new class
-    fc <- new(modelClass, coefficients=c(alpha=first[[1]], beta=first[[2]], gamma=first[[3]]))
+    fc <- switch(modelClass,
+      LogisticFitClass = new(modelClass,
+                             coefficients=c(alpha=first[[1]],
+                                            beta=first[[2]],
+                                            gamma=first[[3]])),
+      new(modelClass)
+      )
 
     ## Do a two pass estimation, first using rough conc. estimates,
     ## then using better ones
