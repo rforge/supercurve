@@ -1,0 +1,73 @@
+
+R version 2.15.3 Patched (2013-03-13 r62287) -- "Security Blanket"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ###
+> ### $Id: sessionInfo.R 955 2015-01-24 22:10:34Z proebuck $
+> ###
+> 
+> 
+> options(warn=1)
+> pkgname <- "SuperCurve"
+> suppressPackageStartupMessages(library(pkgname, character.only=TRUE))
+> 
+> 
+> ##-----------------------------------------------------------------------------
+> ## Returns character of package names corresponding to "Suggests:" field
+> suggestedPackages <- function(pkgname) {
++     ## Mung suggested packages metadata to remove tab and newline characters
++     suggests <- packageDescription(pkgname)$Suggests
++     suggests <- gsub('\n', ' ', suggests)
++     suggests <- gsub('\t', '',  suggests)
++ 
++     unlist(strsplit(suggests, ', '))
++ }
+> 
+> 
+> ## Load packages for all possible processing options
+> invisible(sapply(suggestedPackages(pkgname),
++                  function(suggested) {
++                      suppressPackageStartupMessages(
++                          require(suggested, character.only=TRUE))
++                  }))
+> 
+> show(sessionInfo())
+R version 2.15.3 Patched (2013-03-13 r62287)
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+locale:
+[1] C/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] splines   stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] SuperCurveSampleData_1.0.1 timeDate_3011.99          
+ [3] robustbase_0.92-2          quantreg_5.05             
+ [5] SparseM_1.6                mgcv_1.8-4                
+ [7] nlme_3.1-108               boot_1.3-7                
+ [9] SuperCurve_1.5.8           cobs_1.3-0                
+
+loaded via a namespace (and not attached):
+[1] DEoptimR_1.0-2  MASS_7.3-23     Matrix_1.1-4    grid_2.15.3    
+[5] lattice_0.20-29
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  3.068   0.096   3.206 

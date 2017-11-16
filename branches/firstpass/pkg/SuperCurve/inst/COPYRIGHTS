@@ -1,0 +1,19 @@
+###
+### $Id$
+###
+
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: SuperCurve
+Upstream-Contact: P. Roebuck <proebuck@mdanderson.org>
+Source: http://r-forge.r-project.org/projects/supercurve/
+
+Files: *
+Copyright: 2008-2014, MD Anderson Cancer Center (MDACC)
+License: Artistic-2.0
+
+Files: R/bisection.search.R
+Copyright: 2004-2007, Institute for Mathematics Applied Geosciences (IMAGe)
+	at the National Center for Atmospheric Research (NCAR)
+License: Artistic-2.0
+Comment: Used with permission of Doug Nychka. Original from 'fields' R package.
+

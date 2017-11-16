@@ -1,0 +1,79 @@
+
+R version 2.15.3 Patched (2013-03-13 r62287) -- "Security Blanket"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ###
+> ### $Id: testRPPANormalizationParams.R 957 2015-01-26 01:43:30Z proebuck $
+> ###
+> 
+> 
+> options(warn=1)
+> library(SuperCurve)
+Loading required package: cobs
+> source("checkFuncs")
+> 
+> ###########################
+> ## tests of method
+> 
+> checkException(RPPANormalizationParams(method="bogus"),
++                msg="invalid character value should fail")
+Error in match.arg(method) : 
+  'arg' should be one of "house", "median", "medpolish", "vs"
+[1] TRUE
+> checkException(RPPANormalizationParams(method=""),
++                msg="invalid value (empty string) should fail")
+Error in match.arg(method) : 
+  'arg' should be one of "house", "median", "medpolish", "vs"
+[1] TRUE
+> checkException(RPPANormalizationParams(method=c("foo", "bar")),
++                msg="character vector should fail")
+Error in match.arg(method) : 'arg' must be of length 1
+[1] TRUE
+> 
+> ###########################
+> ## tests of arglist
+> 
+> checkException(RPPANormalizationParams(method="vs",
++                                        arglist="bogus"),
++                msg="invalid character value should fail")
+Error : is.list(arglist) is not TRUE
+[1] TRUE
+> checkException(RPPANormalizationParams(method="vs",
++                                        arglist=list(TRUE, FALSE)),
++                msg="arglist with unnamed components should fail")
+Error in validObject(.Object) : 
+  invalid class "RPPANormalizationParams" object: all list components must be named
+[1] TRUE
+> 
+> ##
+> ##
+> checkTrue(is.RPPANormalizationParams(
++                RPPANormalizationParams(method="vs",
++                                        arglist=NULL)),
++           msg="NULL arglist should succeed")
+[1] TRUE
+> checkTrue(is.RPPANormalizationParams(
++                RPPANormalizationParams(method="house",
++                                        arglist=list(antibodies=c("FOO",
++                                                                  "PLUGH")))),
++           msg="arglist with named components should succeed")
+[1] TRUE
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  0.575   0.041   0.607 

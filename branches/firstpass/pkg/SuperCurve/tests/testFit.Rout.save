@@ -1,0 +1,193 @@
+
+R version 2.15.3 Patched (2013-03-13 r62287) -- "Security Blanket"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ###
+> ### $Id: testFit.R 945 2015-01-21 00:06:51Z proebuck $
+> ###
+> 
+> 
+> options(warn=1)
+> options(show.nls.convergence=TRUE)
+> Sys.setlocale("LC_COLLATE", "C")   # turn off locale-specific sorting, usually
+[1] "C"
+> 
+> library(SuperCurve)
+Loading required package: cobs
+> library(robustbase)
+> library(boot)
+
+Attaching package: 'boot'
+
+The following object(s) are masked from 'package:robustbase':
+
+    salinity
+
+> source("checkFuncs")
+> 
+> extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
+> 
+> ## Get a valid RPPA object to get started
+> path <- file.path(extdata.dir, "rppaTumorData")
+> jnk <- RPPA("JNK.txt", path=path)
+> 
+> ## build the correct design
+> dsn <- RPPADesign(jnk,
++                   grouping="blockSample",
++                   center=TRUE,
++                   controls=list("neg con", "pos con"))
+> 
+> ###########################
+> ## tests of measure
+> 
+> checkException(RPPAFitParams(),
++                msg="missing argument")
+Error in is.character(measure) : 'measure' is missing
+[1] TRUE
+> 
+> fp <- RPPAFitParams("bogus") # cannot catch until data.frame available
+> checkException(RPPAFitFromParams(jnk, dsn, fp),
++                msg="invalid measurement value")
+Error in RPPAFitFromParams(jnk, dsn, fp) : 
+  supply the name of a valid measurement column to fit
+[1] TRUE
+> 
+> fp <- RPPAFitParams(measure="Mean.Net")
+> summary(fp)
+       Length         Class          Mode 
+            1 RPPAFitParams            S4 
+> 
+> ###########################
+> ## tests of model and method
+> 
+> fp <- RPPAFitParams("Mean.Net", model="bogus") # cannot catch this yet
+> summary(fp)
+       Length         Class          Mode 
+            1 RPPAFitParams            S4 
+> checkException(RPPAFitFromParams(jnk, dsn, fp),  # but find bad argument here
++                msg="unregistered fit class as model should fail")
+Error in value[[3L]](cond) : 
+  argument 'model' must be name of registered fit class
+[1] TRUE
+> 
+> checkException(RPPAFitParams("Mean.Net", method="bogus"),
++                msg="invalid method should fail")
+Error in match.arg(method) : 
+  'arg' should be one of "nls", "nlrob", "nlrq"
+[1] TRUE
+> 
+> fp <- RPPAFitParams("Mean.Net", method="nlrob", model="bogus") # cannot catch this yet
+> summary(fp)
+       Length         Class          Mode 
+            1 RPPAFitParams            S4 
+> checkException(RPPAFitFromParams(jnk, dsn, fp),    # but find bad argument here
++                msg="unregistered fit class as model should fail")
+Error in value[[3L]](cond) : 
+  argument 'model' must be name of registered fit class
+[1] TRUE
+> 
+> checkException(registerModel("bogus", 5),
++                msg="invalid classname should fail")
+Error in value[[3L]](cond) : cannot create instance of classname '5'
+[1] TRUE
+> checkException(registerModel("bogus", "numeric"),
++                msg="invalid classname - superclass not FitClass")
+Error in registerModel("bogus", "numeric") : 
+  argument 'classname' must be name of subclass of class 'FitClass'
+[1] TRUE
+> 
+> ## Generate matrix[models, methods] of fits
+> fitmodels <- SuperCurve:::getRegisteredModelKeys()
+> fitmethods <- eval(formals(RPPAFitParams)$method)
+> fits <- sapply(fitmethods,
++                function(fitmethod) {
++                    sapply(fitmodels,
++                           function(fitmodel, fitmethod) {
++                               message(sprintf("*** model: %s, method: %s",
++                                               fitmodel, fitmethod))
++                               fp <- RPPAFitParams("Mean.Net",
++                                                   model=fitmodel,
++                                                   method=fitmethod)
++                               RPPAFitFromParams(jnk, dsn, fp)
++                           },
++                           fitmethod=fitmethod)
++                })
+*** model: cobs, method: nls
+*** model: loess, method: nls
+*** model: logistic, method: nls
+*** model: cobs, method: nlrob
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+*** model: loess, method: nlrob
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+*** model: logistic, method: nlrob
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+Warning in nlsmeth(Y ~ SuperCurve:::.slide.model(Steps + X), data = data.frame(Y = intensity,  :
+  failed to converge in 20 steps
+*** model: cobs, method: nlrq
+Loading required package: quantreg
+Loading required package: SparseM
+
+Attaching package: 'SparseM'
+
+The following object(s) are masked from 'package:base':
+
+    backsolve
+
+*** model: loess, method: nlrq
+*** model: logistic, method: nlrq
+Warning in lsfit(x, y, d^2, intercept = FALSE) :
+  'X' matrix was collinear
+Warning in lsfit(x, y, d^2, intercept = FALSE) :
+  'X' matrix was collinear
+Warning in lsfit(x, y, d^2, intercept = FALSE) :
+  'X' matrix was collinear
+Warning in lsfit(x, y, d^2, intercept = FALSE) :
+  'X' matrix was collinear
+> 
+> 
+> proc.time()
+   user  system elapsed 
+137.175   0.307 137.522 

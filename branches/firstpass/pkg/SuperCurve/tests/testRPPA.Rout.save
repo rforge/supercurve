@@ -1,0 +1,304 @@
+
+R version 2.15.3 Patched (2013-03-13 r62287) -- "Security Blanket"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ###
+> ### $Id: testRPPA.R 945 2015-01-21 00:06:51Z proebuck $
+> ###
+> 
+> 
+> options(warn=1)
+> library(SuperCurve)
+Loading required package: cobs
+> source("checkFuncs")
+> 
+> extdata.dir <- system.file("extdata", package="SuperCurveSampleData")
+> path <- file.path(extdata.dir, "rppaCellData")
+> 
+> ###########################
+> ## tests of file
+> 
+> checkException(RPPA(pi),
++                msg="invalid value should fail - must be connection")
+Error in summary(file)$description : 
+  $ operator is invalid for atomic vectors
+[1] TRUE
+> checkException(RPPA(list.files(path)),
++                msg="character vector (file) should fail")
+Error in RPPA(list.files(path)) : argument 'file' must be of length 1
+[1] TRUE
+> quantfile <- list.files(path)[1]
+> checkTrue(is.RPPA(RPPA(file.path(path, quantfile))),
++           msg="absolute pathname should succeed")
+[1] TRUE
+> checkException(RPPA(""),
++                msg="empty string should fail")
+Error in RPPA("") : argument 'file' must not be empty string
+[1] TRUE
+> nosuchfile <- "nosuch.tsv"
+> checkException(RPPA(nosuchfile),
++                msg="nonexistent file should fail")
+Error in RPPA(nosuchfile) : file "./nosuch.tsv" does not exist
+[1] TRUE
+> 
+> badurl <- "http://www.example.org/myslide.tsv"
+> checkException(RPPA(badurl),
++                msg="unresolvable URL should fail")
+Warning in url(path_or_url, "r") :
+  cannot open: HTTP status was '404 Not Found'
+Error in url(path_or_url, "r") : cannot open the connection
+[1] TRUE
+> ## :TODO: Add test using valid URL for 'file' argument...
+> 
+> 
+> ###########################
+> ## tests of path
+> 
+> checkException(RPPA(quantfile,
++                     path=pi),
++                msg="invalid value should fail")
+Error in RPPA(quantfile, path = pi) : argument 'path' must be character
+[1] TRUE
+> checkException(RPPA(quantfile,
++                     path=c(path, path.expand("~"))),
++                msg="character vector should fail")
+Error in RPPA(quantfile, path = c(path, path.expand("~"))) : 
+  argument 'path' must be of length 1
+[1] TRUE
+> 
+> 
+> ###########################
+> ## tests of antibody
+> 
+> quantfile <- list.files(path)[1]
+> checkException(RPPA(file.path(path, quantfile),
++                     antibody=p1),
++                msg="invalid value should fail")
+Error in RPPA(file.path(path, quantfile), antibody = p1) : 
+  object 'p1' not found
+[1] TRUE
+> checkException(RPPA(file.path(path, quantfile),
++                     antibody=LETTERS),
++                msg="character vector should fail")
+Error in RPPA(file.path(path, quantfile), antibody = LETTERS) : 
+  argument 'antibody' must be of length 1
+[1] TRUE
+> checkException(RPPA(file.path(path, quantfile),
++                     antibody=""),
++                msg="empty string should fail")
+Error in RPPA(file.path(path, quantfile), antibody = "") : 
+  argument 'antibody' must not be empty string
+[1] TRUE
+> local({
++     rppa <- RPPA(file.path(path, quantfile))
++     checkTrue(identical(rppa@antibody,
++                         sub(".txt$", "", quantfile)),
++               msg="default value is filename w/o extension")
++ })
+[1] TRUE
+> 
+> local({
++     antibody <- "FOO"
++     rppa <- RPPA(file.path(path, quantfile),
++                  antibody=antibody)
++     checkTrue(identical(rppa@antibody, antibody),
++               msg="specified value is slotted")
++ })
+[1] TRUE
+> 
+> 
+> ###########################
+> ## tests of readQuantification file
+> 
+> wrtconn <- textConnection(NULL, "w", local=TRUE)
+> checkException(RPPA(wrtconn),
++                msg="write-only connection should fail")
+Error in readQuantification(file, software, alt.layout) : 
+  connection "NULL" not open for read
+[1] TRUE
+> close(wrtconn)
+> 
+> checkException(RPPA("cellLineInfo.tsv", path=path),
++                msg="not MicroVigene datafile should fail")
+Error in readMethod(conn) : 
+  file "/Library/Frameworks/R.framework/Versions/2.15/Resources/library/SuperCurveSampleData/extdata/rppaCellData/cellLineInfo.tsv" is not a MicroVigene datafile
+[1] TRUE
+> 
+> ###########################
+> ## tests of readQuantification software
+> 
+> checkException(RPPA(quantfile,
++                     path=path,
++                     software=pi),
++                msg="invalid value should fail")
+Error in readQuantification(file, software, alt.layout) : 
+  argument 'software' must be character
+[1] TRUE
+> 
+> checkException(RPPA(quantfile,
++                     path=path,
++                     software=c("foo", "bar")),
++                msg="character vector should fail")
+Error in readQuantification(file, software, alt.layout) : 
+  argument 'software' must be of length 1
+[1] TRUE
+> 
+> checkException(RPPA(quantfile,
++                     path=path,
++                     software=""),
++                msg="empty string should fail")
+Error in readQuantification(file, software, alt.layout) : 
+  argument 'software' must not be empty string
+[1] TRUE
+> 
+> software <- "bogus"
+> userMethod <- paste("read", software, sep=".")
+> 
+> checkTrue(!exists(userMethod, mode="function", .GlobalEnv),
++           msg="method must not exist")
+[1] TRUE
+> checkException(RPPA(quantfile,
++                     path=path,
++                     software=software),
++                msg="data import should fail - missing method")
+Warning in .getReadMethod(software) :
+  no user-provided method named 'read.bogus' found
+Error in readQuantification(file, software, alt.layout) : 
+  cannot import data from file "/Library/Frameworks/R.framework/Versions/2.15/Resources/library/SuperCurveSampleData/extdata/rppaCellData/Akt.txt"
+[1] TRUE
+> 
+> local({
++     read.local <- function(file) {
++ 
++     }
++ 
++     checkException(RPPA(quantfile,
++                         path=path,
++                         software="local"),
++                    msg="data import should fail - method not in user workspace")
++ })
+Warning in .getReadMethod(software) :
+  no user-provided method named 'read.local' found
+Error in readQuantification(file, software, alt.layout) : 
+  cannot import data from file "/Library/Frameworks/R.framework/Versions/2.15/Resources/library/SuperCurveSampleData/extdata/rppaCellData/Akt.txt"
+[1] TRUE
+> 
+> read.noCols <- function(file) {
++     data.frame()
++ }
+> 
+> checkException(RPPA(quantfile,
++                     path=path,
++                     software="noCols"),
++                msg="data import should fail - not enough columns")
+Error in readQuantification(file, software, alt.layout) : 
+  missing required columns "Main.Row", "Main.Col", "Sub.Row", "Sub.Col", "Sample"
+[1] TRUE
+> 
+> read.missingReqdCols <- function(file) {
++     data.frame(a=1, b=2, c=3, d=4, e=5, f=6)
++ }
+> 
+> checkException(RPPA(quantfile,
++                     path=path,
++                     software="missingReqdCols"),
++                msg="data import should fail - required columns missing")
+Error in readQuantification(file, software, alt.layout) : 
+  missing required columns "Main.Row", "Main.Col", "Sub.Row", "Sub.Col", "Sample"
+[1] TRUE
+> 
+> read.notEnuffRows <- function(file) {
++     data.frame(Main.Row=1, Main.Col=2, Sub.Row=3, Sub.Col=4, Sample="sample",
++                Other=6)
++ }
+> 
+> checkException(RPPA(quantfile,
++                     path=path,
++                     software="notEnuffRows"),
++                msg="data import should fail - not enough rows")
+Error in readQuantification(file, software, alt.layout) : 
+  number of rows (1) differs from expected (24)
+[1] TRUE
+> 
+> ###########################
+> ## tests of readQuantification alt.layout
+> 
+> checkException(RPPA(quantfile,
++                     path=path,
++                     alt.layout=pi),
++                msg="invalid value should fail")
+Error in readQuantification(file, software, alt.layout) : 
+  argument 'alt.layout' must be character
+[1] TRUE
+> 
+> checkException(RPPA(quantfile,
++                     path=path,
++                     alt.layout=c("foo", "bar")),
++                msg="character vector should fail")
+Error in readQuantification(file, software, alt.layout) : 
+  argument 'alt.layout' must be of length 1
+[1] TRUE
+> 
+> checkException(RPPA(quantfile,
++                     path=path,
++                     alt.layout=""),
++                msg="empty string should fail")
+Error in readQuantification(file, software, alt.layout) : 
+  argument 'alt.layout' must not be empty string
+[1] TRUE
+> 
+> ## :TODO: Add complex checks for 'alt.layout'
+> 
+> 
+> ###########################
+> ## tests of image
+> 
+> 
+> akt <- RPPA("Akt.txt", path=path)
+> image(akt, colorbar=TRUE)
+> 
+> image(akt, colorbar=1) # numeric colorbar value silently converted to logical
+> 
+> checkException(image(akt, colorbar="red"),
++                msg="character value should fail")
+Error in .local(x, ...) : argument 'colorbar' must be logical
+[1] TRUE
+> 
+> checkException(image(akt, measure="bogus"),
++                msg="invalid measure should fail")
+Error in .local(x, ...) : invalid measure 'bogus'
+[1] TRUE
+> 
+> if (getRversion() < "2.8.0") {
++     cat("Using outdated version of R...", "\n")
++     pdf(width=1.2, height=6)
++ } else {
++     dev.new(width=1.2, height=6)
++ }
+dev.new(): using pdf(file="Rplots1.pdf")
+> try( image(akt) )
+Error in plot.new() : figure margins too large
+> try( image(akt, colorbar=TRUE) )
+Error in plot.new() : figure margins too large
+> dev.off()
+pdf 
+  2 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  0.707   0.052   0.788 
